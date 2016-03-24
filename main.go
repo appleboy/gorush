@@ -4,11 +4,38 @@ import (
 	"net/http"
 	"github.com/gin-gonic/gin"
 	api "github.com/appleboy/gin-status-api"
+	"github.com/fvbock/endless"
+	"log"
 )
 
-func rootHandler(context *gin.Context) {
-	context.JSON(http.StatusOK, gin.H{
-		"text": "hello world",
+func AbortWithError(c *gin.Context, code int, message string) {
+	c.JSON(code, gin.H{
+		"code":    code,
+		"message": message,
+	})
+	c.Abort()
+}
+
+func rootHandler(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"text": "Welcome to golang push server.",
+	})
+}
+
+func pushHandler(c *gin.Context) {
+	var form RequestPushNotification
+
+	if err := c.BindJSON(&form); err != nil {
+		log.Println(err)
+		AbortWithError(c, http.StatusBadRequest, "Missing some parameters like token or platform or message")
+		return
+	}
+
+	// process notification.
+	pushNotification(form)
+
+	c.JSON(http.StatusOK, gin.H{
+		"text": "Welcome to golang push server.",
 	})
 }
 
@@ -20,11 +47,12 @@ func GetMainEngine() *gin.Engine {
 	r.Use(gin.Recovery())
 
 	r.GET("/api/status", api.StatusHandler)
+	r.POST("/api/push", pushHandler)
 	r.GET("/", rootHandler)
 
 	return r
 }
 
 func main() {
-	GetMainEngine().Run(":8088")
+	endless.ListenAndServe(":8088", GetMainEngine())
 }
