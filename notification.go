@@ -1,9 +1,9 @@
 package main
 
-import(
+import (
 	apns "github.com/sideshow/apns2"
-	"github.com/sideshow/apns2/payload"
 	"github.com/sideshow/apns2/certificate"
+	"github.com/sideshow/apns2/payload"
 	"log"
 )
 
@@ -17,14 +17,14 @@ type RequestPushNotification struct {
 	Tokens   []string `json:"tokens" binding:"required"`
 	Platform int      `json:"platform" binding:"required"`
 	Message  string   `json:"message" binding:"required"`
-	Priority string `json:"priority,omitempty"`
+	Priority string   `json:"priority,omitempty"`
 	// Android
 	CollapseKey    string `json:"collapse_key,omitempty"`
 	DelayWhileIdle bool   `json:"delay_while_idle,omitempty"`
 	TimeToLive     int    `json:"time_to_live,omitempty"`
 	// iOS
-	ApnsID string `json:"apns_id,omitempty"`
-	Topic string `json:"topic,omitempty"`
+	ApnsID string       `json:"apns_id,omitempty"`
+	Topic  string       `json:"topic,omitempty"`
 	Badge  int          `json:"badge,omitempty"`
 	Sound  string       `json:"sound,omitempty"`
 	Expiry int          `json:"expiry,omitempty"`
@@ -36,7 +36,7 @@ type RequestPushNotification struct {
 
 func pushNotification(notification RequestPushNotification) bool {
 	var (
-		success    bool
+		success bool
 	)
 
 	cert, err := certificate.FromPemFile("./key.pem", "")
@@ -44,7 +44,7 @@ func pushNotification(notification RequestPushNotification) bool {
 		log.Println("Cert Error:", err)
 	}
 
-  apnsClient := apns.NewClient(cert).Development()
+	apnsClient := apns.NewClient(cert).Development()
 
 	switch notification.Platform {
 	case PlatFormIos:
@@ -99,12 +99,12 @@ func pushNotificationIos(req RequestPushNotification, client *apns.Client) bool 
 		res, err := client.Push(notification)
 
 		if err != nil {
-		  log.Println("There was an error", err)
-		  return false
+			log.Println("There was an error", err)
+			return false
 		}
 
 		if res.Sent() {
-		  log.Println("APNs ID:", res.ApnsID)
+			log.Println("APNs ID:", res.ApnsID)
 		}
 	}
 
