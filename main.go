@@ -45,6 +45,7 @@ func GetMainEngine() *gin.Engine {
 	// Global middleware
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
+	r.Use(VersionMiddleware())
 
 	r.GET("/api/status", api.StatusHandler)
 	r.POST("/api/push", pushHandler)
