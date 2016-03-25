@@ -1,10 +1,10 @@
 package main
 
 import (
+	_ "github.com/google/go-gcm"
 	apns "github.com/sideshow/apns2"
 	"github.com/sideshow/apns2/certificate"
 	"github.com/sideshow/apns2/payload"
-	_ "github.com/google/go-gcm"
 	"log"
 )
 
@@ -27,11 +27,11 @@ type alert struct {
 
 type RequestPushNotification struct {
 	// Common
-	Tokens   []string `json:"tokens" binding:"required"`
-	Platform int      `json:"platform" binding:"required"`
-	Message  string   `json:"message" binding:"required"`
-	Priority string   `json:"priority,omitempty"`
-	ContentAvailable bool `json:"content_available,omitempty"`
+	Tokens           []string `json:"tokens" binding:"required"`
+	Platform         int      `json:"platform" binding:"required"`
+	Message          string   `json:"message" binding:"required"`
+	Priority         string   `json:"priority,omitempty"`
+	ContentAvailable bool     `json:"content_available,omitempty"`
 
 	// Android
 	CollapseKey    string `json:"collapse_key,omitempty"`
@@ -39,16 +39,16 @@ type RequestPushNotification struct {
 	TimeToLive     int    `json:"time_to_live,omitempty"`
 
 	// iOS
-	ApnsID string       `json:"apns_id,omitempty"`
-	Topic  string       `json:"topic,omitempty"`
-	Badge  int          `json:"badge,omitempty"`
-	Sound  string       `json:"sound,omitempty"`
-	Expiry int          `json:"expiry,omitempty"`
-	Retry  int          `json:"retry,omitempty"`
-	Category string     `json:"category,omitempty"`
-	URLArgs          []string    `json:"url-args,omitempty"`
-	Extend []ExtendJSON `json:"extend,omitempty"`
-	Alert alert `json:"alert,omitempty"`
+	ApnsID   string       `json:"apns_id,omitempty"`
+	Topic    string       `json:"topic,omitempty"`
+	Badge    int          `json:"badge,omitempty"`
+	Sound    string       `json:"sound,omitempty"`
+	Expiry   int          `json:"expiry,omitempty"`
+	Retry    int          `json:"retry,omitempty"`
+	Category string       `json:"category,omitempty"`
+	URLArgs  []string     `json:"url-args,omitempty"`
+	Extend   []ExtendJSON `json:"extend,omitempty"`
+	Alert    alert        `json:"alert,omitempty"`
 	// meta
 	IDs []uint64 `json:"seq_id,omitempty"`
 }
