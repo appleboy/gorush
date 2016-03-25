@@ -1,7 +1,7 @@
 package main
 
 import (
-	_ "github.com/google/go-gcm"
+	"github.com/google/go-gcm"
 	apns "github.com/sideshow/apns2"
 	"github.com/sideshow/apns2/certificate"
 	"github.com/sideshow/apns2/payload"
@@ -34,9 +34,13 @@ type RequestPushNotification struct {
 	ContentAvailable bool     `json:"content_available,omitempty"`
 
 	// Android
-	CollapseKey    string `json:"collapse_key,omitempty"`
-	DelayWhileIdle bool   `json:"delay_while_idle,omitempty"`
-	TimeToLive     int    `json:"time_to_live,omitempty"`
+	CollapseKey           string           `json:"collapse_key,omitempty"`
+	DelayWhileIdle        bool             `json:"delay_while_idle,omitempty"`
+	TimeToLive            uint             `json:"time_to_live,omitempty"`
+	RestrictedPackageName string           `json:"restricted_package_name,omitempty"`
+	DryRun                bool             `json:"dry_run,omitempty"`
+	Data                  gcm.Data         `json:"data,omitempty"`
+	Notification          gcm.Notification `json:"notification,omitempty"`
 
 	// iOS
 	ApnsID   string       `json:"apns_id,omitempty"`
@@ -181,6 +185,71 @@ func pushNotificationIos(req RequestPushNotification, client *apns.Client) bool 
 }
 
 func pushNotificationAndroid(req RequestPushNotification) bool {
+
+	// HTTP Connection Server Reference for Android
+	// https://developers.google.com/cloud-messaging/http-server-ref
+	notification := gcm.HttpMessage{}
+
+	notification.RegistrationIds = req.Tokens
+
+	if len(req.Topic) > 0 {
+		notification.To = req.Topic
+	}
+
+	if len(req.Priority) > 0 && req.Priority == "high" {
+		notification.Priority = "high"
+	}
+
+	if len(req.CollapseKey) > 0 {
+		notification.CollapseKey = req.CollapseKey
+	}
+
+	if req.ContentAvailable {
+		notification.ContentAvailable = true
+	}
+
+	if req.DelayWhileIdle {
+		notification.DelayWhileIdle = true
+	}
+
+	if req.TimeToLive > 0 {
+		notification.TimeToLive = req.TimeToLive
+	}
+
+	if len(req.RestrictedPackageName) > 0 {
+		notification.RestrictedPackageName = req.RestrictedPackageName
+	}
+
+	if req.DryRun {
+		notification.DryRun = true
+	}
+
+	if len(req.Data) > 0 {
+		notification.Data = req.Data
+	}
+
+	notification.Notification = &req.Notification
+
+	// overwrite notification body
+	notification.Notification.Body = req.Message
+
+	res, err := gcm.SendHttp("api key", notification)
+
+	if err != nil {
+		log.Println(err)
+
+		return false
+	}
+
+	if res.Error != "" {
+		log.Println("GCM Error Message: " + res.Error)
+	}
+
+	if res.Success > 0 {
+		log.Printf("Success count: %d, Failure count: %d", res.Success, res.Failure)
+
+		return true
+	}
 
 	return true
 }
