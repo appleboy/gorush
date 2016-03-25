@@ -232,8 +232,10 @@ func pushNotificationAndroid(req RequestPushNotification) bool {
 
 	notification.Notification = &req.Notification
 
-	// overwrite notification body
-	notification.Notification.Body = req.Message
+	// Set request message if body is empty
+	if len(notification.Notification.Body) == 0 {
+		notification.Notification.Body = req.Message
+	}
 
 	res, err := gcm.SendHttp("api key", notification)
 
