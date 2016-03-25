@@ -19,10 +19,13 @@ type RequestPushNotification struct {
 	Platform int      `json:"platform" binding:"required"`
 	Message  string   `json:"message" binding:"required"`
 	Priority string   `json:"priority,omitempty"`
+	ContentAvailable bool `json:"content_available,omitempty"`
+
 	// Android
 	CollapseKey    string `json:"collapse_key,omitempty"`
 	DelayWhileIdle bool   `json:"delay_while_idle,omitempty"`
 	TimeToLive     int    `json:"time_to_live,omitempty"`
+
 	// iOS
 	ApnsID string       `json:"apns_id,omitempty"`
 	Topic  string       `json:"topic,omitempty"`
@@ -86,6 +89,10 @@ func pushNotificationIos(req RequestPushNotification, client *apns.Client) bool 
 
 		if len(req.Sound) > 0 {
 			payload.Sound(req.Sound)
+		}
+
+		if req.ContentAvailable {
+			payload.ContentAvailable()
 		}
 
 		if len(req.Extend) > 0 {
