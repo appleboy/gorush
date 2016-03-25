@@ -4,6 +4,7 @@ import (
 	apns "github.com/sideshow/apns2"
 	"github.com/sideshow/apns2/certificate"
 	"github.com/sideshow/apns2/payload"
+	_ "github.com/google/go-gcm"
 	"log"
 )
 
