@@ -34,6 +34,7 @@ type RequestPushNotification struct {
 	ContentAvailable bool     `json:"content_available,omitempty"`
 
 	// Android
+	To                    string           `json:"to,omitempty"`
 	CollapseKey           string           `json:"collapse_key,omitempty"`
 	DelayWhileIdle        bool             `json:"delay_while_idle,omitempty"`
 	TimeToLive            uint             `json:"time_to_live,omitempty"`
@@ -53,6 +54,7 @@ type RequestPushNotification struct {
 	URLArgs  []string     `json:"url-args,omitempty"`
 	Extend   []ExtendJSON `json:"extend,omitempty"`
 	Alert    alert        `json:"alert,omitempty"`
+
 	// meta
 	IDs []uint64 `json:"seq_id,omitempty"`
 }
@@ -192,8 +194,8 @@ func pushNotificationAndroid(req RequestPushNotification) bool {
 
 	notification.RegistrationIds = req.Tokens
 
-	if len(req.Topic) > 0 {
-		notification.To = req.Topic
+	if len(req.To) > 0 {
+		notification.To = req.To
 	}
 
 	if len(req.Priority) > 0 && req.Priority == "high" {

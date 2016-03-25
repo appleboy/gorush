@@ -27,7 +27,7 @@ func pushHandler(c *gin.Context) {
 
 	if err := c.BindJSON(&form); err != nil {
 		log.Println(err)
-		AbortWithError(c, http.StatusBadRequest, "Missing some parameters like token or platform or message")
+		AbortWithError(c, http.StatusBadRequest, "Bad input request, please refer to README guide.")
 		return
 	}
 
