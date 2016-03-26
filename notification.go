@@ -61,9 +61,14 @@ type RequestPushNotification struct {
 func pushNotification(notification RequestPushNotification) bool {
 	var (
 		success bool
+		apnsClient *apns.Client
 	)
 
-	apnsClient := apns.NewClient(CertificatePemIos).Development()
+	if PushConf.Ios.Production {
+		apnsClient = apns.NewClient(CertificatePemIos).Production()
+	} else {
+		apnsClient = apns.NewClient(CertificatePemIos).Development()
+	}
 
 	switch notification.Platform {
 	case PlatFormIos:
