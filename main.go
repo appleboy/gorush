@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	apns "github.com/sideshow/apns2"
 	"github.com/sideshow/apns2/certificate"
 )
 
@@ -70,13 +71,22 @@ func main() {
 		return
 	}
 
-	CertificatePemIos, err = certificate.FromPemFile(PushConf.Ios.PemKeyPath, "")
+	if PushConf.Ios.Enabled {
+		CertificatePemIos, err = certificate.FromPemFile(PushConf.Ios.PemKeyPath, "")
 
-	if err != nil {
-		log.Println("Cert Error:", err)
+		if err != nil {
+			log.Println("Cert Error:", err)
 
-		return
+			return
+		}
+
+		if PushConf.Ios.Production {
+			ApnsClient = apns.NewClient(CertificatePemIos).Production()
+		} else {
+			ApnsClient = apns.NewClient(CertificatePemIos).Development()
+		}
 	}
+
 
 	endless.ListenAndServe(":"+PushConf.Core.Port, GetMainEngine())
 }

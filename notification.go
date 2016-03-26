@@ -61,21 +61,11 @@ type RequestPushNotification struct {
 func pushNotification(notification RequestPushNotification) bool {
 	var (
 		success bool
-		apnsClient *apns.Client
 	)
-
-	if PushConf.Ios.Production {
-		apnsClient = apns.NewClient(CertificatePemIos).Production()
-	} else {
-		apnsClient = apns.NewClient(CertificatePemIos).Development()
-	}
 
 	switch notification.Platform {
 	case PlatFormIos:
-		success = pushNotificationIos(notification, apnsClient)
-		if !success {
-			apnsClient = nil
-		}
+		success = pushNotificationIos(notification)
 	case PlatFormAndroid:
 		success = pushNotificationAndroid(notification)
 	}
@@ -83,7 +73,7 @@ func pushNotification(notification RequestPushNotification) bool {
 	return success
 }
 
-func pushNotificationIos(req RequestPushNotification, client *apns.Client) bool {
+func pushNotificationIos(req RequestPushNotification) bool {
 
 	for _, token := range req.Tokens {
 		notification := &apns.Notification{}
@@ -168,7 +158,7 @@ func pushNotificationIos(req RequestPushNotification, client *apns.Client) bool 
 		notification.Payload = payload
 
 		// send ios notification
-		res, err := client.Push(notification)
+		res, err := ApnsClient.Push(notification)
 
 		if err != nil {
 			log.Println("There was an error", err)
@@ -177,10 +167,9 @@ func pushNotificationIos(req RequestPushNotification, client *apns.Client) bool 
 
 		if res.Sent() {
 			log.Println("APNs ID:", res.ApnsID)
+			return true
 		}
 	}
-
-	client = nil
 
 	return true
 }
