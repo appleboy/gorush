@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	PushConf ConfYaml
+	PushConf          ConfYaml
 	CertificatePemIos tls.Certificate
-	ApnsClient *apns.Client
+	ApnsClient        *apns.Client
 )

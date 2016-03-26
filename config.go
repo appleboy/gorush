@@ -1,9 +1,9 @@
 package main
 
 import (
-	"log"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
+	"log"
 )
 
 type ConfYaml struct {
@@ -19,20 +19,20 @@ type SectionCore struct {
 }
 
 type SectionApi struct {
-	PushUri      string `yaml:"push_uri"`
-	StatGoUri    string `yaml:"stat_go_uri"`
+	PushUri   string `yaml:"push_uri"`
+	StatGoUri string `yaml:"stat_go_uri"`
 }
 
 type SectionAndroid struct {
-	Enabled  bool   `yaml:"enabled"`
-	ApiKey   string `yaml:"apikey"`
+	Enabled bool   `yaml:"enabled"`
+	ApiKey  string `yaml:"apikey"`
 }
 
 type SectionIos struct {
-	Enabled              bool   `yaml:"enabled"`
-	PemCertPath          string `yaml:"pem_cert_path"`
-	PemKeyPath           string `yaml:"pem_key_path"`
-	Production           bool   `yaml:"production"`
+	Enabled     bool   `yaml:"enabled"`
+	PemCertPath string `yaml:"pem_cert_path"`
+	PemKeyPath  string `yaml:"pem_key_path"`
+	Production  bool   `yaml:"production"`
 }
 
 func BuildDefaultPushConf() ConfYaml {
