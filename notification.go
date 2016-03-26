@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/google/go-gcm"
 	apns "github.com/sideshow/apns2"
-	"github.com/sideshow/apns2/certificate"
 	"github.com/sideshow/apns2/payload"
 	"log"
 )
@@ -64,19 +63,9 @@ func pushNotification(notification RequestPushNotification) bool {
 		success bool
 	)
 
-	cert, err := certificate.FromPemFile("./key.pem", "")
-	if err != nil {
-		log.Println("Cert Error:", err)
-	}
-
-	apnsClient := apns.NewClient(cert).Development()
-
 	switch notification.Platform {
 	case PlatFormIos:
-		success = pushNotificationIos(notification, apnsClient)
-		if !success {
-			apnsClient = nil
-		}
+		success = pushNotificationIos(notification)
 	case PlatFormAndroid:
 		success = pushNotificationAndroid(notification)
 	}
@@ -84,7 +73,7 @@ func pushNotification(notification RequestPushNotification) bool {
 	return success
 }
 
-func pushNotificationIos(req RequestPushNotification, client *apns.Client) bool {
+func pushNotificationIos(req RequestPushNotification) bool {
 
 	for _, token := range req.Tokens {
 		notification := &apns.Notification{}
@@ -169,19 +158,19 @@ func pushNotificationIos(req RequestPushNotification, client *apns.Client) bool 
 		notification.Payload = payload
 
 		// send ios notification
-		res, err := client.Push(notification)
+		res, err := ApnsClient.Push(notification)
 
 		if err != nil {
-			log.Println("There was an error", err)
+			log.Println("There was an error: ", err)
+
 			return false
 		}
 
 		if res.Sent() {
 			log.Println("APNs ID:", res.ApnsID)
+			return true
 		}
 	}
-
-	client = nil
 
 	return true
 }
@@ -237,7 +226,7 @@ func pushNotificationAndroid(req RequestPushNotification) bool {
 		notification.Notification.Body = req.Message
 	}
 
-	res, err := gcm.SendHttp("api key", notification)
+	res, err := gcm.SendHttp(PushConf.Android.ApiKey, notification)
 
 	if err != nil {
 		log.Println(err)

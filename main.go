@@ -6,6 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	apns "github.com/sideshow/apns2"
+	"github.com/sideshow/apns2/certificate"
 )
 
 func AbortWithError(c *gin.Context, code int, message string) {
@@ -47,13 +49,44 @@ func GetMainEngine() *gin.Engine {
 	r.Use(gin.Recovery())
 	r.Use(VersionMiddleware())
 
-	r.GET("/api/status", api.StatusHandler)
-	r.POST("/api/push", pushHandler)
+	r.GET(PushConf.Api.StatGoUri, api.StatusHandler)
+	r.POST(PushConf.Api.PushUri, pushHandler)
 	r.GET("/", rootHandler)
 
 	return r
 }
 
 func main() {
-	endless.ListenAndServe(":8088", GetMainEngine())
+	var err error
+
+	// set default parameters.
+	PushConf = BuildDefaultPushConf()
+
+	// load user define config.
+	PushConf, err = LoadConfYaml("config.yaml")
+
+	if err != nil {
+		log.Printf("Unable to load config file: '%v'", err)
+
+		return
+	}
+
+	if PushConf.Ios.Enabled {
+		CertificatePemIos, err = certificate.FromPemFile(PushConf.Ios.PemKeyPath, "")
+
+		if err != nil {
+			log.Println("Cert Error:", err)
+
+			return
+		}
+
+		if PushConf.Ios.Production {
+			ApnsClient = apns.NewClient(CertificatePemIos).Production()
+		} else {
+			ApnsClient = apns.NewClient(CertificatePemIos).Development()
+		}
+	}
+
+
+	endless.ListenAndServe(":"+PushConf.Core.Port, GetMainEngine())
 }
