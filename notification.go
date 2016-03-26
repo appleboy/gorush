@@ -161,7 +161,8 @@ func pushNotificationIos(req RequestPushNotification) bool {
 		res, err := ApnsClient.Push(notification)
 
 		if err != nil {
-			log.Println("There was an error", err)
+			log.Println("There was an error: ", err)
+
 			return false
 		}
 
