@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"github.com/sideshow/apns2/certificate"
 )
 
 func AbortWithError(c *gin.Context, code int, message string) {
@@ -55,11 +56,13 @@ func GetMainEngine() *gin.Engine {
 }
 
 func main() {
+	var err error
 
-	// set default parameters
+	// set default parameters.
 	PushConf = BuildDefaultPushConf()
 
-	config, err := LoadConfYaml("config.yaml")
+	// load user define config.
+	PushConf, err = LoadConfYaml("config.yaml")
 
 	if err != nil {
 		log.Printf("Unable to load config file: '%v'", err)
@@ -67,7 +70,13 @@ func main() {
 		return
 	}
 
-	PushConf = config
+	CertificatePemIos, err = certificate.FromPemFile(PushConf.Ios.PemKeyPath, "")
+
+	if err != nil {
+		log.Println("Cert Error:", err)
+
+		return
+	}
 
 	endless.ListenAndServe(":"+PushConf.Core.Port, GetMainEngine())
 }

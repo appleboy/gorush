@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/google/go-gcm"
 	apns "github.com/sideshow/apns2"
-	"github.com/sideshow/apns2/certificate"
 	"github.com/sideshow/apns2/payload"
 	"log"
 )
@@ -64,12 +63,7 @@ func pushNotification(notification RequestPushNotification) bool {
 		success bool
 	)
 
-	cert, err := certificate.FromPemFile("./key.pem", "")
-	if err != nil {
-		log.Println("Cert Error:", err)
-	}
-
-	apnsClient := apns.NewClient(cert).Development()
+	apnsClient := apns.NewClient(CertificatePemIos).Development()
 
 	switch notification.Platform {
 	case PlatFormIos:
