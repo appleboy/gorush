@@ -237,7 +237,7 @@ func pushNotificationAndroid(req RequestPushNotification) bool {
 		notification.Notification.Body = req.Message
 	}
 
-	res, err := gcm.SendHttp("api key", notification)
+	res, err := gcm.SendHttp(PushConf.Android.ApiKey, notification)
 
 	if err != nil {
 		log.Println(err)

@@ -47,13 +47,27 @@ func GetMainEngine() *gin.Engine {
 	r.Use(gin.Recovery())
 	r.Use(VersionMiddleware())
 
-	r.GET("/api/status", api.StatusHandler)
-	r.POST("/api/push", pushHandler)
+	r.GET(PushConf.Api.StatGoUri, api.StatusHandler)
+	r.POST(PushConf.Api.PushUri, pushHandler)
 	r.GET("/", rootHandler)
 
 	return r
 }
 
 func main() {
-	endless.ListenAndServe(":8088", GetMainEngine())
+
+	// set default parameters
+	PushConf = BuildDefaultPushConf()
+
+	config, err := LoadConfYaml("config.yaml")
+
+	if err != nil {
+		log.Printf("Unable to load config file: '%v'", err)
+
+		return
+	}
+
+	PushConf = config
+
+	endless.ListenAndServe(":"+PushConf.Core.Port, GetMainEngine())
 }
