@@ -36,6 +36,12 @@ func main() {
 		}
 	}
 
+	if !gopush.PushConf.Ios.Enabled && !gopush.PushConf.Android.Enabled {
+		log.Printf("Note: Please enable iOS or Android config in yaml config")
+
+		return
+	}
+
 	if gopush.PushConf.Ios.Enabled {
 
 		if *certificateKeyPath != "" {

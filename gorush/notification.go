@@ -86,8 +86,14 @@ func pushNotification(notification RequestPushNotification) bool {
 
 	switch notification.Platform {
 	case PlatFormIos:
+		if !PushConf.Ios.Enabled {
+			return false
+		}
 		success = pushNotificationIos(notification)
 	case PlatFormAndroid:
+		if !PushConf.Android.Enabled {
+			return false
+		}
 		success = pushNotificationAndroid(notification)
 	}
 
