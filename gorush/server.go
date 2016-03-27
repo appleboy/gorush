@@ -40,6 +40,10 @@ func pushHandler(c *gin.Context) {
 }
 
 func GetMainEngine() *gin.Engine {
+	if PushConf.Core.Production {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
 	r := gin.New()
 
 	// Global middleware
