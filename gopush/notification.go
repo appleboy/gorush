@@ -102,6 +102,8 @@ func pushNotification(notification RequestPushNotification) bool {
 
 func pushNotificationIos(req RequestPushNotification) bool {
 
+	// The Remote Notification Payload
+	// https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/TheNotificationPayload.html
 	for _, token := range req.Tokens {
 		notification := &apns.Notification{}
 		notification.DeviceToken = token
