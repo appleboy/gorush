@@ -1,4 +1,4 @@
-package main
+package gopush
 
 const (
 	Version = "0.0.1"

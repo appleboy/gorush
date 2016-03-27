@@ -1,4 +1,4 @@
-package main
+package gopush
 
 import (
 	"github.com/google/go-gcm"

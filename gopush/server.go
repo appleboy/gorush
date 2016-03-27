@@ -1,11 +1,9 @@
-package main
+package gopush
 
 import (
 	api "github.com/appleboy/gin-status-api"
 	"github.com/fvbock/endless"
 	"github.com/gin-gonic/gin"
-	apns "github.com/sideshow/apns2"
-	"github.com/sideshow/apns2/certificate"
 	"log"
 	"net/http"
 )
@@ -56,36 +54,6 @@ func GetMainEngine() *gin.Engine {
 	return r
 }
 
-func main() {
-	var err error
-
-	// set default parameters.
-	PushConf = BuildDefaultPushConf()
-
-	// load user define config.
-	PushConf, err = LoadConfYaml("config.yaml")
-
-	if err != nil {
-		log.Printf("Unable to load config file: '%v'", err)
-
-		return
-	}
-
-	if PushConf.Ios.Enabled {
-		CertificatePemIos, err = certificate.FromPemFile(PushConf.Ios.PemKeyPath, "")
-
-		if err != nil {
-			log.Println("Cert Error:", err)
-
-			return
-		}
-
-		if PushConf.Ios.Production {
-			ApnsClient = apns.NewClient(CertificatePemIos).Production()
-		} else {
-			ApnsClient = apns.NewClient(CertificatePemIos).Development()
-		}
-	}
-
+func RunHTTPServer() {
 	endless.ListenAndServe(":"+PushConf.Core.Port, GetMainEngine())
 }

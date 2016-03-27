@@ -1,4 +1,4 @@
-package main
+package gopush
 
 import (
 	"gopkg.in/yaml.v2"
@@ -52,8 +52,8 @@ func BuildDefaultPushConf() ConfYaml {
 
 	// iOS
 	conf.Ios.Enabled = true
-	conf.Ios.PemCertPath = ""
-	conf.Ios.PemKeyPath = ""
+	conf.Ios.PemCertPath = "cert.pem"
+	conf.Ios.PemKeyPath = "key.pem"
 	conf.Ios.Production = false
 
 	return conf
