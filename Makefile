@@ -18,9 +18,8 @@ docker_build: clean
 	tar -zcvf build.tar.gz gopush.go gopush
 	docker build -t $(BUILD_IMAGE) -f docker/Dockerfile.build .
 	docker run $(BUILD_IMAGE) > bin.tar.gz
-	-rm -rf build.tar.gz
 	tar -zxvf bin.tar.gz
-	-rm -rf bin.tar.gz
+	-rm -rf bin.tar.gz build.tar.gz
 
 clean:
 	rm -rf build.tar.gz bin.tar.gz bin/*

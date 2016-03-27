@@ -48,10 +48,10 @@ func BuildDefaultPushConf() ConfYaml {
 
 	// Android
 	conf.Android.ApiKey = ""
-	conf.Android.Enabled = true
+	conf.Android.Enabled = false
 
 	// iOS
-	conf.Ios.Enabled = true
+	conf.Ios.Enabled = false
 	conf.Ios.PemCertPath = "cert.pem"
 	conf.Ios.PemKeyPath = "key.pem"
 	conf.Ios.Production = false
