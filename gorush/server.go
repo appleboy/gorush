@@ -18,7 +18,7 @@ func AbortWithError(c *gin.Context, code int, message string) {
 
 func rootHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
-		"text": "Welcome to golang push server.",
+		"text": "Welcome to notification server.",
 	})
 }
 
@@ -35,7 +35,7 @@ func pushHandler(c *gin.Context) {
 	pushNotification(form)
 
 	c.JSON(http.StatusOK, gin.H{
-		"text": "Welcome to golang push server.",
+		"text": "Welcome to notification server.",
 	})
 }
 
