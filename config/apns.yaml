@@ -1,0 +1,17 @@
+core:
+  port: "8088"
+  notification_max: 100
+
+api:
+  push_uri: "/api/push"
+  stat_go_uri: "/api/status"
+
+android:
+  enabled: true
+  apikey: ""
+
+ios:
+  enabled: true
+  pem_cert_path: "cert.pem"
+  pem_key_path: "key.pem"
+  production: false
