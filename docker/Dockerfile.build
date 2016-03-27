@@ -6,9 +6,6 @@ RUN mkdir -p /tmp/build
 Add build.tar.gz /tmp/build/
 WORKDIR /tmp/build
 RUN go get -d
-RUN GOOS=linux GOARCH=amd64 go build -ldflags="-w" -o bin/linux/amd64/gopush gopush.go
-RUN GOOS=darwin GOARCH=amd64 go build -ldflags="-w" -o bin/darwin/amd64/gopush gopush.go
-RUN GOOS=windows GOARCH=386 go build -ldflags="-w" -o bin/windows/i386/gopush.exe gopush.go
-RUN GOOS=windows GOARCH=amd64 go build -ldflags="-w" -o bin/windows/amd64/gopush.exe gopush.go
+RUN sh script/build.sh
 
 CMD tar -czf - bin
