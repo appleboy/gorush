@@ -3,6 +3,7 @@ package gopush
 import (
 	"github.com/google/go-gcm"
 	apns "github.com/sideshow/apns2"
+	"github.com/sideshow/apns2/certificate"
 	"github.com/sideshow/apns2/payload"
 	"log"
 )
@@ -56,6 +57,26 @@ type RequestPushNotification struct {
 
 	// meta
 	IDs []uint64 `json:"seq_id,omitempty"`
+}
+
+func InitAPNSClient() {
+	if PushConf.Ios.Enabled {
+		var err error
+
+		CertificatePemIos, err = certificate.FromPemFile(PushConf.Ios.PemKeyPath, "")
+
+		if err != nil {
+			log.Println("Cert Error:", err)
+
+			return
+		}
+
+		if PushConf.Ios.Production {
+			ApnsClient = apns.NewClient(CertificatePemIos).Production()
+		} else {
+			ApnsClient = apns.NewClient(CertificatePemIos).Development()
+		}
+	}
 }
 
 func pushNotification(notification RequestPushNotification) bool {
