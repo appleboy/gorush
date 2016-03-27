@@ -1,4 +1,4 @@
-package main
+package gopush
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 )
 
 func PrintGoPushVersion() {
-	fmt.Printf(`GoPush %s Compiler: %s %s Copyright (C) 2016 Bo-Yi Wu, Inc.`,
+	fmt.Printf(`GoPush %s, Compiler: %s %s, Copyright (C) 2016 Bo-Yi Wu, Inc.`,
 		Version,
 		runtime.Compiler,
 		runtime.Version())
