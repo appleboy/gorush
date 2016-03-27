@@ -3,8 +3,6 @@ package main
 import (
 	"flag"
 	"github.com/appleboy/gopush/gopush"
-	"github.com/sideshow/apns2/certificate"
-	apns "github.com/sideshow/apns2"
 	"log"
 )
 
@@ -49,20 +47,6 @@ func main() {
 
 			return
 		}
-
-		gopush.CertificatePemIos, err = certificate.FromPemFile(gopush.PushConf.Ios.PemKeyPath, "")
-
-		if err != nil {
-			log.Println("Cert Error:", err)
-
-			return
-		}
-
-		if gopush.PushConf.Ios.Production {
-			gopush.ApnsClient = apns.NewClient(gopush.CertificatePemIos).Production()
-		} else {
-			gopush.ApnsClient = apns.NewClient(gopush.CertificatePemIos).Development()
-		}
 	}
 
 	// check andorid api key exist
@@ -84,5 +68,6 @@ func main() {
 		gopush.PushConf.Core.Port = *port
 	}
 
+	gopush.InitAPNSClient()
 	gopush.RunHTTPServer()
 }
