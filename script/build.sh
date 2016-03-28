@@ -1,10 +1,12 @@
 #!/bin/sh
-for GOOS in darwin linux windows; do
-  for GOARCH in 386 amd64; do
+
+OS="darwin linux windows"
+ARCH="amd64"
+
+for GOOS in $OS; do
+  for GOARCH in $ARCH; do
     EXE="gopush"
-    if [ $GOOS == "windows" ]; then
-      EXE="gopush.exe"
-    fi
+    (test "$GOOS" = "windows") && EXE="gopush.exe"
 
     echo "Build: ${GOOS}, Arch: ${GOARCH}, EXE: ${EXE}"
     GOOS=$GOOS GOARCH=$GOARCH go build -ldflags="-w" -o bin/$GOOS/$GOARCH/${EXE} gopush.go;
