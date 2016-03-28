@@ -17,6 +17,9 @@ type SectionCore struct {
 	Port            string `yaml:"port"`
 	NotificationMax int    `yaml:"notification_max"`
 	Production      bool   `yaml:"production"`
+	SSL             bool   `yaml:"ssl"`
+	CertPath        string `yaml:"cert_path"`
+	KeyPath         string `yaml:"key_path"`
 }
 
 type SectionApi struct {
@@ -43,6 +46,9 @@ func BuildDefaultPushConf() ConfYaml {
 	conf.Core.Port = "8088"
 	conf.Core.NotificationMax = 100
 	conf.Core.Production = true
+	conf.Core.SSL = false
+	conf.Core.CertPath = "cert.pem"
+	conf.Core.KeyPath = "key.pem"
 
 	// Api
 	conf.Api.PushUri = "/api/push"

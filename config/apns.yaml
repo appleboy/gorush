@@ -2,6 +2,9 @@ core:
   port: "8088"
   notification_max: 100
   production: true
+  ssl: false
+  cert_path: "cert.pem"
+  key_path: "key.pem"
 
 api:
   push_uri: "/api/push"
