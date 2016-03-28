@@ -2,7 +2,6 @@ package gopush
 
 import (
 	api "github.com/appleboy/gin-status-api"
-	"github.com/braintree/manners"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -59,5 +58,9 @@ func GetMainEngine() *gin.Engine {
 }
 
 func RunHTTPServer() {
-	manners.ListenAndServe(":"+PushConf.Core.Port, GetMainEngine())
+	if PushConf.Core.SSL && PushConf.Core.CertPath != "" && PushConf.Core.KeyPath != "" {
+		GetMainEngine().RunTLS(":"+PushConf.Core.Port, PushConf.Core.CertPath, PushConf.Core.KeyPath)
+	} else {
+		GetMainEngine().Run(":" + PushConf.Core.Port)
+	}
 }
