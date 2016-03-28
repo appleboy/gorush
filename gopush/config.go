@@ -67,14 +67,15 @@ func LoadConfYaml(confPath string) (ConfYaml, error) {
 	configFile, err := ioutil.ReadFile(confPath)
 
 	if err != nil {
-		log.Printf("Unable to read config file '%s'", confPath)
+		log.Printf("Unable to read config file, path: '%s'", confPath)
 
 		return config, err
 	}
 
 	err = yaml.Unmarshal([]byte(configFile), &config)
+
 	if err != nil {
-		log.Printf("Unable to read config file '%v'", err)
+		log.Printf("Unable to Unmarshal config file '%s'", confPath)
 
 		return config, err
 	}
