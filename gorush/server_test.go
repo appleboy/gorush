@@ -3,11 +3,14 @@ package gopush
 import (
 	"github.com/appleboy/gofight"
 	"github.com/buger/jsonparser"
+	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
+	"io/ioutil"
 	"net/http"
+	"os"
 	"runtime"
 	"testing"
-	"os"
+	"time"
 )
 
 var go_version = runtime.Version()
@@ -17,9 +20,55 @@ func initTest() {
 	PushConf.Core.Mode = "test"
 }
 
+func testRequest(t *testing.T, url string) {
+	resp, err := http.Get(url)
+	defer resp.Body.Close()
+	assert.NoError(t, err)
+
+	_, ioerr := ioutil.ReadAll(resp.Body)
+	assert.NoError(t, ioerr)
+	assert.Equal(t, "200 OK", resp.Status, "should get a 200")
+}
+
 func TestPrintGoPushVersion(t *testing.T) {
 	PrintGoPushVersion()
 }
+
+func TestRunNormalServer(t *testing.T) {
+	initTest()
+
+	router := gin.New()
+
+	go func() {
+		assert.NoError(t, RunHTTPServer())
+	}()
+	// have to wait for the goroutine to start and run the server
+	// otherwise the main thread will complete
+	time.Sleep(5 * time.Millisecond)
+
+	assert.Error(t, router.Run(":8088"))
+	testRequest(t, "http://localhost:8088/api/status")
+}
+
+// func TestRunTLSServer(t *testing.T) {
+// 	initTest()
+
+// 	PushConf.Core.SSL = true
+// 	PushConf.Core.Port = "8087"
+// 	PushConf.Core.CertPath = "../certificate/localhost.cert"
+// 	PushConf.Core.KeyPath = "../certificate/localhost.key"
+// 	router := gin.New()
+
+// 	go func() {
+// 		assert.NoError(t, RunHTTPServer())
+// 	}()
+// 	// have to wait for the goroutine to start and run the server
+// 	// otherwise the main thread will complete
+// 	time.Sleep(5 * time.Millisecond)
+
+// 	assert.Error(t, router.Run(":8087"))
+// 	testRequest(t, "https://localhost:8087/api/status")
+// }
 
 func TestRootHandler(t *testing.T) {
 	initTest()
