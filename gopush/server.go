@@ -56,10 +56,13 @@ func GetMainEngine() *gin.Engine {
 	return r
 }
 
-func RunHTTPServer() {
+func RunHTTPServer() error {
+	var err error
 	if PushConf.Core.SSL && PushConf.Core.CertPath != "" && PushConf.Core.KeyPath != "" {
-		GetMainEngine().RunTLS(":"+PushConf.Core.Port, PushConf.Core.CertPath, PushConf.Core.KeyPath)
+		err = GetMainEngine().RunTLS(":"+PushConf.Core.Port, PushConf.Core.CertPath, PushConf.Core.KeyPath)
 	} else {
-		GetMainEngine().Run(":" + PushConf.Core.Port)
+		err = GetMainEngine().Run(":" + PushConf.Core.Port)
 	}
+
+	return err
 }

@@ -28,6 +28,4 @@ key.pem
 config.yaml
 bin/*
 .DS_Store
-*.cert
-*.key
 coverage.out
