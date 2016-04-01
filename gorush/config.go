@@ -16,7 +16,7 @@ type ConfYaml struct {
 type SectionCore struct {
 	Port            string `yaml:"port"`
 	NotificationMax int    `yaml:"notification_max"`
-	Mode      string   `yaml:"mode"`
+	Mode            string `yaml:"mode"`
 	SSL             bool   `yaml:"ssl"`
 	CertPath        string `yaml:"cert_path"`
 	KeyPath         string `yaml:"key_path"`
