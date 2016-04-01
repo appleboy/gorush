@@ -39,9 +39,8 @@ func pushHandler(c *gin.Context) {
 }
 
 func GetMainEngine() *gin.Engine {
-	if PushConf.Core.Production {
-		gin.SetMode(gin.ReleaseMode)
-	}
+	// set server mode
+	gin.SetMode(PushConf.Core.Mode)
 
 	r := gin.New()
 
