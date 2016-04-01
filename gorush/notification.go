@@ -112,11 +112,13 @@ func pushNotification(notification RequestPushNotification) bool {
 	return success
 }
 
+// The iOS Notification Payload
+// ref: https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/TheNotificationPayload.html
 func GetIOSNotification(req RequestPushNotification) *apns.Notification {
 	notification := &apns.Notification{}
 
 	if len(req.ApnsID) > 0 {
-			notification.ApnsID = req.ApnsID
+		notification.ApnsID = req.ApnsID
 	}
 
 	if len(req.Topic) > 0 {
@@ -157,6 +159,7 @@ func GetIOSNotification(req RequestPushNotification) *apns.Notification {
 		payload.AlertTitleLocKey(req.Alert.TitleLocKey)
 	}
 
+	// Need send PR to apns2 repo.
 	// if len(req.Alert.LocArgs) > 0 {
 	// 	payload.AlertLocArgs(req.Alert.LocArgs)
 	// }
@@ -204,8 +207,6 @@ func pushNotificationIos(req RequestPushNotification) bool {
 
 	notification := GetIOSNotification(req)
 
-	// The Remote Notification Payload
-	// https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/TheNotificationPayload.html
 	for _, token := range req.Tokens {
 		notification.DeviceToken = token
 
@@ -228,10 +229,9 @@ func pushNotificationIos(req RequestPushNotification) bool {
 	return true
 }
 
-func pushNotificationAndroid(req RequestPushNotification) bool {
-
-	// HTTP Connection Server Reference for Android
-	// https://developers.google.com/cloud-messaging/http-server-ref
+// HTTP Connection Server Reference for Android
+// https://developers.google.com/cloud-messaging/http-server-ref
+func GetAndroidNotification(req RequestPushNotification) gcm.HttpMessage {
 	notification := gcm.HttpMessage{}
 
 	notification.RegistrationIds = req.Tokens
@@ -278,6 +278,13 @@ func pushNotificationAndroid(req RequestPushNotification) bool {
 	if len(notification.Notification.Body) == 0 {
 		notification.Notification.Body = req.Message
 	}
+
+	return notification
+}
+
+func pushNotificationAndroid(req RequestPushNotification) bool {
+
+	notification := GetAndroidNotification(req)
 
 	res, err := gcm.SendHttp(PushConf.Android.ApiKey, notification)
 

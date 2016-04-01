@@ -1,11 +1,12 @@
 package gopush
 
 import (
-	"github.com/stretchr/testify/assert"
-	"github.com/buger/jsonparser"
 	"encoding/json"
-	"testing"
+	"github.com/buger/jsonparser"
+	"github.com/google/go-gcm"
+	"github.com/stretchr/testify/assert"
 	"log"
+	"testing"
 )
 
 func TestIOSNotificationStructure(t *testing.T) {
@@ -14,25 +15,25 @@ func TestIOSNotificationStructure(t *testing.T) {
 	test := "test"
 	message := "Welcome notification Server"
 	req := RequestPushNotification{
-		ApnsID: test,
-		Topic: test,
-		Priority: "normal",
-		Message: message,
-		Badge: 1,
-		Sound: test,
+		ApnsID:           test,
+		Topic:            test,
+		Priority:         "normal",
+		Message:          message,
+		Badge:            1,
+		Sound:            test,
 		ContentAvailable: true,
 		Extend: []ExtendJSON{
 			{
-				Key: "key1",
+				Key:   "key1",
 				Value: "1",
 			},
 			{
-				Key: "key2",
+				Key:   "key2",
 				Value: "2",
 			},
 		},
 		Category: test,
-		URLArgs: []string{"a", "b"},
+		URLArgs:  []string{"a", "b"},
 	}
 
 	notification := GetIOSNotification(req)
@@ -75,15 +76,15 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 	test := "test"
 	req := RequestPushNotification{
 		Alert: Alert{
-			Action: test,
+			Action:       test,
 			ActionLocKey: test,
-			Body: test,
-			LaunchImage: test,
-			LocArgs: []string{"a", "b"},
-			LocKey: test,
-			Title: test,
+			Body:         test,
+			LaunchImage:  test,
+			LocArgs:      []string{"a", "b"},
+			LocKey:       test,
+			Title:        test,
 			TitleLocArgs: []string{"a", "b"},
-			TitleLocKey: test,
+			TitleLocKey:  test,
 		},
 	}
 
@@ -98,12 +99,12 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 	}
 
 	action, _ := jsonparser.GetString(data, "aps", "alert", "action")
-	actionLocKey, _ := jsonparser.GetString(data, "aps", "alert","action-loc-key")
-	body, _ := jsonparser.GetString(data, "aps", "alert","body")
-	launchImage, _ := jsonparser.GetString(data, "aps", "alert","launch-image")
-	locKey, _ := jsonparser.GetString(data, "aps", "alert","loc-key")
-	title, _ := jsonparser.GetString(data, "aps", "alert","title")
-	titleLocKey, _ := jsonparser.GetString(data, "aps", "alert","title-loc-key")
+	actionLocKey, _ := jsonparser.GetString(data, "aps", "alert", "action-loc-key")
+	body, _ := jsonparser.GetString(data, "aps", "alert", "body")
+	launchImage, _ := jsonparser.GetString(data, "aps", "alert", "launch-image")
+	locKey, _ := jsonparser.GetString(data, "aps", "alert", "loc-key")
+	title, _ := jsonparser.GetString(data, "aps", "alert", "title")
+	titleLocKey, _ := jsonparser.GetString(data, "aps", "alert", "title-loc-key")
 	aps := dat["aps"].(map[string]interface{})
 	alert := aps["alert"].(map[string]interface{})
 	titleLocArgs := alert["title-loc-args"].([]interface{})
@@ -117,4 +118,41 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 	assert.Equal(t, test, titleLocKey)
 	assert.Contains(t, titleLocArgs, "a")
 	assert.Contains(t, titleLocArgs, "b")
+}
+
+func TestAndroidNotificationStructure(t *testing.T) {
+
+	test := "test"
+	req := RequestPushNotification{
+		Tokens:                []string{"a", "b"},
+		Message:               "Welcome",
+		To:                    test,
+		Priority:              "high",
+		CollapseKey:           "1",
+		ContentAvailable:      true,
+		DelayWhileIdle:        true,
+		TimeToLive:            100,
+		RestrictedPackageName: test,
+		DryRun:                true,
+		Data: map[string]interface{}{
+			"a": "1",
+			"b": "2",
+		},
+		Notification: gcm.Notification{
+			Title: test,
+		},
+	}
+
+	notification := GetAndroidNotification(req)
+
+	assert.Equal(t, test, notification.To)
+	assert.Equal(t, "high", notification.Priority)
+	assert.Equal(t, "1", notification.CollapseKey)
+	assert.True(t, notification.ContentAvailable)
+	assert.True(t, notification.DelayWhileIdle)
+	assert.Equal(t, 100, int(notification.TimeToLive))
+	assert.Equal(t, test, notification.RestrictedPackageName)
+	assert.True(t, notification.DryRun)
+	assert.Equal(t, test, notification.Notification.Title)
+	assert.Equal(t, "Welcome", notification.Notification.Body)
 }
