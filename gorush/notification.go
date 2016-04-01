@@ -288,19 +288,21 @@ func pushNotificationAndroid(req RequestPushNotification) bool {
 
 	res, err := gcm.SendHttp(PushConf.Android.ApiKey, notification)
 
+	log.Printf("Success count: %d, Failure count: %d", res.Success, res.Failure)
+
 	if err != nil {
-		log.Println(err)
+		log.Println("GCM Server Error Message: " + err.Error())
 
 		return false
 	}
 
 	if res.Error != "" {
-		log.Println("GCM Error Message: " + res.Error)
+		log.Println("GCM Http Error Message: " + res.Error)
+
+		return false
 	}
 
 	if res.Success > 0 {
-		log.Printf("Success count: %d, Failure count: %d", res.Success, res.Failure)
-
 		return true
 	}
 
