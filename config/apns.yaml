@@ -1,7 +1,7 @@
 core:
   port: "8088"
   notification_max: 100
-  production: true
+  mode: "release"
   ssl: false
   cert_path: "cert.pem"
   key_path: "key.pem"
