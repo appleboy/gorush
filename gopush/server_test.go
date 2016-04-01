@@ -74,7 +74,28 @@ func TestDisabledIosPushHandler(t *testing.T) {
 
 	r.POST("/api/push").
 		SetJSON(gofight.D{
-			"tokens":   []string{"dc0ca2819417e528d8a4a01fc3e6bc7d2518ce738930c3b11203c0ef7c0fab8c"},
+			"tokens":   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
+			"platform": 1,
+			"message":  "Welcome",
+		}).
+		Run(GetMainEngine(), func(r gofight.HttpResponse, rq gofight.HttpRequest) {
+
+			assert.Equal(t, http.StatusOK, r.Code)
+		})
+}
+
+func TestIosPushHandler(t *testing.T) {
+	initTest()
+
+	PushConf.Ios.Enabled = true
+	PushConf.Ios.PemKeyPath = "../certificate/certificate-valid.pem"
+	InitAPNSClient()
+
+	r := gofight.New()
+
+	r.POST("/api/push").
+		SetJSON(gofight.D{
+			"tokens":   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
 			"platform": 1,
 			"message":  "Welcome",
 		}).
