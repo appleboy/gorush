@@ -71,7 +71,7 @@ type RequestPushNotification struct {
 	IDs []uint64 `json:"seq_id,omitempty"`
 }
 
-func InitAPNSClient() {
+func InitAPNSClient() error {
 	if PushConf.Ios.Enabled {
 		var err error
 
@@ -80,7 +80,7 @@ func InitAPNSClient() {
 		if err != nil {
 			log.Println("Cert Error:", err)
 
-			return
+			return err
 		}
 
 		if PushConf.Ios.Production {
@@ -89,6 +89,8 @@ func InitAPNSClient() {
 			ApnsClient = apns.NewClient(CertificatePemIos).Development()
 		}
 	}
+
+	return nil
 }
 
 func pushNotification(notification RequestPushNotification) bool {
@@ -221,8 +223,6 @@ func pushNotificationIos(req RequestPushNotification) bool {
 
 		if res.Sent() {
 			log.Println("APNs ID:", res.ApnsID)
-
-			return true
 		}
 	}
 
