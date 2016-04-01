@@ -64,7 +64,7 @@ func TestMissingParameterPushHandler(t *testing.T) {
 		})
 }
 
-func TestIosPushHandler(t *testing.T) {
+func TestDisabledIosPushHandler(t *testing.T) {
 	initTest()
 
 	PushConf.Ios.Enabled = false
@@ -74,9 +74,28 @@ func TestIosPushHandler(t *testing.T) {
 
 	r.POST("/api/push").
 		SetJSON(gofight.D{
-			"tokens": []string{"dc0ca2819417e528d8a4a01fc3e6bc7d2518ce738930c3b11203c0ef7c0fab8c"},
+			"tokens":   []string{"dc0ca2819417e528d8a4a01fc3e6bc7d2518ce738930c3b11203c0ef7c0fab8c"},
 			"platform": 1,
-			"message": "Welcome",
+			"message":  "Welcome",
+		}).
+		Run(GetMainEngine(), func(r gofight.HttpResponse, rq gofight.HttpRequest) {
+
+			assert.Equal(t, http.StatusOK, r.Code)
+		})
+}
+
+func TestDisabledAndroidPushHandler(t *testing.T) {
+	initTest()
+
+	PushConf.Android.Enabled = false
+
+	r := gofight.New()
+
+	r.POST("/api/push").
+		SetJSON(gofight.D{
+			"tokens":   []string{"aaaaaa", "bbbbb"},
+			"platform": 2,
+			"message":  "Welcome",
 		}).
 		Run(GetMainEngine(), func(r gofight.HttpResponse, rq gofight.HttpRequest) {
 
@@ -93,9 +112,9 @@ func TestAndroidPushHandler(t *testing.T) {
 
 	r.POST("/api/push").
 		SetJSON(gofight.D{
-			"tokens": []string{"aaaaaa", "bbbbb"},
+			"tokens":   []string{"aaaaaa", "bbbbb"},
 			"platform": 2,
-			"message": "Welcome",
+			"message":  "Welcome",
 		}).
 		Run(GetMainEngine(), func(r gofight.HttpResponse, rq gofight.HttpRequest) {
 
