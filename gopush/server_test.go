@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"runtime"
 	"testing"
+	"os"
 )
 
 var go_version = runtime.Version()
@@ -14,6 +15,10 @@ var go_version = runtime.Version()
 func initTest() {
 	PushConf = BuildDefaultPushConf()
 	PushConf.Core.Mode = "test"
+}
+
+func TestPrintGoPushVersion(t *testing.T) {
+	PrintGoPushVersion()
 }
 
 func TestRootHandler(t *testing.T) {
@@ -124,16 +129,59 @@ func TestDisabledAndroidPushHandler(t *testing.T) {
 		})
 }
 
-func TestAndroidPushHandler(t *testing.T) {
+func TestAndroidWrongAPIKey(t *testing.T) {
 	initTest()
 
 	PushConf.Android.Enabled = true
+	PushConf.Android.ApiKey = os.Getenv("ANDROID_API_KEY") + "a"
 
 	r := gofight.New()
 
 	r.POST("/api/push").
 		SetJSON(gofight.D{
 			"tokens":   []string{"aaaaaa", "bbbbb"},
+			"platform": 2,
+			"message":  "Welcome",
+		}).
+		Run(GetMainEngine(), func(r gofight.HttpResponse, rq gofight.HttpRequest) {
+
+			assert.Equal(t, http.StatusOK, r.Code)
+		})
+}
+
+func TestAndroidWrongToken(t *testing.T) {
+	initTest()
+
+	PushConf.Android.Enabled = true
+	PushConf.Android.ApiKey = os.Getenv("ANDROID_API_KEY")
+
+	r := gofight.New()
+
+	r.POST("/api/push").
+		SetJSON(gofight.D{
+			"tokens":   []string{"aaaaaa", "bbbbb"},
+			"platform": 2,
+			"message":  "Welcome",
+		}).
+		Run(GetMainEngine(), func(r gofight.HttpResponse, rq gofight.HttpRequest) {
+
+			assert.Equal(t, http.StatusOK, r.Code)
+		})
+}
+
+func TestAndroidRightToken(t *testing.T) {
+	initTest()
+
+	PushConf.Android.Enabled = true
+	PushConf.Android.ApiKey = os.Getenv("ANDROID_API_KEY")
+
+	android_token := os.Getenv("ANDROID_TEST_TOKEN")
+
+	r := gofight.New()
+
+	r.POST("/api/push").
+		SetJSON(gofight.D{
+			"tokens":   []string{android_token, "bbbbb"},
 			"platform": 2,
 			"message":  "Welcome",
 		}).
