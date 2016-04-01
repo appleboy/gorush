@@ -16,7 +16,7 @@ type ConfYaml struct {
 type SectionCore struct {
 	Port            string `yaml:"port"`
 	NotificationMax int    `yaml:"notification_max"`
-	Production      bool   `yaml:"production"`
+	Mode            string `yaml:"mode"`
 	SSL             bool   `yaml:"ssl"`
 	CertPath        string `yaml:"cert_path"`
 	KeyPath         string `yaml:"key_path"`
@@ -45,7 +45,7 @@ func BuildDefaultPushConf() ConfYaml {
 	// Core
 	conf.Core.Port = "8088"
 	conf.Core.NotificationMax = 100
-	conf.Core.Production = true
+	conf.Core.Mode = "release"
 	conf.Core.SSL = false
 	conf.Core.CertPath = "cert.pem"
 	conf.Core.KeyPath = "key.pem"

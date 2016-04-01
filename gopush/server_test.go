@@ -3,18 +3,17 @@ package gopush
 import (
 	"github.com/appleboy/gofight"
 	"github.com/buger/jsonparser"
-	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"
 )
 
 func initTest() {
-	gin.SetMode(gin.TestMode)
 	PushConf = BuildDefaultPushConf()
+	PushConf.Core.Mode = "test"
 }
 
-func TestGinHelloWorld(t *testing.T) {
+func TestRootHandler(t *testing.T) {
 	initTest()
 
 	r := gofight.New()
