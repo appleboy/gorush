@@ -30,3 +30,4 @@ bin/*
 .DS_Store
 *.cert
 *.key
+coverage.out
