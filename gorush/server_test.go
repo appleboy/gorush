@@ -5,8 +5,8 @@ import (
 	"github.com/buger/jsonparser"
 	"github.com/stretchr/testify/assert"
 	"net/http"
-	"testing"
 	"runtime"
+	"testing"
 )
 
 var go_version = runtime.Version()
