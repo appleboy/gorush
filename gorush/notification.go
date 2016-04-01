@@ -197,6 +197,7 @@ func pushNotificationIos(req RequestPushNotification) bool {
 
 		if res.Sent() {
 			log.Println("APNs ID:", res.ApnsID)
+
 			return true
 		}
 	}
