@@ -50,9 +50,9 @@ func main() {
 	}
 
 	if err = gopush.CheckPushConf(); err != nil {
-			log.Printf("Check Conf Error: '%v'", err)
+		log.Printf("Check Conf Error: '%v'", err)
 
-			return
+		return
 	}
 
 	gopush.InitAPNSClient()
