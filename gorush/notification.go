@@ -1,12 +1,12 @@
 package gopush
 
 import (
+	"errors"
 	"github.com/google/go-gcm"
 	apns "github.com/sideshow/apns2"
 	"github.com/sideshow/apns2/certificate"
 	"github.com/sideshow/apns2/payload"
 	"log"
-	"errors"
 )
 
 type ExtendJSON struct {
