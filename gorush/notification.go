@@ -6,6 +6,7 @@ import (
 	"github.com/sideshow/apns2/certificate"
 	"github.com/sideshow/apns2/payload"
 	"log"
+	"errors"
 )
 
 type ExtendJSON struct {
@@ -69,6 +70,26 @@ type RequestPushNotification struct {
 
 	// meta
 	IDs []uint64 `json:"seq_id,omitempty"`
+}
+
+func CheckPushConf() error {
+	if !PushConf.Ios.Enabled && !PushConf.Android.Enabled {
+		return errors.New("Please enable iOS or Android config in yaml config")
+	}
+
+	if PushConf.Ios.Enabled {
+		if PushConf.Ios.PemKeyPath == "" {
+			return errors.New("Missing iOS certificate path")
+		}
+	}
+
+	if PushConf.Android.Enabled {
+		if PushConf.Android.ApiKey == "" {
+			return errors.New("Missing Android API Key")
+		}
+	}
+
+	return nil
 }
 
 func InitAPNSClient() error {

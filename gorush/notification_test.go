@@ -9,6 +9,53 @@ import (
 	"testing"
 )
 
+func TestDisabledAndroidIosConf(t *testing.T) {
+	PushConf = BuildDefaultPushConf()
+
+	err := CheckPushConf()
+
+	assert.Error(t, err)
+	assert.Equal(t, "Please enable iOS or Android config in yaml config", err.Error())
+}
+
+func TestMissingIOSCertificate(t *testing.T) {
+	PushConf = BuildDefaultPushConf()
+
+	PushConf.Ios.Enabled = true
+	PushConf.Ios.PemKeyPath = ""
+
+	err := CheckPushConf()
+
+	assert.Error(t, err)
+	assert.Equal(t, "Missing iOS certificate path", err.Error())
+}
+
+func TestMissingAndroidAPIKey(t *testing.T) {
+	PushConf = BuildDefaultPushConf()
+
+	PushConf.Android.Enabled = true
+	PushConf.Android.ApiKey = ""
+
+	err := CheckPushConf()
+
+	assert.Error(t, err)
+	assert.Equal(t, "Missing Android API Key", err.Error())
+}
+
+func TestCorrectConf(t *testing.T) {
+	PushConf = BuildDefaultPushConf()
+
+	PushConf.Android.Enabled = true
+	PushConf.Android.ApiKey = "xxxxx"
+
+	PushConf.Ios.Enabled = true
+	PushConf.Ios.PemKeyPath = "xxxxx"
+
+	err := CheckPushConf()
+
+	assert.NoError(t, err)
+}
+
 func TestIOSNotificationStructure(t *testing.T) {
 	var dat map[string]interface{}
 
