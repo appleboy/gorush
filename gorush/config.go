@@ -55,8 +55,8 @@ func BuildDefaultPushConf() ConfYaml {
 	conf.Api.StatGoUri = "/api/status"
 
 	// Android
-	conf.Android.ApiKey = ""
 	conf.Android.Enabled = false
+	conf.Android.ApiKey = ""
 
 	// iOS
 	conf.Ios.Enabled = false
