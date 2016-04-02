@@ -36,42 +36,23 @@ func main() {
 		}
 	}
 
-	if !gopush.PushConf.Ios.Enabled && !gopush.PushConf.Android.Enabled {
-		log.Printf("Note: Please enable iOS or Android config in yaml config")
-
-		return
+	if *certificateKeyPath != "" {
+		gopush.PushConf.Ios.PemKeyPath = *certificateKeyPath
 	}
 
-	if gopush.PushConf.Ios.Enabled {
-
-		if *certificateKeyPath != "" {
-			gopush.PushConf.Ios.PemKeyPath = *certificateKeyPath
-		}
-
-		if gopush.PushConf.Ios.PemKeyPath == "" {
-			log.Println("iOS certificate path not define")
-
-			return
-		}
-	}
-
-	// check andorid api key exist
-	if gopush.PushConf.Android.Enabled {
-
-		if *apiKey != "" {
-			gopush.PushConf.Android.ApiKey = *apiKey
-		}
-
-		if gopush.PushConf.Android.ApiKey == "" {
-			log.Println("Android API Key not define")
-
-			return
-		}
+	if *apiKey != "" {
+		gopush.PushConf.Android.ApiKey = *apiKey
 	}
 
 	// overwrite server port
 	if *port != "" {
 		gopush.PushConf.Core.Port = *port
+	}
+
+	if err = gopush.CheckPushConf(); err != nil {
+			log.Printf("Check Conf Error: '%v'", err)
+
+			return
 	}
 
 	gopush.InitAPNSClient()
