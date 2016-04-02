@@ -5,7 +5,6 @@ import (
 	"github.com/buger/jsonparser"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"runtime"
@@ -18,16 +17,6 @@ var go_version = runtime.Version()
 func initTest() {
 	PushConf = BuildDefaultPushConf()
 	PushConf.Core.Mode = "test"
-}
-
-func testRequest(t *testing.T, url string) {
-	resp, err := http.Get(url)
-	defer resp.Body.Close()
-	assert.NoError(t, err)
-
-	_, ioerr := ioutil.ReadAll(resp.Body)
-	assert.NoError(t, ioerr)
-	assert.Equal(t, "200 OK", resp.Status, "should get a 200")
 }
 
 func TestPrintGoPushVersion(t *testing.T) {
@@ -47,7 +36,7 @@ func TestRunNormalServer(t *testing.T) {
 	time.Sleep(5 * time.Millisecond)
 
 	assert.Error(t, router.Run(":8088"))
-	testRequest(t, "http://localhost:8088/api/status")
+	gofight.TestRequest(t, "http://localhost:8088/api/status")
 }
 
 // func TestRunTLSServer(t *testing.T) {
