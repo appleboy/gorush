@@ -115,24 +115,20 @@ func InitAPNSClient() error {
 }
 
 func pushNotification(notification RequestPushNotification) bool {
-	var (
-		success bool
-	)
-
 	switch notification.Platform {
 	case PlatFormIos:
 		if !PushConf.Ios.Enabled {
 			return false
 		}
-		success = pushNotificationIos(notification)
+		go pushNotificationIos(notification)
 	case PlatFormAndroid:
 		if !PushConf.Android.Enabled {
 			return false
 		}
-		success = pushNotificationAndroid(notification)
+		go pushNotificationAndroid(notification)
 	}
 
-	return success
+	return true
 }
 
 // The iOS Notification Payload
