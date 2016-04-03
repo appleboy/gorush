@@ -115,24 +115,20 @@ func InitAPNSClient() error {
 }
 
 func pushNotification(notification RequestPushNotification) bool {
-	var (
-		success bool
-	)
-
 	switch notification.Platform {
 	case PlatFormIos:
 		if !PushConf.Ios.Enabled {
 			return false
 		}
-		success = pushNotificationIos(notification)
+		go PushToIOS(notification)
 	case PlatFormAndroid:
 		if !PushConf.Android.Enabled {
 			return false
 		}
-		success = pushNotificationAndroid(notification)
+		go PushToAndroid(notification)
 	}
 
-	return success
+	return true
 }
 
 // The iOS Notification Payload
@@ -226,7 +222,7 @@ func GetIOSNotification(req RequestPushNotification) *apns.Notification {
 	return notification
 }
 
-func pushNotificationIos(req RequestPushNotification) bool {
+func PushToIOS(req RequestPushNotification) bool {
 
 	notification := GetIOSNotification(req)
 
@@ -303,7 +299,7 @@ func GetAndroidNotification(req RequestPushNotification) gcm.HttpMessage {
 	return notification
 }
 
-func pushNotificationAndroid(req RequestPushNotification) bool {
+func PushToAndroid(req RequestPushNotification) bool {
 
 	notification := GetAndroidNotification(req)
 
