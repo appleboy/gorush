@@ -6,6 +6,7 @@ import (
 	"github.com/google/go-gcm"
 	"github.com/stretchr/testify/assert"
 	"log"
+	"os"
 	"testing"
 )
 
@@ -202,4 +203,71 @@ func TestAndroidNotificationStructure(t *testing.T) {
 	assert.True(t, notification.DryRun)
 	assert.Equal(t, test, notification.Notification.Title)
 	assert.Equal(t, "Welcome", notification.Notification.Body)
+}
+
+func TestPushToIOS(t *testing.T) {
+	PushConf = BuildDefaultPushConf()
+
+	PushConf.Ios.Enabled = true
+	PushConf.Ios.PemKeyPath = "../certificate/certificate-valid.pem"
+	InitAPNSClient()
+
+	req := RequestPushNotification{
+		Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
+		Platform: 1,
+		Message:  "Welcome",
+	}
+
+	success := PushToIOS(req)
+	assert.False(t, success)
+}
+
+func TestPushToAndroidWrongAPIKey(t *testing.T) {
+	PushConf = BuildDefaultPushConf()
+
+	PushConf.Android.Enabled = true
+	PushConf.Android.ApiKey = os.Getenv("ANDROID_API_KEY") + "a"
+
+	req := RequestPushNotification{
+		Tokens:   []string{"aaaaaa", "bbbbb"},
+		Platform: 2,
+		Message:  "Welcome",
+	}
+
+	success := PushToAndroid(req)
+	assert.False(t, success)
+}
+
+func TestPushToAndroidWrongToken(t *testing.T) {
+	PushConf = BuildDefaultPushConf()
+
+	PushConf.Android.Enabled = true
+	PushConf.Android.ApiKey = os.Getenv("ANDROID_API_KEY")
+
+	req := RequestPushNotification{
+		Tokens:   []string{"aaaaaa", "bbbbb"},
+		Platform: 2,
+		Message:  "Welcome",
+	}
+
+	success := PushToAndroid(req)
+	assert.True(t, success)
+}
+
+func TestPushToAndroidRightToken(t *testing.T) {
+	PushConf = BuildDefaultPushConf()
+
+	PushConf.Android.Enabled = true
+	PushConf.Android.ApiKey = os.Getenv("ANDROID_API_KEY")
+
+	android_token := os.Getenv("ANDROID_TEST_TOKEN")
+
+	req := RequestPushNotification{
+		Tokens:   []string{android_token, "bbbbb"},
+		Platform: 2,
+		Message:  "Welcome",
+	}
+
+	success := PushToAndroid(req)
+	assert.True(t, success)
 }
