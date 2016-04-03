@@ -120,12 +120,12 @@ func pushNotification(notification RequestPushNotification) bool {
 		if !PushConf.Ios.Enabled {
 			return false
 		}
-		go pushNotificationIos(notification)
+		go PushToIOS(notification)
 	case PlatFormAndroid:
 		if !PushConf.Android.Enabled {
 			return false
 		}
-		go pushNotificationAndroid(notification)
+		go PushToAndroid(notification)
 	}
 
 	return true
@@ -222,7 +222,7 @@ func GetIOSNotification(req RequestPushNotification) *apns.Notification {
 	return notification
 }
 
-func pushNotificationIos(req RequestPushNotification) bool {
+func PushToIOS(req RequestPushNotification) bool {
 
 	notification := GetIOSNotification(req)
 
@@ -299,7 +299,7 @@ func GetAndroidNotification(req RequestPushNotification) gcm.HttpMessage {
 	return notification
 }
 
-func pushNotificationAndroid(req RequestPushNotification) bool {
+func PushToAndroid(req RequestPushNotification) bool {
 
 	notification := GetAndroidNotification(req)
 
