@@ -6,8 +6,8 @@ import (
 	"github.com/google/go-gcm"
 	"github.com/stretchr/testify/assert"
 	"log"
-	"testing"
 	"os"
+	"testing"
 )
 
 func TestDisabledAndroidIosConf(t *testing.T) {
@@ -228,7 +228,6 @@ func TestPushToAndroidWrongAPIKey(t *testing.T) {
 	PushConf.Android.Enabled = true
 	PushConf.Android.ApiKey = os.Getenv("ANDROID_API_KEY") + "a"
 
-
 	req := RequestPushNotification{
 		Tokens:   []string{"aaaaaa", "bbbbb"},
 		Platform: 2,
@@ -244,7 +243,6 @@ func TestPushToAndroidWrongToken(t *testing.T) {
 
 	PushConf.Android.Enabled = true
 	PushConf.Android.ApiKey = os.Getenv("ANDROID_API_KEY")
-
 
 	req := RequestPushNotification{
 		Tokens:   []string{"aaaaaa", "bbbbb"},
