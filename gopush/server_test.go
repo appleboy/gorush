@@ -28,8 +28,6 @@ func TestRunNormalServer(t *testing.T) {
 
 	gin.SetMode(gin.TestMode)
 
-	router := gin.New()
-
 	go func() {
 		assert.NoError(t, RunHTTPServer())
 	}()
@@ -37,7 +35,7 @@ func TestRunNormalServer(t *testing.T) {
 	// otherwise the main thread will complete
 	time.Sleep(5 * time.Millisecond)
 
-	assert.Error(t, router.Run(":8088"))
+	assert.Error(t, RunHTTPServer())
 	gofight.TestRequest(t, "http://localhost:8088/api/status")
 }
 
