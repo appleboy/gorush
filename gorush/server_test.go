@@ -67,7 +67,7 @@ func TestRootHandler(t *testing.T) {
 	r := gofight.New()
 
 	r.GET("/").
-		Run(GetMainEngine(), func(r gofight.HttpResponse, rq gofight.HttpRequest) {
+		Run(GetMainEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 			data := []byte(r.Body.String())
 
 			value, _ := jsonparser.GetString(data, "text")
@@ -83,7 +83,7 @@ func TestAPIStatusHandler(t *testing.T) {
 	r := gofight.New()
 
 	r.GET("/api/status").
-		Run(GetMainEngine(), func(r gofight.HttpResponse, rq gofight.HttpRequest) {
+		Run(GetMainEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 			data := []byte(r.Body.String())
 
 			value, _ := jsonparser.GetString(data, "go_version")
@@ -103,7 +103,7 @@ func TestMissingParameterPushHandler(t *testing.T) {
 		SetJSON(gofight.D{
 			"platform": 1,
 		}).
-		Run(GetMainEngine(), func(r gofight.HttpResponse, rq gofight.HttpRequest) {
+		Run(GetMainEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 
 			assert.Equal(t, http.StatusBadRequest, r.Code)
 		})
@@ -123,7 +123,7 @@ func TestDisabledIosPushHandler(t *testing.T) {
 			"platform": 1,
 			"message":  "Welcome",
 		}).
-		Run(GetMainEngine(), func(r gofight.HttpResponse, rq gofight.HttpRequest) {
+		Run(GetMainEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
@@ -154,7 +154,7 @@ func TestIosPushDevelopment(t *testing.T) {
 			"platform": 1,
 			"message":  "Welcome",
 		}).
-		Run(GetMainEngine(), func(r gofight.HttpResponse, rq gofight.HttpRequest) {
+		Run(GetMainEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
@@ -176,7 +176,7 @@ func TestIosPushProduction(t *testing.T) {
 			"platform": 1,
 			"message":  "Welcome",
 		}).
-		Run(GetMainEngine(), func(r gofight.HttpResponse, rq gofight.HttpRequest) {
+		Run(GetMainEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
@@ -195,7 +195,7 @@ func TestDisabledAndroidPushHandler(t *testing.T) {
 			"platform": 2,
 			"message":  "Welcome",
 		}).
-		Run(GetMainEngine(), func(r gofight.HttpResponse, rq gofight.HttpRequest) {
+		Run(GetMainEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
@@ -217,7 +217,7 @@ func TestAndroidPushHandler(t *testing.T) {
 			"platform": 2,
 			"message":  "Welcome",
 		}).
-		Run(GetMainEngine(), func(r gofight.HttpResponse, rq gofight.HttpRequest) {
+		Run(GetMainEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
