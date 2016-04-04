@@ -39,25 +39,23 @@ func TestRunNormalServer(t *testing.T) {
 	gofight.TestRequest(t, "http://localhost:8088/api/status")
 }
 
-// func TestRunTLSServer(t *testing.T) {
-// 	initTest()
+func TestRunTLSServer(t *testing.T) {
+	initTest()
 
-// 	PushConf.Core.SSL = true
-// 	PushConf.Core.Port = "8087"
-// 	PushConf.Core.CertPath = "../certificate/localhost.cert"
-// 	PushConf.Core.KeyPath = "../certificate/localhost.key"
-// 	router := gin.New()
+	PushConf.Core.SSL = true
+	PushConf.Core.Port = "8087"
+	PushConf.Core.CertPath = "../certificate/localhost.cert"
+	PushConf.Core.KeyPath = "../certificate/localhost.key"
 
-// 	go func() {
-// 		assert.NoError(t, RunHTTPServer())
-// 	}()
-// 	// have to wait for the goroutine to start and run the server
-// 	// otherwise the main thread will complete
-// 	time.Sleep(5 * time.Millisecond)
+	go func() {
+		assert.NoError(t, RunHTTPServer())
+	}()
+	// have to wait for the goroutine to start and run the server
+	// otherwise the main thread will complete
+	time.Sleep(5 * time.Millisecond)
 
-// 	assert.Error(t, router.Run(":8087"))
-// 	testRequest(t, "https://localhost:8087/api/status")
-// }
+	assert.Error(t, RunHTTPServer())
+}
 
 func TestRootHandler(t *testing.T) {
 	initTest()
