@@ -11,6 +11,7 @@ type ConfYaml struct {
 	Api     SectionApi     `yaml:"api"`
 	Android SectionAndroid `yaml:"android"`
 	Ios     SectionIos     `yaml:"ios"`
+	Log     SectionLog     `yaml:"log"`
 }
 
 type SectionCore struct {
@@ -39,6 +40,13 @@ type SectionIos struct {
 	Production  bool   `yaml:"production"`
 }
 
+type SectionLog struct {
+	AccessLog   string `yaml:"access_log"`
+	AccessLevel string `yaml:"access_level"`
+	ErrorLog    string `yaml:"error_log"`
+	ErrorLevel  string `yaml:"error_level"`
+}
+
 func BuildDefaultPushConf() ConfYaml {
 	var conf ConfYaml
 
@@ -63,6 +71,12 @@ func BuildDefaultPushConf() ConfYaml {
 	conf.Ios.PemCertPath = "cert.pem"
 	conf.Ios.PemKeyPath = "key.pem"
 	conf.Ios.Production = false
+
+	// log
+	conf.Log.AccessLog = "stdout"
+	conf.Log.AccessLevel = "debug"
+	conf.Log.ErrorLog = "stderr"
+	conf.Log.ErrorLevel = "error"
 
 	return conf
 }
