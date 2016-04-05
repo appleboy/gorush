@@ -19,3 +19,9 @@ ios:
   pem_cert_path: "cert.pem"
   pem_key_path: "key.pem"
   production: false
+
+log:
+  access_log: "stdout"
+  access_level: "debug"
+  error_log: "stderr"
+  error_level: "error"

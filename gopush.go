@@ -49,8 +49,15 @@ func main() {
 		gopush.PushConf.Core.Port = *port
 	}
 
+	if err = gopush.InitLog(); err != nil {
+		log.Println(err)
+
+		return
+	}
+
 	if err = gopush.CheckPushConf(); err != nil {
-		log.Printf("Check Conf Error: '%v'", err)
+		log.Println(err)
+		gopush.LogError.Fatal(err)
 
 		return
 	}
