@@ -2,11 +2,11 @@ package gopush
 
 import (
 	"github.com/Sirupsen/logrus"
-	"log"
 	"os"
+	"errors"
 )
 
-func InitLog() {
+func InitLog() error {
 
 	var err error
 
@@ -25,22 +25,23 @@ func InitLog() {
 	}
 
 	// set logger
-	err = SetLogLevel(LogAccess, PushConf.Log.AccessLevel)
-	if err != nil {
-		log.Fatal(err)
+	if err := SetLogLevel(LogAccess, PushConf.Log.AccessLevel); err != nil {
+		return errors.New("Set access log level error: "+ err.Error())
 	}
-	err = SetLogLevel(LogError, PushConf.Log.ErrorLevel)
-	if err != nil {
-		log.Fatal(err)
+
+	if err := SetLogLevel(LogError, PushConf.Log.ErrorLevel); err != nil {
+		return errors.New("Set error log level error: "+ err.Error())
 	}
-	err = SetLogOut(LogAccess, PushConf.Log.AccessLog)
-	if err != nil {
-		log.Fatal(err)
+
+	if err = SetLogOut(LogAccess, PushConf.Log.AccessLog); err != nil {
+		return errors.New("Set access log path error: "+ err.Error())
 	}
-	err = SetLogOut(LogError, PushConf.Log.ErrorLog)
-	if err != nil {
-		log.Fatal(err)
+
+	if err = SetLogOut(LogError, PushConf.Log.ErrorLog); err != nil {
+		return errors.New("Set error log path error: "+ err.Error())
 	}
+
+	return nil
 }
 
 func SetLogOut(log *logrus.Logger, outString string) error {
@@ -51,19 +52,25 @@ func SetLogOut(log *logrus.Logger, outString string) error {
 		log.Out = os.Stderr
 	default:
 		f, err := os.OpenFile(outString, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
+
 		if err != nil {
 			return err
 		}
+
 		log.Out = f
 	}
+
 	return nil
 }
 
 func SetLogLevel(log *logrus.Logger, levelString string) error {
 	level, err := logrus.ParseLevel(levelString)
+
 	if err != nil {
 		return err
 	}
+
 	log.Level = level
+
 	return nil
 }
