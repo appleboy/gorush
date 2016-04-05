@@ -1,9 +1,9 @@
 package gopush
 
 import (
+	"errors"
 	"github.com/Sirupsen/logrus"
 	"os"
-	"errors"
 )
 
 func InitLog() error {
@@ -26,19 +26,19 @@ func InitLog() error {
 
 	// set logger
 	if err := SetLogLevel(LogAccess, PushConf.Log.AccessLevel); err != nil {
-		return errors.New("Set access log level error: "+ err.Error())
+		return errors.New("Set access log level error: " + err.Error())
 	}
 
 	if err := SetLogLevel(LogError, PushConf.Log.ErrorLevel); err != nil {
-		return errors.New("Set error log level error: "+ err.Error())
+		return errors.New("Set error log level error: " + err.Error())
 	}
 
 	if err = SetLogOut(LogAccess, PushConf.Log.AccessLog); err != nil {
-		return errors.New("Set access log path error: "+ err.Error())
+		return errors.New("Set access log path error: " + err.Error())
 	}
 
 	if err = SetLogOut(LogError, PushConf.Log.ErrorLog); err != nil {
-		return errors.New("Set error log path error: "+ err.Error())
+		return errors.New("Set error log path error: " + err.Error())
 	}
 
 	return nil
