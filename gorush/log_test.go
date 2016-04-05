@@ -1,8 +1,8 @@
 package gopush
 
 import (
-	"github.com/stretchr/testify/assert"
 	"github.com/Sirupsen/logrus"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 

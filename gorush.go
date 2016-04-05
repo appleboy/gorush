@@ -49,8 +49,6 @@ func main() {
 		gopush.PushConf.Core.Port = *port
 	}
 
-
-
 	if err = gopush.InitLog(); err != nil {
 		log.Println(err)
 
