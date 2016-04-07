@@ -21,7 +21,6 @@ var (
 )
 
 type LogReq struct {
-	Time        string `json:"time"`
 	URI         string `json:"uri"`
 	Method      string `json:"method"`
 	IP          string `json:"ip"`
@@ -98,7 +97,7 @@ func SetLogLevel(log *logrus.Logger, levelString string) error {
 	return nil
 }
 
-func LogRequest(uri, method, ip string, contentType string, agent string) {
+func LogRequest(uri string, method string, ip string, contentType string, agent string) {
 	var output string
 	log := &LogReq{
 		URI:         uri,
