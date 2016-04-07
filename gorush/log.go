@@ -1,10 +1,33 @@
 package gopush
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/Sirupsen/logrus"
+	"github.com/gin-gonic/gin"
 	"os"
 )
+
+var (
+	green   = string([]byte{27, 91, 57, 55, 59, 52, 50, 109})
+	white   = string([]byte{27, 91, 57, 48, 59, 52, 55, 109})
+	yellow  = string([]byte{27, 91, 57, 55, 59, 52, 51, 109})
+	red     = string([]byte{27, 91, 57, 55, 59, 52, 49, 109})
+	blue    = string([]byte{27, 91, 57, 55, 59, 52, 52, 109})
+	magenta = string([]byte{27, 91, 57, 55, 59, 52, 53, 109})
+	cyan    = string([]byte{27, 91, 57, 55, 59, 52, 54, 109})
+	reset   = string([]byte{27, 91, 48, 109})
+)
+
+type LogReq struct {
+	Time        string `json:"time"`
+	URI         string `json:"uri"`
+	Method      string `json:"method"`
+	IP          string `json:"ip"`
+	ContentType string `json:"content_type"`
+	Agent       string `json:"agent"`
+}
 
 func InitLog() error {
 
@@ -73,4 +96,38 @@ func SetLogLevel(log *logrus.Logger, levelString string) error {
 	log.Level = level
 
 	return nil
+}
+
+func LogRequest(uri, method, ip string, contentType string, agent string) {
+	var output string
+	log := &LogReq{
+		URI:         uri,
+		Method:      method,
+		IP:          ip,
+		ContentType: contentType,
+		Agent:       agent,
+	}
+
+	if PushConf.Log.Format == "json" {
+		logJson, err := json.Marshal(log)
+
+		if err != nil {
+			LogError.Error("Marshaling JSON error")
+			return
+		}
+
+		output = string(logJson)
+	} else {
+		// format is string
+		output = fmt.Sprintf("|%s header %s| %s %s %s %s %s", magenta, reset, log.Method, log.URI, log.IP, log.ContentType, log.Agent)
+	}
+
+	LogAccess.Info(output)
+}
+
+func LogMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		LogRequest(c.Request.URL.Path, c.Request.Method, c.ClientIP(), c.ContentType(), c.Request.Header.Get("User-Agent"))
+		c.Next()
+	}
 }

@@ -48,6 +48,7 @@ func GetMainEngine() *gin.Engine {
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 	r.Use(VersionMiddleware())
+	r.Use(LogMiddleware())
 
 	r.GET(PushConf.Api.StatGoUri, api.StatusHandler)
 	r.POST(PushConf.Api.PushUri, pushHandler)
