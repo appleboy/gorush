@@ -41,6 +41,7 @@ type SectionIos struct {
 }
 
 type SectionLog struct {
+	Format      string `yaml:"format"`
 	AccessLog   string `yaml:"access_log"`
 	AccessLevel string `yaml:"access_level"`
 	ErrorLog    string `yaml:"error_log"`
@@ -73,6 +74,7 @@ func BuildDefaultPushConf() ConfYaml {
 	conf.Ios.Production = false
 
 	// log
+	conf.Log.Format = "string"
 	conf.Log.AccessLog = "stdout"
 	conf.Log.AccessLevel = "debug"
 	conf.Log.ErrorLog = "stderr"
