@@ -62,6 +62,9 @@ func TestRootHandler(t *testing.T) {
 
 	r := gofight.New()
 
+	// log for json
+	PushConf.Log.Format = "json"
+
 	r.GET("/").
 		Run(GetMainEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 			data := []byte(r.Body.String())

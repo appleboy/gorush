@@ -25,7 +25,7 @@ func TestSetLogOut(t *testing.T) {
 	err = SetLogOut(log, "stderr")
 	assert.Nil(t, err)
 
-	err = SetLogOut(log, "access.log")
+	err = SetLogOut(log, "log/access.log")
 	assert.Nil(t, err)
 
 	// missing create logs folder.
