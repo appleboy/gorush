@@ -229,13 +229,22 @@ func PushToIOS(req RequestPushNotification) bool {
 		res, err := ApnsClient.Push(notification)
 
 		if err != nil {
-			log.Println("There was an error: ", err)
+			// apns server error
+			LogPush(StatusFailedPush, token, req, err)
+
+			return false
+		}
+
+		if res.StatusCode != 200 {
+			// error message:
+			// ref: https://github.com/sideshow/apns2/blob/master/response.go#L14-L65
+			LogPush(StatusFailedPush, token, req, errors.New(res.Reason))
 
 			return false
 		}
 
 		if res.Sent() {
-			log.Println("APNs ID:", res.ApnsID)
+			LogPush(StatusSucceededPush, token, req, nil)
 		}
 	}
 
