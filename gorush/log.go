@@ -7,6 +7,7 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/gin-gonic/gin"
 	"os"
+	// "time"
 )
 
 var (
@@ -28,6 +29,29 @@ type LogReq struct {
 	Agent       string `json:"agent"`
 }
 
+type LogPushEntry struct {
+	Type     string `json:"type"`
+	Platform string `json:"platform"`
+	Token    string `json:"token"`
+	Message  string `json:"message"`
+	Error    string `json:"error"`
+
+	// Android
+	To                    string `json:"to,omitempty"`
+	CollapseKey           string `json:"collapse_key,omitempty"`
+	DelayWhileIdle        bool   `json:"delay_while_idle,omitempty"`
+	TimeToLive            uint   `json:"time_to_live,omitempty"`
+	RestrictedPackageName string `json:"restricted_package_name,omitempty"`
+	DryRun                bool   `json:"dry_run,omitempty"`
+
+	// iOS
+	ApnsID   string `json:"apns_id,omitempty"`
+	Topic    string `json:"topic,omitempty"`
+	Badge    int    `json:"badge,omitempty"`
+	Sound    string `json:"sound,omitempty"`
+	Category string `json:"category,omitempty"`
+}
+
 func InitLog() error {
 
 	var err error
@@ -37,13 +61,15 @@ func InitLog() error {
 	LogError = logrus.New()
 
 	LogAccess.Formatter = &logrus.TextFormatter{
-		ForceColors:   true,
-		FullTimestamp: true,
+		TimestampFormat: "2006/01/02 - 15:04:05",
+		ForceColors:     true,
+		FullTimestamp:   true,
 	}
 
 	LogError.Formatter = &logrus.TextFormatter{
-		ForceColors:   true,
-		FullTimestamp: true,
+		TimestampFormat: "2006/01/02 - 15:04:05",
+		ForceColors:     true,
+		FullTimestamp:   true,
 	}
 
 	// set logger
@@ -108,12 +134,7 @@ func LogRequest(uri string, method string, ip string, contentType string, agent 
 	}
 
 	if PushConf.Log.Format == "json" {
-		logJson, err := json.Marshal(log)
-
-		if err != nil {
-			LogError.Error("Marshaling JSON error")
-			return
-		}
+		logJson, _ := json.Marshal(log)
 
 		output = string(logJson)
 	} else {
@@ -122,6 +143,68 @@ func LogRequest(uri string, method string, ip string, contentType string, agent 
 	}
 
 	LogAccess.Info(output)
+}
+
+func colorForPlatForm(platform int) string {
+	switch platform {
+	case PlatFormIos:
+		return blue
+	case PlatFormAndroid:
+		return cyan
+	default:
+		return reset
+	}
+}
+
+func typeForPlatForm(platform int) string {
+	switch platform {
+	case PlatFormIos:
+		return "ios"
+	case PlatFormAndroid:
+		return "android"
+	default:
+		return ""
+	}
+}
+
+func LogPush(status, token string, req RequestPushNotification, errPush error) {
+	var plat, platColor, output string
+
+	platColor = colorForPlatForm(req.Platform)
+	plat = typeForPlatForm(req.Platform)
+
+	errMsg := ""
+	if errPush != nil {
+		errMsg = errPush.Error()
+	}
+
+	log := &LogPushEntry{
+		Type:     status,
+		Platform: plat,
+		Token:    token,
+		Message:  req.Message,
+		Error:    errMsg,
+	}
+
+	if PushConf.Log.Format == "json" {
+		logJson, _ := json.Marshal(log)
+
+		output = string(logJson)
+	} else {
+		switch status {
+		case StatusSucceededPush:
+			output = fmt.Sprintf("|%s %s %s| %s%s%s [%s] %s", green, log.Type, reset, platColor, log.Platform, reset, log.Token, log.Message)
+		case StatusFailedPush:
+			output = fmt.Sprintf("|%s %s %s| %s%s%s [%s] | %s | Error Message: %s", red, log.Type, reset, platColor, log.Platform, reset, log.Token, log.Message, log.Error)
+		}
+	}
+
+	switch status {
+	case StatusSucceededPush:
+		LogAccess.Info(string(output))
+	case StatusFailedPush:
+		LogError.Error(string(output))
+	}
 }
 
 func LogMiddleware() gin.HandlerFunc {
