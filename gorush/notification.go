@@ -67,9 +67,6 @@ type RequestPushNotification struct {
 	URLArgs  []string     `json:"url-args,omitempty"`
 	Extend   []ExtendJSON `json:"extend,omitempty"`
 	Alert    Alert        `json:"alert,omitempty"`
-
-	// meta
-	IDs []uint64 `json:"seq_id,omitempty"`
 }
 
 func CheckPushConf() error {
@@ -178,10 +175,9 @@ func GetIOSNotification(req RequestPushNotification) *apns.Notification {
 		payload.AlertTitleLocKey(req.Alert.TitleLocKey)
 	}
 
-	// Need send PR to apns2 repo.
-	// if len(req.Alert.LocArgs) > 0 {
-	// 	payload.AlertLocArgs(req.Alert.LocArgs)
-	// }
+	if len(req.Alert.LocArgs) > 0 {
+		payload.AlertLocArgs(req.Alert.LocArgs)
+	}
 
 	if len(req.Alert.TitleLocArgs) > 0 {
 		payload.AlertTitleLocArgs(req.Alert.TitleLocArgs)
