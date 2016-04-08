@@ -2,11 +2,11 @@ package gopush
 
 import (
 	"errors"
+	"fmt"
 	"github.com/google/go-gcm"
 	apns "github.com/sideshow/apns2"
 	"github.com/sideshow/apns2/certificate"
 	"github.com/sideshow/apns2/payload"
-	"log"
 )
 
 type ExtendJSON struct {
@@ -96,7 +96,7 @@ func InitAPNSClient() error {
 		CertificatePemIos, err = certificate.FromPemFile(PushConf.Ios.PemKeyPath, "")
 
 		if err != nil {
-			log.Println("Cert Error:", err)
+			LogError.Error("Cert Error:", err.Error())
 
 			return err
 		}
@@ -310,22 +310,22 @@ func PushToAndroid(req RequestPushNotification) bool {
 
 	res, err := gcm.SendHttp(PushConf.Android.ApiKey, notification)
 
-	log.Printf("Success count: %d, Failure count: %d", res.Success, res.Failure)
-
 	if err != nil {
-		log.Println("GCM Server Error Message: " + err.Error())
+		// GCM server error
+		LogError.Error("GCM server error: " + err.Error())
 
 		return false
 	}
 
-	if res.Error != "" {
-		log.Println("GCM Http Error Message: " + res.Error)
+	LogAccess.Debug(fmt.Sprintf("Android Success count: %d, Failure count: %d", res.Success, res.Failure))
 
-		return false
-	}
+	for k, result := range res.Results {
+		if result.Error != "" {
+			LogPush(StatusFailedPush, req.Tokens[k], req, errors.New(result.Error))
+			continue
+		}
 
-	if res.Success > 0 {
-		return true
+		LogPush(StatusSucceededPush, req.Tokens[k], req, nil)
 	}
 
 	return true
