@@ -75,3 +75,15 @@ func TestErrorLogPath(t *testing.T) {
 
 	assert.NotNil(t, InitLog())
 }
+
+func TestPlatFormType(t *testing.T) {
+	assert.Equal(t, "ios", typeForPlatForm(PlatFormIos))
+	assert.Equal(t, "android", typeForPlatForm(PlatFormAndroid))
+	assert.Equal(t, "", typeForPlatForm(10000))
+}
+
+func TestPlatFormColor(t *testing.T) {
+	assert.Equal(t, blue, colorForPlatForm(PlatFormIos))
+	assert.Equal(t, yellow, colorForPlatForm(PlatFormAndroid))
+	assert.Equal(t, reset, colorForPlatForm(1000000))
+}
