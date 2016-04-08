@@ -150,7 +150,7 @@ func colorForPlatForm(platform int) string {
 	case PlatFormIos:
 		return blue
 	case PlatFormAndroid:
-		return cyan
+		return yellow
 	default:
 		return reset
 	}
