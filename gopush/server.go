@@ -3,7 +3,6 @@ package gopush
 import (
 	api "github.com/appleboy/gin-status-api"
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
 )
 
@@ -25,7 +24,6 @@ func pushHandler(c *gin.Context) {
 	var form RequestPushNotification
 
 	if err := c.BindJSON(&form); err != nil {
-		log.Println(err)
 		AbortWithError(c, http.StatusBadRequest, "Bad input request, please refer to README guide.")
 		return
 	}
