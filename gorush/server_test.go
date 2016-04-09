@@ -229,8 +229,6 @@ func TestAllSuccessAndroidPushHandler(t *testing.T) {
 
 	PushConf.Android.Enabled = true
 	PushConf.Android.ApiKey = os.Getenv("ANDROID_API_KEY")
-	// log for json
-	PushConf.Log.Format = "json"
 
 	android_token := os.Getenv("ANDROID_TEST_TOKEN")
 
@@ -246,7 +244,4 @@ func TestAllSuccessAndroidPushHandler(t *testing.T) {
 
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
-
-	// wait push response
-	time.Sleep(3000 * time.Millisecond)
 }

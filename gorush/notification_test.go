@@ -266,6 +266,8 @@ func TestPushToAndroidRightToken(t *testing.T) {
 
 	PushConf.Android.Enabled = true
 	PushConf.Android.ApiKey = os.Getenv("ANDROID_API_KEY")
+	// log for json
+	PushConf.Log.Format = "json"
 
 	android_token := os.Getenv("ANDROID_TEST_TOKEN")
 
@@ -277,4 +279,24 @@ func TestPushToAndroidRightToken(t *testing.T) {
 
 	success := PushToAndroid(req)
 	assert.True(t, success)
+}
+
+func TestOverwriteAndroidApiKey(t *testing.T) {
+	PushConf = BuildDefaultPushConf()
+
+	PushConf.Android.Enabled = true
+	PushConf.Android.ApiKey = os.Getenv("ANDROID_API_KEY")
+
+	android_token := os.Getenv("ANDROID_TEST_TOKEN")
+
+	req := RequestPushNotification{
+		Tokens:   []string{android_token, "bbbbb"},
+		Platform: 2,
+		Message:  "Welcome",
+		// overwrite android api key
+		ApiKey: "1234",
+	}
+
+	success := PushToAndroid(req)
+	assert.False(t, success)
 }
