@@ -29,4 +29,4 @@ config.yaml
 bin/*
 .DS_Store
 coverage.out
-logs/*
+gopush/log/*.log

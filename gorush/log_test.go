@@ -25,7 +25,7 @@ func TestSetLogOut(t *testing.T) {
 	err = SetLogOut(log, "stderr")
 	assert.Nil(t, err)
 
-	err = SetLogOut(log, "access.log")
+	err = SetLogOut(log, "log/access.log")
 	assert.Nil(t, err)
 
 	// missing create logs folder.
@@ -74,4 +74,16 @@ func TestErrorLogPath(t *testing.T) {
 	PushConf.Log.ErrorLog = "logs/error.log"
 
 	assert.NotNil(t, InitLog())
+}
+
+func TestPlatFormType(t *testing.T) {
+	assert.Equal(t, "ios", typeForPlatForm(PlatFormIos))
+	assert.Equal(t, "android", typeForPlatForm(PlatFormAndroid))
+	assert.Equal(t, "", typeForPlatForm(10000))
+}
+
+func TestPlatFormColor(t *testing.T) {
+	assert.Equal(t, blue, colorForPlatForm(PlatFormIos))
+	assert.Equal(t, yellow, colorForPlatForm(PlatFormAndroid))
+	assert.Equal(t, reset, colorForPlatForm(1000000))
 }
