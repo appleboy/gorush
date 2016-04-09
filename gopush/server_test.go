@@ -205,8 +205,6 @@ func TestHalfSuccessAndroidPushHandler(t *testing.T) {
 
 	PushConf.Android.Enabled = true
 	PushConf.Android.ApiKey = os.Getenv("ANDROID_API_KEY")
-	// log for json
-	PushConf.Log.Format = "json"
 
 	android_token := os.Getenv("ANDROID_TEST_TOKEN")
 
