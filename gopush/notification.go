@@ -7,6 +7,7 @@ import (
 	apns "github.com/sideshow/apns2"
 	"github.com/sideshow/apns2/certificate"
 	"github.com/sideshow/apns2/payload"
+	"time"
 )
 
 type ExtendJSON struct {
@@ -59,14 +60,15 @@ type RequestPushNotification struct {
 	Notification          gcm.Notification `json:"notification,omitempty"`
 
 	// iOS
-	ApnsID   string       `json:"apns_id,omitempty"`
-	Topic    string       `json:"topic,omitempty"`
-	Badge    int          `json:"badge,omitempty"`
-	Sound    string       `json:"sound,omitempty"`
-	Category string       `json:"category,omitempty"`
-	URLArgs  []string     `json:"url-args,omitempty"`
-	Extend   []ExtendJSON `json:"extend,omitempty"`
-	Alert    Alert        `json:"alert,omitempty"`
+	Expiration int64        `json:"expiration,omitempty"`
+	ApnsID     string       `json:"apns_id,omitempty"`
+	Topic      string       `json:"topic,omitempty"`
+	Badge      int          `json:"badge,omitempty"`
+	Sound      string       `json:"sound,omitempty"`
+	Category   string       `json:"category,omitempty"`
+	URLArgs    []string     `json:"url-args,omitempty"`
+	Extend     []ExtendJSON `json:"extend,omitempty"`
+	Alert      Alert        `json:"alert,omitempty"`
 }
 
 func CheckPushConf() error {
@@ -139,6 +141,10 @@ func GetIOSNotification(req RequestPushNotification) *apns.Notification {
 
 	if len(req.Topic) > 0 {
 		notification.Topic = req.Topic
+	}
+
+	if req.Expiration > 0 {
+		notification.Expiration = time.Unix(req.Expiration, 0)
 	}
 
 	if len(req.Priority) > 0 && req.Priority == "normal" {
