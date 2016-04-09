@@ -200,7 +200,7 @@ func TestDisabledAndroidPushHandler(t *testing.T) {
 		})
 }
 
-func TestAndroidPushHandler(t *testing.T) {
+func TestHalfSuccessAndroidPushHandler(t *testing.T) {
 	initTest()
 
 	PushConf.Android.Enabled = true
@@ -222,4 +222,31 @@ func TestAndroidPushHandler(t *testing.T) {
 
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
+}
+
+func TestAllSuccessAndroidPushHandler(t *testing.T) {
+	initTest()
+
+	PushConf.Android.Enabled = true
+	PushConf.Android.ApiKey = os.Getenv("ANDROID_API_KEY")
+	// log for json
+	PushConf.Log.Format = "json"
+
+	android_token := os.Getenv("ANDROID_TEST_TOKEN")
+
+	r := gofight.New()
+
+	r.POST("/api/push").
+		SetJSON(gofight.D{
+			"tokens":   []string{android_token, android_token},
+			"platform": 2,
+			"message":  "Welcome",
+		}).
+		Run(GetMainEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+
+			assert.Equal(t, http.StatusOK, r.Code)
+		})
+
+	// wait push response
+	time.Sleep(3000 * time.Millisecond)
 }

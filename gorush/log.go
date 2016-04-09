@@ -139,7 +139,14 @@ func LogRequest(uri string, method string, ip string, contentType string, agent 
 		output = string(logJson)
 	} else {
 		// format is string
-		output = fmt.Sprintf("|%s header %s| %s %s %s %s %s", magenta, reset, log.Method, log.URI, log.IP, log.ContentType, log.Agent)
+		output = fmt.Sprintf("|%s header %s| %s %s %s %s %s",
+			magenta, reset,
+			log.Method,
+			log.URI,
+			log.IP,
+			log.ContentType,
+			log.Agent,
+		)
 	}
 
 	LogAccess.Info(output)
@@ -193,9 +200,20 @@ func LogPush(status, token string, req RequestPushNotification, errPush error) {
 	} else {
 		switch status {
 		case StatusSucceededPush:
-			output = fmt.Sprintf("|%s %s %s| %s%s%s [%s] %s", green, log.Type, reset, platColor, log.Platform, reset, log.Token, log.Message)
+			output = fmt.Sprintf("|%s %s %s| %s%s%s [%s] %s",
+				green, log.Type, reset,
+				platColor, log.Platform, reset,
+				log.Token,
+				log.Message,
+			)
 		case StatusFailedPush:
-			output = fmt.Sprintf("|%s %s %s| %s%s%s [%s] | %s | Error Message: %s", red, log.Type, reset, platColor, log.Platform, reset, log.Token, log.Message, log.Error)
+			output = fmt.Sprintf("|%s %s %s| %s%s%s [%s] | %s | Error Message: %s",
+				red, log.Type, reset,
+				platColor, log.Platform, reset,
+				log.Token,
+				log.Message,
+				log.Error,
+			)
 		}
 	}
 
