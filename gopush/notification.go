@@ -50,6 +50,7 @@ type RequestPushNotification struct {
 	ContentAvailable bool     `json:"content_available,omitempty"`
 
 	// Android
+	ApiKey                string           `json:"api_key,omitempty"`
 	To                    string           `json:"to,omitempty"`
 	CollapseKey           string           `json:"collapse_key,omitempty"`
 	DelayWhileIdle        bool             `json:"delay_while_idle,omitempty"`
@@ -311,10 +312,15 @@ func GetAndroidNotification(req RequestPushNotification) gcm.HttpMessage {
 }
 
 func PushToAndroid(req RequestPushNotification) bool {
+	var apiKey string
 
 	notification := GetAndroidNotification(req)
 
-	res, err := gcm.SendHttp(PushConf.Android.ApiKey, notification)
+	if apiKey = PushConf.Android.ApiKey; req.ApiKey != "" {
+		apiKey = req.ApiKey
+	}
+
+	res, err := gcm.SendHttp(apiKey, notification)
 
 	if err != nil {
 		// GCM server error
