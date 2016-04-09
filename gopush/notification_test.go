@@ -156,6 +156,7 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 	aps := dat["aps"].(map[string]interface{})
 	alert := aps["alert"].(map[string]interface{})
 	titleLocArgs := alert["title-loc-args"].([]interface{})
+	locArgs := alert["loc-args"].([]interface{})
 
 	assert.Equal(t, test, action)
 	assert.Equal(t, test, actionLocKey)
@@ -166,6 +167,8 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 	assert.Equal(t, test, titleLocKey)
 	assert.Contains(t, titleLocArgs, "a")
 	assert.Contains(t, titleLocArgs, "b")
+	assert.Contains(t, locArgs, "a")
+	assert.Contains(t, locArgs, "b")
 }
 
 func TestAndroidNotificationStructure(t *testing.T) {

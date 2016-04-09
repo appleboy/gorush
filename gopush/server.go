@@ -3,7 +3,6 @@ package gopush
 import (
 	api "github.com/appleboy/gin-status-api"
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
 )
 
@@ -25,7 +24,6 @@ func pushHandler(c *gin.Context) {
 	var form RequestPushNotification
 
 	if err := c.BindJSON(&form); err != nil {
-		log.Println(err)
 		AbortWithError(c, http.StatusBadRequest, "Bad input request, please refer to README guide.")
 		return
 	}
@@ -48,6 +46,7 @@ func GetMainEngine() *gin.Engine {
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 	r.Use(VersionMiddleware())
+	r.Use(LogMiddleware())
 
 	r.GET(PushConf.Api.StatGoUri, api.StatusHandler)
 	r.POST(PushConf.Api.PushUri, pushHandler)

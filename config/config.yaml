@@ -21,6 +21,7 @@ ios:
   production: false
 
 log:
+  format: "string" # string or json
   access_log: "stdout"
   access_level: "debug"
   error_log: "stderr"

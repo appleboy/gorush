@@ -8,3 +8,8 @@ const (
 	PlatFormIos = iota + 1
 	PlatFormAndroid
 )
+
+const (
+	StatusSucceededPush = "succeeded-push"
+	StatusFailedPush    = "failed-push"
+)

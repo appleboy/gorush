@@ -2,11 +2,11 @@ package gopush
 
 import (
 	"errors"
+	"fmt"
 	"github.com/google/go-gcm"
 	apns "github.com/sideshow/apns2"
 	"github.com/sideshow/apns2/certificate"
 	"github.com/sideshow/apns2/payload"
-	"log"
 )
 
 type ExtendJSON struct {
@@ -67,9 +67,6 @@ type RequestPushNotification struct {
 	URLArgs  []string     `json:"url-args,omitempty"`
 	Extend   []ExtendJSON `json:"extend,omitempty"`
 	Alert    Alert        `json:"alert,omitempty"`
-
-	// meta
-	IDs []uint64 `json:"seq_id,omitempty"`
 }
 
 func CheckPushConf() error {
@@ -99,7 +96,7 @@ func InitAPNSClient() error {
 		CertificatePemIos, err = certificate.FromPemFile(PushConf.Ios.PemKeyPath, "")
 
 		if err != nil {
-			log.Println("Cert Error:", err)
+			LogError.Error("Cert Error:", err.Error())
 
 			return err
 		}
@@ -178,10 +175,9 @@ func GetIOSNotification(req RequestPushNotification) *apns.Notification {
 		payload.AlertTitleLocKey(req.Alert.TitleLocKey)
 	}
 
-	// Need send PR to apns2 repo.
-	// if len(req.Alert.LocArgs) > 0 {
-	// 	payload.AlertLocArgs(req.Alert.LocArgs)
-	// }
+	if len(req.Alert.LocArgs) > 0 {
+		payload.AlertLocArgs(req.Alert.LocArgs)
+	}
 
 	if len(req.Alert.TitleLocArgs) > 0 {
 		payload.AlertTitleLocArgs(req.Alert.TitleLocArgs)
@@ -233,13 +229,22 @@ func PushToIOS(req RequestPushNotification) bool {
 		res, err := ApnsClient.Push(notification)
 
 		if err != nil {
-			log.Println("There was an error: ", err)
+			// apns server error
+			LogPush(StatusFailedPush, token, req, err)
+
+			return false
+		}
+
+		if res.StatusCode != 200 {
+			// error message:
+			// ref: https://github.com/sideshow/apns2/blob/master/response.go#L14-L65
+			LogPush(StatusFailedPush, token, req, errors.New(res.Reason))
 
 			return false
 		}
 
 		if res.Sent() {
-			log.Println("APNs ID:", res.ApnsID)
+			LogPush(StatusSucceededPush, token, req, nil)
 		}
 	}
 
@@ -305,22 +310,22 @@ func PushToAndroid(req RequestPushNotification) bool {
 
 	res, err := gcm.SendHttp(PushConf.Android.ApiKey, notification)
 
-	log.Printf("Success count: %d, Failure count: %d", res.Success, res.Failure)
-
 	if err != nil {
-		log.Println("GCM Server Error Message: " + err.Error())
+		// GCM server error
+		LogError.Error("GCM server error: " + err.Error())
 
 		return false
 	}
 
-	if res.Error != "" {
-		log.Println("GCM Http Error Message: " + res.Error)
+	LogAccess.Debug(fmt.Sprintf("Android Success count: %d, Failure count: %d", res.Success, res.Failure))
 
-		return false
-	}
+	for k, result := range res.Results {
+		if result.Error != "" {
+			LogPush(StatusFailedPush, req.Tokens[k], req, errors.New(result.Error))
+			continue
+		}
 
-	if res.Success > 0 {
-		return true
+		LogPush(StatusSucceededPush, req.Tokens[k], req, nil)
 	}
 
 	return true
