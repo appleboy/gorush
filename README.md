@@ -37,9 +37,9 @@ ios:
 
 log:
   format: "string" # string or json
-  access_log: "stdout"
+  access_log: "stdout" # stdout: output to console, or define log path like "log/access_log"
   access_level: "debug"
-  error_log: "stderr"
+  error_log: "stderr" # stderr: output to console, or define log path like "log/error_log"
   error_level: "error"
 ```
 
