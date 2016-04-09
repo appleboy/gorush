@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"testing"
+	"time"
 )
 
 func TestDisabledAndroidIosConf(t *testing.T) {
@@ -59,12 +60,14 @@ func TestCorrectConf(t *testing.T) {
 
 func TestIOSNotificationStructure(t *testing.T) {
 	var dat map[string]interface{}
+	var unix = time.Now().Unix()
 
 	test := "test"
 	message := "Welcome notification Server"
 	req := RequestPushNotification{
 		ApnsID:           test,
 		Topic:            test,
+		Expiration:       time.Now().Unix(),
 		Priority:         "normal",
 		Message:          message,
 		Badge:            1,
@@ -106,6 +109,7 @@ func TestIOSNotificationStructure(t *testing.T) {
 
 	assert.Equal(t, test, notification.ApnsID)
 	assert.Equal(t, test, notification.Topic)
+	assert.Equal(t, unix, notification.Expiration.Unix())
 	assert.Equal(t, ApnsPriorityLow, notification.Priority)
 	assert.Equal(t, message, alert)
 	assert.Equal(t, 1, int(badge))
