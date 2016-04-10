@@ -1,10 +1,10 @@
 package gopush
 
 import (
+	"fmt"
 	api "github.com/appleboy/gin-status-api"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"fmt"
 )
 
 func AbortWithError(c *gin.Context, code int, message string) {
