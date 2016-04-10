@@ -21,15 +21,20 @@ func rootHandler(c *gin.Context) {
 }
 
 func pushHandler(c *gin.Context) {
-	var form RequestPushNotification
+	var form RequestPush
 
 	if err := c.BindJSON(&form); err != nil {
-		AbortWithError(c, http.StatusBadRequest, "Bad input request, please refer to README guide.")
+		AbortWithError(c, http.StatusBadRequest, "Missing nitifications field.")
+		return
+	}
+
+	if len(form.Notifications) == 0 {
+		AbortWithError(c, http.StatusBadRequest, "Notification field is empty.")
 		return
 	}
 
 	// process notification.
-	pushNotification(form)
+	go SendNotification(form)
 
 	c.JSON(http.StatusOK, gin.H{
 		"text": "Welcome to notification server.",

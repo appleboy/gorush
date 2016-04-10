@@ -42,7 +42,7 @@ type Alert struct {
 }
 
 type RequestPush struct {
-	Notifications []PushNotification `json:"notifications"`
+	Notifications []PushNotification `json:"notifications" binding:"required"`
 }
 
 type PushNotification struct {
