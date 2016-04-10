@@ -15,7 +15,7 @@ See the [YAML config eample](config/config.yaml):
 ```yaml
 core:
   port: "8088"
-  notification_max: 100
+  max_notification: 100
   mode: "release"
   ssl: false
   cert_path: "cert.pem"
