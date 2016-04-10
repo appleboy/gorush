@@ -4,6 +4,7 @@ import (
 	api "github.com/appleboy/gin-status-api"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"fmt"
 )
 
 func AbortWithError(c *gin.Context, code int, message string) {
@@ -22,14 +23,26 @@ func rootHandler(c *gin.Context) {
 
 func pushHandler(c *gin.Context) {
 	var form RequestPush
+	var msg string
 
 	if err := c.BindJSON(&form); err != nil {
-		AbortWithError(c, http.StatusBadRequest, "Missing nitifications field.")
+		msg = "Missing nitifications field."
+		LogAccess.Debug(msg)
+		AbortWithError(c, http.StatusBadRequest, msg)
 		return
 	}
 
 	if len(form.Notifications) == 0 {
-		AbortWithError(c, http.StatusBadRequest, "Notification field is empty.")
+		msg = "Notification field is empty."
+		LogAccess.Debug(msg)
+		AbortWithError(c, http.StatusBadRequest, msg)
+		return
+	}
+
+	if len(form.Notifications) > PushConf.Core.MaxNotification {
+		msg = fmt.Sprintf("Number of notifications(%d) over limit(%d)", len(form.Notifications), PushConf.Core.MaxNotification)
+		LogAccess.Debug(msg)
+		AbortWithError(c, http.StatusBadRequest, msg)
 		return
 	}
 
