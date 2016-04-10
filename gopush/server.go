@@ -26,7 +26,7 @@ func pushHandler(c *gin.Context) {
 	var msg string
 
 	if err := c.BindJSON(&form); err != nil {
-		msg = "Missing nitifications field."
+		msg = "Missing notifications field."
 		LogAccess.Debug(msg)
 		AbortWithError(c, http.StatusBadRequest, msg)
 		return
