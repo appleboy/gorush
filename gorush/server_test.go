@@ -121,6 +121,35 @@ func TestEmptyNotifications(t *testing.T) {
 		})
 }
 
+func TestOutOfRangeMaxNotifications(t *testing.T) {
+	initTest()
+
+	PushConf.Core.MaxNotification = 1
+
+	r := gofight.New()
+
+	// notifications is empty.
+	r.POST("/api/push").
+		SetJSON(gofight.D{
+			"notifications": []gofight.D{
+				gofight.D{
+					"tokens":   []string{"aaaaa", "bbbbb"},
+					"platform": 2,
+					"message":  "Welcome",
+				},
+				gofight.D{
+					"tokens":   []string{"aaaaa", "bbbbb"},
+					"platform": 2,
+					"message":  "Welcome",
+				},
+			},
+		}).
+		Run(GetMainEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+
+			assert.Equal(t, http.StatusBadRequest, r.Code)
+		})
+}
+
 func TestSuccessPushHandler(t *testing.T) {
 	initTest()
 
