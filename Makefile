@@ -17,5 +17,8 @@ docker_build: clean
 	tar -zxvf bin.tar.gz
 	-rm -rf bin.tar.gz build.tar.gz
 
+test:
+	cd gopush && go test -v -covermode=count -coverprofile=coverage.out
+
 clean:
 	rm -rf build.tar.gz bin.tar.gz bin/*
