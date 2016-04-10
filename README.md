@@ -73,6 +73,12 @@ $ ./gopush -ios -m="your message" -i="API Key" -t="Device token"
 * `-i`: Apple Push Notification Certificate path (`pem` file).
 * `-t`: Device token.
 
+The default endpoint is APNs development. Please add `-production` flag for APNs production push endpoint.
+
+```bash
+$ ./gopush -ios -m="your message" -i="API Key" -t="Device token" -production
+```
+
 ## License
 
 Copyright 2016 Bo-Yi Wu [@appleboy](https://twitter.com/appleboy).
