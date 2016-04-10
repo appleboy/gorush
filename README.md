@@ -9,6 +9,8 @@ A push notification server using [Gin](https://github.com/gin-gonic/gin) framewo
 * Support [Google Cloud Message](https://developers.google.com/cloud-messaging/) using [go-gcm](https://github.com/google/go-gcm) library for Android.
 * Support [HTTP/2](https://http2.github.io/) Apple Push Notification Service using [apns2](https://github.com/sideshow/apns2) library.
 * Support [YAML](https://github.com/go-yaml/yaml) configuration.
+* Support command line to send single Androdi or iOS notification.
+* Support Web API to send push notification.
 
 See the [YAML config eample](config/config.yaml):
 
@@ -42,6 +44,34 @@ log:
   error_log: "stderr" # stderr: output to console, or define log path like "log/error_log"
   error_level: "error"
 ```
+
+## Basic Usage
+
+How to send push notification with `gopush` command line? (Android or iOS)
+
+### Android
+
+Send single notification with the following command.
+
+```bash
+$ ./gopush -android -m="your message" -k="API Key" -t="Device token"
+```
+
+* `-m`: Notification message.
+* `-k`: [Google cloud message](https://developers.google.com/cloud-messaging/) api key
+* `-t`: Device token.
+
+### iOS
+
+Send single notification with the following command.
+
+```bash
+$ ./gopush -ios -m="your message" -i="API Key" -t="Device token"
+```
+
+* `-m`: Notification message.
+* `-i`: Apple Push Notification Certificate path (`pem` file).
+* `-t`: Device token.
 
 ## License
 
