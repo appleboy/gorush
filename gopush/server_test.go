@@ -92,15 +92,28 @@ func TestAPIStatusHandler(t *testing.T) {
 		})
 }
 
-func TestMissingParameterPushHandler(t *testing.T) {
+func TestMissingNotificationsParameter(t *testing.T) {
 	initTest()
 
 	r := gofight.New()
 
-	// missing some parameter.
+	// missing notifications parameter.
+	r.POST("/api/push").
+		Run(GetMainEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+
+			assert.Equal(t, http.StatusBadRequest, r.Code)
+		})
+}
+
+func TestEmptyNotifications(t *testing.T) {
+	initTest()
+
+	r := gofight.New()
+
+	// notifications is empty.
 	r.POST("/api/push").
 		SetJSON(gofight.D{
-			"platform": 1,
+			"notifications": []PushNotification{},
 		}).
 		Run(GetMainEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 
@@ -108,99 +121,7 @@ func TestMissingParameterPushHandler(t *testing.T) {
 		})
 }
 
-func TestDisabledIosPushHandler(t *testing.T) {
-	initTest()
-
-	PushConf.Ios.Enabled = false
-	InitAPNSClient()
-
-	r := gofight.New()
-
-	r.POST("/api/push").
-		SetJSON(gofight.D{
-			"tokens":   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
-			"platform": 1,
-			"message":  "Welcome",
-		}).
-		Run(GetMainEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
-
-			assert.Equal(t, http.StatusOK, r.Code)
-		})
-}
-
-func TestMissingIosCertificate(t *testing.T) {
-	initTest()
-
-	PushConf.Ios.Enabled = true
-	PushConf.Ios.PemKeyPath = "test"
-	err := InitAPNSClient()
-
-	assert.Error(t, err)
-}
-
-func TestIosPushDevelopment(t *testing.T) {
-	initTest()
-
-	PushConf.Ios.Enabled = true
-	PushConf.Ios.PemKeyPath = "../certificate/certificate-valid.pem"
-	InitAPNSClient()
-
-	r := gofight.New()
-
-	r.POST("/api/push").
-		SetJSON(gofight.D{
-			"tokens":   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
-			"platform": 1,
-			"message":  "Welcome",
-		}).
-		Run(GetMainEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
-
-			assert.Equal(t, http.StatusOK, r.Code)
-		})
-}
-
-func TestIosPushProduction(t *testing.T) {
-	initTest()
-
-	PushConf.Ios.Enabled = true
-	PushConf.Ios.Production = true
-	PushConf.Ios.PemKeyPath = "../certificate/certificate-valid.pem"
-	InitAPNSClient()
-
-	r := gofight.New()
-
-	r.POST("/api/push").
-		SetJSON(gofight.D{
-			"tokens":   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
-			"platform": 1,
-			"message":  "Welcome",
-		}).
-		Run(GetMainEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
-
-			assert.Equal(t, http.StatusOK, r.Code)
-		})
-}
-
-func TestDisabledAndroidPushHandler(t *testing.T) {
-	initTest()
-
-	PushConf.Android.Enabled = false
-
-	r := gofight.New()
-
-	r.POST("/api/push").
-		SetJSON(gofight.D{
-			"tokens":   []string{"aaaaaa", "bbbbb"},
-			"platform": 2,
-			"message":  "Welcome",
-		}).
-		Run(GetMainEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
-
-			assert.Equal(t, http.StatusOK, r.Code)
-		})
-}
-
-func TestHalfSuccessAndroidPushHandler(t *testing.T) {
+func TestSuccessPushHandler(t *testing.T) {
 	initTest()
 
 	PushConf.Android.Enabled = true
@@ -212,31 +133,13 @@ func TestHalfSuccessAndroidPushHandler(t *testing.T) {
 
 	r.POST("/api/push").
 		SetJSON(gofight.D{
-			"tokens":   []string{android_token, "bbbbb"},
-			"platform": 2,
-			"message":  "Welcome",
-		}).
-		Run(GetMainEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
-
-			assert.Equal(t, http.StatusOK, r.Code)
-		})
-}
-
-func TestAllSuccessAndroidPushHandler(t *testing.T) {
-	initTest()
-
-	PushConf.Android.Enabled = true
-	PushConf.Android.ApiKey = os.Getenv("ANDROID_API_KEY")
-
-	android_token := os.Getenv("ANDROID_TEST_TOKEN")
-
-	r := gofight.New()
-
-	r.POST("/api/push").
-		SetJSON(gofight.D{
-			"tokens":   []string{android_token, android_token},
-			"platform": 2,
-			"message":  "Welcome",
+			"notifications": []gofight.D{
+				gofight.D{
+					"tokens":   []string{android_token, "bbbbb"},
+					"platform": 2,
+					"message":  "Welcome",
+				},
+			},
 		}).
 		Run(GetMainEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 

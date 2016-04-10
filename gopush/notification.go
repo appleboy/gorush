@@ -41,7 +41,11 @@ type Alert struct {
 	TitleLocKey  string   `json:"title-loc-key,omitempty"`
 }
 
-type RequestPushNotification struct {
+type RequestPush struct {
+	Notifications []PushNotification `json:"notifications" binding:"required"`
+}
+
+type PushNotification struct {
 	// Common
 	Tokens           []string `json:"tokens" binding:"required"`
 	Platform         int      `json:"platform" binding:"required"`
@@ -114,26 +118,33 @@ func InitAPNSClient() error {
 	return nil
 }
 
-func pushNotification(notification RequestPushNotification) bool {
-	switch notification.Platform {
-	case PlatFormIos:
-		if !PushConf.Ios.Enabled {
-			return false
+func SendNotification(req RequestPush) int {
+	var count int
+	for _, notification := range req.Notifications {
+		switch notification.Platform {
+		case PlatFormIos:
+			if !PushConf.Ios.Enabled {
+				continue
+			}
+
+			count += 1
+			go PushToIOS(notification)
+		case PlatFormAndroid:
+			if !PushConf.Android.Enabled {
+				continue
+			}
+
+			count += 1
+			go PushToAndroid(notification)
 		}
-		go PushToIOS(notification)
-	case PlatFormAndroid:
-		if !PushConf.Android.Enabled {
-			return false
-		}
-		go PushToAndroid(notification)
 	}
 
-	return true
+	return count
 }
 
 // The iOS Notification Payload
 // ref: https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/TheNotificationPayload.html
-func GetIOSNotification(req RequestPushNotification) *apns.Notification {
+func GetIOSNotification(req PushNotification) *apns.Notification {
 	notification := &apns.Notification{}
 
 	if len(req.ApnsID) > 0 {
@@ -225,7 +236,7 @@ func GetIOSNotification(req RequestPushNotification) *apns.Notification {
 	return notification
 }
 
-func PushToIOS(req RequestPushNotification) bool {
+func PushToIOS(req PushNotification) bool {
 
 	notification := GetIOSNotification(req)
 
@@ -260,7 +271,7 @@ func PushToIOS(req RequestPushNotification) bool {
 
 // HTTP Connection Server Reference for Android
 // https://developers.google.com/cloud-messaging/http-server-ref
-func GetAndroidNotification(req RequestPushNotification) gcm.HttpMessage {
+func GetAndroidNotification(req PushNotification) gcm.HttpMessage {
 	notification := gcm.HttpMessage{}
 
 	notification.RegistrationIds = req.Tokens
@@ -311,7 +322,7 @@ func GetAndroidNotification(req RequestPushNotification) gcm.HttpMessage {
 	return notification
 }
 
-func PushToAndroid(req RequestPushNotification) bool {
+func PushToAndroid(req PushNotification) bool {
 	var apiKey string
 
 	notification := GetAndroidNotification(req)

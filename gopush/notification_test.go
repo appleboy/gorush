@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/buger/jsonparser"
 	"github.com/google/go-gcm"
+	"github.com/sideshow/apns2"
 	"github.com/stretchr/testify/assert"
 	"log"
 	"os"
@@ -64,7 +65,7 @@ func TestIOSNotificationStructure(t *testing.T) {
 
 	test := "test"
 	message := "Welcome notification Server"
-	req := RequestPushNotification{
+	req := PushNotification{
 		ApnsID:           test,
 		Topic:            test,
 		Expiration:       time.Now().Unix(),
@@ -126,7 +127,7 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 	var dat map[string]interface{}
 
 	test := "test"
-	req := RequestPushNotification{
+	req := PushNotification{
 		Alert: Alert{
 			Action:       test,
 			ActionLocKey: test,
@@ -178,7 +179,7 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 func TestAndroidNotificationStructure(t *testing.T) {
 
 	test := "test"
-	req := RequestPushNotification{
+	req := PushNotification{
 		Tokens:                []string{"a", "b"},
 		Message:               "Welcome",
 		To:                    test,
@@ -219,7 +220,7 @@ func TestPushToIOS(t *testing.T) {
 	PushConf.Ios.PemKeyPath = "../certificate/certificate-valid.pem"
 	InitAPNSClient()
 
-	req := RequestPushNotification{
+	req := PushNotification{
 		Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
 		Platform: 1,
 		Message:  "Welcome",
@@ -235,7 +236,7 @@ func TestPushToAndroidWrongAPIKey(t *testing.T) {
 	PushConf.Android.Enabled = true
 	PushConf.Android.ApiKey = os.Getenv("ANDROID_API_KEY") + "a"
 
-	req := RequestPushNotification{
+	req := PushNotification{
 		Tokens:   []string{"aaaaaa", "bbbbb"},
 		Platform: 2,
 		Message:  "Welcome",
@@ -251,7 +252,7 @@ func TestPushToAndroidWrongToken(t *testing.T) {
 	PushConf.Android.Enabled = true
 	PushConf.Android.ApiKey = os.Getenv("ANDROID_API_KEY")
 
-	req := RequestPushNotification{
+	req := PushNotification{
 		Tokens:   []string{"aaaaaa", "bbbbb"},
 		Platform: 2,
 		Message:  "Welcome",
@@ -271,7 +272,7 @@ func TestPushToAndroidRightTokenForJSONLog(t *testing.T) {
 
 	android_token := os.Getenv("ANDROID_TEST_TOKEN")
 
-	req := RequestPushNotification{
+	req := PushNotification{
 		Tokens:   []string{android_token, "bbbbb"},
 		Platform: 2,
 		Message:  "Welcome",
@@ -289,7 +290,7 @@ func TestPushToAndroidRightTokenForStringLog(t *testing.T) {
 
 	android_token := os.Getenv("ANDROID_TEST_TOKEN")
 
-	req := RequestPushNotification{
+	req := PushNotification{
 		Tokens:   []string{android_token, "bbbbb"},
 		Platform: 2,
 		Message:  "Welcome",
@@ -307,7 +308,7 @@ func TestOverwriteAndroidApiKey(t *testing.T) {
 
 	android_token := os.Getenv("ANDROID_TEST_TOKEN")
 
-	req := RequestPushNotification{
+	req := PushNotification{
 		Tokens:   []string{android_token, "bbbbb"},
 		Platform: 2,
 		Message:  "Welcome",
@@ -317,4 +318,134 @@ func TestOverwriteAndroidApiKey(t *testing.T) {
 
 	success := PushToAndroid(req)
 	assert.False(t, success)
+}
+
+func TestSenMultipleNotifications(t *testing.T) {
+	PushConf = BuildDefaultPushConf()
+
+	PushConf.Ios.Enabled = true
+	PushConf.Ios.PemKeyPath = "../certificate/certificate-valid.pem"
+	InitAPNSClient()
+
+	PushConf.Android.Enabled = true
+	PushConf.Android.ApiKey = os.Getenv("ANDROID_API_KEY")
+
+	android_token := os.Getenv("ANDROID_TEST_TOKEN")
+
+	req := RequestPush{
+		Notifications: []PushNotification{
+			//ios
+			PushNotification{
+				Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
+				Platform: 1,
+				Message:  "Welcome",
+			},
+			// android
+			PushNotification{
+				Tokens:   []string{android_token, "bbbbb"},
+				Platform: 2,
+				Message:  "Welcome",
+			},
+		},
+	}
+
+	count := SendNotification(req)
+	assert.Equal(t, 2, count)
+}
+
+func TestDisabledAndroidNotifications(t *testing.T) {
+	PushConf = BuildDefaultPushConf()
+
+	PushConf.Ios.Enabled = true
+	PushConf.Ios.PemKeyPath = "../certificate/certificate-valid.pem"
+	InitAPNSClient()
+
+	PushConf.Android.Enabled = false
+	PushConf.Android.ApiKey = os.Getenv("ANDROID_API_KEY")
+
+	android_token := os.Getenv("ANDROID_TEST_TOKEN")
+
+	req := RequestPush{
+		Notifications: []PushNotification{
+			//ios
+			PushNotification{
+				Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
+				Platform: 1,
+				Message:  "Welcome",
+			},
+			// android
+			PushNotification{
+				Tokens:   []string{android_token, "bbbbb"},
+				Platform: 2,
+				Message:  "Welcome",
+			},
+		},
+	}
+
+	count := SendNotification(req)
+	assert.Equal(t, 1, count)
+}
+
+func TestDisabledIosNotifications(t *testing.T) {
+	PushConf = BuildDefaultPushConf()
+
+	PushConf.Ios.Enabled = false
+	PushConf.Ios.PemKeyPath = "../certificate/certificate-valid.pem"
+	InitAPNSClient()
+
+	PushConf.Android.Enabled = true
+	PushConf.Android.ApiKey = os.Getenv("ANDROID_API_KEY")
+
+	android_token := os.Getenv("ANDROID_TEST_TOKEN")
+
+	req := RequestPush{
+		Notifications: []PushNotification{
+			//ios
+			PushNotification{
+				Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
+				Platform: 1,
+				Message:  "Welcome",
+			},
+			// android
+			PushNotification{
+				Tokens:   []string{android_token, "bbbbb"},
+				Platform: 2,
+				Message:  "Welcome",
+			},
+		},
+	}
+
+	count := SendNotification(req)
+	assert.Equal(t, 1, count)
+}
+
+func TestMissingIosCertificate(t *testing.T) {
+	PushConf = BuildDefaultPushConf()
+
+	PushConf.Ios.Enabled = true
+	PushConf.Ios.PemKeyPath = "test"
+	err := InitAPNSClient()
+
+	assert.Error(t, err)
+}
+
+func TestAPNSClientDevHost(t *testing.T) {
+	PushConf = BuildDefaultPushConf()
+
+	PushConf.Ios.Enabled = true
+	PushConf.Ios.PemKeyPath = "../certificate/certificate-valid.pem"
+	InitAPNSClient()
+
+	assert.Equal(t, apns2.HostDevelopment, ApnsClient.Host)
+}
+
+func TestAPNSClientProdHost(t *testing.T) {
+	PushConf = BuildDefaultPushConf()
+
+	PushConf.Ios.Enabled = true
+	PushConf.Ios.Production = true
+	PushConf.Ios.PemKeyPath = "../certificate/certificate-valid.pem"
+	InitAPNSClient()
+
+	assert.Equal(t, apns2.HostProduction, ApnsClient.Host)
 }

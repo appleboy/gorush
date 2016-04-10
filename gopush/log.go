@@ -174,7 +174,7 @@ func typeForPlatForm(platform int) string {
 	}
 }
 
-func LogPush(status, token string, req RequestPushNotification, errPush error) {
+func LogPush(status, token string, req PushNotification, errPush error) {
 	var plat, platColor, output string
 
 	platColor = colorForPlatForm(req.Platform)
