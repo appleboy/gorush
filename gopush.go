@@ -35,7 +35,7 @@ func main() {
 		gopush.PushConf, err = gopush.LoadConfYaml(*confPath)
 
 		if err != nil {
-			log.Printf("Unable to load yaml config file: '%v'", err)
+			log.Printf("Load yaml config file error: '%v'", err)
 
 			return
 		}

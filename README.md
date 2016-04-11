@@ -49,12 +49,14 @@ log:
 
 How to send push notification using `gopush` command? (Android or iOS)
 
+Download `gopush` binary file from [release page](https://github.com/appleboy/gopush/releases).
+
 ### Android
 
 Send single notification with the following command.
 
 ```bash
-$ ./gopush -android -m="your message" -k="API Key" -t="Device token"
+$ gopush -android -m="your message" -k="API Key" -t="Device token"
 ```
 
 * `-m`: Notification message.
@@ -66,7 +68,7 @@ $ ./gopush -android -m="your message" -k="API Key" -t="Device token"
 Send single notification with the following command.
 
 ```bash
-$ ./gopush -ios -m="your message" -i="API Key" -t="Device token"
+$ gopush -ios -m="your message" -i="API Key" -t="Device token"
 ```
 
 * `-m`: Notification message.
@@ -76,7 +78,7 @@ $ ./gopush -ios -m="your message" -i="API Key" -t="Device token"
 The default endpoint is APNs development. Please add `-production` flag for APNs production push endpoint.
 
 ```bash
-$ ./gopush -ios -m="your message" -i="API Key" -t="Device token" -production
+$ gopush -ios -m="your message" -i="API Key" -t="Device token" -production
 ```
 
 ## License
