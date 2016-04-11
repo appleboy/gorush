@@ -16,7 +16,7 @@ func PrintGoPushVersion() {
 func VersionMiddleware() gin.HandlerFunc {
 	// Set out header value for each response
 	return func(c *gin.Context) {
-		c.Writer.Header().Set("Server-Version", "GoPush "+Version)
+		c.Writer.Header().Set("Server-Version", "GoPush/"+Version)
 		c.Next()
 	}
 }
