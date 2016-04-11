@@ -12,7 +12,7 @@ A push notification server using [Gin](https://github.com/gin-gonic/gin) framewo
 * Support command line to send single Android or iOS notification.
 * Support Web API to send push notification.
 
-See the [YAML config example](config/config.yaml):
+See the [YAML config example](config/config.yml):
 
 ```yaml
 core:
@@ -80,6 +80,22 @@ The default endpoint is APNs development. Please add `-production` flag for APNs
 ```bash
 $ gopush -ios -m="your message" -i="API Key" -t="Device token" -production
 ```
+
+### Run gopush with web server
+
+Please make sure your [config.yml](config/config.yml) exist. Default port is `8088`.
+
+```bash
+$ gopush -c config.yml
+```
+
+Test status of api server using [httpie](https://github.com/jkbrzt/httpie) tool:
+
+```bash
+$ http -v --verify=no --json GET https://localhost:8088/api/status
+```
+
+![statue screenshot](screenshot/status.png)
 
 ## License
 
