@@ -1,0 +1,14 @@
+FROM alpine
+
+MAINTAINER Bo-Yi Wu <appleboy.tw@gmail.com>
+
+RUN apk update && apk upgrade \
+  && apk add ca-certificates \
+  && rm -rf /var/cache/apk/*
+
+RUN mkdir /app
+ADD gopush.tar.gz /app/
+ADD config /app/config
+WORKDIR /app
+ENTRYPOINT ["./gopush", "-c", "config/config.yml"]
+EXPOSE 8088

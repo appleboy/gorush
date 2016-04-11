@@ -1,11 +1,12 @@
-FROM golang:1.6
+FROM golang:1.6-alpine
 
 MAINTAINER Bo-Yi Wu <appleboy.tw@gmail.com>
 
+RUN apk --update add git
 RUN mkdir -p /tmp/build
 Add build.tar.gz /tmp/build/
 WORKDIR /tmp/build
 RUN go get -v -d
-RUN sh script/build.sh
+RUN GOOS=linux GOARCH=amd64 go build -ldflags="-w" -o bin/gopush gopush.go
 
-CMD tar -czf - bin
+CMD tar -C bin -czf - gopush

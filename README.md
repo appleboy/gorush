@@ -81,7 +81,7 @@ The default endpoint is APNs development. Please add `-production` flag for APNs
 $ gopush -ios -m="your message" -i="API Key" -t="Device token" -production
 ```
 
-### Run gopush with web server
+## Run gopush web server
 
 Please make sure your [config.yml](config/config.yml) exist. Default port is `8088`.
 
@@ -96,6 +96,21 @@ $ http -v --verify=no --json GET https://localhost:8088/api/status
 ```
 
 ![statue screenshot](screenshot/status.png)
+
+## Run gopush in Docker
+
+Set up `gopush` in the cloud in under 5 minutes with zero knowledge of Golang or Linux shell using our [gopush Docker image](https://hub.docker.com/r/appleboy/gopush/).
+
+```bash
+$ docker pull appleboy/gopush
+$ docker run -name gopush -p 80:8088 appleboy/gopush
+```
+
+Testing your gopush server.
+
+```bash
+$ http -v --verify=no --json GET http://your.docker.host/api/status
+```
 
 ## License
 
