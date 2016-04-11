@@ -3,9 +3,6 @@ FROM golang:1.6
 MAINTAINER Bo-Yi Wu <appleboy.tw@gmail.com>
 
 RUN mkdir -p /tmp/build
-Add build.tar.gz /tmp/build/
+Add . /tmp/build/
 WORKDIR /tmp/build
-RUN go get -v -d
-RUN sh script/build.sh
-
-CMD tar -czf - bin
+RUN go get -v -d -t ./...
