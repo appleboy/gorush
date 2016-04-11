@@ -28,8 +28,8 @@ api:
   stat_go_uri: "/api/status"
 
 android:
-  enabled: false
-  apikey: ""
+  enabled: true
+  apikey: "YOUR_API_KEY"
 
 ios:
   enabled: false
