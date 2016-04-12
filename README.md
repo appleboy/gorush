@@ -11,6 +11,7 @@ A push notification server using [Gin](https://github.com/gin-gonic/gin) framewo
 * Support [YAML](https://github.com/go-yaml/yaml) configuration.
 * Support command line to send single Android or iOS notification.
 * Support Web API to send push notification.
+* Support zero downtime restarts for go servers using [endless](https://github.com/fvbock/endless).
 
 See the [YAML config example](config/config.yml):
 
