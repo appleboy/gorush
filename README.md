@@ -4,6 +4,11 @@ A push notification server using [Gin](https://github.com/gin-gonic/gin) framewo
 
 [![Build Status](https://travis-ci.org/appleboy/gofight.svg?branch=master)](https://travis-ci.org/appleboy/gofight) [![Coverage Status](https://coveralls.io/repos/github/appleboy/gopush/badge.svg?branch=master)](https://coveralls.io/github/appleboy/gopush?branch=master) [![Go Report Card](https://goreportcard.com/badge/github.com/appleboy/gopush)](https://goreportcard.com/report/github.com/appleboy/gopush) [![codebeat badge](https://codebeat.co/badges/ee01d852-b5e8-465a-ad93-631d738818ff)](https://codebeat.co/projects/github-com-appleboy-gopush)
 
+## Support Platform
+
+* [APNS](https://developer.apple.com/library/ios/documentation/networkinginternet/conceptual/remotenotificationspg/Chapters/ApplePushService.html)
+* [GCM](https://developer.android.com/google/gcm/index.html)
+
 ## Feature
 
 * Support [Google Cloud Message](https://developers.google.com/cloud-messaging/) using [go-gcm](https://github.com/google/go-gcm) library for Android.
@@ -12,6 +17,7 @@ A push notification server using [Gin](https://github.com/gin-gonic/gin) framewo
 * Support command line to send single Android or iOS notification.
 * Support Web API to send push notification.
 * Support zero downtime restarts for go servers using [endless](https://github.com/fvbock/endless).
+* Support [HTTP/2](https://http2.github.io/) or HTTP/1.1 protocol.
 
 See the [YAML config example](config/config.yml):
 
@@ -115,12 +121,14 @@ Testing your gopush server.
 $ http -v --verify=no --json GET http://your.docker.host/api/status
 ```
 
-### Web API
+## Web API
 
 Gopush support the following API.
 
 * **GET**  `/api/status` Golang cpu, memory, gc, etc information. Thanks for [golang-stats-api-handler](https://github.com/fukata/golang-stats-api-handler).
 * **POST** `/api/push` push ios and android notifications.
+
+### POST /api/push
 
 Simple send iOS notification example, the `platform` value is `1`:
 
@@ -149,6 +157,58 @@ Simple send Android notification example, the `platform` value is `2`:
   ]
 }
 ```
+
+Send multiple notifications as below:
+
+```json
+{
+  "notifications": [
+    {
+      "tokens": ["token_a", "token_b"],
+      "platform": 1,
+      "message": "Hello World iOS!"
+    },
+    {
+      "tokens": ["token_a", "token_b"],
+      "platform": 2,
+      "message": "Hello World Android!"
+    },
+    {
+      "tokens": ["token_a", "token_b"],
+      "platform": 2,
+      "message": "Hello World!"
+    },
+    .....
+  ]
+}
+```
+
+Request body must has a notifications array. The following is a parameter table for each notification.
+
+|name|type|description|required|note|
+|-------|-------|--------|--------|---------|
+|tokens|string array|device tokens|o||
+|platform|int|platform(iOS,Android)|o|1=iOS, 2=Android|
+|message|string|message for notification|o||
+|priority|string|Sets the priority of the message.|-||
+|content_available|bool|data messages wake the app by default.|-||
+|api_key|string|Android api key|-|only Android|
+|to|string|The value must be a registration token, notification key, or topic.|-|only Android|
+|collapse_key|string|a key for collapsing notifications|-|only Android|
+|delay_while_idle|bool|a flag for device idling|-|only Android|
+|time_to_live|int|expiration of message kept on GCM storage|-|only Android|
+|restricted_package_name|string|the package name of the application|-|only Android|
+|dry_run|bool|allows developers to test a request without actually sending a message|-|only Android|
+|data|string array|data payload of a GCM message|-|only Android|
+|notification|string array|payload of a GCM message|-|only Android|
+|expiration|int|expiration for notification|-|only iOS|
+|apns_id|string|A canonical UUID that identifies the notification|-|only iOS|
+|topic|string|topic of the remote notification|-|only iOS|
+|badge|int|badge count|-|only iOS|
+|sound|string|sound type|-|only iOS|
+|category|string|the UIMutableUserNotificationCategory object|-|only iOS|
+|extend|string array|extensible partition|-|only iOS|
+|alert|string array|payload of a iOS message|-|only iOS|
 
 ## License
 
