@@ -29,9 +29,6 @@ script:
     -service=travis-ci -repotoken=$COVERALLS_TOKEN
 
 after_success:
-  - echo $TRAVIS_PULL_REQUEST
-  - echo $TRAVIS_BRANCH
-  - echo $TRAVIS_GO_VERSION
   - test "$TRAVIS_BRANCH" == "master" && test "$TRAVIS_GO_VERSION" == "1.6"
     && test "$TRAVIS_PULL_REQUEST" == "false" && docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
   - test "$TRAVIS_BRANCH" == "master" && test "$TRAVIS_GO_VERSION" == "1.6"
