@@ -1,4 +1,4 @@
-.PHONY: all
+.PHONY: all docker_build deploy
 
 VERSION=0.0.1
 
