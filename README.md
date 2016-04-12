@@ -49,9 +49,11 @@ log:
 
 How to send push notification using `gopush` command? (Android or iOS)
 
-Download `gopush` binary file from [release page](https://github.com/appleboy/gopush/releases).
+### Download a binary
 
-### Android
+The pre-compiled binaries can be downloaded from [release page](https://github.com/appleboy/gopush/releases).
+
+### Send Android notification
 
 Send single notification with the following command.
 
@@ -63,7 +65,7 @@ $ gopush -android -m="your message" -k="API Key" -t="Device token"
 * `-k`: [Google cloud message](https://developers.google.com/cloud-messaging/) api key
 * `-t`: Device token.
 
-### iOS
+### Send iOS notification
 
 Send single notification with the following command.
 
@@ -110,6 +112,41 @@ Testing your gopush server.
 
 ```bash
 $ http -v --verify=no --json GET http://your.docker.host/api/status
+```
+
+### Web API
+
+Gopush support the following API.
+
+* **GET**  `/api/status` Golang cpu, memory, gc, etc information. Thanks for [golang-stats-api-handler](https://github.com/fukata/golang-stats-api-handler).
+* **POST** `/api/push` push ios and android notifications.
+
+Simple send iOS notification example, the `platform` value is `1`:
+
+```json
+{
+  "notifications": [
+    {
+      "tokens": ["token_a", "token_b"],
+      "platform": 1,
+      "message": "Hello World iOS!"
+    }
+  ]
+}
+```
+
+Simple send Android notification example, the `platform` value is `2`:
+
+```json
+{
+  "notifications": [
+    {
+      "tokens": ["token_a", "token_b"],
+      "platform": 2,
+      "message": "Hello World Android!"
+    }
+  ]
+}
 ```
 
 ## License
