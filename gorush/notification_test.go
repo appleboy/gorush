@@ -18,7 +18,7 @@ func TestDisabledAndroidIosConf(t *testing.T) {
 	err := CheckPushConf()
 
 	assert.Error(t, err)
-	assert.Equal(t, "Please enable iOS or Android config in yaml config", err.Error())
+	assert.Equal(t, "Please enable iOS or Android config in yml config", err.Error())
 }
 
 func TestMissingIOSCertificate(t *testing.T) {
@@ -37,7 +37,7 @@ func TestMissingAndroidAPIKey(t *testing.T) {
 	PushConf = BuildDefaultPushConf()
 
 	PushConf.Android.Enabled = true
-	PushConf.Android.ApiKey = ""
+	PushConf.Android.APIKey = ""
 
 	err := CheckPushConf()
 
@@ -49,7 +49,7 @@ func TestCorrectConf(t *testing.T) {
 	PushConf = BuildDefaultPushConf()
 
 	PushConf.Android.Enabled = true
-	PushConf.Android.ApiKey = "xxxxx"
+	PushConf.Android.APIKey = "xxxxx"
 
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.PemKeyPath = "xxxxx"
@@ -237,7 +237,7 @@ func TestPushToAndroidWrongAPIKey(t *testing.T) {
 	PushConf = BuildDefaultPushConf()
 
 	PushConf.Android.Enabled = true
-	PushConf.Android.ApiKey = os.Getenv("ANDROID_API_KEY") + "a"
+	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY") + "a"
 
 	req := PushNotification{
 		Tokens:   []string{"aaaaaa", "bbbbb"},
@@ -253,7 +253,7 @@ func TestPushToAndroidWrongToken(t *testing.T) {
 	PushConf = BuildDefaultPushConf()
 
 	PushConf.Android.Enabled = true
-	PushConf.Android.ApiKey = os.Getenv("ANDROID_API_KEY")
+	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
 
 	req := PushNotification{
 		Tokens:   []string{"aaaaaa", "bbbbb"},
@@ -269,14 +269,14 @@ func TestPushToAndroidRightTokenForJSONLog(t *testing.T) {
 	PushConf = BuildDefaultPushConf()
 
 	PushConf.Android.Enabled = true
-	PushConf.Android.ApiKey = os.Getenv("ANDROID_API_KEY")
+	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
 	// log for json
 	PushConf.Log.Format = "json"
 
-	android_token := os.Getenv("ANDROID_TEST_TOKEN")
+	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
 	req := PushNotification{
-		Tokens:   []string{android_token, "bbbbb"},
+		Tokens:   []string{androidToken, "bbbbb"},
 		Platform: 2,
 		Message:  "Welcome",
 	}
@@ -289,12 +289,12 @@ func TestPushToAndroidRightTokenForStringLog(t *testing.T) {
 	PushConf = BuildDefaultPushConf()
 
 	PushConf.Android.Enabled = true
-	PushConf.Android.ApiKey = os.Getenv("ANDROID_API_KEY")
+	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
 
-	android_token := os.Getenv("ANDROID_TEST_TOKEN")
+	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
 	req := PushNotification{
-		Tokens:   []string{android_token, "bbbbb"},
+		Tokens:   []string{androidToken, "bbbbb"},
 		Platform: 2,
 		Message:  "Welcome",
 	}
@@ -303,20 +303,20 @@ func TestPushToAndroidRightTokenForStringLog(t *testing.T) {
 	assert.True(t, success)
 }
 
-func TestOverwriteAndroidApiKey(t *testing.T) {
+func TestOverwriteAndroidAPIKey(t *testing.T) {
 	PushConf = BuildDefaultPushConf()
 
 	PushConf.Android.Enabled = true
-	PushConf.Android.ApiKey = os.Getenv("ANDROID_API_KEY")
+	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
 
-	android_token := os.Getenv("ANDROID_TEST_TOKEN")
+	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
 	req := PushNotification{
-		Tokens:   []string{android_token, "bbbbb"},
+		Tokens:   []string{androidToken, "bbbbb"},
 		Platform: 2,
 		Message:  "Welcome",
 		// overwrite android api key
-		ApiKey: "1234",
+		APIKey: "1234",
 	}
 
 	success := PushToAndroid(req)
@@ -331,9 +331,9 @@ func TestSenMultipleNotifications(t *testing.T) {
 	InitAPNSClient()
 
 	PushConf.Android.Enabled = true
-	PushConf.Android.ApiKey = os.Getenv("ANDROID_API_KEY")
+	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
 
-	android_token := os.Getenv("ANDROID_TEST_TOKEN")
+	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
 	req := RequestPush{
 		Notifications: []PushNotification{
@@ -345,7 +345,7 @@ func TestSenMultipleNotifications(t *testing.T) {
 			},
 			// android
 			PushNotification{
-				Tokens:   []string{android_token, "bbbbb"},
+				Tokens:   []string{androidToken, "bbbbb"},
 				Platform: 2,
 				Message:  "Welcome",
 			},
@@ -364,9 +364,9 @@ func TestDisabledAndroidNotifications(t *testing.T) {
 	InitAPNSClient()
 
 	PushConf.Android.Enabled = false
-	PushConf.Android.ApiKey = os.Getenv("ANDROID_API_KEY")
+	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
 
-	android_token := os.Getenv("ANDROID_TEST_TOKEN")
+	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
 	req := RequestPush{
 		Notifications: []PushNotification{
@@ -378,7 +378,7 @@ func TestDisabledAndroidNotifications(t *testing.T) {
 			},
 			// android
 			PushNotification{
-				Tokens:   []string{android_token, "bbbbb"},
+				Tokens:   []string{androidToken, "bbbbb"},
 				Platform: 2,
 				Message:  "Welcome",
 			},
@@ -397,9 +397,9 @@ func TestDisabledIosNotifications(t *testing.T) {
 	InitAPNSClient()
 
 	PushConf.Android.Enabled = true
-	PushConf.Android.ApiKey = os.Getenv("ANDROID_API_KEY")
+	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
 
-	android_token := os.Getenv("ANDROID_TEST_TOKEN")
+	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
 	req := RequestPush{
 		Notifications: []PushNotification{
@@ -411,7 +411,7 @@ func TestDisabledIosNotifications(t *testing.T) {
 			},
 			// android
 			PushNotification{
-				Tokens:   []string{android_token, "bbbbb"},
+				Tokens:   []string{androidToken, "bbbbb"},
 				Platform: 2,
 				Message:  "Welcome",
 			},
