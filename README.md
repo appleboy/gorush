@@ -104,23 +104,6 @@ Test status of api server using [httpie](https://github.com/jkbrzt/httpie) tool:
 $ http -v --verify=no --json GET https://localhost:8088/api/status
 ```
 
-![statue screenshot](screenshot/status.png)
-
-## Run gopush in Docker
-
-Set up `gopush` in the cloud in under 5 minutes with zero knowledge of Golang or Linux shell using our [gopush Docker image](https://hub.docker.com/r/appleboy/gopush/).
-
-```bash
-$ docker pull appleboy/gopush
-$ docker run -name gopush -p 80:8088 appleboy/gopush
-```
-
-Testing your gopush server.
-
-```bash
-$ http -v --verify=no --json GET http://your.docker.host/api/status
-```
-
 ## Web API
 
 Gopush support the following API.
@@ -183,6 +166,7 @@ Send multiple notifications as below:
 }
 ```
 
+See more example about [iOS](#ios-example) or [Android](#android-example).
 
 ### Request body
 
@@ -356,6 +340,23 @@ Success response:
   "success": "ok"
 }
 ```
+
+## Run gopush in Docker
+
+Set up `gopush` in the cloud in under 5 minutes with zero knowledge of Golang or Linux shell using our [gopush Docker image](https://hub.docker.com/r/appleboy/gopush/).
+
+```bash
+$ docker pull appleboy/gopush
+$ docker run -name gopush -p 80:8088 appleboy/gopush
+```
+
+Testing your gopush server.
+
+```bash
+$ http -v --verify=no --json GET http://your.docker.host/api/status
+```
+
+![statue screenshot](screenshot/status.png)
 
 ## License
 
