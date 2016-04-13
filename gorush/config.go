@@ -5,14 +5,16 @@ import (
 	"io/ioutil"
 )
 
+// ConfYaml is config structure.
 type ConfYaml struct {
 	Core    SectionCore    `yaml:"core"`
-	Api     SectionApi     `yaml:"api"`
+	API     SectionAPI     `yaml:"api"`
 	Android SectionAndroid `yaml:"android"`
 	Ios     SectionIos     `yaml:"ios"`
 	Log     SectionLog     `yaml:"log"`
 }
 
+// SectionCore is sub seciont of config.
 type SectionCore struct {
 	Port            string `yaml:"port"`
 	MaxNotification int    `yaml:"max_notification"`
@@ -22,16 +24,19 @@ type SectionCore struct {
 	KeyPath         string `yaml:"key_path"`
 }
 
-type SectionApi struct {
-	PushUri   string `yaml:"push_uri"`
-	StatGoUri string `yaml:"stat_go_uri"`
+// SectionAPI is sub seciont of config.
+type SectionAPI struct {
+	PushURI   string `yaml:"push_uri"`
+	StatGoURI string `yaml:"stat_go_uri"`
 }
 
+// SectionAndroid is sub seciont of config.
 type SectionAndroid struct {
 	Enabled bool   `yaml:"enabled"`
-	ApiKey  string `yaml:"apikey"`
+	APIKey  string `yaml:"apikey"`
 }
 
+// SectionIos is sub seciont of config.
 type SectionIos struct {
 	Enabled     bool   `yaml:"enabled"`
 	PemCertPath string `yaml:"pem_cert_path"`
@@ -39,6 +44,7 @@ type SectionIos struct {
 	Production  bool   `yaml:"production"`
 }
 
+// SectionLog is sub seciont of config.
 type SectionLog struct {
 	Format      string `yaml:"format"`
 	AccessLog   string `yaml:"access_log"`
@@ -47,6 +53,7 @@ type SectionLog struct {
 	ErrorLevel  string `yaml:"error_level"`
 }
 
+// BuildDefaultPushConf is default config setting.
 func BuildDefaultPushConf() ConfYaml {
 	var conf ConfYaml
 
@@ -59,12 +66,12 @@ func BuildDefaultPushConf() ConfYaml {
 	conf.Core.MaxNotification = 100
 
 	// Api
-	conf.Api.PushUri = "/api/push"
-	conf.Api.StatGoUri = "/api/status"
+	conf.API.PushURI = "/api/push"
+	conf.API.StatGoURI = "/api/status"
 
 	// Android
 	conf.Android.Enabled = false
-	conf.Android.ApiKey = ""
+	conf.Android.APIKey = ""
 
 	// iOS
 	conf.Ios.Enabled = false
@@ -82,6 +89,7 @@ func BuildDefaultPushConf() ConfYaml {
 	return conf
 }
 
+// LoadConfYaml provide load yml config.
 func LoadConfYaml(confPath string) (ConfYaml, error) {
 	var config ConfYaml
 

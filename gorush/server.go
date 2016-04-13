@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func AbortWithError(c *gin.Context, code int, message string) {
+func abortWithError(c *gin.Context, code int, message string) {
 	c.JSON(code, gin.H{
 		"code":    code,
 		"message": message,
@@ -29,21 +29,21 @@ func pushHandler(c *gin.Context) {
 	if err := c.BindJSON(&form); err != nil {
 		msg = "Missing notifications field."
 		LogAccess.Debug(msg)
-		AbortWithError(c, http.StatusBadRequest, msg)
+		abortWithError(c, http.StatusBadRequest, msg)
 		return
 	}
 
 	if len(form.Notifications) == 0 {
 		msg = "Notifications field is empty."
 		LogAccess.Debug(msg)
-		AbortWithError(c, http.StatusBadRequest, msg)
+		abortWithError(c, http.StatusBadRequest, msg)
 		return
 	}
 
 	if len(form.Notifications) > PushConf.Core.MaxNotification {
 		msg = fmt.Sprintf("Number of notifications(%d) over limit(%d)", len(form.Notifications), PushConf.Core.MaxNotification)
 		LogAccess.Debug(msg)
-		AbortWithError(c, http.StatusBadRequest, msg)
+		abortWithError(c, http.StatusBadRequest, msg)
 		return
 	}
 
@@ -55,7 +55,7 @@ func pushHandler(c *gin.Context) {
 	})
 }
 
-func GetMainEngine() *gin.Engine {
+func routerEngine() *gin.Engine {
 	// set server mode
 	gin.SetMode(PushConf.Core.Mode)
 
@@ -67,19 +67,20 @@ func GetMainEngine() *gin.Engine {
 	r.Use(VersionMiddleware())
 	r.Use(LogMiddleware())
 
-	r.GET(PushConf.Api.StatGoUri, api.StatusHandler)
-	r.POST(PushConf.Api.PushUri, pushHandler)
+	r.GET(PushConf.API.StatGoURI, api.StatusHandler)
+	r.POST(PushConf.API.PushURI, pushHandler)
 	r.GET("/", rootHandler)
 
 	return r
 }
 
+// RunHTTPServer provide run http or https protocol.
 func RunHTTPServer() error {
 	var err error
 	if PushConf.Core.SSL && PushConf.Core.CertPath != "" && PushConf.Core.KeyPath != "" {
-		err = endless.ListenAndServeTLS(":"+PushConf.Core.Port, PushConf.Core.CertPath, PushConf.Core.KeyPath, GetMainEngine())
+		err = endless.ListenAndServeTLS(":"+PushConf.Core.Port, PushConf.Core.CertPath, PushConf.Core.KeyPath, routerEngine())
 	} else {
-		err = endless.ListenAndServe(":"+PushConf.Core.Port, GetMainEngine())
+		err = endless.ListenAndServe(":"+PushConf.Core.Port, routerEngine())
 	}
 
 	return err

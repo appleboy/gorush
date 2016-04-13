@@ -6,6 +6,7 @@ import (
 	"runtime"
 )
 
+// PrintGoPushVersion provide print server engine
 func PrintGoPushVersion() {
 	fmt.Printf(`GoPush %s, Compiler: %s %s, Copyright (C) 2016 Bo-Yi Wu, Inc.`,
 		Version,
@@ -13,6 +14,7 @@ func PrintGoPushVersion() {
 		runtime.Version())
 }
 
+// VersionMiddleware : add version on header.
 func VersionMiddleware() gin.HandlerFunc {
 	// Set out header value for each response
 	return func(c *gin.Context) {

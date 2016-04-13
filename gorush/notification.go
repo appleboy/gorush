@@ -10,22 +10,24 @@ import (
 	"time"
 )
 
+// D provide string array
 type D map[string]interface{}
 
 const (
-	// PriorityLow will tell APNs to send the push message at a time that takes
+	// ApnsPriorityLow will tell APNs to send the push message at a time that takes
 	// into account power considerations for the device. Notifications with this
 	// priority might be grouped and delivered in bursts. They are throttled, and
 	// in some cases are not delivered.
 	ApnsPriorityLow = 5
 
-	// PriorityHigh will tell APNs to send the push message immediately.
+	// ApnsPriorityHigh will tell APNs to send the push message immediately.
 	// Notifications with this priority must trigger an alert, sound, or badge on
 	// the target device. It is an error to use this priority for a push
 	// notification that contains only the content-available key.
 	ApnsPriorityHigh = 10
 )
 
+// Alert is APNs payload
 type Alert struct {
 	Action       string   `json:"action,omitempty"`
 	ActionLocKey string   `json:"action-loc-key,omitempty"`
@@ -38,10 +40,12 @@ type Alert struct {
 	TitleLocKey  string   `json:"title-loc-key,omitempty"`
 }
 
+// RequestPush support multiple notification request.
 type RequestPush struct {
 	Notifications []PushNotification `json:"notifications" binding:"required"`
 }
 
+// PushNotification is single notification request
 type PushNotification struct {
 	// Common
 	Tokens           []string `json:"tokens" binding:"required"`
@@ -54,7 +58,7 @@ type PushNotification struct {
 	Data             D        `json:"data,omitempty"`
 
 	// Android
-	ApiKey                string           `json:"api_key,omitempty"`
+	APIKey                string           `json:"api_key,omitempty"`
 	To                    string           `json:"to,omitempty"`
 	CollapseKey           string           `json:"collapse_key,omitempty"`
 	DelayWhileIdle        bool             `json:"delay_while_idle,omitempty"`
@@ -73,9 +77,10 @@ type PushNotification struct {
 	Alert      Alert    `json:"alert,omitempty"`
 }
 
+// CheckPushConf provide check your yml config.
 func CheckPushConf() error {
 	if !PushConf.Ios.Enabled && !PushConf.Android.Enabled {
-		return errors.New("Please enable iOS or Android config in yaml config")
+		return errors.New("Please enable iOS or Android config in yml config")
 	}
 
 	if PushConf.Ios.Enabled {
@@ -85,7 +90,7 @@ func CheckPushConf() error {
 	}
 
 	if PushConf.Android.Enabled {
-		if PushConf.Android.ApiKey == "" {
+		if PushConf.Android.APIKey == "" {
 			return errors.New("Missing Android API Key")
 		}
 	}
@@ -93,6 +98,7 @@ func CheckPushConf() error {
 	return nil
 }
 
+// InitAPNSClient use for initialize APNs Client.
 func InitAPNSClient() error {
 	if PushConf.Ios.Enabled {
 		var err error
@@ -115,6 +121,7 @@ func InitAPNSClient() error {
 	return nil
 }
 
+// SendNotification provide send all push request.
 func SendNotification(req RequestPush) int {
 	var count int
 	for _, notification := range req.Notifications {
@@ -124,14 +131,14 @@ func SendNotification(req RequestPush) int {
 				continue
 			}
 
-			count += 1
+			count++
 			go PushToIOS(notification)
 		case PlatFormAndroid:
 			if !PushConf.Android.Enabled {
 				continue
 			}
 
-			count += 1
+			count++
 			go PushToAndroid(notification)
 		}
 	}
@@ -139,6 +146,7 @@ func SendNotification(req RequestPush) int {
 	return count
 }
 
+// GetIOSNotification use for define iOS notificaiton.
 // The iOS Notification Payload
 // ref: https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/TheNotificationPayload.html
 func GetIOSNotification(req PushNotification) *apns.Notification {
@@ -233,6 +241,7 @@ func GetIOSNotification(req PushNotification) *apns.Notification {
 	return notification
 }
 
+// PushToIOS provide send notification to APNs server.
 func PushToIOS(req PushNotification) bool {
 
 	notification := GetIOSNotification(req)
@@ -245,7 +254,7 @@ func PushToIOS(req PushNotification) bool {
 
 		if err != nil {
 			// apns server error
-			LogPush(StatusFailedPush, token, req, err)
+			LogPush(FailedPush, token, req, err)
 
 			return false
 		}
@@ -253,19 +262,20 @@ func PushToIOS(req PushNotification) bool {
 		if res.StatusCode != 200 {
 			// error message:
 			// ref: https://github.com/sideshow/apns2/blob/master/response.go#L14-L65
-			LogPush(StatusFailedPush, token, req, errors.New(res.Reason))
+			LogPush(FailedPush, token, req, errors.New(res.Reason))
 
 			return false
 		}
 
 		if res.Sent() {
-			LogPush(StatusSucceededPush, token, req, nil)
+			LogPush(SucceededPush, token, req, nil)
 		}
 	}
 
 	return true
 }
 
+// GetAndroidNotification use for define Android notificaiton.
 // HTTP Connection Server Reference for Android
 // https://developers.google.com/cloud-messaging/http-server-ref
 func GetAndroidNotification(req PushNotification) gcm.HttpMessage {
@@ -331,16 +341,17 @@ func GetAndroidNotification(req PushNotification) gcm.HttpMessage {
 	return notification
 }
 
+// PushToAndroid provide send notification to Android server.
 func PushToAndroid(req PushNotification) bool {
-	var apiKey string
+	var APIKey string
 
 	notification := GetAndroidNotification(req)
 
-	if apiKey = PushConf.Android.ApiKey; req.ApiKey != "" {
-		apiKey = req.ApiKey
+	if APIKey = PushConf.Android.APIKey; req.APIKey != "" {
+		APIKey = req.APIKey
 	}
 
-	res, err := gcm.SendHttp(apiKey, notification)
+	res, err := gcm.SendHttp(APIKey, notification)
 
 	if err != nil {
 		// GCM server error
@@ -353,11 +364,11 @@ func PushToAndroid(req PushNotification) bool {
 
 	for k, result := range res.Results {
 		if result.Error != "" {
-			LogPush(StatusFailedPush, req.Tokens[k], req, errors.New(result.Error))
+			LogPush(FailedPush, req.Tokens[k], req, errors.New(result.Error))
 			continue
 		}
 
-		LogPush(StatusSucceededPush, req.Tokens[k], req, nil)
+		LogPush(SucceededPush, req.Tokens[k], req, nil)
 	}
 
 	return true

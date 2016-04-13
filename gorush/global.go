@@ -7,9 +7,14 @@ import (
 )
 
 var (
-	PushConf          ConfYaml
+	// PushConf is gorush config
+	PushConf ConfYaml
+	// CertificatePemIos is ios certificate file
 	CertificatePemIos tls.Certificate
-	ApnsClient        *apns.Client
-	LogAccess         *logrus.Logger
-	LogError          *logrus.Logger
+	// ApnsClient is apns client
+	ApnsClient *apns.Client
+	// LogAccess is log server request log
+	LogAccess *logrus.Logger
+	// LogError is log server error log
+	LogError *logrus.Logger
 )
