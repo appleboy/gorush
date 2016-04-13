@@ -10,10 +10,7 @@ import (
 	"time"
 )
 
-type ExtendJSON struct {
-	Key   string `json:"key"`
-	Value string `json:"val"`
-}
+type D map[string]interface{}
 
 const (
 	// PriorityLow will tell APNs to send the push message at a time that takes
@@ -50,8 +47,11 @@ type PushNotification struct {
 	Tokens           []string `json:"tokens" binding:"required"`
 	Platform         int      `json:"platform" binding:"required"`
 	Message          string   `json:"message" binding:"required"`
+	Title            string   `json:"title,omitempty"`
 	Priority         string   `json:"priority,omitempty"`
 	ContentAvailable bool     `json:"content_available,omitempty"`
+	Sound            string   `json:"sound,omitempty"`
+	Data             D        `json:"data,omitempty"`
 
 	// Android
 	ApiKey                string           `json:"api_key,omitempty"`
@@ -61,19 +61,16 @@ type PushNotification struct {
 	TimeToLive            uint             `json:"time_to_live,omitempty"`
 	RestrictedPackageName string           `json:"restricted_package_name,omitempty"`
 	DryRun                bool             `json:"dry_run,omitempty"`
-	Data                  gcm.Data         `json:"data,omitempty"`
 	Notification          gcm.Notification `json:"notification,omitempty"`
 
 	// iOS
-	Expiration int64        `json:"expiration,omitempty"`
-	ApnsID     string       `json:"apns_id,omitempty"`
-	Topic      string       `json:"topic,omitempty"`
-	Badge      int          `json:"badge,omitempty"`
-	Sound      string       `json:"sound,omitempty"`
-	Category   string       `json:"category,omitempty"`
-	URLArgs    []string     `json:"url-args,omitempty"`
-	Extend     []ExtendJSON `json:"extend,omitempty"`
-	Alert      Alert        `json:"alert,omitempty"`
+	Expiration int64    `json:"expiration,omitempty"`
+	ApnsID     string   `json:"apns_id,omitempty"`
+	Topic      string   `json:"topic,omitempty"`
+	Badge      int      `json:"badge,omitempty"`
+	Category   string   `json:"category,omitempty"`
+	URLArgs    []string `json:"url-args,omitempty"`
+	Alert      Alert    `json:"alert,omitempty"`
 }
 
 func CheckPushConf() error {
@@ -177,16 +174,16 @@ func GetIOSNotification(req PushNotification) *apns.Notification {
 		payload.ContentAvailable()
 	}
 
-	if len(req.Extend) > 0 {
-		for _, extend := range req.Extend {
-			payload.Custom(extend.Key, extend.Value)
+	if len(req.Data) > 0 {
+		for k, v := range req.Data {
+			payload.Custom(k, v)
 		}
 	}
 
 	// Alert dictionary
 
-	if len(req.Alert.Title) > 0 {
-		payload.AlertTitle(req.Alert.Title)
+	if len(req.Title) > 0 {
+		payload.AlertTitle(req.Title)
 	}
 
 	if len(req.Alert.TitleLocKey) > 0 {
@@ -308,8 +305,12 @@ func GetAndroidNotification(req PushNotification) gcm.HttpMessage {
 		notification.DryRun = true
 	}
 
+	// Add another field
 	if len(req.Data) > 0 {
-		notification.Data = req.Data
+		notification.Data = make(map[string]interface{})
+		for k, v := range req.Data {
+			notification.Data[k] = v
+		}
 	}
 
 	notification.Notification = &req.Notification
@@ -317,6 +318,14 @@ func GetAndroidNotification(req PushNotification) gcm.HttpMessage {
 	// Set request message if body is empty
 	if len(notification.Notification.Body) == 0 {
 		notification.Notification.Body = req.Message
+	}
+
+	if len(req.Title) > 0 {
+		notification.Notification.Title = req.Title
+	}
+
+	if len(req.Sound) > 0 {
+		notification.Notification.Sound = req.Sound
 	}
 
 	return notification
