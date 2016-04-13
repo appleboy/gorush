@@ -47,11 +47,14 @@ type RequestPush struct {
 
 type PushNotification struct {
 	// Common
-	Tokens           []string `json:"tokens" binding:"required"`
-	Platform         int      `json:"platform" binding:"required"`
-	Message          string   `json:"message" binding:"required"`
-	Priority         string   `json:"priority,omitempty"`
-	ContentAvailable bool     `json:"content_available,omitempty"`
+	Tokens           []string     `json:"tokens" binding:"required"`
+	Platform         int          `json:"platform" binding:"required"`
+	Message          string       `json:"message" binding:"required"`
+	Title            string       `json:"title,omitempty"`
+	Priority         string       `json:"priority,omitempty"`
+	ContentAvailable bool         `json:"content_available,omitempty"`
+	Sound            string       `json:"sound,omitempty"`
+	Extend           []ExtendJSON `json:"extend,omitempty"`
 
 	// Android
 	ApiKey                string           `json:"api_key,omitempty"`
@@ -65,15 +68,13 @@ type PushNotification struct {
 	Notification          gcm.Notification `json:"notification,omitempty"`
 
 	// iOS
-	Expiration int64        `json:"expiration,omitempty"`
-	ApnsID     string       `json:"apns_id,omitempty"`
-	Topic      string       `json:"topic,omitempty"`
-	Badge      int          `json:"badge,omitempty"`
-	Sound      string       `json:"sound,omitempty"`
-	Category   string       `json:"category,omitempty"`
-	URLArgs    []string     `json:"url-args,omitempty"`
-	Extend     []ExtendJSON `json:"extend,omitempty"`
-	Alert      Alert        `json:"alert,omitempty"`
+	Expiration int64    `json:"expiration,omitempty"`
+	ApnsID     string   `json:"apns_id,omitempty"`
+	Topic      string   `json:"topic,omitempty"`
+	Badge      int      `json:"badge,omitempty"`
+	Category   string   `json:"category,omitempty"`
+	URLArgs    []string `json:"url-args,omitempty"`
+	Alert      Alert    `json:"alert,omitempty"`
 }
 
 func CheckPushConf() error {
@@ -185,8 +186,8 @@ func GetIOSNotification(req PushNotification) *apns.Notification {
 
 	// Alert dictionary
 
-	if len(req.Alert.Title) > 0 {
-		payload.AlertTitle(req.Alert.Title)
+	if len(req.Title) > 0 {
+		payload.AlertTitle(req.Title)
 	}
 
 	if len(req.Alert.TitleLocKey) > 0 {
@@ -308,6 +309,15 @@ func GetAndroidNotification(req PushNotification) gcm.HttpMessage {
 		notification.DryRun = true
 	}
 
+	if len(req.Extend) > 0 {
+		notification.Data = make(map[string]interface{})
+
+		for _, extend := range req.Extend {
+			notification.Data[extend.Key] = extend.Value
+		}
+	}
+
+	// overwrite Extend
 	if len(req.Data) > 0 {
 		notification.Data = req.Data
 	}
@@ -317,6 +327,14 @@ func GetAndroidNotification(req PushNotification) gcm.HttpMessage {
 	// Set request message if body is empty
 	if len(notification.Notification.Body) == 0 {
 		notification.Notification.Body = req.Message
+	}
+
+	if len(req.Title) > 0 {
+		notification.Notification.Title = req.Title
+	}
+
+	if len(req.Sound) > 0 {
+		notification.Notification.Sound = req.Sound
 	}
 
 	return notification
