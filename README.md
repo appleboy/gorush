@@ -210,6 +210,8 @@ Request body must has a notifications array. The following is a parameter table 
 |extend|string array|extensible partition|-|only iOS|
 |alert|string array|payload of a iOS message|-|only iOS|
 
+See more detail [APNs](https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/APNsProviderAPI.html#//apple_ref/doc/uid/TP40008194-CH101-SW1) and [GCM](https://developers.google.com/cloud-messaging/http-server-ref#send-downstream) reference.
+
 ## License
 
 Copyright 2016 Bo-Yi Wu [@appleboy](https://twitter.com/appleboy).
