@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-var go_version = runtime.Version()
+var goVersion = runtime.Version()
 
 func initTest() {
 	PushConf = BuildDefaultPushConf()
@@ -66,7 +66,7 @@ func TestRootHandler(t *testing.T) {
 	PushConf.Log.Format = "json"
 
 	r.GET("/").
-		Run(GetMainEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+		Run(routerEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 			data := []byte(r.Body.String())
 
 			value, _ := jsonparser.GetString(data, "text")
@@ -82,12 +82,12 @@ func TestAPIStatusHandler(t *testing.T) {
 	r := gofight.New()
 
 	r.GET("/api/status").
-		Run(GetMainEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+		Run(routerEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 			data := []byte(r.Body.String())
 
-			value, _ := jsonparser.GetString(data, "go_version")
+			value, _ := jsonparser.GetString(data, "goVersion")
 
-			assert.Equal(t, go_version, value)
+			assert.Equal(t, goVersion, value)
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }
@@ -99,7 +99,7 @@ func TestMissingNotificationsParameter(t *testing.T) {
 
 	// missing notifications parameter.
 	r.POST("/api/push").
-		Run(GetMainEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+		Run(routerEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 
 			assert.Equal(t, http.StatusBadRequest, r.Code)
 		})
@@ -115,7 +115,7 @@ func TestEmptyNotifications(t *testing.T) {
 		SetJSON(gofight.D{
 			"notifications": []PushNotification{},
 		}).
-		Run(GetMainEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+		Run(routerEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 
 			assert.Equal(t, http.StatusBadRequest, r.Code)
 		})
@@ -144,7 +144,7 @@ func TestOutOfRangeMaxNotifications(t *testing.T) {
 				},
 			},
 		}).
-		Run(GetMainEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+		Run(routerEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 
 			assert.Equal(t, http.StatusBadRequest, r.Code)
 		})
@@ -154,9 +154,9 @@ func TestSuccessPushHandler(t *testing.T) {
 	initTest()
 
 	PushConf.Android.Enabled = true
-	PushConf.Android.ApiKey = os.Getenv("ANDROID_API_KEY")
+	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
 
-	android_token := os.Getenv("ANDROID_TEST_TOKEN")
+	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
 	r := gofight.New()
 
@@ -164,13 +164,13 @@ func TestSuccessPushHandler(t *testing.T) {
 		SetJSON(gofight.D{
 			"notifications": []gofight.D{
 				gofight.D{
-					"tokens":   []string{android_token, "bbbbb"},
+					"tokens":   []string{androidToken, "bbbbb"},
 					"platform": 2,
 					"message":  "Welcome",
 				},
 			},
 		}).
-		Run(GetMainEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+		Run(routerEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 
 			assert.Equal(t, http.StatusOK, r.Code)
 		})

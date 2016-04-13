@@ -34,5 +34,8 @@ endif
 	docker tag -f $(PRODUCTION_IMAGE):latest $(DEPLOY_ACCOUNT)/$(PRODUCTION_IMAGE):$(tag)
 	docker push $(DEPLOY_ACCOUNT)/$(PRODUCTION_IMAGE):$(tag)
 
+lint:
+	golint gopush
+
 clean:
 	-rm -rf build.tar.gz gopush.tar.gz bin/*

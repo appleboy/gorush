@@ -21,6 +21,7 @@ var (
 	reset   = string([]byte{27, 91, 48, 109})
 )
 
+// LogReq is http request log
 type LogReq struct {
 	URI         string `json:"uri"`
 	Method      string `json:"method"`
@@ -29,6 +30,7 @@ type LogReq struct {
 	Agent       string `json:"agent"`
 }
 
+// LogPushEntry is push response log
 type LogPushEntry struct {
 	Type     string `json:"type"`
 	Platform string `json:"platform"`
@@ -52,6 +54,7 @@ type LogPushEntry struct {
 	Category string `json:"category,omitempty"`
 }
 
+// InitLog use for initial log module
 func InitLog() error {
 
 	var err error
@@ -92,6 +95,7 @@ func InitLog() error {
 	return nil
 }
 
+// SetLogOut provide log stdout and stderr output
 func SetLogOut(log *logrus.Logger, outString string) error {
 	switch outString {
 	case "stdout":
@@ -111,6 +115,8 @@ func SetLogOut(log *logrus.Logger, outString string) error {
 	return nil
 }
 
+// SetLogLevel is define log level what you want
+// log level: panic, fatal, error, warn, info and debug
 func SetLogLevel(log *logrus.Logger, levelString string) error {
 	level, err := logrus.ParseLevel(levelString)
 
@@ -123,6 +129,7 @@ func SetLogLevel(log *logrus.Logger, levelString string) error {
 	return nil
 }
 
+// LogRequest record http request
 func LogRequest(uri string, method string, ip string, contentType string, agent string) {
 	var output string
 	log := &LogReq{
@@ -134,9 +141,9 @@ func LogRequest(uri string, method string, ip string, contentType string, agent 
 	}
 
 	if PushConf.Log.Format == "json" {
-		logJson, _ := json.Marshal(log)
+		logJSON, _ := json.Marshal(log)
 
-		output = string(logJson)
+		output = string(logJSON)
 	} else {
 		// format is string
 		output = fmt.Sprintf("|%s header %s| %s %s %s %s %s",
@@ -174,6 +181,7 @@ func typeForPlatForm(platform int) string {
 	}
 }
 
+// LogPush record user push request and server response.
 func LogPush(status, token string, req PushNotification, errPush error) {
 	var plat, platColor, output string
 
@@ -194,19 +202,19 @@ func LogPush(status, token string, req PushNotification, errPush error) {
 	}
 
 	if PushConf.Log.Format == "json" {
-		logJson, _ := json.Marshal(log)
+		logJSON, _ := json.Marshal(log)
 
-		output = string(logJson)
+		output = string(logJSON)
 	} else {
 		switch status {
-		case StatusSucceededPush:
+		case SucceededPush:
 			output = fmt.Sprintf("|%s %s %s| %s%s%s [%s] %s",
 				green, log.Type, reset,
 				platColor, log.Platform, reset,
 				log.Token,
 				log.Message,
 			)
-		case StatusFailedPush:
+		case FailedPush:
 			output = fmt.Sprintf("|%s %s %s| %s%s%s [%s] | %s | Error Message: %s",
 				red, log.Type, reset,
 				platColor, log.Platform, reset,
@@ -218,13 +226,14 @@ func LogPush(status, token string, req PushNotification, errPush error) {
 	}
 
 	switch status {
-	case StatusSucceededPush:
+	case SucceededPush:
 		LogAccess.Info(string(output))
-	case StatusFailedPush:
+	case FailedPush:
 		LogError.Error(string(output))
 	}
 }
 
+// LogMiddleware provide gin router handler.
 func LogMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		LogRequest(c.Request.URL.Path, c.Request.Method, c.ClientIP(), c.ContentType(), c.Request.Header.Get("User-Agent"))
