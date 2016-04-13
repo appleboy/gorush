@@ -28,3 +28,4 @@
 //
 // For more details, see the documentation and example.
 //
+package main
