@@ -289,6 +289,73 @@ Add other fields which user defined via `data` field.
   ]
 ```
 
+### Android Example
+
+Send normal notification.
+
+```json
+  "notifications": [
+    {
+      "tokens": ["token_a", "token_b"],
+      "platform": 2,
+      "message": "Hello World Android!",
+      "title": "You got message"
+    }
+  ]
+```
+
+Add `notification` payload.
+
+```json
+  "notifications": [
+    {
+      "tokens": ["token_a", "token_b"],
+      "platform": 2,
+      "message": "Hello World Android!",
+      "title": "You got message",
+      "notification" : {
+        "icon": "myicon",
+        "color": "#112244"
+      }
+    }
+  ]
+```
+
+Add other fields which user defined via `data` field.
+
+```json
+  "notifications": [
+    {
+      "tokens": ["token_a", "token_b"],
+      "platform": 2,
+      "message": "Hello World Android!",
+      "title": "You got message",
+      "data": {
+       "Nick" : "Mario",
+       "body" : "great match!",
+       "Room" : "PortugalVSDenmark"
+      }
+    }
+  ]
+```
+
+### Response body
+
+Error response message table:
+
+|status code|message|
+|-------|-------|
+|400|Missing `notifications` field.|
+|400|Notifications field is empty.|
+|400|Number of notifications(50) over limit(10)|
+
+Success response:
+
+```json
+{
+  "success": "ok"
+}
+```
 
 ## License
 
