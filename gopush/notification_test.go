@@ -74,15 +74,9 @@ func TestIOSNotificationStructure(t *testing.T) {
 		Badge:            1,
 		Sound:            test,
 		ContentAvailable: true,
-		Extend: []ExtendJSON{
-			{
-				Key:   "key1",
-				Value: "1",
-			},
-			{
-				Key:   "key2",
-				Value: "2",
-			},
+		Data: D{
+			"key1": "test",
+			"key2": 2,
 		},
 		Category: test,
 		URLArgs:  []string{"a", "b"},
@@ -103,8 +97,8 @@ func TestIOSNotificationStructure(t *testing.T) {
 	sound, _ := jsonparser.GetString(data, "aps", "sound")
 	contentAvailable, _ := jsonparser.GetInt(data, "aps", "content-available")
 	category, _ := jsonparser.GetString(data, "aps", "category")
-	key1 := dat["key1"].(string)
-	key2 := dat["key2"].(string)
+	key1 := dat["key1"].(interface{})
+	key2 := dat["key2"].(interface{})
 	aps := dat["aps"].(map[string]interface{})
 	urlArgs := aps["url-args"].([]interface{})
 
@@ -116,8 +110,8 @@ func TestIOSNotificationStructure(t *testing.T) {
 	assert.Equal(t, 1, int(badge))
 	assert.Equal(t, test, sound)
 	assert.Equal(t, 1, int(contentAvailable))
-	assert.Equal(t, "1", key1)
-	assert.Equal(t, "2", key2)
+	assert.Equal(t, "test", key1)
+	assert.Equal(t, 2, int(key2.(float64)))
 	assert.Equal(t, test, category)
 	assert.Contains(t, urlArgs, "a")
 	assert.Contains(t, urlArgs, "b")
@@ -193,15 +187,9 @@ func TestAndroidNotificationStructure(t *testing.T) {
 		DryRun:                true,
 		Title:                 test,
 		Sound:                 test,
-		Extend: []ExtendJSON{
-			{
-				Key:   "key1",
-				Value: "1",
-			},
-			{
-				Key:   "key2",
-				Value: "2",
-			},
+		Data: D{
+			"a": "1",
+			"b": 2,
 		},
 		Notification: gcm.Notification{
 			Color: test,
@@ -224,33 +212,8 @@ func TestAndroidNotificationStructure(t *testing.T) {
 	assert.Equal(t, test, notification.Notification.Color)
 	assert.Equal(t, test, notification.Notification.Tag)
 	assert.Equal(t, "Welcome", notification.Notification.Body)
-	assert.Equal(t, "1", notification.Data["key1"])
-
-	// add data file to overwrite `Extend`
-	req = PushNotification{
-		Tokens:  []string{"a", "b"},
-		Message: "Welcome",
-		To:      test,
-		Data: map[string]interface{}{
-			"a": "1",
-			"b": "2",
-		},
-		Extend: []ExtendJSON{
-			{
-				Key:   "key1",
-				Value: "1",
-			},
-			{
-				Key:   "key2",
-				Value: "2",
-			},
-		},
-	}
-
-	notification = GetAndroidNotification(req)
-
 	assert.Equal(t, "1", notification.Data["a"])
-	assert.Equal(t, "2", notification.Data["b"])
+	assert.Equal(t, 2, notification.Data["b"])
 }
 
 func TestPushToIOS(t *testing.T) {
