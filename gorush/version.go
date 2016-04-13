@@ -1,4 +1,4 @@
-package gopush
+package gorush
 
 import (
 	"fmt"
@@ -6,9 +6,9 @@ import (
 	"runtime"
 )
 
-// PrintGoPushVersion provide print server engine
-func PrintGoPushVersion() {
-	fmt.Printf(`GoPush %s, Compiler: %s %s, Copyright (C) 2016 Bo-Yi Wu, Inc.`,
+// PrintGoRushVersion provide print server engine
+func PrintGoRushVersion() {
+	fmt.Printf(`GoRush %s, Compiler: %s %s, Copyright (C) 2016 Bo-Yi Wu, Inc.`,
 		Version,
 		runtime.Compiler,
 		runtime.Version())
@@ -18,7 +18,7 @@ func PrintGoPushVersion() {
 func VersionMiddleware() gin.HandlerFunc {
 	// Set out header value for each response
 	return func(c *gin.Context) {
-		c.Writer.Header().Set("Server-Version", "GoPush/"+Version)
+		c.Writer.Header().Set("Server-Version", "GoRush/"+Version)
 		c.Next()
 	}
 }

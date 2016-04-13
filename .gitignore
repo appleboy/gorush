@@ -29,6 +29,6 @@ config.yml
 bin/*
 .DS_Store
 coverage.out
-gopush/log/*.log
+gorush/log/*.log
 build.tar.gz
-gopush.tar.gz
+gorush.tar.gz

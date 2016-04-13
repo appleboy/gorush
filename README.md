@@ -1,8 +1,8 @@
-# Gopush
+# gorush
 
 A push notification server using [Gin](https://github.com/gin-gonic/gin) framework written in Go (Golang).
 
-[![GoDoc](https://godoc.org/github.com/appleboy/gopush?status.svg)](https://godoc.org/github.com/appleboy/gopush) [![Build Status](https://travis-ci.org/appleboy/gofight.svg?branch=master)](https://travis-ci.org/appleboy/gofight) [![Coverage Status](https://coveralls.io/repos/github/appleboy/gopush/badge.svg?branch=master)](https://coveralls.io/github/appleboy/gopush?branch=master) [![Go Report Card](https://goreportcard.com/badge/github.com/appleboy/gopush)](https://goreportcard.com/report/github.com/appleboy/gopush) [![codebeat badge](https://codebeat.co/badges/ee01d852-b5e8-465a-ad93-631d738818ff)](https://codebeat.co/projects/github-com-appleboy-gopush)
+[![GoDoc](https://godoc.org/github.com/appleboy/gorush?status.svg)](https://godoc.org/github.com/appleboy/gorush) [![Build Status](https://travis-ci.org/appleboy/gofight.svg?branch=master)](https://travis-ci.org/appleboy/gofight) [![Coverage Status](https://coveralls.io/repos/github/appleboy/gorush/badge.svg?branch=master)](https://coveralls.io/github/appleboy/gorush?branch=master) [![Go Report Card](https://goreportcard.com/badge/github.com/appleboy/gorush)](https://goreportcard.com/report/github.com/appleboy/gorush) [![codebeat badge](https://codebeat.co/badges/ee01d852-b5e8-465a-ad93-631d738818ff)](https://codebeat.co/projects/github-com-appleboy-gorush)
 
 ## Support Platform
 
@@ -54,18 +54,18 @@ log:
 
 ## Basic Usage
 
-How to send push notification using `gopush` command? (Android or iOS)
+How to send push notification using `gorush` command? (Android or iOS)
 
 ### Download a binary
 
-The pre-compiled binaries can be downloaded from [release page](https://github.com/appleboy/gopush/releases).
+The pre-compiled binaries can be downloaded from [release page](https://github.com/appleboy/gorush/releases).
 
 ### Send Android notification
 
 Send single notification with the following command.
 
 ```bash
-$ gopush -android -m="your message" -k="API Key" -t="Device token"
+$ gorush -android -m="your message" -k="API Key" -t="Device token"
 ```
 
 * `-m`: Notification message.
@@ -77,7 +77,7 @@ $ gopush -android -m="your message" -k="API Key" -t="Device token"
 Send single notification with the following command.
 
 ```bash
-$ gopush -ios -m="your message" -i="API Key" -t="Device token"
+$ gorush -ios -m="your message" -i="API Key" -t="Device token"
 ```
 
 * `-m`: Notification message.
@@ -87,15 +87,15 @@ $ gopush -ios -m="your message" -i="API Key" -t="Device token"
 The default endpoint is APNs development. Please add `-production` flag for APNs production push endpoint.
 
 ```bash
-$ gopush -ios -m="your message" -i="API Key" -t="Device token" -production
+$ gorush -ios -m="your message" -i="API Key" -t="Device token" -production
 ```
 
-## Run gopush web server
+## Run gorush web server
 
 Please make sure your [config.yml](config/config.yml) exist. Default port is `8088`.
 
 ```bash
-$ gopush -c config.yml
+$ gorush -c config.yml
 ```
 
 Test status of api server using [httpie](https://github.com/jkbrzt/httpie) tool:
@@ -106,7 +106,7 @@ $ http -v --verify=no --json GET https://localhost:8088/api/status
 
 ## Web API
 
-Gopush support the following API.
+gorush support the following API.
 
 * **GET**  `/api/status` Golang cpu, memory, gc, etc information. Thanks for [golang-stats-api-handler](https://github.com/fukata/golang-stats-api-handler).
 * **POST** `/api/push` push ios and android notifications.
@@ -341,16 +341,16 @@ Success response:
 }
 ```
 
-## Run gopush in Docker
+## Run gorush in Docker
 
-Set up `gopush` in the cloud in under 5 minutes with zero knowledge of Golang or Linux shell using our [gopush Docker image](https://hub.docker.com/r/appleboy/gopush/).
+Set up `gorush` in the cloud in under 5 minutes with zero knowledge of Golang or Linux shell using our [gorush Docker image](https://hub.docker.com/r/appleboy/gorush/).
 
 ```bash
-$ docker pull appleboy/gopush
-$ docker run -name gopush -p 80:8088 appleboy/gopush
+$ docker pull appleboy/gorush
+$ docker run -name gorush -p 80:8088 appleboy/gorush
 ```
 
-Testing your gopush server.
+Testing your gorush server.
 
 ```bash
 $ http -v --verify=no --json GET http://your.docker.host/api/status

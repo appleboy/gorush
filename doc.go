@@ -1,8 +1,8 @@
 // A push notification server using Gin framework written in Go (Golang).
 //
-// Details about the gopush project are found in github page:
+// Details about the gorush project are found in github page:
 //
-//     https://github.com/appleboy/gopush
+//     https://github.com/appleboy/gorush
 //
 // Support Google Cloud Message using go-gcm library for Android.
 // Support HTTP/2 Apple Push Notification Service using apns2 library.
@@ -16,15 +16,15 @@
 //
 // Send Android notification
 //
-//   $ gopush -android -m="your message" -k="API Key" -t="Device token"
+//   $ gorush -android -m="your message" -k="API Key" -t="Device token"
 //
 // Send iOS notification
 //
-//   $ gopush -ios -m="your message" -i="API Key" -t="Device token"
+//   $ gorush -ios -m="your message" -i="API Key" -t="Device token"
 //
 // The default endpoint is APNs development. Please add -production flag for APNs production push endpoint.
 //
-//   $ gopush -ios -m="your message" -i="API Key" -t="Device token" -production
+//   $ gorush -ios -m="your message" -i="API Key" -t="Device token" -production
 //
 // For more details, see the documentation and example.
 //

@@ -1,4 +1,4 @@
-package gopush
+package gorush
 
 import (
 	"encoding/json"

@@ -1,4 +1,4 @@
-package gopush
+package gorush
 
 import (
 	"github.com/appleboy/gofight"
@@ -19,8 +19,8 @@ func initTest() {
 	PushConf.Core.Mode = "test"
 }
 
-func TestPrintGoPushVersion(t *testing.T) {
-	PrintGoPushVersion()
+func TestPrintGoRushVersion(t *testing.T) {
+	PrintGoRushVersion()
 }
 
 func TestRunNormalServer(t *testing.T) {
@@ -85,7 +85,7 @@ func TestAPIStatusHandler(t *testing.T) {
 		Run(routerEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 			data := []byte(r.Body.String())
 
-			value, _ := jsonparser.GetString(data, "goVersion")
+			value, _ := jsonparser.GetString(data, "go_version")
 
 			assert.Equal(t, goVersion, value)
 			assert.Equal(t, http.StatusOK, r.Code)

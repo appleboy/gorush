@@ -1,4 +1,4 @@
-package gopush
+package gorush
 
 const (
 	// Version is gorush server version.

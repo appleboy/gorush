@@ -5,11 +5,11 @@ ARCH="amd64"
 
 for GOOS in $OS; do
   for GOARCH in $ARCH; do
-    EXE="gopush"
-    (test "$GOOS" = "windows") && EXE="gopush.exe"
+    EXE="gorush"
+    (test "$GOOS" = "windows") && EXE="gorush.exe"
 
     echo "Build: ${GOOS}, Arch: ${GOARCH}, EXE: ${EXE}"
-    GOOS=$GOOS GOARCH=$GOARCH go build -ldflags="-w" -o bin/$GOOS/$GOARCH/${EXE} gopush.go;
-    tar -C bin/$GOOS/$GOARCH -czf bin/gopush-$GOOS-$GOARCH.tar.gz gopush
+    GOOS=$GOOS GOARCH=$GOARCH go build -ldflags="-w" -o bin/$GOOS/$GOARCH/${EXE} gorush.go;
+    tar -C bin/$GOOS/$GOARCH -czf bin/gorush-$GOOS-$GOARCH.tar.gz gorush
   done
 done

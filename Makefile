@@ -3,9 +3,9 @@
 VERSION=0.0.1
 
 DEPS := $(wildcard *.go)
-BUILD_IMAGE := "gopush-build"
-TEST_IMAGE := "gopush-testing"
-PRODUCTION_IMAGE := "gopush"
+BUILD_IMAGE := "gorush-build"
+TEST_IMAGE := "gorush-testing"
+PRODUCTION_IMAGE := "gorush"
 DEPLOY_ACCOUNT := "appleboy"
 
 all: build
@@ -14,17 +14,17 @@ build: clean
 	sh script/build.sh
 
 test:
-	cd gopush && go test -v -covermode=count -coverprofile=coverage.out
+	cd gorush && go test -v -covermode=count -coverprofile=coverage.out
 
 docker_build: clean
-	tar -zcvf build.tar.gz gopush.go gopush
+	tar -zcvf build.tar.gz gorush.go gorush
 	docker build --rm -t $(BUILD_IMAGE) -f docker/Dockerfile.build .
-	docker run --rm $(BUILD_IMAGE) > gopush.tar.gz
+	docker run --rm $(BUILD_IMAGE) > gorush.tar.gz
 	docker build --rm -t $(PRODUCTION_IMAGE) -f docker/Dockerfile.dist .
 
 docker_test:
 	@docker build --rm -t $(TEST_IMAGE) -f docker/Dockerfile.testing .
-	@docker run --rm -e ANDROID_TEST_TOKEN=$(ANDROID_TEST_TOKEN) -e ANDROID_API_KEY=$(ANDROID_API_KEY) $(TEST_IMAGE) sh -c "cd gopush && go test -v"
+	@docker run --rm -e ANDROID_TEST_TOKEN=$(ANDROID_TEST_TOKEN) -e ANDROID_API_KEY=$(ANDROID_API_KEY) $(TEST_IMAGE) sh -c "cd gorush && go test -v"
 
 deploy:
 ifeq ($(tag),)
@@ -35,7 +35,7 @@ endif
 	docker push $(DEPLOY_ACCOUNT)/$(PRODUCTION_IMAGE):$(tag)
 
 lint:
-	golint gopush
+	golint gorush
 
 clean:
-	-rm -rf build.tar.gz gopush.tar.gz bin/*
+	-rm -rf build.tar.gz gorush.tar.gz bin/*

@@ -1,4 +1,4 @@
-package gopush
+package gorush
 
 import (
 	"github.com/stretchr/testify/assert"
