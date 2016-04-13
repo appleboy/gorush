@@ -128,6 +128,8 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 
 	test := "test"
 	req := PushNotification{
+		Message: "Welcome",
+		Title:   test,
 		Alert: Alert{
 			Action:       test,
 			ActionLocKey: test,
@@ -135,7 +137,6 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 			LaunchImage:  test,
 			LocArgs:      []string{"a", "b"},
 			LocKey:       test,
-			Title:        test,
 			TitleLocArgs: []string{"a", "b"},
 			TitleLocKey:  test,
 		},
@@ -190,12 +191,21 @@ func TestAndroidNotificationStructure(t *testing.T) {
 		TimeToLive:            100,
 		RestrictedPackageName: test,
 		DryRun:                true,
-		Data: map[string]interface{}{
-			"a": "1",
-			"b": "2",
+		Title:                 test,
+		Sound:                 test,
+		Extend: []ExtendJSON{
+			{
+				Key:   "key1",
+				Value: "1",
+			},
+			{
+				Key:   "key2",
+				Value: "2",
+			},
 		},
 		Notification: gcm.Notification{
-			Title: test,
+			Color: test,
+			Tag:   test,
 		},
 	}
 
@@ -210,7 +220,37 @@ func TestAndroidNotificationStructure(t *testing.T) {
 	assert.Equal(t, test, notification.RestrictedPackageName)
 	assert.True(t, notification.DryRun)
 	assert.Equal(t, test, notification.Notification.Title)
+	assert.Equal(t, test, notification.Notification.Sound)
+	assert.Equal(t, test, notification.Notification.Color)
+	assert.Equal(t, test, notification.Notification.Tag)
 	assert.Equal(t, "Welcome", notification.Notification.Body)
+	assert.Equal(t, "1", notification.Data["key1"])
+
+	// add data file to overwrite `Extend`
+	req = PushNotification{
+		Tokens:  []string{"a", "b"},
+		Message: "Welcome",
+		To:      test,
+		Data: map[string]interface{}{
+			"a": "1",
+			"b": "2",
+		},
+		Extend: []ExtendJSON{
+			{
+				Key:   "key1",
+				Value: "1",
+			},
+			{
+				Key:   "key2",
+				Value: "2",
+			},
+		},
+	}
+
+	notification = GetAndroidNotification(req)
+
+	assert.Equal(t, "1", notification.Data["a"])
+	assert.Equal(t, "2", notification.Data["b"])
 }
 
 func TestPushToIOS(t *testing.T) {

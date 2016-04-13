@@ -183,6 +183,9 @@ Send multiple notifications as below:
 }
 ```
 
+
+### Request body
+
 Request body must has a notifications array. The following is a parameter table for each notification.
 
 |name|type|description|required|note|
@@ -192,6 +195,9 @@ Request body must has a notifications array. The following is a parameter table 
 |message|string|message for notification|o||
 |priority|string|Sets the priority of the message.|-||
 |content_available|bool|data messages wake the app by default.|-||
+|sound|string|sound type|-||
+|title|string|notification title|-||
+|extend|string array|extensible partition|-||
 |api_key|string|Android api key|-|only Android|
 |to|string|The value must be a registration token, notification key, or topic.|-|only Android|
 |collapse_key|string|a key for collapsing notifications|-|only Android|
@@ -200,17 +206,42 @@ Request body must has a notifications array. The following is a parameter table 
 |restricted_package_name|string|the package name of the application|-|only Android|
 |dry_run|bool|allows developers to test a request without actually sending a message|-|only Android|
 |data|string array|data payload of a GCM message|-|only Android|
-|notification|string array|payload of a GCM message|-|only Android|
+|notification|string array|payload of a GCM message|-|only Android. See the [detail]()|
 |expiration|int|expiration for notification|-|only iOS|
 |apns_id|string|A canonical UUID that identifies the notification|-|only iOS|
 |topic|string|topic of the remote notification|-|only iOS|
 |badge|int|badge count|-|only iOS|
-|sound|string|sound type|-|only iOS|
 |category|string|the UIMutableUserNotificationCategory object|-|only iOS|
-|extend|string array|extensible partition|-|only iOS|
-|alert|string array|payload of a iOS message|-|only iOS|
+|alert|string array|payload of a iOS message|-|only iOS. See the [detail]()|
 
-See more detail [APNs](https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/APNsProviderAPI.html#//apple_ref/doc/uid/TP40008194-CH101-SW1) and [GCM](https://developers.google.com/cloud-messaging/http-server-ref#send-downstream) reference.
+### iOS alert structure
+
+|name|type|description|required|note|
+|-------|-------|--------|--------|---------|
+|action|||||
+|action-loc-key|||||
+|launch-image|||||
+|loc-args|||||
+|loc-key|||||
+|title-loc-args|||||
+|title-loc-key|||||
+
+See more detail about [APNs Provider API](https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/APNsProviderAPI.html#//apple_ref/doc/uid/TP40008194-CH101-SW1).
+
+### Android notification structure
+
+|name|type|description|required|note|
+|-------|-------|--------|--------|---------|
+|icon|string|Indicates notification icon.|-||
+|tag|string|Indicates whether each notification message results in a new entry on the notification center on Android.|-||
+|color|string|Indicates color of the icon, expressed in #rrggbb format|-||
+|click_action|string|The action associated with a user click on the notification.|-||
+|body_loc_key|string|Indicates the key to the body string for localization.|-||
+|body_loc_args|string|Indicates the string value to replace format specifiers in body string for localization.|-||
+|title_loc_key|string|Indicates the key to the title string for localization.|-||
+|title_loc_args|string|Indicates the string value to replace format specifiers in title string for localization.|-||
+
+See more detail about [GCM server reference](https://developers.google.com/cloud-messaging/http-server-ref#send-downstream).
 
 ## License
 
