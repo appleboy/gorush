@@ -10,10 +10,7 @@ import (
 	"time"
 )
 
-type ExtendJSON struct {
-	Key   string `json:"key"`
-	Value string `json:"val"`
-}
+type D map[string]interface{}
 
 const (
 	// PriorityLow will tell APNs to send the push message at a time that takes
@@ -47,14 +44,14 @@ type RequestPush struct {
 
 type PushNotification struct {
 	// Common
-	Tokens           []string     `json:"tokens" binding:"required"`
-	Platform         int          `json:"platform" binding:"required"`
-	Message          string       `json:"message" binding:"required"`
-	Title            string       `json:"title,omitempty"`
-	Priority         string       `json:"priority,omitempty"`
-	ContentAvailable bool         `json:"content_available,omitempty"`
-	Sound            string       `json:"sound,omitempty"`
-	Extend           []ExtendJSON `json:"extend,omitempty"`
+	Tokens           []string `json:"tokens" binding:"required"`
+	Platform         int      `json:"platform" binding:"required"`
+	Message          string   `json:"message" binding:"required"`
+	Title            string   `json:"title,omitempty"`
+	Priority         string   `json:"priority,omitempty"`
+	ContentAvailable bool     `json:"content_available,omitempty"`
+	Sound            string   `json:"sound,omitempty"`
+	Data             D        `json:"data,omitempty"`
 
 	// Android
 	ApiKey                string           `json:"api_key,omitempty"`
@@ -64,7 +61,6 @@ type PushNotification struct {
 	TimeToLive            uint             `json:"time_to_live,omitempty"`
 	RestrictedPackageName string           `json:"restricted_package_name,omitempty"`
 	DryRun                bool             `json:"dry_run,omitempty"`
-	Data                  gcm.Data         `json:"data,omitempty"`
 	Notification          gcm.Notification `json:"notification,omitempty"`
 
 	// iOS
@@ -178,9 +174,9 @@ func GetIOSNotification(req PushNotification) *apns.Notification {
 		payload.ContentAvailable()
 	}
 
-	if len(req.Extend) > 0 {
-		for _, extend := range req.Extend {
-			payload.Custom(extend.Key, extend.Value)
+	if len(req.Data) > 0 {
+		for k, v := range req.Data {
+			payload.Custom(k, v)
 		}
 	}
 
@@ -309,17 +305,12 @@ func GetAndroidNotification(req PushNotification) gcm.HttpMessage {
 		notification.DryRun = true
 	}
 
-	if len(req.Extend) > 0 {
-		notification.Data = make(map[string]interface{})
-
-		for _, extend := range req.Extend {
-			notification.Data[extend.Key] = extend.Value
-		}
-	}
-
-	// overwrite Extend
+	// Add another field
 	if len(req.Data) > 0 {
-		notification.Data = req.Data
+		notification.Data = make(map[string]interface{})
+		for k, v := range req.Data {
+			notification.Data[k] = v
+		}
 	}
 
 	notification.Notification = &req.Notification
