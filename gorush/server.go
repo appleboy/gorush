@@ -34,7 +34,7 @@ func pushHandler(c *gin.Context) {
 	}
 
 	if len(form.Notifications) == 0 {
-		msg = "Notification field is empty."
+		msg = "Notifications field is empty."
 		LogAccess.Debug(msg)
 		AbortWithError(c, http.StatusBadRequest, msg)
 		return
@@ -51,7 +51,7 @@ func pushHandler(c *gin.Context) {
 	go SendNotification(form)
 
 	c.JSON(http.StatusOK, gin.H{
-		"text": "Welcome to notification server.",
+		"success": "ok",
 	})
 }
 
