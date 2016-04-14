@@ -9,6 +9,8 @@ import (
 var (
 	// PushConf is gorush config
 	PushConf ConfYaml
+	// QueueNotification is chan type
+	QueueNotification chan PushNotification
 	// CertificatePemIos is ios certificate file
 	CertificatePemIos tls.Certificate
 	// ApnsClient is apns client
