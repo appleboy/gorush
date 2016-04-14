@@ -47,8 +47,8 @@ func pushHandler(c *gin.Context) {
 		return
 	}
 
-	// process notification.
-	go SendNotification(form)
+	// queue notification.
+	go queueNotification(form)
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": "ok",

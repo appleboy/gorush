@@ -3,6 +3,7 @@ package gorush
 import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
+	"runtime"
 )
 
 // ConfYaml is config structure.
@@ -18,6 +19,8 @@ type ConfYaml struct {
 type SectionCore struct {
 	Port            string `yaml:"port"`
 	MaxNotification int    `yaml:"max_notification"`
+	WorkerNum       int    `yaml:"worker_num"`
+	QueueNum        int    `yaml:"queue_num"`
 	Mode            string `yaml:"mode"`
 	SSL             bool   `yaml:"ssl"`
 	CertPath        string `yaml:"cert_path"`
@@ -59,6 +62,8 @@ func BuildDefaultPushConf() ConfYaml {
 
 	// Core
 	conf.Core.Port = "8088"
+	conf.Core.WorkerNum = runtime.NumCPU()
+	conf.Core.QueueNum = 8192
 	conf.Core.Mode = "release"
 	conf.Core.SSL = false
 	conf.Core.CertPath = "cert.pem"
