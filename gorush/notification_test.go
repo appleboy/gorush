@@ -229,8 +229,8 @@ func TestPushToIOS(t *testing.T) {
 		Message:  "Welcome",
 	}
 
-	PushToIOS(req)
-	// assert.False(t, success)
+	isError := PushToIOS(req)
+	assert.True(t, isError)
 }
 
 func TestPushToAndroidWrongAPIKey(t *testing.T) {

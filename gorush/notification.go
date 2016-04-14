@@ -260,7 +260,9 @@ func GetIOSNotification(req PushNotification) *apns.Notification {
 }
 
 // PushToIOS provide send notification to APNs server.
-func PushToIOS(req PushNotification) {
+func PushToIOS(req PushNotification) bool {
+
+	var isError bool
 
 	notification := GetIOSNotification(req)
 
@@ -273,7 +275,7 @@ func PushToIOS(req PushNotification) {
 		if err != nil {
 			// apns server error
 			LogPush(FailedPush, token, req, err)
-
+			isError = true
 			continue
 		}
 
@@ -281,7 +283,6 @@ func PushToIOS(req PushNotification) {
 			// error message:
 			// ref: https://github.com/sideshow/apns2/blob/master/response.go#L14-L65
 			LogPush(FailedPush, token, req, errors.New(res.Reason))
-
 			continue
 		}
 
@@ -289,6 +290,8 @@ func PushToIOS(req PushNotification) {
 			LogPush(SucceededPush, token, req, nil)
 		}
 	}
+
+	return isError
 }
 
 // GetAndroidNotification use for define Android notificaiton.
