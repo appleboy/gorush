@@ -18,12 +18,15 @@ A push notification server using [Gin](https://github.com/gin-gonic/gin) framewo
 * Support Web API to send push notification.
 * Support zero downtime restarts for go servers using [endless](https://github.com/fvbock/endless).
 * Support [HTTP/2](https://http2.github.io/) or HTTP/1.1 protocol.
+* Support notification queue and multiple workers.
 
 See the [YAML config example](config/config.yml):
 
 ```yaml
 core:
   port: "8088"
+  worker_num: 8
+  queue_num: 8192
   max_notification: 100
   mode: "release"
   ssl: false

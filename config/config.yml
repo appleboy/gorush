@@ -1,5 +1,7 @@
 core:
   port: "8088"
+  worker_num: 8
+  queue_num: 8192
   max_notification: 100
   mode: "release"
   ssl: false
