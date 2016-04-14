@@ -114,5 +114,6 @@ func main() {
 	}
 
 	gorush.InitAPNSClient()
+	gorush.InitWorkers(gorush.PushConf.Core.WorkerNum, gorush.PushConf.Core.QueueNum)
 	gorush.RunHTTPServer()
 }

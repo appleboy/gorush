@@ -121,8 +121,29 @@ func InitAPNSClient() error {
 	return nil
 }
 
-// SendNotification provide send all push request.
-func SendNotification(req RequestPush) int {
+// InitWorkers for initialize all workers.
+func InitWorkers(workerNum, queueNum int) {
+	LogAccess.Debug("worker number is ", workerNum, ", queue number is ", queueNum)
+	QueueNotification = make(chan PushNotification, queueNum)
+	for i := 0; i < workerNum; i++ {
+		go startWorker()
+	}
+}
+
+func startWorker() {
+	for {
+		notification := <-QueueNotification
+		switch notification.Platform {
+		case PlatFormIos:
+			PushToIOS(notification)
+		case PlatFormAndroid:
+			PushToAndroid(notification)
+		}
+	}
+}
+
+// queueNotification add notification to queue list.
+func queueNotification(req RequestPush) int {
 	var count int
 	for _, notification := range req.Notifications {
 		switch notification.Platform {
@@ -130,17 +151,14 @@ func SendNotification(req RequestPush) int {
 			if !PushConf.Ios.Enabled {
 				continue
 			}
-
-			count++
-			go PushToIOS(notification)
 		case PlatFormAndroid:
 			if !PushConf.Android.Enabled {
 				continue
 			}
-
-			count++
-			go PushToAndroid(notification)
 		}
+		QueueNotification <- notification
+
+		count++
 	}
 
 	return count
@@ -242,7 +260,7 @@ func GetIOSNotification(req PushNotification) *apns.Notification {
 }
 
 // PushToIOS provide send notification to APNs server.
-func PushToIOS(req PushNotification) bool {
+func PushToIOS(req PushNotification) {
 
 	notification := GetIOSNotification(req)
 
@@ -256,7 +274,7 @@ func PushToIOS(req PushNotification) bool {
 			// apns server error
 			LogPush(FailedPush, token, req, err)
 
-			return false
+			continue
 		}
 
 		if res.StatusCode != 200 {
@@ -264,15 +282,13 @@ func PushToIOS(req PushNotification) bool {
 			// ref: https://github.com/sideshow/apns2/blob/master/response.go#L14-L65
 			LogPush(FailedPush, token, req, errors.New(res.Reason))
 
-			return false
+			continue
 		}
 
 		if res.Sent() {
 			LogPush(SucceededPush, token, req, nil)
 		}
 	}
-
-	return true
 }
 
 // GetAndroidNotification use for define Android notificaiton.
