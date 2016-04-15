@@ -123,33 +123,33 @@ Golang cpu, memory, gc, etc information. Response with `200` http status code.
 
 ```json
 {
-  time: 1460686815848046600,
-  go_version: "go1.6.1",
-  go_os: "darwin",
-  go_arch: "amd64",
-  cpu_num: 4,
-  goroutine_num: 15,
-  gomaxprocs: 4,
-  cgo_call_num: 1,
-  memory_alloc: 7455192,
-  memory_total_alloc: 8935464,
-  memory_sys: 12560632,
-  memory_lookups: 17,
-  memory_mallocs: 31426,
-  memory_frees: 11772,
-  memory_stack: 524288,
-  heap_alloc: 7455192,
-  heap_sys: 8912896,
-  heap_idle: 909312,
-  heap_inuse: 8003584,
-  heap_released: 0,
-  heap_objects: 19654,
-  gc_next: 9754725,
-  gc_last: 1460686815762559700,
-  gc_num: 2,
-  gc_per_second: 0,
-  gc_pause_per_second: 0,
-  gc_pause: [
+  "time": 1460686815848046600,
+  "go_version": "go1.6.1",
+  "go_os": "darwin",
+  "go_arch": "amd64",
+  "cpu_num": 4,
+  "goroutine_num": 15,
+  "gomaxprocs": 4,
+  "cgo_call_num": 1,
+  "memory_alloc": 7455192,
+  "memory_total_alloc": 8935464,
+  "memory_sys": 12560632,
+  "memory_lookups": 17,
+  "memory_mallocs": 31426,
+  "memory_frees": 11772,
+  "memory_stack": 524288,
+  "heap_alloc": 7455192,
+  "heap_sys": 8912896,
+  "heap_idle": 909312,
+  "heap_inuse": 8003584,
+  "heap_released": 0,
+  "heap_objects": 19654,
+  "gc_next": 9754725,
+  "gc_last": 1460686815762559700,
+  "gc_num": 2,
+  "gc_per_second": 0,
+  "gc_pause_per_second": 0,
+  "gc_pause": [
     0.326576,
     0.227096
   ]
@@ -158,22 +158,22 @@ Golang cpu, memory, gc, etc information. Response with `200` http status code.
 
 ### GET /api/stat/app
 
-Get success or failure of notification counts information.
+Show success or failure counts information of notification.
 
 ```json
 {
-  queue_max: 8192,
-  queue_usage: 0,
-  total_count: 77,
-  ios: {
-    push_success: 19,
-    push_error: 38
+  "queue_max": 8192,
+  "queue_usage": 0,
+  "total_count": 77,
+  "ios": {
+    "push_success": 19,
+    "push_error": 38
   },
-  android: {
-    push_success: 10,
-    push_error: 10
+  "android": {
+    "push_success": 10,
+    "push_error": 10
   }
-  }
+}
 ```
 
 ### POST /api/push
