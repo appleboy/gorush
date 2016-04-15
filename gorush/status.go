@@ -6,6 +6,7 @@ import (
 	"sync/atomic"
 )
 
+// StatusApp is app status structure
 type StatusApp struct {
 	QueueMax   int           `json:"queue_max"`
 	QueueUsage int           `json:"queue_usage"`
@@ -14,16 +15,19 @@ type StatusApp struct {
 	Android    AndroidStatus `json:"android"`
 }
 
+// AndroidStatus is android structure
 type AndroidStatus struct {
 	PushSuccess int64 `json:"push_success"`
 	PushError   int64 `json:"push_error"`
 }
 
+// IosStatus is iOS structure
 type IosStatus struct {
 	PushSuccess int64 `json:"push_success"`
 	PushError   int64 `json:"push_error"`
 }
 
+// InitAppStatus for initialize app status
 func InitAppStatus() {
 	RushStatus.TotalCount = 0
 	RushStatus.Ios.PushSuccess = 0

@@ -19,5 +19,6 @@ var (
 	LogAccess *logrus.Logger
 	// LogError is log server error log
 	LogError   *logrus.Logger
+	// RushStatus is notification status
 	RushStatus StatusApp
 )
