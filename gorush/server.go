@@ -55,6 +55,10 @@ func pushHandler(c *gin.Context) {
 	})
 }
 
+func configHandler(c *gin.Context) {
+	c.YAML(http.StatusCreated, PushConf)
+}
+
 func routerEngine() *gin.Engine {
 	// set server mode
 	gin.SetMode(PushConf.Core.Mode)
@@ -69,6 +73,7 @@ func routerEngine() *gin.Engine {
 
 	r.GET(PushConf.API.StatGoURI, api.StatusHandler)
 	r.GET(PushConf.API.StatAppURI, appStatusHandler)
+	r.GET(PushConf.API.ConfigURI, configHandler)
 	r.POST(PushConf.API.PushURI, pushHandler)
 	r.GET("/", rootHandler)
 

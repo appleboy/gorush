@@ -29,9 +29,10 @@ type SectionCore struct {
 
 // SectionAPI is sub seciont of config.
 type SectionAPI struct {
-	PushURI   string `yaml:"push_uri"`
-	StatGoURI string `yaml:"stat_go_uri"`
+	PushURI    string `yaml:"push_uri"`
+	StatGoURI  string `yaml:"stat_go_uri"`
 	StatAppURI string `yaml:"stat_app_uri"`
+	ConfigURI  string `yaml:"config_uri"`
 }
 
 // SectionAndroid is sub seciont of config.
@@ -75,6 +76,7 @@ func BuildDefaultPushConf() ConfYaml {
 	conf.API.PushURI = "/api/push"
 	conf.API.StatGoURI = "/api/stat/go"
 	conf.API.StatAppURI = "/api/stat/app"
+	conf.API.ConfigURI = "/api/config"
 
 	// Android
 	conf.Android.Enabled = false
