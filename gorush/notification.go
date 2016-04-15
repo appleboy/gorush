@@ -158,8 +158,10 @@ func queueNotification(req RequestPush) int {
 		}
 		QueueNotification <- notification
 
-		count++
+		count += len(notification.Tokens)
 	}
+
+	addTotalCount(int64(count))
 
 	return count
 }
@@ -276,6 +278,7 @@ func PushToIOS(req PushNotification) bool {
 			// apns server error
 			LogPush(FailedPush, token, req, err)
 			isError = true
+			addIosError(1)
 			continue
 		}
 
@@ -283,11 +286,13 @@ func PushToIOS(req PushNotification) bool {
 			// error message:
 			// ref: https://github.com/sideshow/apns2/blob/master/response.go#L14-L65
 			LogPush(FailedPush, token, req, errors.New(res.Reason))
+			addIosError(1)
 			continue
 		}
 
 		if res.Sent() {
 			LogPush(SucceededPush, token, req, nil)
+			addIosSuccess(1)
 		}
 	}
 
@@ -380,6 +385,8 @@ func PushToAndroid(req PushNotification) bool {
 	}
 
 	LogAccess.Debug(fmt.Sprintf("Android Success count: %d, Failure count: %d", res.Success, res.Failure))
+	addAndroidSuccess(int64(res.Success))
+	addAndroidError(int64(res.Failure))
 
 	for k, result := range res.Results {
 		if result.Error != "" {

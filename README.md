@@ -19,6 +19,7 @@ A push notification server using [Gin](https://github.com/gin-gonic/gin) framewo
 * Support zero downtime restarts for go servers using [endless](https://github.com/fvbock/endless).
 * Support [HTTP/2](https://http2.github.io/) or HTTP/1.1 protocol.
 * Support notification queue and multiple workers.
+* Support `/api/stat/app` show notification success and failure counts.
 
 See the [YAML config example](config/config.yml):
 
@@ -35,7 +36,8 @@ core:
 
 api:
   push_uri: "/api/push"
-  stat_go_uri: "/api/status"
+  stat_go_uri: "/api/stat/go"
+  stat_app_uri: "/api/stat/app"
 
 android:
   enabled: true
@@ -101,18 +103,78 @@ Please make sure your [config.yml](config/config.yml) exist. Default port is `80
 $ gorush -c config.yml
 ```
 
-Test status of api server using [httpie](https://github.com/jkbrzt/httpie) tool:
+Get go status of api server using [httpie](https://github.com/jkbrzt/httpie) tool:
 
 ```bash
-$ http -v --verify=no --json GET https://localhost:8088/api/status
+$ http -v --verify=no --json GET https://localhost:8088/api/stat/go
 ```
 
 ## Web API
 
-gorush support the following API.
+Gorush support the following API.
 
-* **GET**  `/api/status` Golang cpu, memory, gc, etc information. Thanks for [golang-stats-api-handler](https://github.com/fukata/golang-stats-api-handler).
+* **GET**  `/api/stat/go` Golang cpu, memory, gc, etc information. Thanks for [golang-stats-api-handler](https://github.com/fukata/golang-stats-api-handler).
+* **GET**  `/api/stat/app` show notification success and failure counts.
 * **POST** `/api/push` push ios and android notifications.
+
+### GET /api/stat/go
+
+Golang cpu, memory, gc, etc information. Response with `200` http status code.
+
+```json
+{
+  time: 1460686815848046600,
+  go_version: "go1.6.1",
+  go_os: "darwin",
+  go_arch: "amd64",
+  cpu_num: 4,
+  goroutine_num: 15,
+  gomaxprocs: 4,
+  cgo_call_num: 1,
+  memory_alloc: 7455192,
+  memory_total_alloc: 8935464,
+  memory_sys: 12560632,
+  memory_lookups: 17,
+  memory_mallocs: 31426,
+  memory_frees: 11772,
+  memory_stack: 524288,
+  heap_alloc: 7455192,
+  heap_sys: 8912896,
+  heap_idle: 909312,
+  heap_inuse: 8003584,
+  heap_released: 0,
+  heap_objects: 19654,
+  gc_next: 9754725,
+  gc_last: 1460686815762559700,
+  gc_num: 2,
+  gc_per_second: 0,
+  gc_pause_per_second: 0,
+  gc_pause: [
+    0.326576,
+    0.227096
+  ]
+}
+```
+
+### GET /api/stat/app
+
+Get success or failure of notification counts information.
+
+```json
+{
+  queue_max: 8192,
+  queue_usage: 0,
+  total_count: 77,
+  ios: {
+    push_success: 19,
+    push_error: 38
+  },
+  android: {
+    push_success: 10,
+    push_error: 10
+  }
+  }
+```
 
 ### POST /api/push
 
@@ -356,7 +418,7 @@ $ docker run -name gorush -p 80:8088 appleboy/gorush
 Testing your gorush server.
 
 ```bash
-$ http -v --verify=no --json GET http://your.docker.host/api/status
+$ http -v --verify=no --json GET http://your.docker.host/api/stat/go
 ```
 
 ![statue screenshot](screenshot/status.png)

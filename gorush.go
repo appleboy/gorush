@@ -77,6 +77,7 @@ func main() {
 			Message:  *message,
 		}
 
+		gorush.InitAppStatus()
 		gorush.PushToAndroid(req)
 
 		return
@@ -103,6 +104,7 @@ func main() {
 			Message:  *message,
 		}
 
+		gorush.InitAppStatus()
 		gorush.InitAPNSClient()
 		gorush.PushToIOS(req)
 
@@ -113,6 +115,7 @@ func main() {
 		gorush.LogError.Fatal(err)
 	}
 
+	gorush.InitAppStatus()
 	gorush.InitAPNSClient()
 	gorush.InitWorkers(gorush.PushConf.Core.WorkerNum, gorush.PushConf.Core.QueueNum)
 	gorush.RunHTTPServer()
