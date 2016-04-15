@@ -340,13 +340,13 @@ func TestSenMultipleNotifications(t *testing.T) {
 	req := RequestPush{
 		Notifications: []PushNotification{
 			//ios
-			PushNotification{
+			{
 				Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
 				Platform: 1,
 				Message:  "Welcome",
 			},
 			// android
-			PushNotification{
+			{
 				Tokens:   []string{androidToken, "bbbbb"},
 				Platform: 2,
 				Message:  "Welcome",
@@ -373,13 +373,13 @@ func TestDisabledAndroidNotifications(t *testing.T) {
 	req := RequestPush{
 		Notifications: []PushNotification{
 			//ios
-			PushNotification{
+			{
 				Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
 				Platform: 1,
 				Message:  "Welcome",
 			},
 			// android
-			PushNotification{
+			{
 				Tokens:   []string{androidToken, "bbbbb"},
 				Platform: 2,
 				Message:  "Welcome",
@@ -406,13 +406,13 @@ func TestDisabledIosNotifications(t *testing.T) {
 	req := RequestPush{
 		Notifications: []PushNotification{
 			//ios
-			PushNotification{
+			{
 				Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
 				Platform: 1,
 				Message:  "Welcome",
 			},
 			// android
-			PushNotification{
+			{
 				Tokens:   []string{androidToken, "bbbbb"},
 				Platform: 2,
 				Message:  "Welcome",

@@ -154,12 +154,12 @@ func TestOutOfRangeMaxNotifications(t *testing.T) {
 	r.POST("/api/push").
 		SetJSON(gofight.D{
 			"notifications": []gofight.D{
-				gofight.D{
+				{
 					"tokens":   []string{"aaaaa", "bbbbb"},
 					"platform": 2,
 					"message":  "Welcome",
 				},
-				gofight.D{
+				{
 					"tokens":   []string{"aaaaa", "bbbbb"},
 					"platform": 2,
 					"message":  "Welcome",
@@ -185,7 +185,7 @@ func TestSuccessPushHandler(t *testing.T) {
 	r.POST("/api/push").
 		SetJSON(gofight.D{
 			"notifications": []gofight.D{
-				gofight.D{
+				{
 					"tokens":   []string{androidToken, "bbbbb"},
 					"platform": 2,
 					"message":  "Welcome",
