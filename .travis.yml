@@ -29,9 +29,9 @@ script:
     -service=travis-ci -repotoken=$COVERALLS_TOKEN
 
 after_success:
-  - test "$TRAVIS_BRANCH" == "master" && test "$TRAVIS_GO_VERSION" == "1.6"
+  - test "$TRAVIS_BRANCH" == "master" && test "$TRAVIS_GO_VERSION" == "1.6.1"
     && test "$TRAVIS_PULL_REQUEST" == "false" && docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-  - test "$TRAVIS_BRANCH" == "master" && test "$TRAVIS_GO_VERSION" == "1.6"
+  - test "$TRAVIS_BRANCH" == "master" && test "$TRAVIS_GO_VERSION" == "1.6.1"
     && test "$TRAVIS_PULL_REQUEST" == "false" && cd $TRAVIS_BUILD_DIR && make docker_build
-  - test "$TRAVIS_BRANCH" == "master" && test "$TRAVIS_GO_VERSION" == "1.6"
+  - test "$TRAVIS_BRANCH" == "master" && test "$TRAVIS_GO_VERSION" == "1.6.1"
     && test "$TRAVIS_PULL_REQUEST" == "false" && cd $TRAVIS_BUILD_DIR && make deploy tag=latest
