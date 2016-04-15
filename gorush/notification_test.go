@@ -355,7 +355,7 @@ func TestSenMultipleNotifications(t *testing.T) {
 	}
 
 	count := queueNotification(req)
-	assert.Equal(t, 2, count)
+	assert.Equal(t, 3, count)
 }
 
 func TestDisabledAndroidNotifications(t *testing.T) {
@@ -421,7 +421,7 @@ func TestDisabledIosNotifications(t *testing.T) {
 	}
 
 	count := queueNotification(req)
-	assert.Equal(t, 1, count)
+	assert.Equal(t, 2, count)
 }
 
 func TestMissingIosCertificate(t *testing.T) {
