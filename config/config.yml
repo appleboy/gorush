@@ -12,6 +12,7 @@ api:
   push_uri: "/api/push"
   stat_go_uri: "/api/stat/go"
   stat_app_uri: "/api/stat/app"
+  config_uri: "/api/config"
 
 android:
   enabled: true

@@ -20,6 +20,7 @@ A push notification server using [Gin](https://github.com/gin-gonic/gin) framewo
 * Support [HTTP/2](https://http2.github.io/) or HTTP/1.1 protocol.
 * Support notification queue and multiple workers.
 * Support `/api/stat/app` show notification success and failure counts.
+* Support `/api/config` show your yml config.
 
 See the [YAML config example](config/config.yml):
 
@@ -38,6 +39,7 @@ api:
   push_uri: "/api/push"
   stat_go_uri: "/api/stat/go"
   stat_app_uri: "/api/stat/app"
+  config_uri: "/api/config"
 
 android:
   enabled: true
@@ -115,6 +117,7 @@ Gorush support the following API.
 
 * **GET**  `/api/stat/go` Golang cpu, memory, gc, etc information. Thanks for [golang-stats-api-handler](https://github.com/fukata/golang-stats-api-handler).
 * **GET**  `/api/stat/app` show notification success and failure counts.
+* **GET**  `/api/config` show server yml config file.
 * **POST** `/api/push` push ios and android notifications.
 
 ### GET /api/stat/go

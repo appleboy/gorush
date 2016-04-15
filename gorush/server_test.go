@@ -103,6 +103,17 @@ func TestAPIStatusAppHandler(t *testing.T) {
 		})
 }
 
+func TestAPIConfigHandler(t *testing.T) {
+	initTest()
+
+	r := gofight.New()
+
+	r.GET("/api/config").
+		Run(routerEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+			assert.Equal(t, http.StatusCreated, r.Code)
+		})
+}
+
 func TestMissingNotificationsParameter(t *testing.T) {
 	initTest()
 
