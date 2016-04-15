@@ -68,6 +68,7 @@ func routerEngine() *gin.Engine {
 	r.Use(LogMiddleware())
 
 	r.GET(PushConf.API.StatGoURI, api.StatusHandler)
+	r.GET(PushConf.API.StatAppURI, appStatusHandler)
 	r.POST(PushConf.API.PushURI, pushHandler)
 	r.GET("/", rootHandler)
 

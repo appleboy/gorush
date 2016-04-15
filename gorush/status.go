@@ -1,6 +1,8 @@
 package gorush
 
 import (
+	"github.com/gin-gonic/gin"
+	"net/http"
 	"sync/atomic"
 )
 
@@ -48,4 +50,18 @@ func addAndroidSuccess(count int64) {
 
 func addAndroidError(count int64) {
 	atomic.AddInt64(&RushStatus.Android.PushError, count)
+}
+
+func appStatusHandler(c *gin.Context) {
+	result := StatusApp{}
+
+	result.QueueMax = cap(QueueNotification)
+	result.QueueUsage = len(QueueNotification)
+	result.TotalCount = atomic.LoadInt64(&RushStatus.TotalCount)
+	result.Ios.PushSuccess = atomic.LoadInt64(&RushStatus.Ios.PushSuccess)
+	result.Ios.PushError = atomic.LoadInt64(&RushStatus.Ios.PushError)
+	result.Android.PushSuccess = atomic.LoadInt64(&RushStatus.Android.PushSuccess)
+	result.Android.PushError = atomic.LoadInt64(&RushStatus.Android.PushError)
+
+	c.JSON(http.StatusOK, result)
 }

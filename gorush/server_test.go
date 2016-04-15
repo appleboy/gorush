@@ -36,7 +36,7 @@ func TestRunNormalServer(t *testing.T) {
 	time.Sleep(5 * time.Millisecond)
 
 	assert.Error(t, RunHTTPServer())
-	gofight.TestRequest(t, "http://localhost:8088/api/status")
+	gofight.TestRequest(t, "http://localhost:8088/api/stat/go")
 }
 
 func TestRunTLSServer(t *testing.T) {
@@ -76,18 +76,29 @@ func TestRootHandler(t *testing.T) {
 		})
 }
 
-func TestAPIStatusHandler(t *testing.T) {
+func TestAPIStatusGoHandler(t *testing.T) {
 	initTest()
 
 	r := gofight.New()
 
-	r.GET("/api/status").
+	r.GET("/api/stat/go").
 		Run(routerEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 			data := []byte(r.Body.String())
 
 			value, _ := jsonparser.GetString(data, "go_version")
 
 			assert.Equal(t, goVersion, value)
+			assert.Equal(t, http.StatusOK, r.Code)
+		})
+}
+
+func TestAPIStatusAppHandler(t *testing.T) {
+	initTest()
+
+	r := gofight.New()
+
+	r.GET("/api/stat/app").
+		Run(routerEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }

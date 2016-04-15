@@ -10,7 +10,8 @@ core:
 
 api:
   push_uri: "/api/push"
-  stat_go_uri: "/api/status"
+  stat_go_uri: "/api/stat/go"
+  stat_app_uri: "/api/stat/app"
 
 android:
   enabled: true
