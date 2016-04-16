@@ -6,6 +6,16 @@ import (
 	"log"
 )
 
+func checkInput(token, message string) {
+	if len(token) == 0 {
+		gorush.LogError.Fatal("Missing token flag (-t)")
+	}
+
+	if len(message) == 0 {
+		gorush.LogError.Fatal("Missing message flag (-m)")
+	}
+}
+
 func main() {
 	version := flag.Bool("v", false, "gorush version")
 	confPath := flag.String("c", "", "yaml configuration file path for gorush")
@@ -62,13 +72,8 @@ func main() {
 
 	// send android notification
 	if *android {
-		if len(*token) == 0 {
-			gorush.LogError.Fatal("Missing token flag (-t)")
-		}
 
-		if len(*message) == 0 {
-			gorush.LogError.Fatal("Missing message flag (-m)")
-		}
+		checkInput(*token, *message)
 
 		gorush.PushConf.Android.Enabled = true
 		req := gorush.PushNotification{
@@ -85,13 +90,7 @@ func main() {
 
 	// send android notification
 	if *ios {
-		if len(*token) == 0 {
-			gorush.LogError.Fatal("Missing token flag (-t)")
-		}
-
-		if len(*message) == 0 {
-			gorush.LogError.Fatal("Missing message flag (-m)")
-		}
+		checkInput(*token, *message)
 
 		if *production {
 			gorush.PushConf.Ios.Production = true
