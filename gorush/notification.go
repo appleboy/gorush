@@ -220,7 +220,7 @@ func iosAlertDictionary(payload *payload.Payload, req PushNotification) *payload
 func GetIOSNotification(req PushNotification) *apns.Notification {
 	notification := &apns.Notification{
 		ApnsID: req.ApnsID,
-		Topic: req.Topic,
+		Topic:  req.Topic,
 	}
 
 	if req.Expiration > 0 {
@@ -303,13 +303,13 @@ func PushToIOS(req PushNotification) bool {
 // https://developers.google.com/cloud-messaging/http-server-ref
 func GetAndroidNotification(req PushNotification) gcm.HttpMessage {
 	notification := gcm.HttpMessage{
-		To: req.To,
-		CollapseKey: req.CollapseKey,
-		ContentAvailable: req.ContentAvailable,
-		DelayWhileIdle: req.DelayWhileIdle,
-		TimeToLive: req.TimeToLive,
+		To:                    req.To,
+		CollapseKey:           req.CollapseKey,
+		ContentAvailable:      req.ContentAvailable,
+		DelayWhileIdle:        req.DelayWhileIdle,
+		TimeToLive:            req.TimeToLive,
 		RestrictedPackageName: req.RestrictedPackageName,
-		DryRun: req.DryRun,
+		DryRun:                req.DryRun,
 	}
 
 	notification.RegistrationIds = req.Tokens
