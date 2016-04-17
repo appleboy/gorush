@@ -166,48 +166,7 @@ func queueNotification(req RequestPush) int {
 	return count
 }
 
-// GetIOSNotification use for define iOS notificaiton.
-// The iOS Notification Payload
-// ref: https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/TheNotificationPayload.html
-func GetIOSNotification(req PushNotification) *apns.Notification {
-	notification := &apns.Notification{}
-
-	if len(req.ApnsID) > 0 {
-		notification.ApnsID = req.ApnsID
-	}
-
-	if len(req.Topic) > 0 {
-		notification.Topic = req.Topic
-	}
-
-	if req.Expiration > 0 {
-		notification.Expiration = time.Unix(req.Expiration, 0)
-	}
-
-	if len(req.Priority) > 0 && req.Priority == "normal" {
-		notification.Priority = apns.PriorityLow
-	}
-
-	payload := payload.NewPayload().Alert(req.Message)
-
-	if req.Badge > 0 {
-		payload.Badge(req.Badge)
-	}
-
-	if len(req.Sound) > 0 {
-		payload.Sound(req.Sound)
-	}
-
-	if req.ContentAvailable {
-		payload.ContentAvailable()
-	}
-
-	if len(req.Data) > 0 {
-		for k, v := range req.Data {
-			payload.Custom(k, v)
-		}
-	}
-
+func iosAlertDictionary(payload *payload.Payload, req PushNotification) *payload.Payload {
 	// Alert dictionary
 
 	if len(req.Title) > 0 {
@@ -252,9 +211,49 @@ func GetIOSNotification(req PushNotification) *apns.Notification {
 		payload.Category(req.Category)
 	}
 
+	return payload
+}
+
+// GetIOSNotification use for define iOS notificaiton.
+// The iOS Notification Payload
+// ref: https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/TheNotificationPayload.html
+func GetIOSNotification(req PushNotification) *apns.Notification {
+	notification := &apns.Notification{
+		ApnsID: req.ApnsID,
+		Topic: req.Topic,
+	}
+
+	if req.Expiration > 0 {
+		notification.Expiration = time.Unix(req.Expiration, 0)
+	}
+
+	if len(req.Priority) > 0 && req.Priority == "normal" {
+		notification.Priority = apns.PriorityLow
+	}
+
+	payload := payload.NewPayload().Alert(req.Message)
+
+	if req.Badge > 0 {
+		payload.Badge(req.Badge)
+	}
+
+	if len(req.Sound) > 0 {
+		payload.Sound(req.Sound)
+	}
+
+	if req.ContentAvailable {
+		payload.ContentAvailable()
+	}
+
 	if len(req.URLArgs) > 0 {
 		payload.URLArgs(req.URLArgs)
 	}
+
+	for k, v := range req.Data {
+		payload.Custom(k, v)
+	}
+
+	payload = iosAlertDictionary(payload, req)
 
 	notification.Payload = payload
 
@@ -303,40 +302,20 @@ func PushToIOS(req PushNotification) bool {
 // HTTP Connection Server Reference for Android
 // https://developers.google.com/cloud-messaging/http-server-ref
 func GetAndroidNotification(req PushNotification) gcm.HttpMessage {
-	notification := gcm.HttpMessage{}
+	notification := gcm.HttpMessage{
+		To: req.To,
+		CollapseKey: req.CollapseKey,
+		ContentAvailable: req.ContentAvailable,
+		DelayWhileIdle: req.DelayWhileIdle,
+		TimeToLive: req.TimeToLive,
+		RestrictedPackageName: req.RestrictedPackageName,
+		DryRun: req.DryRun,
+	}
 
 	notification.RegistrationIds = req.Tokens
 
-	if len(req.To) > 0 {
-		notification.To = req.To
-	}
-
 	if len(req.Priority) > 0 && req.Priority == "high" {
 		notification.Priority = "high"
-	}
-
-	if len(req.CollapseKey) > 0 {
-		notification.CollapseKey = req.CollapseKey
-	}
-
-	if req.ContentAvailable {
-		notification.ContentAvailable = true
-	}
-
-	if req.DelayWhileIdle {
-		notification.DelayWhileIdle = true
-	}
-
-	if req.TimeToLive > 0 {
-		notification.TimeToLive = req.TimeToLive
-	}
-
-	if len(req.RestrictedPackageName) > 0 {
-		notification.RestrictedPackageName = req.RestrictedPackageName
-	}
-
-	if req.DryRun {
-		notification.DryRun = true
 	}
 
 	// Add another field
