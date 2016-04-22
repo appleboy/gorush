@@ -29,6 +29,13 @@ type IosStatus struct {
 	PushError   int64 `json:"push_error"`
 }
 
+func getRedisInt64Result(key string) int64 {
+	val, _ := RedisClient.Get(key).Result()
+	count, _ := strconv.ParseInt(val, 10, 64)
+
+	return count
+}
+
 func initApp() {
 	RushStatus.TotalCount = 0
 	RushStatus.Ios.PushSuccess = 0
@@ -65,7 +72,7 @@ func addTotalCount(count int64) {
 	case "memory":
 		atomic.AddInt64(&RushStatus.TotalCount, count)
 	case "redis":
-		RedisClient.Set("key1", strconv.Itoa(int(count)), 0)
+		RedisClient.Set(gorushTotalCount, strconv.Itoa(int(count)), 0)
 	default:
 		atomic.AddInt64(&RushStatus.TotalCount, count)
 	}
@@ -76,7 +83,7 @@ func addIosSuccess(count int64) {
 	case "memory":
 		atomic.AddInt64(&RushStatus.Ios.PushSuccess, count)
 	case "redis":
-		RedisClient.Set("key2", strconv.Itoa(int(count)), 0)
+		RedisClient.Set(gorushIosSuccess, strconv.Itoa(int(count)), 0)
 	default:
 		atomic.AddInt64(&RushStatus.Ios.PushSuccess, count)
 	}
@@ -87,7 +94,7 @@ func addIosError(count int64) {
 	case "memory":
 		atomic.AddInt64(&RushStatus.Ios.PushError, count)
 	case "redis":
-		RedisClient.Set("key3", strconv.Itoa(int(count)), 0)
+		RedisClient.Set(gorushIosError, strconv.Itoa(int(count)), 0)
 	default:
 		atomic.AddInt64(&RushStatus.Ios.PushError, count)
 	}
@@ -99,7 +106,7 @@ func addAndroidSuccess(count int64) {
 		atomic.AddInt64(&RushStatus.Android.PushSuccess, count)
 	case "redis":
 
-		RedisClient.Set("key4", strconv.Itoa(int(count)), 0)
+		RedisClient.Set(gorushAndroidSuccess, strconv.Itoa(int(count)), 0)
 	default:
 		atomic.AddInt64(&RushStatus.Android.PushSuccess, count)
 	}
@@ -110,7 +117,7 @@ func addAndroidError(count int64) {
 	case "memory":
 		atomic.AddInt64(&RushStatus.Android.PushError, count)
 	case "redis":
-		RedisClient.Set("key5", strconv.Itoa(int(count)), 0)
+		RedisClient.Set(gorushAndroidError, strconv.Itoa(int(count)), 0)
 	default:
 		atomic.AddInt64(&RushStatus.Android.PushError, count)
 	}
@@ -122,8 +129,7 @@ func getTotalCount() int64 {
 	case "memory":
 		count = atomic.LoadInt64(&RushStatus.TotalCount)
 	case "redis":
-		val, _ := RedisClient.Get("key1").Result()
-		count, _ = strconv.ParseInt(val, 10, 64)
+		count = getRedisInt64Result(gorushAndroidError)
 	default:
 		count = atomic.LoadInt64(&RushStatus.TotalCount)
 	}
@@ -137,8 +143,7 @@ func getIosSuccess() int64 {
 	case "memory":
 		count = atomic.LoadInt64(&RushStatus.Ios.PushSuccess)
 	case "redis":
-		val, _ := RedisClient.Get("key2").Result()
-		count, _ = strconv.ParseInt(val, 10, 64)
+		count = getRedisInt64Result(gorushAndroidError)
 	default:
 		count = atomic.LoadInt64(&RushStatus.Ios.PushSuccess)
 	}
@@ -152,8 +157,7 @@ func getIosError() int64 {
 	case "memory":
 		count = atomic.LoadInt64(&RushStatus.Ios.PushError)
 	case "redis":
-		val, _ := RedisClient.Get("key3").Result()
-		count, _ = strconv.ParseInt(val, 10, 64)
+		count = getRedisInt64Result(gorushAndroidError)
 	default:
 		count = atomic.LoadInt64(&RushStatus.Ios.PushError)
 	}
@@ -167,8 +171,7 @@ func getAndroidSuccess() int64 {
 	case "memory":
 		count = atomic.LoadInt64(&RushStatus.Android.PushSuccess)
 	case "redis":
-		val, _ := RedisClient.Get("key4").Result()
-		count, _ = strconv.ParseInt(val, 10, 64)
+		count = getRedisInt64Result(gorushAndroidError)
 	default:
 		count = atomic.LoadInt64(&RushStatus.Android.PushSuccess)
 	}
@@ -182,8 +185,7 @@ func getAndroidError() int64 {
 	case "memory":
 		count = atomic.LoadInt64(&RushStatus.Android.PushError)
 	case "redis":
-		val, _ := RedisClient.Get("key5").Result()
-		count, _ = strconv.ParseInt(val, 10, 64)
+		count = getRedisInt64Result(gorushAndroidError)
 	default:
 		count = atomic.LoadInt64(&RushStatus.Android.PushError)
 	}

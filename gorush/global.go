@@ -22,6 +22,6 @@ var (
 	LogError *logrus.Logger
 	// RushStatus is notification status
 	RushStatus StatusApp
-	// Redis
+	// RedisClient is global variable for redis
 	RedisClient *redis.Client
 )

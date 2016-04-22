@@ -18,3 +18,12 @@ const (
 	// FailedPush is log block
 	FailedPush = "failed-push"
 )
+
+// Stat variable for redis
+const (
+	gorushTotalCount = "gorush-total-count"
+	gorushIosSuccess = "gorush-ios-success-count"
+	gorushIosError = "gorush-ios-error-count"
+	gorushAndroidSuccess = "gorush-android-success-count"
+	gorushAndroidError = "gorush-android-error-count"
+)
