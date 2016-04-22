@@ -13,6 +13,7 @@ type ConfYaml struct {
 	Android SectionAndroid `yaml:"android"`
 	Ios     SectionIos     `yaml:"ios"`
 	Log     SectionLog     `yaml:"log"`
+	Stat    SectionStat    `yaml:stat`
 }
 
 // SectionCore is sub seciont of config.
@@ -58,6 +59,19 @@ type SectionLog struct {
 	ErrorLevel  string `yaml:"error_level"`
 }
 
+// SectionStat is sub seciont of config.
+type SectionStat struct {
+	Engine string       `yaml:"service"`
+	Redis  SectionRedis `yaml:"redis"`
+}
+
+// SectionRedis is sub seciont of config.
+type SectionRedis struct {
+	Addr     string `yaml:"addr"`
+	Password string `yaml:"password"`
+	DB       int64  `yaml:"db"`
+}
+
 // BuildDefaultPushConf is default config setting.
 func BuildDefaultPushConf() ConfYaml {
 	var conf ConfYaml
@@ -94,6 +108,11 @@ func BuildDefaultPushConf() ConfYaml {
 	conf.Log.AccessLevel = "debug"
 	conf.Log.ErrorLog = "stderr"
 	conf.Log.ErrorLevel = "error"
+
+	conf.Stat.Engine = "memory"
+	conf.Stat.Redis.Addr = "localhost:6379"
+	conf.Stat.Redis.Password = ""
+	conf.Stat.Redis.DB = 0
 
 	return conf
 }

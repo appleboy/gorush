@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"github.com/Sirupsen/logrus"
 	apns "github.com/sideshow/apns2"
+	"gopkg.in/redis.v3"
 )
 
 var (
@@ -21,4 +22,6 @@ var (
 	LogError *logrus.Logger
 	// RushStatus is notification status
 	RushStatus StatusApp
+	// RedisClient is global variable for redis
+	RedisClient *redis.Client
 )

@@ -21,6 +21,7 @@ A push notification server using [Gin](https://github.com/gin-gonic/gin) framewo
 * Support notification queue and multiple workers.
 * Support `/api/stat/app` show notification success and failure counts.
 * Support `/api/config` show your yml config.
+* Support store app stat to [redis](http://redis.io/) or memory.
 
 See the [YAML config example](config/config.yml):
 
@@ -57,6 +58,13 @@ log:
   access_level: "debug"
   error_log: "stderr" # stderr: output to console, or define log path like "log/error_log"
   error_level: "error"
+
+stat:
+  engine: "memory" # support memory or redis
+  redis:
+    addr: "localhost:6379"
+    password: ""
+    db: 0
 ```
 
 ## Basic Usage

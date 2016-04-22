@@ -50,3 +50,66 @@ func TestAddAndroidError(t *testing.T) {
 
 	assert.Equal(t, int64(1000), val)
 }
+
+func TestRedisServerSuccess(t *testing.T) {
+	PushConf.Stat.Redis.Addr = "localhost:6379"
+
+	err := initRedis()
+
+	assert.NoError(t, err)
+}
+
+func TestRedisServerError(t *testing.T) {
+	PushConf.Stat.Redis.Addr = "localhost:6370"
+
+	err := initRedis()
+
+	assert.Error(t, err)
+}
+
+func TestStatForRedisEngine(t *testing.T) {
+	var val int64
+	PushConf.Stat.Engine = "redis"
+	PushConf.Stat.Redis.Addr = "localhost:6379"
+	InitAppStatus()
+
+	addTotalCount(1000)
+	addIosSuccess(1000)
+	addIosError(1000)
+	addAndroidSuccess(1000)
+	addAndroidError(1000)
+
+	val = getTotalCount()
+	assert.Equal(t, int64(1000), val)
+	val = getIosSuccess()
+	assert.Equal(t, int64(1000), val)
+	val = getIosError()
+	assert.Equal(t, int64(1000), val)
+	val = getAndroidSuccess()
+	assert.Equal(t, int64(1000), val)
+	val = getAndroidError()
+	assert.Equal(t, int64(1000), val)
+}
+
+func TestDefaultEngine(t *testing.T) {
+	var val int64
+	PushConf.Stat.Engine = "test"
+	InitAppStatus()
+
+	addTotalCount(1000)
+	addIosSuccess(1000)
+	addIosError(1000)
+	addAndroidSuccess(1000)
+	addAndroidError(1000)
+
+	val = getTotalCount()
+	assert.Equal(t, int64(1000), val)
+	val = getIosSuccess()
+	assert.Equal(t, int64(1000), val)
+	val = getIosError()
+	assert.Equal(t, int64(1000), val)
+	val = getAndroidSuccess()
+	assert.Equal(t, int64(1000), val)
+	val = getAndroidError()
+	assert.Equal(t, int64(1000), val)
+}

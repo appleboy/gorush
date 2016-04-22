@@ -7,6 +7,6 @@ RUN mkdir -p /tmp/build
 Add build.tar.gz /tmp/build/
 WORKDIR /tmp/build
 RUN go get -v -d
-RUN GOOS=linux GOARCH=amd64 go build -ldflags="-w" -o bin/gorush gorush.go
+RUN GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o bin/gorush gorush.go
 
 CMD tar -C bin -czf - gorush
