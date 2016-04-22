@@ -48,6 +48,12 @@ func InitAppStatus() {
 			Password: PushConf.Stat.Redis.Password,
 			DB:       PushConf.Stat.Redis.DB,
 		})
+
+		RushStatus.TotalCount = getTotalCount()
+		RushStatus.Ios.PushSuccess = getIosSuccess()
+		RushStatus.Ios.PushError = getIosError()
+		RushStatus.Android.PushSuccess = getAndroidSuccess()
+		RushStatus.Android.PushError = getAndroidError()
 	default:
 		initApp()
 	}
