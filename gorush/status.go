@@ -44,18 +44,29 @@ func initApp() {
 	RushStatus.Android.PushError = 0
 }
 
-func initRedis() {
+func initRedis() error {
 	RedisClient = redis.NewClient(&redis.Options{
 		Addr:     PushConf.Stat.Redis.Addr,
 		Password: PushConf.Stat.Redis.Password,
 		DB:       PushConf.Stat.Redis.DB,
 	})
 
+	_, err := RedisClient.Ping().Result()
+
+	if err != nil {
+		// redis server error
+		LogError.Error("Can't connect redis server: " + err.Error())
+
+		return err
+	}
+
 	RushStatus.TotalCount = getTotalCount()
 	RushStatus.Ios.PushSuccess = getIosSuccess()
 	RushStatus.Ios.PushError = getIosError()
 	RushStatus.Android.PushSuccess = getAndroidSuccess()
 	RushStatus.Android.PushError = getAndroidError()
+
+	return nil
 }
 
 // InitAppStatus for initialize app status

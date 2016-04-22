@@ -51,6 +51,22 @@ func TestAddAndroidError(t *testing.T) {
 	assert.Equal(t, int64(1000), val)
 }
 
+func TestRedisServerSuccess(t *testing.T) {
+	PushConf.Stat.Redis.Addr = "localhost:6379"
+
+	err := initRedis()
+
+	assert.NoError(t, err)
+}
+
+func TestRedisServerError(t *testing.T) {
+	PushConf.Stat.Redis.Addr = "localhost:6370"
+
+	err := initRedis()
+
+	assert.Error(t, err)
+}
+
 func TestStatForRedisEngine(t *testing.T) {
 	var val int64
 	PushConf.Stat.Engine = "redis"
