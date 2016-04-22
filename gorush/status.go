@@ -44,23 +44,27 @@ func initApp() {
 	RushStatus.Android.PushError = 0
 }
 
+func initRedis() {
+	RedisClient = redis.NewClient(&redis.Options{
+		Addr:     PushConf.Stat.Redis.Addr,
+		Password: PushConf.Stat.Redis.Password,
+		DB:       PushConf.Stat.Redis.DB,
+	})
+
+	RushStatus.TotalCount = getTotalCount()
+	RushStatus.Ios.PushSuccess = getIosSuccess()
+	RushStatus.Ios.PushError = getIosError()
+	RushStatus.Android.PushSuccess = getAndroidSuccess()
+	RushStatus.Android.PushError = getAndroidError()
+}
+
 // InitAppStatus for initialize app status
 func InitAppStatus() {
 	switch PushConf.Stat.Engine {
 	case "memory":
 		initApp()
 	case "redis":
-		RedisClient = redis.NewClient(&redis.Options{
-			Addr:     PushConf.Stat.Redis.Addr,
-			Password: PushConf.Stat.Redis.Password,
-			DB:       PushConf.Stat.Redis.DB,
-		})
-
-		RushStatus.TotalCount = getTotalCount()
-		RushStatus.Ios.PushSuccess = getIosSuccess()
-		RushStatus.Ios.PushError = getIosError()
-		RushStatus.Android.PushSuccess = getAndroidSuccess()
-		RushStatus.Android.PushError = getAndroidError()
+		initRedis()
 	default:
 		initApp()
 	}
