@@ -57,6 +57,13 @@ log:
   access_level: "debug"
   error_log: "stderr" # stderr: output to console, or define log path like "log/error_log"
   error_level: "error"
+
+stat:
+  engine: "memory" # support memory or redis
+  redis:
+    addr: "localhost:6379"
+    password: ""
+    db: 0
 ```
 
 ## Basic Usage
