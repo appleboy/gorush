@@ -69,7 +69,7 @@ type SectionStat struct {
 type SectionRedis struct {
 	Addr     string `yaml:"addr"`
 	Password string `yaml:"password"`
-	DB       string `yaml:"db"`
+	DB       int64  `yaml:"db"`
 }
 
 // BuildDefaultPushConf is default config setting.
@@ -112,7 +112,7 @@ func BuildDefaultPushConf() ConfYaml {
 	conf.Stat.Engine = "memory"
 	conf.Stat.Redis.Addr = "localhost:6379"
 	conf.Stat.Redis.Password = ""
-	conf.Stat.Redis.DB = "0"
+	conf.Stat.Redis.DB = 0
 
 	return conf
 }
