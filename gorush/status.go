@@ -1,12 +1,12 @@
 package gorush
 
 import (
+	"github.com/asdine/storm"
 	"github.com/gin-gonic/gin"
 	"gopkg.in/redis.v3"
 	"net/http"
 	"strconv"
 	"sync/atomic"
-	"github.com/asdine/storm"
 )
 
 // StatusApp is app status structure

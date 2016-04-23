@@ -61,8 +61,8 @@ type SectionLog struct {
 
 // SectionStat is sub seciont of config.
 type SectionStat struct {
-	Engine string       `yaml:"service"`
-	Redis  SectionRedis `yaml:"redis"`
+	Engine string        `yaml:"service"`
+	Redis  SectionRedis  `yaml:"redis"`
 	BoltDB SectionBoltDB `yaml:"boltdb"`
 }
 
@@ -75,7 +75,7 @@ type SectionRedis struct {
 
 // SectionBoltDB is sub seciont of config.
 type SectionBoltDB struct {
-	Path     string `yaml:"path"`
+	Path   string `yaml:"path"`
 	Bucket string `yaml:"bucket"`
 }
 
