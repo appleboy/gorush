@@ -60,11 +60,14 @@ log:
   error_level: "error"
 
 stat:
-  engine: "memory" # support memory or redis
+  engine: "memory" # support memory, redis or boltdb
   redis:
     addr: "localhost:6379"
     password: ""
     db: 0
+  boltdb:
+    path: "gorush.db"
+    bucket: "gorush"
 ```
 
 ## Basic Usage

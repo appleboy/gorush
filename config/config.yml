@@ -37,3 +37,6 @@ stat:
     addr: "localhost:6379"
     password: ""
     db: 0
+  boltdb:
+    path: "gorush.db"
+    bucket: "gorush"
