@@ -32,3 +32,4 @@ coverage.out
 gorush/log/*.log
 build.tar.gz
 gorush.tar.gz
+gorush.db
