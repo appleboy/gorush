@@ -30,13 +30,6 @@ type IosStatus struct {
 	PushError   int64 `json:"push_error"`
 }
 
-func getRedisInt64Result(key string) int64 {
-	val, _ := RedisClient.Get(key).Result()
-	count, _ := strconv.ParseInt(val, 10, 64)
-
-	return count
-}
-
 func initApp() {
 	RushStatus.TotalCount = 0
 	RushStatus.Ios.PushSuccess = 0
@@ -91,6 +84,11 @@ func InitAppStatus() {
 		initApp()
 	}
 
+}
+
+func getRedisInt64Result(key string, count *int64) {
+	val, _ := RedisClient.Get(key).Result()
+	*count, _ = strconv.ParseInt(val, 10, 64)
 }
 
 func boltdbSet(key string, count int64) {
@@ -176,7 +174,7 @@ func getTotalCount() int64 {
 	case "memory":
 		count = atomic.LoadInt64(&RushStatus.TotalCount)
 	case "redis":
-		count = getRedisInt64Result(gorushTotalCount)
+		getRedisInt64Result(gorushTotalCount, &count)
 	case "boltdb":
 		boltdbGet(gorushTotalCount, &count)
 	default:
@@ -192,7 +190,7 @@ func getIosSuccess() int64 {
 	case "memory":
 		count = atomic.LoadInt64(&RushStatus.Ios.PushSuccess)
 	case "redis":
-		count = getRedisInt64Result(gorushIosSuccess)
+		getRedisInt64Result(gorushIosSuccess, &count)
 	case "boltdb":
 		boltdbGet(gorushIosSuccess, &count)
 	default:
@@ -208,7 +206,7 @@ func getIosError() int64 {
 	case "memory":
 		count = atomic.LoadInt64(&RushStatus.Ios.PushError)
 	case "redis":
-		count = getRedisInt64Result(gorushIosError)
+		getRedisInt64Result(gorushIosError, &count)
 	case "boltdb":
 		boltdbGet(gorushIosError, &count)
 	default:
@@ -224,7 +222,7 @@ func getAndroidSuccess() int64 {
 	case "memory":
 		count = atomic.LoadInt64(&RushStatus.Android.PushSuccess)
 	case "redis":
-		count = getRedisInt64Result(gorushAndroidSuccess)
+		getRedisInt64Result(gorushAndroidSuccess, &count)
 	case "boltdb":
 		boltdbGet(gorushAndroidSuccess, &count)
 	default:
@@ -240,7 +238,7 @@ func getAndroidError() int64 {
 	case "memory":
 		count = atomic.LoadInt64(&RushStatus.Android.PushError)
 	case "redis":
-		count = getRedisInt64Result(gorushAndroidError)
+		getRedisInt64Result(gorushAndroidError, &count)
 	case "boltdb":
 		boltdbGet(gorushAndroidError, &count)
 	default:
