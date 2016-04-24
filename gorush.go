@@ -82,6 +82,12 @@ func main() {
 			Message:  *message,
 		}
 
+		err := gorush.CheckGCMMessage(req)
+
+		if err != nil {
+			gorush.LogError.Fatal(err)
+		}
+
 		gorush.InitAppStatus()
 		gorush.PushToAndroid(req)
 

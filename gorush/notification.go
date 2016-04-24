@@ -77,6 +77,37 @@ type PushNotification struct {
 	Alert      Alert    `json:"alert,omitempty"`
 }
 
+// CheckGCMMessage for check GCM Message
+func CheckGCMMessage(req PushNotification) error {
+	var msg string
+	if req.Message == "" {
+		msg = "the message must not be empty"
+		LogAccess.Debug(msg)
+		return errors.New(msg)
+	}
+
+	if len(req.Tokens) == 0 {
+		msg = "the message must specify at least one registration ID"
+		LogAccess.Debug(msg)
+		return errors.New(msg)
+	}
+
+	if len(req.Tokens) > 1000 {
+		msg = "the message may specify at most 1000 registration IDs"
+		LogAccess.Debug(msg)
+		return errors.New(msg)
+	}
+
+	if req.TimeToLive < 0 || 2419200 < req.TimeToLive {
+		msg = "the message's TimeToLive field must be an integer " +
+			"between 0 and 2419200 (4 weeks)"
+		LogAccess.Debug(msg)
+		return errors.New(msg)
+	}
+
+	return nil
+}
+
 // CheckPushConf provide check your yml config.
 func CheckPushConf() error {
 	if !PushConf.Ios.Enabled && !PushConf.Android.Enabled {
@@ -347,6 +378,13 @@ func GetAndroidNotification(req PushNotification) gcm.HttpMessage {
 // PushToAndroid provide send notification to Android server.
 func PushToAndroid(req PushNotification) bool {
 	var APIKey string
+
+	// check message
+	err := CheckGCMMessage(req)
+
+	if err != nil {
+		return false
+	}
 
 	notification := GetAndroidNotification(req)
 

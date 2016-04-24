@@ -454,3 +454,72 @@ func TestAPNSClientProdHost(t *testing.T) {
 
 	assert.Equal(t, apns2.HostProduction, ApnsClient.Host)
 }
+
+func TestGCMMessage(t *testing.T) {
+	var req PushNotification
+	var err error
+
+	// the message must not be empty
+	req = PushNotification{
+		Message: "",
+	}
+
+	err = CheckGCMMessage(req)
+	assert.Error(t, err)
+
+	// the message must specify at least one registration ID
+	req = PushNotification{
+		Message: "Test",
+		Tokens: []string{},
+	}
+
+	err = CheckGCMMessage(req)
+	assert.Error(t, err)
+
+	// the message may specify at most 1000 registration IDs
+	req = PushNotification{
+		Message: "Test",
+		Tokens: make([]string, 1001),
+	}
+
+	err = CheckGCMMessage(req)
+	assert.Error(t, err)
+
+	// the message's TimeToLive field must be an integer
+	// between 0 and 2419200 (4 weeks)
+	req = PushNotification{
+		Message: "Test",
+		Tokens: []string{"XXXXXXXXX"},
+		TimeToLive: 2419201,
+	}
+
+	err = CheckGCMMessage(req)
+	assert.Error(t, err)
+
+	// Pass
+	req = PushNotification{
+		Message: "Test",
+		Tokens: []string{"XXXXXXXXX"},
+		TimeToLive: 86400,
+	}
+
+	err = CheckGCMMessage(req)
+	assert.NoError(t, err)
+}
+
+func TestCheckAndroidMessage(t *testing.T) {
+	PushConf = BuildDefaultPushConf()
+
+	PushConf.Android.Enabled = true
+	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+
+	req := PushNotification{
+		Tokens:   []string{"aaaaaa", "bbbbb"},
+		Platform: 2,
+		Message:  "Welcome",
+		TimeToLive: 2419201,
+	}
+
+	success := PushToAndroid(req)
+	assert.False(t, success)
+}
