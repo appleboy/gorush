@@ -156,12 +156,12 @@ func TestOutOfRangeMaxNotifications(t *testing.T) {
 			"notifications": []gofight.D{
 				{
 					"tokens":   []string{"aaaaa", "bbbbb"},
-					"platform": 2,
+					"platform": PlatFormAndroid,
 					"message":  "Welcome",
 				},
 				{
 					"tokens":   []string{"aaaaa", "bbbbb"},
-					"platform": 2,
+					"platform": PlatFormAndroid,
 					"message":  "Welcome",
 				},
 			},
@@ -187,7 +187,7 @@ func TestSuccessPushHandler(t *testing.T) {
 			"notifications": []gofight.D{
 				{
 					"tokens":   []string{androidToken, "bbbbb"},
-					"platform": 2,
+					"platform": PlatFormAndroid,
 					"message":  "Welcome",
 				},
 			},

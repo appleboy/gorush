@@ -241,7 +241,7 @@ func TestPushToAndroidWrongAPIKey(t *testing.T) {
 
 	req := PushNotification{
 		Tokens:   []string{"aaaaaa", "bbbbb"},
-		Platform: 2,
+		Platform: PlatFormAndroid,
 		Message:  "Welcome",
 	}
 
@@ -257,7 +257,7 @@ func TestPushToAndroidWrongToken(t *testing.T) {
 
 	req := PushNotification{
 		Tokens:   []string{"aaaaaa", "bbbbb"},
-		Platform: 2,
+		Platform: PlatFormAndroid,
 		Message:  "Welcome",
 	}
 
@@ -277,7 +277,7 @@ func TestPushToAndroidRightTokenForJSONLog(t *testing.T) {
 
 	req := PushNotification{
 		Tokens:   []string{androidToken, "bbbbb"},
-		Platform: 2,
+		Platform: PlatFormAndroid,
 		Message:  "Welcome",
 	}
 
@@ -295,7 +295,7 @@ func TestPushToAndroidRightTokenForStringLog(t *testing.T) {
 
 	req := PushNotification{
 		Tokens:   []string{androidToken, "bbbbb"},
-		Platform: 2,
+		Platform: PlatFormAndroid,
 		Message:  "Welcome",
 	}
 
@@ -313,7 +313,7 @@ func TestOverwriteAndroidAPIKey(t *testing.T) {
 
 	req := PushNotification{
 		Tokens:   []string{androidToken, "bbbbb"},
-		Platform: 2,
+		Platform: PlatFormAndroid,
 		Message:  "Welcome",
 		// overwrite android api key
 		APIKey: "1234",
@@ -342,13 +342,13 @@ func TestSenMultipleNotifications(t *testing.T) {
 			//ios
 			{
 				Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
-				Platform: 1,
+				Platform: PlatFormIos,
 				Message:  "Welcome",
 			},
 			// android
 			{
 				Tokens:   []string{androidToken, "bbbbb"},
-				Platform: 2,
+				Platform: PlatFormAndroid,
 				Message:  "Welcome",
 			},
 		},
@@ -375,13 +375,13 @@ func TestDisabledAndroidNotifications(t *testing.T) {
 			//ios
 			{
 				Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
-				Platform: 1,
+				Platform: PlatFormIos,
 				Message:  "Welcome",
 			},
 			// android
 			{
 				Tokens:   []string{androidToken, "bbbbb"},
-				Platform: 2,
+				Platform: PlatFormAndroid,
 				Message:  "Welcome",
 			},
 		},
@@ -408,13 +408,13 @@ func TestDisabledIosNotifications(t *testing.T) {
 			//ios
 			{
 				Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
-				Platform: 1,
+				Platform: PlatFormIos,
 				Message:  "Welcome",
 			},
 			// android
 			{
 				Tokens:   []string{androidToken, "bbbbb"},
-				Platform: 2,
+				Platform: PlatFormAndroid,
 				Message:  "Welcome",
 			},
 		},
@@ -453,4 +453,85 @@ func TestAPNSClientProdHost(t *testing.T) {
 	InitAPNSClient()
 
 	assert.Equal(t, apns2.HostProduction, ApnsClient.Host)
+}
+
+func TestGCMMessage(t *testing.T) {
+	var req PushNotification
+	var err error
+
+	// the message must not be empty
+	req = PushNotification{
+		Message: "",
+	}
+
+	err = CheckMessage(req)
+	assert.Error(t, err)
+
+	// the message must specify at least one registration ID
+	req = PushNotification{
+		Message: "Test",
+		Tokens: []string{},
+	}
+
+	err = CheckMessage(req)
+	assert.Error(t, err)
+
+	// the token must not be empty
+	req = PushNotification{
+		Message: "Test",
+		Tokens: []string{""},
+	}
+
+	err = CheckMessage(req)
+	assert.Error(t, err)
+
+	// the message may specify at most 1000 registration IDs
+	req = PushNotification{
+		Message: "Test",
+		Platform: PlatFormAndroid,
+		Tokens: make([]string, 1001),
+	}
+
+	err = CheckMessage(req)
+	assert.Error(t, err)
+
+	// the message's TimeToLive field must be an integer
+	// between 0 and 2419200 (4 weeks)
+	req = PushNotification{
+		Message: "Test",
+		Platform: PlatFormAndroid,
+		Tokens: []string{"XXXXXXXXX"},
+		TimeToLive: 2419201,
+	}
+
+	err = CheckMessage(req)
+	assert.Error(t, err)
+
+	// Pass
+	req = PushNotification{
+		Message: "Test",
+		Platform: PlatFormAndroid,
+		Tokens: []string{"XXXXXXXXX"},
+		TimeToLive: 86400,
+	}
+
+	err = CheckMessage(req)
+	assert.NoError(t, err)
+}
+
+func TestCheckAndroidMessage(t *testing.T) {
+	PushConf = BuildDefaultPushConf()
+
+	PushConf.Android.Enabled = true
+	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+
+	req := PushNotification{
+		Tokens:   []string{"aaaaaa", "bbbbb"},
+		Platform: PlatFormAndroid,
+		Message:  "Welcome",
+		TimeToLive: 2419201,
+	}
+
+	success := PushToAndroid(req)
+	assert.False(t, success)
 }

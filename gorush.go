@@ -72,14 +72,17 @@ func main() {
 
 	// send android notification
 	if *android {
-
-		checkInput(*token, *message)
-
 		gorush.PushConf.Android.Enabled = true
 		req := gorush.PushNotification{
 			Tokens:   []string{*token},
 			Platform: gorush.PlatFormAndroid,
 			Message:  *message,
+		}
+
+		err := gorush.CheckMessage(req)
+
+		if err != nil {
+			gorush.LogError.Fatal(err)
 		}
 
 		gorush.InitAppStatus()
@@ -90,8 +93,6 @@ func main() {
 
 	// send android notification
 	if *ios {
-		checkInput(*token, *message)
-
 		if *production {
 			gorush.PushConf.Ios.Production = true
 		}
@@ -101,6 +102,12 @@ func main() {
 			Tokens:   []string{*token},
 			Platform: gorush.PlatFormIos,
 			Message:  *message,
+		}
+
+		err := gorush.CheckMessage(req)
+
+		if err != nil {
+			gorush.LogError.Fatal(err)
 		}
 
 		gorush.InitAppStatus()
