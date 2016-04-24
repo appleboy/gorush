@@ -77,7 +77,7 @@ type PushNotification struct {
 	Alert      Alert    `json:"alert,omitempty"`
 }
 
-// CheckGCMMessage for check GCM Message
+// CheckMessage for check request message
 func CheckMessage(req PushNotification) error {
 	var msg string
 	if req.Message == "" {
@@ -104,6 +104,7 @@ func CheckMessage(req PushNotification) error {
 		return errors.New(msg)
 	}
 
+	// ref: https://developers.google.com/cloud-messaging/http-server-ref
 	if req.Platform == PlatFormAndroid && (req.TimeToLive < 0 || 2419200 < req.TimeToLive) {
 		msg = "the message's TimeToLive field must be an integer " +
 			"between 0 and 2419200 (4 weeks)"
