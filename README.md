@@ -20,8 +20,8 @@ A push notification server using [Gin](https://github.com/gin-gonic/gin) framewo
 * Support [HTTP/2](https://http2.github.io/) or HTTP/1.1 protocol.
 * Support notification queue and multiple workers.
 * Support `/api/stat/app` show notification success and failure counts.
-* Support `/api/config` show your yml config.
-* Support store app stat to memory, [redis](http://redis.io/) or [BoltDB](https://github.com/boltdb/bolt).
+* Support `/api/config` show your [YAML](https://en.wikipedia.org/wiki/YAML) config.
+* Support store app stat to memory, [Redis](http://redis.io/) or [BoltDB](https://github.com/boltdb/bolt).
 
 See the [YAML config example](config/config.yml):
 
@@ -95,7 +95,7 @@ $ gorush -android -m="your message" -k="API Key" -t="Device token"
 Send single notification with the following command.
 
 ```bash
-$ gorush -ios -m="your message" -i="API Key" -t="Device token"
+$ gorush -ios -m="your message" -i="your certificate path" -t="device token"
 ```
 
 * `-m`: Notification message.
@@ -105,7 +105,7 @@ $ gorush -ios -m="your message" -i="API Key" -t="Device token"
 The default endpoint is APNs development. Please add `-production` flag for APNs production push endpoint.
 
 ```bash
-$ gorush -ios -m="your message" -i="API Key" -t="Device token" -production
+$ gorush -ios -m="your message" -i="your certificate path" -t="device token" -production
 ```
 
 ## Run gorush web server
