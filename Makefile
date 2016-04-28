@@ -1,7 +1,5 @@
 .PHONY: all
 
-VERSION=0.0.1
-
 DEPS := $(wildcard *.go)
 BUILD_IMAGE := "gorush-build"
 TEST_IMAGE := "gorush-testing"

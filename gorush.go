@@ -27,6 +27,7 @@ func main() {
 	android := flag.Bool("android", false, "send android notification")
 	ios := flag.Bool("ios", false, "send ios notification")
 	production := flag.Bool("production", false, "production mode in iOS")
+	topic := flag.String("topic", "", "apns topic in iOS")
 
 	flag.Parse()
 
@@ -102,6 +103,10 @@ func main() {
 			Tokens:   []string{*token},
 			Platform: gorush.PlatFormIos,
 			Message:  *message,
+		}
+
+		if *topic != "" {
+			req.Topic = *topic
 		}
 
 		err := gorush.CheckMessage(req)
