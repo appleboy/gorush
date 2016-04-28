@@ -95,12 +95,13 @@ $ gorush -android -m="your message" -k="API Key" -t="Device token"
 Send single notification with the following command.
 
 ```bash
-$ gorush -ios -m="your message" -i="your certificate path" -t="device token"
+$ gorush -ios -m="your message" -i="your certificate path" -t="device token" -topic="apns topic"
 ```
 
 * `-m`: Notification message.
 * `-i`: Apple Push Notification Certificate path (`pem` file).
 * `-t`: Device token.
+* `-topic`: The topic of the remote notification.
 
 The default endpoint is APNs development. Please add `-production` flag for APNs production push endpoint.
 
