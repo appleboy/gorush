@@ -2,7 +2,7 @@ package gorush
 
 const (
 	// Version is gorush server version.
-	Version = "1.1.0"
+	Version = "1.2.1"
 )
 
 const (
