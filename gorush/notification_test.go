@@ -470,7 +470,7 @@ func TestGCMMessage(t *testing.T) {
 	// the message must specify at least one registration ID
 	req = PushNotification{
 		Message: "Test",
-		Tokens: []string{},
+		Tokens:  []string{},
 	}
 
 	err = CheckMessage(req)
@@ -479,7 +479,7 @@ func TestGCMMessage(t *testing.T) {
 	// the token must not be empty
 	req = PushNotification{
 		Message: "Test",
-		Tokens: []string{""},
+		Tokens:  []string{""},
 	}
 
 	err = CheckMessage(req)
@@ -487,9 +487,9 @@ func TestGCMMessage(t *testing.T) {
 
 	// the message may specify at most 1000 registration IDs
 	req = PushNotification{
-		Message: "Test",
+		Message:  "Test",
 		Platform: PlatFormAndroid,
-		Tokens: make([]string, 1001),
+		Tokens:   make([]string, 1001),
 	}
 
 	err = CheckMessage(req)
@@ -498,9 +498,9 @@ func TestGCMMessage(t *testing.T) {
 	// the message's TimeToLive field must be an integer
 	// between 0 and 2419200 (4 weeks)
 	req = PushNotification{
-		Message: "Test",
-		Platform: PlatFormAndroid,
-		Tokens: []string{"XXXXXXXXX"},
+		Message:    "Test",
+		Platform:   PlatFormAndroid,
+		Tokens:     []string{"XXXXXXXXX"},
 		TimeToLive: 2419201,
 	}
 
@@ -509,9 +509,9 @@ func TestGCMMessage(t *testing.T) {
 
 	// Pass
 	req = PushNotification{
-		Message: "Test",
-		Platform: PlatFormAndroid,
-		Tokens: []string{"XXXXXXXXX"},
+		Message:    "Test",
+		Platform:   PlatFormAndroid,
+		Tokens:     []string{"XXXXXXXXX"},
 		TimeToLive: 86400,
 	}
 
@@ -526,9 +526,9 @@ func TestCheckAndroidMessage(t *testing.T) {
 	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
 
 	req := PushNotification{
-		Tokens:   []string{"aaaaaa", "bbbbb"},
-		Platform: PlatFormAndroid,
-		Message:  "Welcome",
+		Tokens:     []string{"aaaaaa", "bbbbb"},
+		Platform:   PlatFormAndroid,
+		Message:    "Welcome",
 		TimeToLive: 2419201,
 	}
 
