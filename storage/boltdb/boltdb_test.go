@@ -1,7 +1,7 @@
 package boltdb
 
 import (
-	"github.com/appleboy/gorush/gorush"
+	c "github.com/appleboy/gorush/gorush/config"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -9,32 +9,32 @@ import (
 func TestRedisEngine(t *testing.T) {
 	var val int64
 
-	config := gorush.BuildDefaultPushConf()
+	config := c.BuildDefaultPushConf()
 
-	boltDB := New(config, gorush.StatusApp{})
-	boltDB.initBoltDB()
-	boltDB.resetBoltDB()
+	boltDB := New(config)
+	boltDB.Init()
+	boltDB.Reset()
 
-	boltDB.addTotalCount(10)
-	val = boltDB.getTotalCount()
+	boltDB.AddTotalCount(10)
+	val = boltDB.GetTotalCount()
 	assert.Equal(t, int64(10), val)
-	boltDB.addTotalCount(10)
-	val = boltDB.getTotalCount()
+	boltDB.AddTotalCount(10)
+	val = boltDB.GetTotalCount()
 	assert.Equal(t, int64(20), val)
 
-	boltDB.addIosSuccess(20)
-	val = boltDB.getIosSuccess()
+	boltDB.AddIosSuccess(20)
+	val = boltDB.GetIosSuccess()
 	assert.Equal(t, int64(20), val)
 
-	boltDB.addIosError(30)
-	val = boltDB.getIosError()
+	boltDB.AddIosError(30)
+	val = boltDB.GetIosError()
 	assert.Equal(t, int64(30), val)
 
-	boltDB.addAndroidSuccess(40)
-	val = boltDB.getAndroidSuccess()
+	boltDB.AddAndroidSuccess(40)
+	val = boltDB.GetAndroidSuccess()
 	assert.Equal(t, int64(40), val)
 
-	boltDB.addAndroidError(50)
-	val = boltDB.getAndroidError()
+	boltDB.AddAndroidError(50)
+	val = boltDB.GetAndroidError()
 	assert.Equal(t, int64(50), val)
 }

@@ -2,6 +2,7 @@ package gorush
 
 import (
 	"encoding/json"
+	"github.com/appleboy/gorush/gorush/config"
 	"github.com/buger/jsonparser"
 	"github.com/google/go-gcm"
 	"github.com/sideshow/apns2"
@@ -13,7 +14,7 @@ import (
 )
 
 func TestDisabledAndroidIosConf(t *testing.T) {
-	PushConf = BuildDefaultPushConf()
+	PushConf = config.BuildDefaultPushConf()
 
 	err := CheckPushConf()
 
@@ -22,7 +23,7 @@ func TestDisabledAndroidIosConf(t *testing.T) {
 }
 
 func TestMissingIOSCertificate(t *testing.T) {
-	PushConf = BuildDefaultPushConf()
+	PushConf = config.BuildDefaultPushConf()
 
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.PemKeyPath = ""
@@ -34,7 +35,7 @@ func TestMissingIOSCertificate(t *testing.T) {
 }
 
 func TestMissingAndroidAPIKey(t *testing.T) {
-	PushConf = BuildDefaultPushConf()
+	PushConf = config.BuildDefaultPushConf()
 
 	PushConf.Android.Enabled = true
 	PushConf.Android.APIKey = ""
@@ -46,7 +47,7 @@ func TestMissingAndroidAPIKey(t *testing.T) {
 }
 
 func TestCorrectConf(t *testing.T) {
-	PushConf = BuildDefaultPushConf()
+	PushConf = config.BuildDefaultPushConf()
 
 	PushConf.Android.Enabled = true
 	PushConf.Android.APIKey = "xxxxx"
@@ -217,11 +218,12 @@ func TestAndroidNotificationStructure(t *testing.T) {
 }
 
 func TestPushToIOS(t *testing.T) {
-	PushConf = BuildDefaultPushConf()
+	PushConf = config.BuildDefaultPushConf()
 
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.PemKeyPath = "../certificate/certificate-valid.pem"
 	InitAPNSClient()
+	InitAppStatus()
 
 	req := PushNotification{
 		Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
@@ -234,7 +236,7 @@ func TestPushToIOS(t *testing.T) {
 }
 
 func TestPushToAndroidWrongAPIKey(t *testing.T) {
-	PushConf = BuildDefaultPushConf()
+	PushConf = config.BuildDefaultPushConf()
 
 	PushConf.Android.Enabled = true
 	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY") + "a"
@@ -250,7 +252,7 @@ func TestPushToAndroidWrongAPIKey(t *testing.T) {
 }
 
 func TestPushToAndroidWrongToken(t *testing.T) {
-	PushConf = BuildDefaultPushConf()
+	PushConf = config.BuildDefaultPushConf()
 
 	PushConf.Android.Enabled = true
 	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
@@ -266,7 +268,7 @@ func TestPushToAndroidWrongToken(t *testing.T) {
 }
 
 func TestPushToAndroidRightTokenForJSONLog(t *testing.T) {
-	PushConf = BuildDefaultPushConf()
+	PushConf = config.BuildDefaultPushConf()
 
 	PushConf.Android.Enabled = true
 	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
@@ -286,7 +288,7 @@ func TestPushToAndroidRightTokenForJSONLog(t *testing.T) {
 }
 
 func TestPushToAndroidRightTokenForStringLog(t *testing.T) {
-	PushConf = BuildDefaultPushConf()
+	PushConf = config.BuildDefaultPushConf()
 
 	PushConf.Android.Enabled = true
 	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
@@ -304,7 +306,7 @@ func TestPushToAndroidRightTokenForStringLog(t *testing.T) {
 }
 
 func TestOverwriteAndroidAPIKey(t *testing.T) {
-	PushConf = BuildDefaultPushConf()
+	PushConf = config.BuildDefaultPushConf()
 
 	PushConf.Android.Enabled = true
 	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
@@ -324,7 +326,7 @@ func TestOverwriteAndroidAPIKey(t *testing.T) {
 }
 
 func TestSenMultipleNotifications(t *testing.T) {
-	PushConf = BuildDefaultPushConf()
+	PushConf = config.BuildDefaultPushConf()
 
 	InitWorkers(2, 2)
 
@@ -359,7 +361,7 @@ func TestSenMultipleNotifications(t *testing.T) {
 }
 
 func TestDisabledAndroidNotifications(t *testing.T) {
-	PushConf = BuildDefaultPushConf()
+	PushConf = config.BuildDefaultPushConf()
 
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.PemKeyPath = "../certificate/certificate-valid.pem"
@@ -392,7 +394,7 @@ func TestDisabledAndroidNotifications(t *testing.T) {
 }
 
 func TestDisabledIosNotifications(t *testing.T) {
-	PushConf = BuildDefaultPushConf()
+	PushConf = config.BuildDefaultPushConf()
 
 	PushConf.Ios.Enabled = false
 	PushConf.Ios.PemKeyPath = "../certificate/certificate-valid.pem"
@@ -425,7 +427,7 @@ func TestDisabledIosNotifications(t *testing.T) {
 }
 
 func TestMissingIosCertificate(t *testing.T) {
-	PushConf = BuildDefaultPushConf()
+	PushConf = config.BuildDefaultPushConf()
 
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.PemKeyPath = "test"
@@ -435,7 +437,7 @@ func TestMissingIosCertificate(t *testing.T) {
 }
 
 func TestAPNSClientDevHost(t *testing.T) {
-	PushConf = BuildDefaultPushConf()
+	PushConf = config.BuildDefaultPushConf()
 
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.PemKeyPath = "../certificate/certificate-valid.pem"
@@ -445,7 +447,7 @@ func TestAPNSClientDevHost(t *testing.T) {
 }
 
 func TestAPNSClientProdHost(t *testing.T) {
-	PushConf = BuildDefaultPushConf()
+	PushConf = config.BuildDefaultPushConf()
 
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.Production = true
@@ -520,7 +522,7 @@ func TestGCMMessage(t *testing.T) {
 }
 
 func TestCheckAndroidMessage(t *testing.T) {
-	PushConf = BuildDefaultPushConf()
+	PushConf = config.BuildDefaultPushConf()
 
 	PushConf.Android.Enabled = true
 	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")

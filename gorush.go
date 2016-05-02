@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"github.com/appleboy/gorush/gorush"
+	"github.com/appleboy/gorush/gorush/config"
 	"log"
 )
 
@@ -39,11 +40,11 @@ func main() {
 	var err error
 
 	// set default parameters.
-	gorush.PushConf = gorush.BuildDefaultPushConf()
+	gorush.PushConf = config.BuildDefaultPushConf()
 
 	// load user define config.
 	if *confPath != "" {
-		gorush.PushConf, err = gorush.LoadConfYaml(*confPath)
+		gorush.PushConf, err = config.LoadConfYaml(*confPath)
 
 		if err != nil {
 			log.Printf("Load yaml config file error: '%v'", err)

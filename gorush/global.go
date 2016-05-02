@@ -3,13 +3,14 @@ package gorush
 import (
 	"crypto/tls"
 	"github.com/Sirupsen/logrus"
+	"github.com/appleboy/gorush/gorush/config"
 	apns "github.com/sideshow/apns2"
 	"gopkg.in/redis.v3"
 )
 
 var (
 	// PushConf is gorush config
-	PushConf ConfYaml
+	PushConf config.ConfYaml
 	// QueueNotification is chan type
 	QueueNotification chan PushNotification
 	// CertificatePemIos is ios certificate file
@@ -20,8 +21,8 @@ var (
 	LogAccess *logrus.Logger
 	// LogError is log server error log
 	LogError *logrus.Logger
-	// RushStatus is notification status
-	RushStatus StatusApp
 	// RedisClient is global variable for redis
 	RedisClient *redis.Client
+	// StatStorage implements the storage interface
+	StatStorage Storage
 )

@@ -1,17 +1,17 @@
 package redis
 
 import (
-	"github.com/appleboy/gorush/gorush"
+	c "github.com/appleboy/gorush/gorush/config"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestRedisServerError(t *testing.T) {
-	config := gorush.BuildDefaultPushConf()
+	config := c.BuildDefaultPushConf()
 	config.Stat.Redis.Addr = "localhost:6370"
 
-	redis := New(config, gorush.StatusApp{})
-	err := redis.initRedis()
+	redis := New(config)
+	err := redis.Init()
 
 	assert.Error(t, err)
 }
@@ -19,32 +19,32 @@ func TestRedisServerError(t *testing.T) {
 func TestRedisEngine(t *testing.T) {
 	var val int64
 
-	config := gorush.BuildDefaultPushConf()
+	config := c.BuildDefaultPushConf()
 
-	redis := New(config, gorush.StatusApp{})
-	redis.initRedis()
-	redis.resetRedis()
+	redis := New(config)
+	redis.Init()
+	redis.Reset()
 
-	redis.addTotalCount(10)
-	val = redis.getTotalCount()
+	redis.AddTotalCount(10)
+	val = redis.GetTotalCount()
 	assert.Equal(t, int64(10), val)
-	redis.addTotalCount(10)
-	val = redis.getTotalCount()
+	redis.AddTotalCount(10)
+	val = redis.GetTotalCount()
 	assert.Equal(t, int64(20), val)
 
-	redis.addIosSuccess(20)
-	val = redis.getIosSuccess()
+	redis.AddIosSuccess(20)
+	val = redis.GetIosSuccess()
 	assert.Equal(t, int64(20), val)
 
-	redis.addIosError(30)
-	val = redis.getIosError()
+	redis.AddIosError(30)
+	val = redis.GetIosError()
 	assert.Equal(t, int64(30), val)
 
-	redis.addAndroidSuccess(40)
-	val = redis.getAndroidSuccess()
+	redis.AddAndroidSuccess(40)
+	val = redis.GetAndroidSuccess()
 	assert.Equal(t, int64(40), val)
 
-	redis.addAndroidError(50)
-	val = redis.getAndroidError()
+	redis.AddAndroidError(50)
+	val = redis.GetAndroidError()
 	assert.Equal(t, int64(50), val)
 }

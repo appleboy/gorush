@@ -2,6 +2,7 @@ package gorush
 
 import (
 	"github.com/appleboy/gofight"
+	"github.com/appleboy/gorush/gorush/config"
 	"github.com/buger/jsonparser"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
@@ -15,7 +16,7 @@ import (
 var goVersion = runtime.Version()
 
 func initTest() {
-	PushConf = BuildDefaultPushConf()
+	PushConf = config.BuildDefaultPushConf()
 	PushConf.Core.Mode = "test"
 }
 
