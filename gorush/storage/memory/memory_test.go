@@ -1,7 +1,6 @@
 package memory
 
 import (
-	"github.com/appleboy/gorush/gorush"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -9,25 +8,25 @@ import (
 func TestMemoryEngine(t *testing.T) {
 	var val int64
 
-	memory := New(gorush.StatusApp{})
+	memory := New()
 
-	memory.addTotalCount(1)
-	val = memory.getTotalCount()
+	memory.AddTotalCount(1)
+	val = memory.GetTotalCount()
 	assert.Equal(t, int64(1), val)
 
-	memory.addIosSuccess(2)
-	val = memory.getIosSuccess()
+	memory.AddIosSuccess(2)
+	val = memory.GetIosSuccess()
 	assert.Equal(t, int64(2), val)
 
-	memory.addIosError(3)
-	val = memory.getIosError()
+	memory.AddIosError(3)
+	val = memory.GetIosError()
 	assert.Equal(t, int64(3), val)
 
-	memory.addAndroidSuccess(4)
-	val = memory.getAndroidSuccess()
+	memory.AddAndroidSuccess(4)
+	val = memory.GetAndroidSuccess()
 	assert.Equal(t, int64(4), val)
 
-	memory.addAndroidError(5)
-	val = memory.getAndroidError()
+	memory.AddAndroidError(5)
+	val = memory.GetAndroidError()
 	assert.Equal(t, int64(5), val)
 }
