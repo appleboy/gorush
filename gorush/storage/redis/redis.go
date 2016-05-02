@@ -1,18 +1,26 @@
 package redis
 
 import (
-	"github.com/appleboy/gorush/gorush"
+	"github.com/appleboy/gorush/gorush/config"
 	"gopkg.in/redis.v3"
 	"log"
 	"strconv"
 )
 
+// Stat variable for redis
+const (
+	TotalCountKey     = "gorush-total-count"
+	IosSuccessKey     = "gorush-ios-success-count"
+	IosErrorKey       = "gorush-ios-error-count"
+	AndroidSuccessKey = "gorush-android-success-count"
+	AndroidErrorKey   = "gorush-android-error-count"
+)
+
 var RedisClient *redis.Client
 
 // Storage implements the storage interface for gorush (https://github.com/appleboy/gorush)
-func New(config gorush.ConfYaml, stat gorush.StatusApp) *Storage {
+func New(config config.ConfYaml) *Storage {
 	return &Storage{
-		stat:   stat,
 		config: config,
 	}
 }
@@ -23,11 +31,10 @@ func getRedisInt64Result(key string, count *int64) {
 }
 
 type Storage struct {
-	config gorush.ConfYaml
-	stat   gorush.StatusApp
+	config config.ConfYaml
 }
 
-func (s *Storage) initRedis() error {
+func (s *Storage) Init() error {
 	RedisClient = redis.NewClient(&redis.Options{
 		Addr:     s.config.Stat.Redis.Addr,
 		Password: s.config.Stat.Redis.Password,
@@ -43,79 +50,73 @@ func (s *Storage) initRedis() error {
 		return err
 	}
 
-	s.stat.TotalCount = s.getTotalCount()
-	s.stat.Ios.PushSuccess = s.getIosSuccess()
-	s.stat.Ios.PushError = s.getIosError()
-	s.stat.Android.PushSuccess = s.getAndroidSuccess()
-	s.stat.Android.PushError = s.getAndroidError()
-
 	return nil
 }
 
-func (s *Storage) resetRedis() {
-	RedisClient.Set(gorush.TotalCountKey, strconv.Itoa(0), 0)
-	RedisClient.Set(gorush.IosSuccessKey, strconv.Itoa(0), 0)
-	RedisClient.Set(gorush.IosErrorKey, strconv.Itoa(0), 0)
-	RedisClient.Set(gorush.AndroidSuccessKey, strconv.Itoa(0), 0)
-	RedisClient.Set(gorush.AndroidErrorKey, strconv.Itoa(0), 0)
+func (s *Storage) Reset() {
+	RedisClient.Set(TotalCountKey, strconv.Itoa(0), 0)
+	RedisClient.Set(IosSuccessKey, strconv.Itoa(0), 0)
+	RedisClient.Set(IosErrorKey, strconv.Itoa(0), 0)
+	RedisClient.Set(AndroidSuccessKey, strconv.Itoa(0), 0)
+	RedisClient.Set(AndroidErrorKey, strconv.Itoa(0), 0)
 }
 
-func (s *Storage) addTotalCount(count int64) {
-	total := s.getTotalCount() + count
-	RedisClient.Set(gorush.TotalCountKey, strconv.Itoa(int(total)), 0)
+func (s *Storage) AddTotalCount(count int64) {
+	total := s.GetTotalCount() + count
+	RedisClient.Set(TotalCountKey, strconv.Itoa(int(total)), 0)
 }
 
-func (s *Storage) addIosSuccess(count int64) {
-	total := s.getIosSuccess() + count
-	RedisClient.Set(gorush.IosSuccessKey, strconv.Itoa(int(total)), 0)
+func (s *Storage) AddIosSuccess(count int64) {
+	total := s.GetIosSuccess() + count
+	RedisClient.Set(IosSuccessKey, strconv.Itoa(int(total)), 0)
 }
 
-func (s *Storage) addIosError(count int64) {
-	total := s.getIosError() + count
-	RedisClient.Set(gorush.IosErrorKey, strconv.Itoa(int(total)), 0)
+func (s *Storage) AddIosError(count int64) {
+	total := s.GetIosError() + count
+	RedisClient.Set(IosErrorKey, strconv.Itoa(int(total)), 0)
 }
 
-func (s *Storage) addAndroidSuccess(count int64) {
-	total := s.getAndroidSuccess() + count
-	RedisClient.Set(gorush.AndroidSuccessKey, strconv.Itoa(int(total)), 0)
+func (s *Storage) AddAndroidSuccess(count int64) {
+	total := s.GetAndroidSuccess() + count
+	RedisClient.Set(AndroidSuccessKey, strconv.Itoa(int(total)), 0)
 }
 
-func (s *Storage) addAndroidError(count int64) {
-	total := s.getAndroidError() + count
-	RedisClient.Set(gorush.AndroidErrorKey, strconv.Itoa(int(total)), 0)
+func (s *Storage) AddAndroidError(count int64) {
+	total := s.GetAndroidError() + count
+	RedisClient.Set(AndroidErrorKey, strconv.Itoa(int(total)), 0)
 }
 
-func (s *Storage) getTotalCount() int64 {
+func (s *Storage) GetTotalCount() int64 {
 	var count int64
-	getRedisInt64Result(gorush.TotalCountKey, &count)
+	getRedisInt64Result(TotalCountKey, &count)
 
 	return count
 }
 
-func (s *Storage) getIosSuccess() int64 {
+func (s *Storage) GetIosSuccess() int64 {
 	var count int64
-	getRedisInt64Result(gorush.IosSuccessKey, &count)
+	getRedisInt64Result(IosSuccessKey, &count)
 
 	return count
 }
 
-func (s *Storage) getIosError() int64 {
+func (s *Storage) GetIosError() int64 {
 	var count int64
-	getRedisInt64Result(gorush.IosErrorKey, &count)
+	getRedisInt64Result(IosErrorKey, &count)
 
 	return count
 }
 
-func (s *Storage) getAndroidSuccess() int64 {
+func (s *Storage) GetAndroidSuccess() int64 {
 	var count int64
-	getRedisInt64Result(gorush.AndroidSuccessKey, &count)
+	getRedisInt64Result(AndroidSuccessKey, &count)
 
 	return count
 }
 
-func (s *Storage) getAndroidError() int64 {
+func (s *Storage) GetAndroidError() int64 {
 	var count int64
-	getRedisInt64Result(gorush.AndroidErrorKey, &count)
+	getRedisInt64Result(AndroidErrorKey, &count)
 
 	return count
 }

@@ -2,6 +2,7 @@ package gorush
 
 import (
 	"github.com/Sirupsen/logrus"
+	"github.com/appleboy/gorush/gorush/config"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -34,7 +35,7 @@ func TestSetLogOut(t *testing.T) {
 }
 
 func TestInitDefaultLog(t *testing.T) {
-	PushConf = BuildDefaultPushConf()
+	PushConf = config.BuildDefaultPushConf()
 
 	// no errors on default config
 	assert.Nil(t, InitLog())
@@ -45,7 +46,7 @@ func TestInitDefaultLog(t *testing.T) {
 }
 
 func TestAccessLevel(t *testing.T) {
-	PushConf = BuildDefaultPushConf()
+	PushConf = config.BuildDefaultPushConf()
 
 	PushConf.Log.AccessLevel = "invalid"
 
@@ -53,7 +54,7 @@ func TestAccessLevel(t *testing.T) {
 }
 
 func TestErrorLevel(t *testing.T) {
-	PushConf = BuildDefaultPushConf()
+	PushConf = config.BuildDefaultPushConf()
 
 	PushConf.Log.ErrorLevel = "invalid"
 
@@ -61,7 +62,7 @@ func TestErrorLevel(t *testing.T) {
 }
 
 func TestAccessLogPath(t *testing.T) {
-	PushConf = BuildDefaultPushConf()
+	PushConf = config.BuildDefaultPushConf()
 
 	PushConf.Log.AccessLog = "logs/access.log"
 
@@ -69,7 +70,7 @@ func TestAccessLogPath(t *testing.T) {
 }
 
 func TestErrorLogPath(t *testing.T) {
-	PushConf = BuildDefaultPushConf()
+	PushConf = config.BuildDefaultPushConf()
 
 	PushConf.Log.ErrorLog = "logs/error.log"
 
