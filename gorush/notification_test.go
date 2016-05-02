@@ -222,6 +222,7 @@ func TestPushToIOS(t *testing.T) {
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.PemKeyPath = "../certificate/certificate-valid.pem"
 	InitAPNSClient()
+	InitAppStatus()
 
 	req := PushNotification{
 		Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},

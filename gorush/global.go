@@ -20,8 +20,8 @@ var (
 	LogAccess *logrus.Logger
 	// LogError is log server error log
 	LogError *logrus.Logger
-	// RushStatus is notification status
-	RushStatus StatusApp
 	// RedisClient is global variable for redis
 	RedisClient *redis.Client
+	// StatStorage implements the storage interface
+	StatStorage Storage
 )

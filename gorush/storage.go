@@ -2,14 +2,14 @@ package gorush
 
 // Storage interface
 type Storage interface {
-	addTotalCount(int64)
-	addIosSuccess(int64)
-	addIosError(int64)
-	addAndroidSuccess(int64)
-	addAndroidError(int64)
-	getTotalCount() int64
-	getIosSuccess() int64
-	getIosError() int64
-	getAndroidSuccess() int64
-	getAndroidError() int64
+	AddTotalCount(int64)
+	AddIosSuccess(int64)
+	AddIosError(int64)
+	AddAndroidSuccess(int64)
+	AddAndroidError(int64)
+	GetTotalCount() int64
+	GetIosSuccess() int64
+	GetIosError() int64
+	GetAndroidSuccess() int64
+	GetAndroidError() int64
 }
