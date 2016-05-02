@@ -2,6 +2,7 @@ package gorush
 
 import (
 	"github.com/appleboy/gorush/gorush/storage/memory"
+	"github.com/appleboy/gorush/gorush/storage/redis"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -32,8 +33,9 @@ func InitAppStatus() {
 	switch PushConf.Stat.Engine {
 	case "memory":
 		StatStorage = memory.New()
-	// case "redis":
-	// 	initRedis()
+	case "redis":
+		StatStorage = redis.New(PushConf)
+		StatStorage.Init()
 	// case "boltdb":
 	// 	initBoltDB()
 	default:

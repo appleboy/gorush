@@ -34,6 +34,13 @@ type Storage struct {
 	stat *statApp
 }
 
+func (s *Storage) Init() error {
+	return nil
+}
+
+func (s *Storage) Reset() {
+}
+
 func (s *Storage) AddTotalCount(count int64) {
 	atomic.AddInt64(&s.stat.TotalCount, count)
 }

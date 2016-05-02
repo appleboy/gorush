@@ -2,6 +2,8 @@ package gorush
 
 // Storage interface
 type Storage interface {
+	Init() error
+	Reset()
 	AddTotalCount(int64)
 	AddIosSuccess(int64)
 	AddIosError(int64)
