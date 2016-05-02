@@ -25,7 +25,7 @@ func New(config config.ConfYaml) *Storage {
 	}
 }
 
-func getRedisInt64Result(key string, count *int64) {
+func getInt64(key string, count *int64) {
 	val, _ := RedisClient.Get(key).Result()
 	*count, _ = strconv.ParseInt(val, 10, 64)
 }
@@ -88,35 +88,35 @@ func (s *Storage) AddAndroidError(count int64) {
 
 func (s *Storage) GetTotalCount() int64 {
 	var count int64
-	getRedisInt64Result(TotalCountKey, &count)
+	getInt64(TotalCountKey, &count)
 
 	return count
 }
 
 func (s *Storage) GetIosSuccess() int64 {
 	var count int64
-	getRedisInt64Result(IosSuccessKey, &count)
+	getInt64(IosSuccessKey, &count)
 
 	return count
 }
 
 func (s *Storage) GetIosError() int64 {
 	var count int64
-	getRedisInt64Result(IosErrorKey, &count)
+	getInt64(IosErrorKey, &count)
 
 	return count
 }
 
 func (s *Storage) GetAndroidSuccess() int64 {
 	var count int64
-	getRedisInt64Result(AndroidSuccessKey, &count)
+	getInt64(AndroidSuccessKey, &count)
 
 	return count
 }
 
 func (s *Storage) GetAndroidError() int64 {
 	var count int64
-	getRedisInt64Result(AndroidErrorKey, &count)
+	getInt64(AndroidErrorKey, &count)
 
 	return count
 }
