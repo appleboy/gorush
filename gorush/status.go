@@ -108,9 +108,9 @@ func addTotalCount(count int64) {
 	case "memory":
 		atomic.AddInt64(&RushStatus.TotalCount, count)
 	case "redis":
-		RedisClient.Set(gorushTotalCount, strconv.Itoa(int(count)), 0)
+		RedisClient.Set(TotalCountKey, strconv.Itoa(int(count)), 0)
 	case "boltdb":
-		boltdbSet(gorushTotalCount, count)
+		boltdbSet(TotalCountKey, count)
 	default:
 		atomic.AddInt64(&RushStatus.TotalCount, count)
 	}
@@ -121,9 +121,9 @@ func addIosSuccess(count int64) {
 	case "memory":
 		atomic.AddInt64(&RushStatus.Ios.PushSuccess, count)
 	case "redis":
-		RedisClient.Set(gorushIosSuccess, strconv.Itoa(int(count)), 0)
+		RedisClient.Set(IosSuccessKey, strconv.Itoa(int(count)), 0)
 	case "boltdb":
-		boltdbSet(gorushIosSuccess, count)
+		boltdbSet(IosSuccessKey, count)
 	default:
 		atomic.AddInt64(&RushStatus.Ios.PushSuccess, count)
 	}
@@ -134,9 +134,9 @@ func addIosError(count int64) {
 	case "memory":
 		atomic.AddInt64(&RushStatus.Ios.PushError, count)
 	case "redis":
-		RedisClient.Set(gorushIosError, strconv.Itoa(int(count)), 0)
+		RedisClient.Set(IosErrorKey, strconv.Itoa(int(count)), 0)
 	case "boltdb":
-		boltdbSet(gorushIosError, count)
+		boltdbSet(IosErrorKey, count)
 	default:
 		atomic.AddInt64(&RushStatus.Ios.PushError, count)
 	}
@@ -147,9 +147,9 @@ func addAndroidSuccess(count int64) {
 	case "memory":
 		atomic.AddInt64(&RushStatus.Android.PushSuccess, count)
 	case "redis":
-		RedisClient.Set(gorushAndroidSuccess, strconv.Itoa(int(count)), 0)
+		RedisClient.Set(AndroidSuccessKey, strconv.Itoa(int(count)), 0)
 	case "boltdb":
-		boltdbSet(gorushAndroidSuccess, count)
+		boltdbSet(AndroidSuccessKey, count)
 	default:
 		atomic.AddInt64(&RushStatus.Android.PushSuccess, count)
 	}
@@ -160,9 +160,9 @@ func addAndroidError(count int64) {
 	case "memory":
 		atomic.AddInt64(&RushStatus.Android.PushError, count)
 	case "redis":
-		RedisClient.Set(gorushAndroidError, strconv.Itoa(int(count)), 0)
+		RedisClient.Set(AndroidErrorKey, strconv.Itoa(int(count)), 0)
 	case "boltdb":
-		boltdbSet(gorushAndroidError, count)
+		boltdbSet(AndroidErrorKey, count)
 	default:
 		atomic.AddInt64(&RushStatus.Android.PushError, count)
 	}
@@ -174,9 +174,9 @@ func getTotalCount() int64 {
 	case "memory":
 		count = atomic.LoadInt64(&RushStatus.TotalCount)
 	case "redis":
-		getRedisInt64Result(gorushTotalCount, &count)
+		getRedisInt64Result(TotalCountKey, &count)
 	case "boltdb":
-		boltdbGet(gorushTotalCount, &count)
+		boltdbGet(TotalCountKey, &count)
 	default:
 		count = atomic.LoadInt64(&RushStatus.TotalCount)
 	}
@@ -190,9 +190,9 @@ func getIosSuccess() int64 {
 	case "memory":
 		count = atomic.LoadInt64(&RushStatus.Ios.PushSuccess)
 	case "redis":
-		getRedisInt64Result(gorushIosSuccess, &count)
+		getRedisInt64Result(IosSuccessKey, &count)
 	case "boltdb":
-		boltdbGet(gorushIosSuccess, &count)
+		boltdbGet(IosSuccessKey, &count)
 	default:
 		count = atomic.LoadInt64(&RushStatus.Ios.PushSuccess)
 	}
@@ -206,9 +206,9 @@ func getIosError() int64 {
 	case "memory":
 		count = atomic.LoadInt64(&RushStatus.Ios.PushError)
 	case "redis":
-		getRedisInt64Result(gorushIosError, &count)
+		getRedisInt64Result(IosErrorKey, &count)
 	case "boltdb":
-		boltdbGet(gorushIosError, &count)
+		boltdbGet(IosErrorKey, &count)
 	default:
 		count = atomic.LoadInt64(&RushStatus.Ios.PushError)
 	}
@@ -222,9 +222,9 @@ func getAndroidSuccess() int64 {
 	case "memory":
 		count = atomic.LoadInt64(&RushStatus.Android.PushSuccess)
 	case "redis":
-		getRedisInt64Result(gorushAndroidSuccess, &count)
+		getRedisInt64Result(AndroidSuccessKey, &count)
 	case "boltdb":
-		boltdbGet(gorushAndroidSuccess, &count)
+		boltdbGet(AndroidSuccessKey, &count)
 	default:
 		count = atomic.LoadInt64(&RushStatus.Android.PushSuccess)
 	}
@@ -238,9 +238,9 @@ func getAndroidError() int64 {
 	case "memory":
 		count = atomic.LoadInt64(&RushStatus.Android.PushError)
 	case "redis":
-		getRedisInt64Result(gorushAndroidError, &count)
+		getRedisInt64Result(AndroidErrorKey, &count)
 	case "boltdb":
-		boltdbGet(gorushAndroidError, &count)
+		boltdbGet(AndroidErrorKey, &count)
 	default:
 		count = atomic.LoadInt64(&RushStatus.Android.PushError)
 	}

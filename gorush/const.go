@@ -21,9 +21,9 @@ const (
 
 // Stat variable for redis
 const (
-	gorushTotalCount     = "gorush-total-count"
-	gorushIosSuccess     = "gorush-ios-success-count"
-	gorushIosError       = "gorush-ios-error-count"
-	gorushAndroidSuccess = "gorush-android-success-count"
-	gorushAndroidError   = "gorush-android-error-count"
+	TotalCountKey     = "gorush-total-count"
+	IosSuccessKey     = "gorush-ios-success-count"
+	IosErrorKey       = "gorush-ios-error-count"
+	AndroidSuccessKey = "gorush-android-success-count"
+	AndroidErrorKey   = "gorush-android-error-count"
 )
