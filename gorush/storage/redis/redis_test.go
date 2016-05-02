@@ -23,24 +23,28 @@ func TestRedisEngine(t *testing.T) {
 
 	redis := New(config, gorush.StatusApp{})
 	redis.initRedis()
+	redis.resetRedis()
 
-	redis.addTotalCount(1)
+	redis.addTotalCount(10)
 	val = redis.getTotalCount()
-	assert.Equal(t, int64(1), val)
+	assert.Equal(t, int64(10), val)
+	redis.addTotalCount(10)
+	val = redis.getTotalCount()
+	assert.Equal(t, int64(20), val)
 
-	redis.addIosSuccess(2)
+	redis.addIosSuccess(20)
 	val = redis.getIosSuccess()
-	assert.Equal(t, int64(2), val)
+	assert.Equal(t, int64(20), val)
 
-	redis.addIosError(3)
+	redis.addIosError(30)
 	val = redis.getIosError()
-	assert.Equal(t, int64(3), val)
+	assert.Equal(t, int64(30), val)
 
-	redis.addAndroidSuccess(4)
+	redis.addAndroidSuccess(40)
 	val = redis.getAndroidSuccess()
-	assert.Equal(t, int64(4), val)
+	assert.Equal(t, int64(40), val)
 
-	redis.addAndroidError(5)
+	redis.addAndroidError(50)
 	val = redis.getAndroidError()
-	assert.Equal(t, int64(5), val)
+	assert.Equal(t, int64(50), val)
 }

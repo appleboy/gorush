@@ -52,24 +52,37 @@ func (s *Storage) initRedis() error {
 	return nil
 }
 
+func (s *Storage) resetRedis() {
+	RedisClient.Set(gorush.TotalCountKey, strconv.Itoa(0), 0)
+	RedisClient.Set(gorush.IosSuccessKey, strconv.Itoa(0), 0)
+	RedisClient.Set(gorush.IosErrorKey, strconv.Itoa(0), 0)
+	RedisClient.Set(gorush.AndroidSuccessKey, strconv.Itoa(0), 0)
+	RedisClient.Set(gorush.AndroidErrorKey, strconv.Itoa(0), 0)
+}
+
 func (s *Storage) addTotalCount(count int64) {
-	RedisClient.Set(gorush.TotalCountKey, strconv.Itoa(int(count)), 0)
+	total := s.getTotalCount() + count
+	RedisClient.Set(gorush.TotalCountKey, strconv.Itoa(int(total)), 0)
 }
 
 func (s *Storage) addIosSuccess(count int64) {
-	RedisClient.Set(gorush.IosSuccessKey, strconv.Itoa(int(count)), 0)
+	total := s.getIosSuccess() + count
+	RedisClient.Set(gorush.IosSuccessKey, strconv.Itoa(int(total)), 0)
 }
 
 func (s *Storage) addIosError(count int64) {
-	RedisClient.Set(gorush.IosErrorKey, strconv.Itoa(int(count)), 0)
+	total := s.getIosError() + count
+	RedisClient.Set(gorush.IosErrorKey, strconv.Itoa(int(total)), 0)
 }
 
 func (s *Storage) addAndroidSuccess(count int64) {
-	RedisClient.Set(gorush.AndroidSuccessKey, strconv.Itoa(int(count)), 0)
+	total := s.getAndroidSuccess() + count
+	RedisClient.Set(gorush.AndroidSuccessKey, strconv.Itoa(int(total)), 0)
 }
 
 func (s *Storage) addAndroidError(count int64) {
-	RedisClient.Set(gorush.AndroidErrorKey, strconv.Itoa(int(count)), 0)
+	total := s.getAndroidError() + count
+	RedisClient.Set(gorush.AndroidErrorKey, strconv.Itoa(int(total)), 0)
 }
 
 func (s *Storage) getTotalCount() int64 {
