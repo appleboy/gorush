@@ -12,7 +12,7 @@ build: clean
 	sh script/build.sh
 
 test:
-	cd gorush && go test -v -covermode=count -coverprofile=coverage.out
+	cd gorush && go test -cover -v ./...
 
 docker_build: clean
 	tar -zcvf build.tar.gz gorush.go gorush
