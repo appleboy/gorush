@@ -1,6 +1,7 @@
 package gorush
 
 import (
+	"github.com/appleboy/gorush/gorush/storage/boltdb"
 	"github.com/appleboy/gorush/gorush/storage/memory"
 	"github.com/appleboy/gorush/gorush/storage/redis"
 	"github.com/gin-gonic/gin"
@@ -29,18 +30,27 @@ type IosStatus struct {
 }
 
 // InitAppStatus for initialize app status
-func InitAppStatus() {
+func InitAppStatus() error {
 	switch PushConf.Stat.Engine {
 	case "memory":
 		StatStorage = memory.New()
 	case "redis":
 		StatStorage = redis.New(PushConf)
-		StatStorage.Init()
-	// case "boltdb":
-	// 	initBoltDB()
+		err := StatStorage.Init()
+
+		if err != nil {
+			LogError.Error("redis error: " + err.Error())
+
+			return err
+		}
+
+	case "boltdb":
+		StatStorage = boltdb.New(PushConf)
 	default:
 		StatStorage = memory.New()
 	}
+
+	return nil
 }
 
 func appStatusHandler(c *gin.Context) {
