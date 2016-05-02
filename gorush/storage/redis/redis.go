@@ -7,14 +7,6 @@ import (
 	"strconv"
 )
 
-const (
-	gorushTotalCount     = "gorush-total-count"
-	gorushIosSuccess     = "gorush-ios-success-count"
-	gorushIosError       = "gorush-ios-error-count"
-	gorushAndroidSuccess = "gorush-android-success-count"
-	gorushAndroidError   = "gorush-android-error-count"
-)
-
 var RedisClient *redis.Client
 
 // Storage implements the storage interface for gorush (https://github.com/appleboy/gorush)
@@ -61,56 +53,56 @@ func (s *Storage) initRedis() error {
 }
 
 func (s *Storage) addTotalCount(count int64) {
-	RedisClient.Set(gorushTotalCount, strconv.Itoa(int(count)), 0)
+	RedisClient.Set(gorush.TotalCountKey, strconv.Itoa(int(count)), 0)
 }
 
 func (s *Storage) addIosSuccess(count int64) {
-	RedisClient.Set(gorushIosSuccess, strconv.Itoa(int(count)), 0)
+	RedisClient.Set(gorush.IosSuccessKey, strconv.Itoa(int(count)), 0)
 }
 
 func (s *Storage) addIosError(count int64) {
-	RedisClient.Set(gorushIosError, strconv.Itoa(int(count)), 0)
+	RedisClient.Set(gorush.IosErrorKey, strconv.Itoa(int(count)), 0)
 }
 
 func (s *Storage) addAndroidSuccess(count int64) {
-	RedisClient.Set(gorushAndroidSuccess, strconv.Itoa(int(count)), 0)
+	RedisClient.Set(gorush.AndroidSuccessKey, strconv.Itoa(int(count)), 0)
 }
 
 func (s *Storage) addAndroidError(count int64) {
-	RedisClient.Set(gorushAndroidError, strconv.Itoa(int(count)), 0)
+	RedisClient.Set(gorush.AndroidErrorKey, strconv.Itoa(int(count)), 0)
 }
 
 func (s *Storage) getTotalCount() int64 {
 	var count int64
-	getRedisInt64Result(gorushTotalCount, &count)
+	getRedisInt64Result(gorush.TotalCountKey, &count)
 
 	return count
 }
 
 func (s *Storage) getIosSuccess() int64 {
 	var count int64
-	getRedisInt64Result(gorushIosSuccess, &count)
+	getRedisInt64Result(gorush.IosSuccessKey, &count)
 
 	return count
 }
 
 func (s *Storage) getIosError() int64 {
 	var count int64
-	getRedisInt64Result(gorushIosError, &count)
+	getRedisInt64Result(gorush.IosErrorKey, &count)
 
 	return count
 }
 
 func (s *Storage) getAndroidSuccess() int64 {
 	var count int64
-	getRedisInt64Result(gorushAndroidSuccess, &count)
+	getRedisInt64Result(gorush.AndroidSuccessKey, &count)
 
 	return count
 }
 
 func (s *Storage) getAndroidError() int64 {
 	var count int64
-	getRedisInt64Result(gorushAndroidError, &count)
+	getRedisInt64Result(gorush.AndroidErrorKey, &count)
 
 	return count
 }
