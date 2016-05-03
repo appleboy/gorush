@@ -5,7 +5,6 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/appleboy/gorush/gorush/config"
 	apns "github.com/sideshow/apns2"
-	"gopkg.in/redis.v3"
 )
 
 var (
@@ -21,8 +20,6 @@ var (
 	LogAccess *logrus.Logger
 	// LogError is log server error log
 	LogError *logrus.Logger
-	// RedisClient is global variable for redis
-	RedisClient *redis.Client
 	// StatStorage implements the storage interface
 	StatStorage Storage
 )

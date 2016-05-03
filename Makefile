@@ -11,8 +11,17 @@ all: build
 build: clean
 	sh script/build.sh
 
-test:
+test: memory_test redis_test boltdb_test
 	cd gorush && go test -cover -v -coverprofile=coverage.out
+
+memory_test:
+	cd gorush/storage/memory && go test -v -cover *.go
+
+redis_test:
+	cd gorush/storage/redis && go test -v -cover *.go
+
+boltdb_test:
+	cd gorush/storage/boltdb && go test -v -cover *.go
 
 html: test
 	cd gorush && go tool cover -html=coverage.out
