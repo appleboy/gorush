@@ -1,7 +1,7 @@
 package boltdb
 
 import (
-	"github.com/appleboy/gorush/gorush/config"
+	"github.com/appleboy/gorush/config"
 	"github.com/asdine/storm"
 )
 

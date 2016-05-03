@@ -1,7 +1,7 @@
 package redis
 
 import (
-	c "github.com/appleboy/gorush/gorush/config"
+	c "github.com/appleboy/gorush/config"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

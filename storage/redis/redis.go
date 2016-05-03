@@ -1,7 +1,7 @@
 package redis
 
 import (
-	"github.com/appleboy/gorush/gorush/config"
+	"github.com/appleboy/gorush/config"
 	"gopkg.in/redis.v3"
 	"log"
 	"strconv"

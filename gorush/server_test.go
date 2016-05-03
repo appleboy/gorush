@@ -2,7 +2,7 @@ package gorush
 
 import (
 	"github.com/appleboy/gofight"
-	"github.com/appleboy/gorush/gorush/config"
+	"github.com/appleboy/gorush/config"
 	"github.com/buger/jsonparser"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"

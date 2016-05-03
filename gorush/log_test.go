@@ -2,7 +2,7 @@ package gorush
 
 import (
 	"github.com/Sirupsen/logrus"
-	"github.com/appleboy/gorush/gorush/config"
+	"github.com/appleboy/gorush/config"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
