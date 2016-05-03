@@ -2,8 +2,8 @@ package main
 
 import (
 	"flag"
+	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/gorush"
-	"github.com/appleboy/gorush/gorush/config"
 	"log"
 )
 
