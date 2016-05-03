@@ -5,4 +5,6 @@ MAINTAINER Bo-Yi Wu <appleboy.tw@gmail.com>
 RUN mkdir -p /tmp/build
 Add . /tmp/build/
 WORKDIR /tmp/build
+RUN sed -i"" -e "s/localhost/redis/g" config/config.yml
+RUN sed -i"" -e "s/localhost/redis/g" gorush/*.go
 RUN go get -v -d -t ./...

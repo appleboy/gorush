@@ -34,7 +34,9 @@ docker_build: clean
 
 docker_test:
 	@docker build --rm -t $(TEST_IMAGE) -f docker/Dockerfile.testing .
-	@docker run --rm -e ANDROID_TEST_TOKEN=$(ANDROID_TEST_TOKEN) -e ANDROID_API_KEY=$(ANDROID_API_KEY) $(TEST_IMAGE) sh -c "cd gorush && go test -v"
+	@docker run --name gorush-redis -d redis
+	@docker run --rm --link gorush-redis:redis -e ANDROID_TEST_TOKEN=$(ANDROID_TEST_TOKEN) -e ANDROID_API_KEY=$(ANDROID_API_KEY) $(TEST_IMAGE) sh -c "cd gorush && go test -v"
+	@docker rm -f gorush-redis
 
 deploy:
 ifeq ($(tag),)
