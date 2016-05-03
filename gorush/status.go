@@ -1,9 +1,9 @@
 package gorush
 
 import (
-	"github.com/appleboy/gorush/gorush/storage/boltdb"
-	"github.com/appleboy/gorush/gorush/storage/memory"
-	"github.com/appleboy/gorush/gorush/storage/redis"
+	"github.com/appleboy/gorush/storage/boltdb"
+	"github.com/appleboy/gorush/storage/memory"
+	"github.com/appleboy/gorush/storage/redis"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
