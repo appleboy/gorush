@@ -1,0 +1,16 @@
+package: github.com/appleboy/gorush
+import:
+- package: github.com/gin-gonic/gin
+- package: github.com/stretchr/testify
+  subpackages:
+  - assert
+- package: github.com/appleboy/gofight
+- package: github.com/buger/jsonparser
+- package: github.com/appleboy/gin-status-api
+- package: github.com/fvbock/endless
+- package: github.com/google/go-gcm
+- package: github.com/sideshow/apns2
+  subpackages:
+  - certificate
+  - payload
+- package: github.com/Sirupsen/logrus

@@ -1,0 +1,27 @@
+hash: 9b3d3cc7501fe305ef404c9441144d834679a6cfc5e60e0006cb7fd36e525584
+updated: 2016-05-03T12:00:10.412823603+08:00
+imports:
+- name: github.com/appleboy/gin-status-api
+  version: 6e9d17f8a41d142221548f0493486dfffc492652
+- name: github.com/appleboy/gofight
+  version: d902822d4cc09742e326960c813fb7f7ed324fcc
+- name: github.com/buger/jsonparser
+  version: f0ac9350516a2f00f02704daa15e5d1ed5b0b76b
+- name: github.com/fvbock/endless
+  version: dd6ed5d07b55d55cf8342731bbbb96bd20283b7d
+- name: github.com/gin-gonic/gin
+  version: 542be2fe77724f800fcab7eb6c01a4e597fb8506
+- name: github.com/google/go-gcm
+  version: 1708036c4639349562068ad2d4df2364cd0a1004
+- name: github.com/sideshow/apns2
+  version: 729daff3d4e45239f3b584580aa408572737c5b1
+  subpackages:
+  - certificate
+  - payload
+- name: github.com/Sirupsen/logrus
+  version: cd7d1bbe41066b6c1f19780f895901052150a575
+- name: github.com/stretchr/testify
+  version: c5d7a69bf8a2c9c374798160849c071093e41dd1
+  subpackages:
+  - assert
+devImports: []
