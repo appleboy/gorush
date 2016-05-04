@@ -49,6 +49,12 @@ endif
 	docker tag -f $(PRODUCTION_IMAGE):latest $(DEPLOY_ACCOUNT)/$(PRODUCTION_IMAGE):$(tag)
 	docker push $(DEPLOY_ACCOUNT)/$(PRODUCTION_IMAGE):$(tag)
 
+bundle:
+	glide install
+
+bundle_update:
+	glide update --all-dependencies --resolve-current
+
 lint:
 	golint gorush
 

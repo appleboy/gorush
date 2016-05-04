@@ -21,7 +21,7 @@ env:
 
 before_install:
   - sudo add-apt-repository ppa:masterminds/glide -y && sudo apt-get update
-  - sudo apt-get install -y glide
+  - sudo apt-get install -y --force-yes glide
 
 install:
   - export GO15VENDOREXPERIMENT=1
