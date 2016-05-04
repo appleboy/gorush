@@ -2,11 +2,12 @@ FROM golang:1.6-alpine
 
 MAINTAINER Bo-Yi Wu <appleboy.tw@gmail.com>
 
-RUN apk --update add git
-RUN mkdir -p /tmp/build
-Add build.tar.gz /tmp/build/
-WORKDIR /tmp/build
-RUN go get -v -d
+RUN apk --update add git make
+RUN go get github.com/Masterminds/glide && cd $GOPATH/src/github.com/Masterminds/glide && make install
+RUN mkdir -p $GOPATH/src/github.com/appleboy/gorush
+Add build.tar.gz $GOPATH/src/github.com/appleboy/gorush/
+WORKDIR $GOPATH/src/github.com/appleboy/gorush
+RUN make bundle
 RUN GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o bin/gorush gorush.go
 
 CMD tar -C bin -czf - gorush

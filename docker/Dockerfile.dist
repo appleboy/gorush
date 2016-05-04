@@ -8,7 +8,7 @@ RUN apk update && apk upgrade \
 
 RUN mkdir /app
 ADD gorush.tar.gz /app/
-ADD config/config.yml /app/config
+ADD config/config.yml /app/config/
 WORKDIR /app
 ENTRYPOINT ["./gorush", "-c", "config/config.yml"]
 EXPOSE 8088

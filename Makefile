@@ -31,7 +31,7 @@ html:
 	go tool cover -html=coverage.out
 
 docker_build: clean
-	tar -zcvf build.tar.gz gorush.go gorush
+	tar -zcvf build.tar.gz gorush.go gorush config storage Makefile glide.lock glide.yaml
 	docker build --rm -t $(BUILD_IMAGE) -f docker/Dockerfile.build .
 	docker run --rm $(BUILD_IMAGE) > gorush.tar.gz
 	docker build --rm -t $(PRODUCTION_IMAGE) -f docker/Dockerfile.dist .
