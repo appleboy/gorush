@@ -1,0 +1,175 @@
+hash: 4e05c4dd1a8106a87fee3b589dd32aecc7ffeb1246bed8f8516b32fe745034d6
+updated: 2016-05-04T14:26:47.161898051+08:00
+imports:
+- name: github.com/alecthomas/kingpin
+  version: e1543c77ba157565dbf7b3e8e4e15087a120397f
+- name: github.com/alecthomas/template
+  version: a0175ee3bccc567396460bf5acd36800cb10c49c
+  subpackages:
+  - parse
+- name: github.com/alecthomas/units
+  version: 2efee857e7cfd4f3d0138cc3cbb1b4966962b93a
+- name: github.com/aliafshar/toylog
+  version: 11d228569d74fd7a2c9d50016043ccc31e6832ed
+- name: github.com/appleboy/gin-status-api
+  version: 6e9d17f8a41d142221548f0493486dfffc492652
+- name: github.com/appleboy/gofight
+  version: d902822d4cc09742e326960c813fb7f7ed324fcc
+- name: github.com/asdine/storm
+  version: 877bb85183441419d77e7f91ce65a6ccc92a4ff6
+  subpackages:
+  - codec
+  - codec/gob
+- name: github.com/boltdb/bolt
+  version: d97499360d1ecebc492ea66c7447ea948f417620
+- name: github.com/buger/jsonparser
+  version: f0ac9350516a2f00f02704daa15e5d1ed5b0b76b
+- name: github.com/davecgh/go-spew
+  version: 5215b55f46b2b919f50a1df0eaa5886afe4e3b3d
+  subpackages:
+  - spew
+- name: github.com/dchest/siphash
+  version: 6d8617816bb5d8268011ffbfb8720f17ce9af63c
+- name: github.com/dgrijalva/jwt-go
+  version: a2c85815a77d0f951e33ba4db5ae93629a1530af
+- name: github.com/dgryski/go-ddmin
+  version: f7df7ebd4081e6d5d5efc4c70e9c871c9af4ccc0
+- name: github.com/dustin/go-broadcast
+  version: 3bdf6d4a7164a50bc19d5f230e2981d87d2584f1
+- name: github.com/fatih/structs
+  version: 73c4e3dc02a78deaba8640d5f3a8c236ec1352bf
+- name: github.com/fukata/golang-stats-api-handler
+  version: ab9f90f16caab828afda479fd34bfbbbba2efcee
+- name: github.com/fvbock/endless
+  version: dd6ed5d07b55d55cf8342731bbbb96bd20283b7d
+- name: github.com/gin-gonic/gin
+  version: 542be2fe77724f800fcab7eb6c01a4e597fb8506
+  subpackages:
+  - binding
+  - render
+- name: github.com/golang/protobuf
+  version: 2402d76f3d41f928c7902a765dfc872356dd3aad
+  subpackages:
+  - proto
+  - proto/testdata
+- name: github.com/golang/snappy
+  version: 43fea289edce21979658cbbdb3925390890aa86e
+- name: github.com/google/go-gcm
+  version: 1708036c4639349562068ad2d4df2364cd0a1004
+- name: github.com/gorilla/context
+  version: a8d44e7d8e4d532b6a27a02dd82abb31cc1b01bd
+- name: github.com/gorilla/mux
+  version: 9c19ed558d5df4da88e2ade9c8940d742aef0e7e
+- name: github.com/jpillora/backoff
+  version: 0496a6c14df020789376f4d4a261273d5ddb36ec
+- name: github.com/julienschmidt/httprouter
+  version: 77366a47451a56bb3ba682481eed85b64fea14e8
+- name: github.com/klauspost/compress
+  version: 14eb9c4951195779ecfbec34431a976de7335b0a
+  subpackages:
+  - flate
+  - gzip
+  - zlib
+- name: github.com/klauspost/cpuid
+  version: 09cded8978dc9e80714c4d85b0322337b0a1e5e0
+- name: github.com/klauspost/crc32
+  version: 19b0b332c9e4516a6370a0456e6182c3b5036720
+- name: github.com/labstack/echo
+  version: 682a5580b7a1009eeea5cdc57db005b85ea7a560
+  subpackages:
+  - engine
+  - test
+- name: github.com/labstack/gommon
+  version: 2e62be24dbb1ceb226554aaccfe5a89ec71043b3
+  subpackages:
+  - log
+  - bytes
+  - color
+- name: github.com/mailru/easyjson
+  version: 7b35f91cec5814b29803a7d9fd5517f638761e67
+  subpackages:
+  - jlexer
+  - jwriter
+  - buffer
+- name: github.com/manucorporat/sse
+  version: ee05b128a739a0fb76c7ebd3ae4810c1de808d6d
+- name: github.com/manucorporat/stats
+  version: 8f2d6ace262eba462e9beb552382c98be51d807b
+- name: github.com/mattn/go-colorable
+  version: 45ce6a6f60010487dd0dbab368b5fbbed1c14ef0
+- name: github.com/mattn/go-isatty
+  version: 56b76bdf51f7708750eac80fa38b952bb9f32639
+- name: github.com/mattn/go-xmpp
+  version: 12d5633a9d4d91f910e7f6a26b8654c23d5a890f
+- name: github.com/pborman/uuid
+  version: c55201b036063326c5b1b89ccfe45a184973d073
+- name: github.com/pmezard/go-difflib
+  version: 792786c7400a136282c1664665ae0a8db921c6c2
+  subpackages:
+  - difflib
+- name: github.com/pquerna/ffjson
+  version: 0ffb2b0305b5927b936a35dc3a440fdfede62420
+  subpackages:
+  - fflib/v1
+  - fflib/v1/internal
+- name: github.com/Sereal/Sereal
+  version: c6226708d1fbcead06ef8a3b23af0c91925fb612
+  subpackages:
+  - Go/sereal
+- name: github.com/sideshow/apns2
+  version: 729daff3d4e45239f3b584580aa408572737c5b1
+  subpackages:
+  - certificate
+  - payload
+- name: github.com/Sirupsen/logrus
+  version: 4b6ea7319e214d98c938f12692336f7ca9348d6b
+- name: github.com/stretchr/objx
+  version: cbeaeb16a013161a98496fad62933b1d21786672
+- name: github.com/stretchr/testify
+  version: f390dcf405f7b83c997eac1b06768bb9f44dec18
+  subpackages:
+  - assert
+  - http
+  - mock
+- name: github.com/ugorji/go
+  version: a396ed22fc049df733440d90efe17475e3929ccb
+  subpackages:
+  - codec
+- name: github.com/valyala/fasthttp
+  version: 3509bd8a7d1d9e9a9a4e8594e78af85fc01e2fba
+  subpackages:
+  - expvarhandler
+- name: github.com/valyala/fasttemplate
+  version: 3b874956e03f1636d171bda64b130f9135f42cff
+- name: golang.org/x/crypto
+  version: 2cb52d93744fdc9a51f5c87b36fe2208d424af5a
+  subpackages:
+  - pkcs12
+  - ssh/terminal
+  - pkcs12/internal/rc2
+- name: golang.org/x/net
+  version: f315505cf3349909cdf013ea56690da34e96a451
+  subpackages:
+  - context
+  - http2
+  - http2/hpack
+- name: gopkg.in/airbrake/gobrake.v2
+  version: 31c8ff1fb8b79a6947e6565e9a6df535f98a6b94
+- name: gopkg.in/alecthomas/kingpin.v2
+  version: 8cccfa8eb2e3183254457fb1749b2667fbc364c7
+- name: gopkg.in/bsm/ratelimit.v1
+  version: db14e161995a5177acef654cb0dd785e8ee8bc22
+- name: gopkg.in/gemnasium/logrus-airbrake-hook.v2
+  version: 31e6fd4bd5a98d8ee7673d24bc54ec73c31810dd
+- name: gopkg.in/go-playground/validator.v8
+  version: c193cecd124b5cc722d7ee5538e945bdb3348435
+- name: gopkg.in/redis.v3
+  version: 5183f8dcde9737db7583dbfa9881800dba26e3fa
+  subpackages:
+  - internal
+  - internal/consistenthash
+  - internal/hashtag
+  - internal/pool
+- name: gopkg.in/yaml.v2
+  version: a83829b6f1293c91addabc89d0571c246397bbf4
+devImports: []

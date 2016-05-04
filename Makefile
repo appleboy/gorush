@@ -11,20 +11,23 @@ all: build
 build: clean
 	sh script/build.sh
 
-test: memory_test redis_test boltdb_test
-	cd gorush && go test -cover -v -coverprofile=coverage.out
-
-memory_test:
-	cd storage/memory && go test -v -cover *.go
+test: redis_test boltdb_test memory_test config_test
+	go test -v -cover -covermode=count -coverprofile=coverage.out ./gorush/...
 
 redis_test:
-	cd storage/redis && go test -v -cover *.go
+	go test -v -cover -covermode=count -coverprofile=coverage.out ./storage/redis/...
 
 boltdb_test:
-	cd storage/boltdb && go test -v -cover *.go
+	go test -v -cover -covermode=count -coverprofile=coverage.out ./storage/boltdb/...
 
-html: test
-	cd gorush && go tool cover -html=coverage.out
+memory_test:
+	go test -v -cover -covermode=count -coverprofile=coverage.out ./storage/memory/...
+
+config_test:
+	go test -v -cover -covermode=count -coverprofile=coverage.out ./config/...
+
+html:
+	go tool cover -html=coverage.out
 
 docker_build: clean
 	tar -zcvf build.tar.gz gorush.go gorush
@@ -45,6 +48,12 @@ ifeq ($(tag),)
 endif
 	docker tag -f $(PRODUCTION_IMAGE):latest $(DEPLOY_ACCOUNT)/$(PRODUCTION_IMAGE):$(tag)
 	docker push $(DEPLOY_ACCOUNT)/$(PRODUCTION_IMAGE):$(tag)
+
+bundle:
+	glide install
+
+bundle_update:
+	glide update --all-dependencies --resolve-current
 
 lint:
 	golint gorush
