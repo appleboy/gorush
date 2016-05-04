@@ -2,9 +2,12 @@ FROM golang:1.6
 
 MAINTAINER Bo-Yi Wu <appleboy.tw@gmail.com>
 
-RUN mkdir -p /tmp/build
-Add . /tmp/build/
-WORKDIR /tmp/build
+# install glide package management.
+RUN go get github.com/Masterminds/glide && cd $GOPATH/src/github.com/Masterminds/glide && make install
+RUN mkdir -p $GOPATH/src/github.com/appleboy/gorush
+Add . $GOPATH/src/github.com/appleboy/gorush/
+WORKDIR $GOPATH/src/github.com/appleboy/gorush
 RUN sed -i"" -e "s/localhost/redis/g" config/config.yml
 RUN sed -i"" -e "s/localhost/redis/g" gorush/status_test.go
-RUN go get -v -d -t ./...
+RUN sed -i"" -e "s/localhost/redis/g" storage/redis/redis_test.go
+RUN make bundle

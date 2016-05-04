@@ -20,6 +20,7 @@ func TestRedisEngine(t *testing.T) {
 	var val int64
 
 	config := c.BuildDefaultPushConf()
+	config.Stat.Redis.Addr = "localhost:6379"
 
 	redis := New(config)
 	redis.Init()
