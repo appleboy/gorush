@@ -2,6 +2,7 @@
 
 OS="darwin linux"
 ARCH="amd64"
+VERSION=$1
 
 for GOOS in $OS; do
   for GOARCH in $ARCH; do
@@ -10,6 +11,6 @@ for GOOS in $OS; do
 
     echo "Build: ${GOOS}, Arch: ${GOARCH}, EXE: ${EXE}"
     GOOS=$GOOS GOARCH=$GOARCH go build -ldflags="-w" -o bin/$GOOS/$GOARCH/${EXE} gorush.go;
-    tar -C bin/$GOOS/$GOARCH -czf bin/gorush-$GOOS-$GOARCH.tar.gz gorush
+    tar -C bin/$GOOS/$GOARCH -czf bin/gorush-$VERSION-$GOOS-$GOARCH.tar.gz gorush
   done
 done

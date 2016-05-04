@@ -5,11 +5,12 @@ BUILD_IMAGE := "gorush-build"
 TEST_IMAGE := "gorush-testing"
 PRODUCTION_IMAGE := "gorush"
 DEPLOY_ACCOUNT := "appleboy"
+VERSION := $(shell git describe --tags)
 
 all: build
 
 build: clean
-	sh script/build.sh
+	sh script/build.sh $(VERSION)
 
 test: redis_test boltdb_test memory_test config_test
 	go test -v -cover -covermode=count -coverprofile=coverage.out ./gorush/...
