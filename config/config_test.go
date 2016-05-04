@@ -43,3 +43,11 @@ func TestReadConfig(t *testing.T) {
 	assert.Equal(t, "8088", config.Core.Port)
 	assert.True(t, config.Android.Enabled)
 }
+
+// Test config file.
+func TestDefaultConfig(t *testing.T) {
+	config := BuildDefaultPushConf()
+
+	assert.Equal(t, "8088", config.Core.Port)
+	assert.False(t, config.Android.Enabled)
+}
