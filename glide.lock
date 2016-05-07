@@ -1,5 +1,5 @@
 hash: 4e05c4dd1a8106a87fee3b589dd32aecc7ffeb1246bed8f8516b32fe745034d6
-updated: 2016-05-04T14:26:47.161898051+08:00
+updated: 2016-05-07T23:52:16.479759881+08:00
 imports:
 - name: github.com/alecthomas/kingpin
   version: e1543c77ba157565dbf7b3e8e4e15087a120397f
@@ -16,7 +16,7 @@ imports:
 - name: github.com/appleboy/gofight
   version: d902822d4cc09742e326960c813fb7f7ed324fcc
 - name: github.com/asdine/storm
-  version: 877bb85183441419d77e7f91ce65a6ccc92a4ff6
+  version: d8dddb265c7e07e17532fc4e24f7bddb39c33d66
   subpackages:
   - codec
   - codec/gob
@@ -31,13 +31,13 @@ imports:
 - name: github.com/dchest/siphash
   version: 6d8617816bb5d8268011ffbfb8720f17ce9af63c
 - name: github.com/dgrijalva/jwt-go
-  version: a2c85815a77d0f951e33ba4db5ae93629a1530af
+  version: 40bd0f3b4891a9d7f121bfb7b8e8b0525625e262
 - name: github.com/dgryski/go-ddmin
   version: f7df7ebd4081e6d5d5efc4c70e9c871c9af4ccc0
 - name: github.com/dustin/go-broadcast
   version: 3bdf6d4a7164a50bc19d5f230e2981d87d2584f1
 - name: github.com/fatih/structs
-  version: 73c4e3dc02a78deaba8640d5f3a8c236ec1352bf
+  version: e5ca5fe90dcf72d2903310c7d6e0e7c2a13ad7e4
 - name: github.com/fukata/golang-stats-api-handler
   version: ab9f90f16caab828afda479fd34bfbbbba2efcee
 - name: github.com/fvbock/endless
@@ -53,7 +53,7 @@ imports:
   - proto
   - proto/testdata
 - name: github.com/golang/snappy
-  version: 43fea289edce21979658cbbdb3925390890aa86e
+  version: d7b1e156f50d3c4664f683603af70e3e47fa0aa2
 - name: github.com/google/go-gcm
   version: 1708036c4639349562068ad2d4df2364cd0a1004
 - name: github.com/gorilla/context
@@ -75,7 +75,7 @@ imports:
 - name: github.com/klauspost/crc32
   version: 19b0b332c9e4516a6370a0456e6182c3b5036720
 - name: github.com/labstack/echo
-  version: 682a5580b7a1009eeea5cdc57db005b85ea7a560
+  version: e943ed24be65c0716769b88318309c845b7b144c
   subpackages:
   - engine
   - test
@@ -86,7 +86,7 @@ imports:
   - bytes
   - color
 - name: github.com/mailru/easyjson
-  version: 7b35f91cec5814b29803a7d9fd5517f638761e67
+  version: 5ba5887e4b8e695b9ac697dfaefe429157153a43
   subpackages:
   - jlexer
   - jwriter
@@ -108,7 +108,7 @@ imports:
   subpackages:
   - difflib
 - name: github.com/pquerna/ffjson
-  version: 0ffb2b0305b5927b936a35dc3a440fdfede62420
+  version: 6cb0d17684c750fa55e8475b02b0a8c3b062efbc
   subpackages:
   - fflib/v1
   - fflib/v1/internal
@@ -136,13 +136,13 @@ imports:
   subpackages:
   - codec
 - name: github.com/valyala/fasthttp
-  version: 3509bd8a7d1d9e9a9a4e8594e78af85fc01e2fba
+  version: fcba2aa2f2a878517d0084ba29fcf5c09940dbb5
   subpackages:
   - expvarhandler
 - name: github.com/valyala/fasttemplate
   version: 3b874956e03f1636d171bda64b130f9135f42cff
 - name: golang.org/x/crypto
-  version: 2cb52d93744fdc9a51f5c87b36fe2208d424af5a
+  version: 47ff8dfbc528fea3003fc0ce2d88ffbbfbc46a43
   subpackages:
   - pkcs12
   - ssh/terminal
