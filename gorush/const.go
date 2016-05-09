@@ -1,11 +1,6 @@
 package gorush
 
 const (
-	// Version is gorush server version.
-	Version = "1.2.1"
-)
-
-const (
 	// PlatFormIos constant is 1 for iOS
 	PlatFormIos = iota + 1
 	// PlatFormAndroid constant is 2 for Android

@@ -17,6 +17,8 @@ func checkInput(token, message string) {
 	}
 }
 
+var Version = "No Version Provided"
+
 func main() {
 	version := flag.Bool("v", false, "gorush version")
 	confPath := flag.String("c", "", "yaml configuration file path for gorush")
@@ -31,6 +33,8 @@ func main() {
 	topic := flag.String("topic", "", "apns topic in iOS")
 
 	flag.Parse()
+
+	gorush.SetVersion(Version)
 
 	if *version {
 		gorush.PrintGoRushVersion()

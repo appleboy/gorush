@@ -10,7 +10,7 @@ for GOOS in $OS; do
     (test "$GOOS" = "windows") && EXE="gorush.exe"
 
     echo "Build: ${GOOS}, Arch: ${GOARCH}, EXE: ${EXE}"
-    GOOS=$GOOS GOARCH=$GOARCH go build -ldflags="-s -w" -o bin/$GOOS/$GOARCH/${EXE} gorush.go;
+    GOOS=$GOOS GOARCH=$GOARCH go build -ldflags="-s -w -X main.Version=${VERSION}" -o bin/$GOOS/$GOARCH/${EXE} gorush.go;
     tar -C bin/$GOOS/$GOARCH -czf bin/gorush-$VERSION-$GOOS-$GOARCH.tar.gz gorush
   done
 done
