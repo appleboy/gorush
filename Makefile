@@ -2,10 +2,10 @@
 
 DEPS := $(wildcard *.go)
 BUILD_IMAGE := "gorush-build"
-TEST_IMAGE := "gorush-testing"
 PRODUCTION_IMAGE := "gorush"
 DEPLOY_ACCOUNT := "appleboy"
 VERSION := $(shell git describe --tags)
+TIMENAME := $(shell date '+%Y%m%d%H%M%S%s')
 
 all: build
 
@@ -38,11 +38,11 @@ docker_build: clean
 	docker build --rm -t $(PRODUCTION_IMAGE) -f docker/Dockerfile.dist .
 
 docker_test:
-	-docker rm -f gorush-redis
-	@docker build --rm -t $(TEST_IMAGE) -f docker/Dockerfile.testing .
-	@docker run --name gorush-redis -d redis
-	@docker run --rm --link gorush-redis:redis -e ANDROID_TEST_TOKEN=$(ANDROID_TEST_TOKEN) -e ANDROID_API_KEY=$(ANDROID_API_KEY) $(TEST_IMAGE) sh -c "make test"
-	@docker rm -f gorush-redis
+	@docker build --rm -t $(TIMENAME)-test -f docker/Dockerfile.testing .
+	@docker run --name $(TIMENAME)-redis -d redis
+	@docker run --rm --link $(TIMENAME)-redis:redis -e ANDROID_TEST_TOKEN=$(ANDROID_TEST_TOKEN) -e ANDROID_API_KEY=$(ANDROID_API_KEY) $(TIMENAME)-test sh -c "make test"
+	@docker rm -f $(TIMENAME)-redis
+	@docker rmi -f $(TIMENAME)-test
 
 deploy:
 ifeq ($(tag),)
