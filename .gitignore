@@ -34,3 +34,4 @@ build.tar.gz
 gorush.tar.gz
 gorush.db
 vendor
+Dockerfile.tmp

@@ -32,7 +32,8 @@ html:
 
 docker_build: clean
 	tar -zcvf build.tar.gz gorush.go gorush config storage Makefile glide.lock glide.yaml
-	docker build --rm -t $(BUILD_IMAGE) -f docker/Dockerfile.build .
+	sed -e "s/#VERSION#/$(VERSION)/g" docker/Dockerfile.build > docker/Dockerfile.tmp
+	docker build --rm -t $(BUILD_IMAGE) -f docker/Dockerfile.tmp .
 	docker run --rm $(BUILD_IMAGE) > gorush.tar.gz
 	docker build --rm -t $(PRODUCTION_IMAGE) -f docker/Dockerfile.dist .
 
