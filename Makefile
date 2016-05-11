@@ -5,7 +5,7 @@ BUILD_IMAGE := "gorush-build"
 PRODUCTION_IMAGE := "gorush"
 DEPLOY_ACCOUNT := "appleboy"
 VERSION := $(shell git describe --tags)
-TIMENAME := $(shell date '+%Y%m%d%H%M%S%s')
+PROJECT := $(shell date '+%Y%m%d%H%M%S%s')
 
 all: build
 
@@ -38,11 +38,8 @@ docker_build: clean
 	docker build --rm -t $(PRODUCTION_IMAGE) -f docker/Dockerfile.dist .
 
 docker_test:
-	@docker build --rm -t $(TIMENAME)-test -f docker/Dockerfile.testing .
-	@docker run --name $(TIMENAME)-redis -d redis
-	@docker run --rm --link $(TIMENAME)-redis:redis -e ANDROID_TEST_TOKEN=$(ANDROID_TEST_TOKEN) -e ANDROID_API_KEY=$(ANDROID_API_KEY) $(TIMENAME)-test sh -c "make test"
-	@docker rm -f $(TIMENAME)-redis
-	@docker rmi -f $(TIMENAME)-test
+	docker-compose -p ${PROJECT} -f docker/docker-compose.testing.yml run --rm gorush
+	docker-compose -p ${PROJECT} -f docker/docker-compose.testing.yml down
 
 deploy:
 ifeq ($(tag),)
@@ -62,4 +59,4 @@ lint:
 	golint gorush
 
 clean:
-	-rm -rf build.tar.gz gorush.tar.gz bin/*
+	-rm -rf build.tar.gz gorush.tar.gz bin/* coverage.out gorush.tar.gz

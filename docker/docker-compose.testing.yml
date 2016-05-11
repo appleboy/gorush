@@ -1,0 +1,14 @@
+gorush:
+  build: "."
+  dockerfile: Dockerfile.testing
+  links:
+    - redis
+  privileged: true
+  environment:
+    - ANDROID_API_KEY
+    - ANDROID_TEST_TOKEN
+  command: /bin/sh -c "make test"
+
+redis:
+  image: redis:alpine
+  privileged: true
