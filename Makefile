@@ -38,7 +38,6 @@ docker_build: clean
 	docker build --rm -t $(PRODUCTION_IMAGE) -f docker/Dockerfile.dist .
 
 docker_test:
-	docker-compose -p ${RANDOM} -f docker/docker-compose.testing.yml build --no-cache gorush
 	docker-compose -p ${RANDOM} -f docker/docker-compose.testing.yml run --rm gorush
 	docker-compose -p ${RANDOM} -f docker/docker-compose.testing.yml down
 
