@@ -430,7 +430,7 @@ $ docker pull appleboy/gorush
 $ docker run -name gorush -p 80:8088 appleboy/gorush
 ```
 
-Testing your gorush server.
+Testing your gorush server using [httpie](https://github.com/jkbrzt/httpie) command.
 
 ```bash
 $ http -v --verify=no --json GET http://your.docker.host/api/stat/go
