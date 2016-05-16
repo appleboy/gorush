@@ -30,6 +30,7 @@ log:
   access_level: "debug"
   error_log: "stderr"
   error_level: "error"
+  hide_token: true
 
 stat:
   engine: "memory"

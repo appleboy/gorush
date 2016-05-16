@@ -57,6 +57,7 @@ type SectionLog struct {
 	AccessLevel string `yaml:"access_level"`
 	ErrorLog    string `yaml:"error_log"`
 	ErrorLevel  string `yaml:"error_level"`
+	HideToken   bool   `yaml:"hide_token"`
 }
 
 // SectionStat is sub seciont of config.
@@ -115,6 +116,7 @@ func BuildDefaultPushConf() ConfYaml {
 	conf.Log.AccessLevel = "debug"
 	conf.Log.ErrorLog = "stderr"
 	conf.Log.ErrorLevel = "error"
+	conf.Log.HideToken = true
 
 	conf.Stat.Engine = "memory"
 	conf.Stat.Redis.Addr = "localhost:6379"

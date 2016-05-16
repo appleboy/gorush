@@ -7,7 +7,7 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/gin-gonic/gin"
 	"os"
-	// "time"
+	"strings"
 )
 
 var (
@@ -181,6 +181,24 @@ func typeForPlatForm(platform int) string {
 	}
 }
 
+func hideToken(token string, markLen int) string {
+	if len(token) == 0 {
+		return ""
+	}
+
+	if len(token) < markLen*2 {
+		return strings.Repeat("*", len(token))
+	}
+
+	start := token[len(token)-markLen:]
+	end := token[0:markLen]
+
+	result := strings.Replace(token, start, strings.Repeat("*", markLen), -1)
+	result = strings.Replace(result, end, strings.Repeat("*", markLen), -1)
+
+	return result
+}
+
 // LogPush record user push request and server response.
 func LogPush(status, token string, req PushNotification, errPush error) {
 	var plat, platColor, output string
@@ -191,6 +209,10 @@ func LogPush(status, token string, req PushNotification, errPush error) {
 	errMsg := ""
 	if errPush != nil {
 		errMsg = errPush.Error()
+	}
+
+	if PushConf.Log.HideToken == true {
+		token = hideToken(token, 10)
 	}
 
 	log := &LogPushEntry{
