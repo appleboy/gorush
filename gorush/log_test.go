@@ -92,4 +92,5 @@ func TestPlatFormColor(t *testing.T) {
 func TestHideToken(t *testing.T) {
 	assert.Equal(t, "", hideToken("", 2))
 	assert.Equal(t, "**345678**", hideToken("1234567890", 2))
+	assert.Equal(t, "*****", hideToken("12345", 10))
 }

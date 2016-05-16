@@ -181,16 +181,20 @@ func typeForPlatForm(platform int) string {
 	}
 }
 
-func hideToken(token string, starLen int) string {
+func hideToken(token string, markLen int) string {
 	if len(token) == 0 {
 		return ""
 	}
 
-	start := token[len(token)-starLen:]
-	end := token[0:starLen]
+	if len(token) < markLen*2 {
+		return strings.Repeat("*", len(token))
+	}
 
-	result := strings.Replace(token, start, strings.Repeat("*", starLen), -1)
-	result = strings.Replace(result, end, strings.Repeat("*", starLen), -1)
+	start := token[len(token)-markLen:]
+	end := token[0:markLen]
+
+	result := strings.Replace(token, start, strings.Repeat("*", markLen), -1)
+	result = strings.Replace(result, end, strings.Repeat("*", markLen), -1)
 
 	return result
 }
@@ -205,6 +209,10 @@ func LogPush(status, token string, req PushNotification, errPush error) {
 	errMsg := ""
 	if errPush != nil {
 		errMsg = errPush.Error()
+	}
+
+	if PushConf.Log.HideToken == true {
+		token = hideToken(token, 10)
 	}
 
 	log := &LogPushEntry{
