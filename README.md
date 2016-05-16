@@ -58,6 +58,7 @@ log:
   access_level: "debug"
   error_log: "stderr" # stderr: output to console, or define log path like "log/error_log"
   error_level: "error"
+  hide_token: true
 
 stat:
   engine: "memory" # support memory, redis or boltdb
