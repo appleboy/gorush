@@ -7,7 +7,7 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/gin-gonic/gin"
 	"os"
-	// "time"
+	"strings"
 )
 
 var (
@@ -179,6 +179,20 @@ func typeForPlatForm(platform int) string {
 	default:
 		return ""
 	}
+}
+
+func hideToken(token string, starLen int) string {
+	if len(token) == 0 {
+		return ""
+	}
+
+	start := token[len(token)-starLen:]
+	end := token[0:starLen]
+
+	result := strings.Replace(token, start, strings.Repeat("*", starLen), -1)
+	result = strings.Replace(result, end, strings.Repeat("*", starLen), -1)
+
+	return result
 }
 
 // LogPush record user push request and server response.

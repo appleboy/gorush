@@ -88,3 +88,8 @@ func TestPlatFormColor(t *testing.T) {
 	assert.Equal(t, yellow, colorForPlatForm(PlatFormAndroid))
 	assert.Equal(t, reset, colorForPlatForm(1000000))
 }
+
+func TestHideToken(t *testing.T) {
+	assert.Equal(t, "", hideToken("", 2))
+	assert.Equal(t, "**345678**", hideToken("1234567890", 2))
+}
