@@ -12,6 +12,10 @@ func SetVersion(ver string) {
 	version = ver
 }
 
+func GetVersion() string {
+	return version
+}
+
 // PrintGoRushVersion provide print server engine
 func PrintGoRushVersion() {
 	fmt.Printf(`GoRush %s, Compiler: %s %s, Copyright (C) 2016 Bo-Yi Wu, Inc.`,

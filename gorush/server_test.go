@@ -21,7 +21,11 @@ func initTest() {
 }
 
 func TestPrintGoRushVersion(t *testing.T) {
+	SetVersion("3.0.0")
+	ver := GetVersion()
 	PrintGoRushVersion()
+
+	assert.Equal(t, "3.0.0", ver)
 }
 
 func TestRunNormalServer(t *testing.T) {

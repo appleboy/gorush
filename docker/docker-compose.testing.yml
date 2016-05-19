@@ -1,14 +1,15 @@
 gorush:
-  build: "."
-  dockerfile: Dockerfile.testing
+  build: ./golang
   links:
     - redis
   privileged: true
   environment:
     - ANDROID_API_KEY
     - ANDROID_TEST_TOKEN
-  command: /bin/sh -c "make test"
+  volumes:
+    - ../:/go/src/github.com/appleboy/gorush
+  command: /bin/sh -c './docker/testing.sh'
 
 redis:
-  image: redis:alpine
+  build: ./redis
   privileged: true
