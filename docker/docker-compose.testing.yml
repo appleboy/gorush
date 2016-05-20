@@ -7,7 +7,7 @@ gorush:
     - ANDROID_API_KEY
     - ANDROID_TEST_TOKEN
   volumes:
-    - ../:/go/src/github.com/appleboy/gorush
+    - ../:/app
   command: /bin/sh -c './docker/testing.sh'
 
 redis:
