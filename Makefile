@@ -70,4 +70,4 @@ lint:
 	golint gorush
 
 clean:
-	-rm -rf build.tar.gz gorush.tar.gz bin/* coverage.out gorush.tar.gz
+	-rm -rf build.tar.gz gorush.tar.gz bin/* coverage.out gorush.tar.gz gorush/gorush.db storage/boltdb/gorush.db
