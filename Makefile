@@ -2,7 +2,7 @@
 
 DEPS := $(wildcard *.go)
 BUILD_IMAGE := "gorush-build"
-PRODUCTION_IMAGE := "gorush"
+PRODUCTION_IMAGE := "gorush-production"
 DEPLOY_ACCOUNT := "appleboy"
 VERSION := $(shell git describe --tags)
 RANDOM := $(shell date '+%Y%m%d%H%M%S%s')
@@ -46,13 +46,15 @@ docker_build: clean
 	sed -e "s/#VERSION#/$(VERSION)/g" docker/Dockerfile.build > docker/Dockerfile.tmp
 	docker build --rm -t $(BUILD_IMAGE) -f docker/Dockerfile.tmp .
 	docker run --rm $(BUILD_IMAGE) > gorush.tar.gz
-	docker build --rm -t $(PRODUCTION_IMAGE) -f docker/Dockerfile.dist .
 
 docker_test: init
 	docker-compose -p ${RANDOM} -f docker/docker-compose.testing.yml run --rm gorush
 	docker-compose -p ${RANDOM} -f docker/docker-compose.testing.yml down
 
-deploy:
+docker_production: docker_build
+	docker build --rm -t $(PRODUCTION_IMAGE) -f docker/Dockerfile.dist .
+
+deploy: docker_production
 ifeq ($(tag),)
 	@echo "Usage: make $@ tag=<tag>"
 	@exit 1
