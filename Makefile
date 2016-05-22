@@ -9,22 +9,33 @@ RANDOM := $(shell date '+%Y%m%d%H%M%S%s')
 
 all: build
 
+init:
+ifeq ($(ANDROID_API_KEY),)
+	@echo "Missing ANDROID_API_KEY Parameter"
+	@exit 1
+endif
+ifeq ($(ANDROID_TEST_TOKEN),)
+	@echo "Missing ANDROID_TEST_TOKEN Parameter"
+	@exit 1
+endif
+	@echo "Already set ANDROID_API_KEY and ANDROID_TEST_TOKEN globale variable."
+
 build: clean
 	sh script/build.sh $(VERSION)
 
 test: redis_test boltdb_test memory_test config_test
 	go test -v -cover -covermode=count -coverprofile=coverage.out ./gorush/...
 
-redis_test:
+redis_test: init
 	go test -v -cover -covermode=count -coverprofile=coverage.out ./storage/redis/...
 
-boltdb_test:
+boltdb_test: init
 	go test -v -cover -covermode=count -coverprofile=coverage.out ./storage/boltdb/...
 
-memory_test:
+memory_test: init
 	go test -v -cover -covermode=count -coverprofile=coverage.out ./storage/memory/...
 
-config_test:
+config_test: init
 	go test -v -cover -covermode=count -coverprofile=coverage.out ./config/...
 
 html:
@@ -37,7 +48,7 @@ docker_build: clean
 	docker run --rm $(BUILD_IMAGE) > gorush.tar.gz
 	docker build --rm -t $(PRODUCTION_IMAGE) -f docker/Dockerfile.dist .
 
-docker_test:
+docker_test: init
 	docker-compose -p ${RANDOM} -f docker/docker-compose.testing.yml run --rm gorush
 	docker-compose -p ${RANDOM} -f docker/docker-compose.testing.yml down
 
