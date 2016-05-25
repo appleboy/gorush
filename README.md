@@ -428,7 +428,7 @@ Set up `gorush` in the cloud in under 5 minutes with zero knowledge of Golang or
 
 ```bash
 $ docker pull appleboy/gorush
-$ docker run -name gorush -p 80:8088 appleboy/gorush
+$ docker run --name gorush -p 80:8088 appleboy/gorush
 ```
 
 Testing your gorush server using [httpie](https://github.com/jkbrzt/httpie) command.
