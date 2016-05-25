@@ -1,15 +1,18 @@
-gorush:
-  build: ./golang
-  links:
-    - redis
-  privileged: true
-  environment:
-    - ANDROID_API_KEY
-    - ANDROID_TEST_TOKEN
-  volumes:
-    - ../:/app
-  command: /bin/sh -c './docker/testing.sh'
+version: "2"
 
-redis:
-  build: ./redis
-  privileged: true
+services:
+  gorush:
+    build: ./golang
+    links:
+      - redis
+    privileged: true
+    environment:
+      - ANDROID_API_KEY
+      - ANDROID_TEST_TOKEN
+    volumes:
+      - ../:/app
+    command: /bin/sh -c './docker/testing.sh'
+
+  redis:
+    build: ./redis
+    privileged: true
