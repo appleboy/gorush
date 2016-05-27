@@ -48,8 +48,7 @@ android:
 
 ios:
   enabled: false
-  pem_cert_path: "cert.pem"
-  pem_key_path: "key.pem"
+  pem_path: "key.pem"
   production: false
 
 log:

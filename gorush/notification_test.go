@@ -26,7 +26,7 @@ func TestMissingIOSCertificate(t *testing.T) {
 	PushConf = config.BuildDefaultPushConf()
 
 	PushConf.Ios.Enabled = true
-	PushConf.Ios.PemKeyPath = ""
+	PushConf.Ios.PemPath = ""
 
 	err := CheckPushConf()
 
@@ -53,7 +53,7 @@ func TestCorrectConf(t *testing.T) {
 	PushConf.Android.APIKey = "xxxxx"
 
 	PushConf.Ios.Enabled = true
-	PushConf.Ios.PemKeyPath = "xxxxx"
+	PushConf.Ios.PemPath = "xxxxx"
 
 	err := CheckPushConf()
 
@@ -221,7 +221,7 @@ func TestPushToIOS(t *testing.T) {
 	PushConf = config.BuildDefaultPushConf()
 
 	PushConf.Ios.Enabled = true
-	PushConf.Ios.PemKeyPath = "../certificate/certificate-valid.pem"
+	PushConf.Ios.PemPath = "../certificate/certificate-valid.pem"
 	InitAPNSClient()
 	InitAppStatus()
 
@@ -331,7 +331,7 @@ func TestSenMultipleNotifications(t *testing.T) {
 	InitWorkers(2, 2)
 
 	PushConf.Ios.Enabled = true
-	PushConf.Ios.PemKeyPath = "../certificate/certificate-valid.pem"
+	PushConf.Ios.PemPath = "../certificate/certificate-valid.pem"
 	InitAPNSClient()
 
 	PushConf.Android.Enabled = true
@@ -364,7 +364,7 @@ func TestDisabledAndroidNotifications(t *testing.T) {
 	PushConf = config.BuildDefaultPushConf()
 
 	PushConf.Ios.Enabled = true
-	PushConf.Ios.PemKeyPath = "../certificate/certificate-valid.pem"
+	PushConf.Ios.PemPath = "../certificate/certificate-valid.pem"
 	InitAPNSClient()
 
 	PushConf.Android.Enabled = false
@@ -397,7 +397,7 @@ func TestDisabledIosNotifications(t *testing.T) {
 	PushConf = config.BuildDefaultPushConf()
 
 	PushConf.Ios.Enabled = false
-	PushConf.Ios.PemKeyPath = "../certificate/certificate-valid.pem"
+	PushConf.Ios.PemPath = "../certificate/certificate-valid.pem"
 	InitAPNSClient()
 
 	PushConf.Android.Enabled = true
@@ -430,7 +430,7 @@ func TestMissingIosCertificate(t *testing.T) {
 	PushConf = config.BuildDefaultPushConf()
 
 	PushConf.Ios.Enabled = true
-	PushConf.Ios.PemKeyPath = "test"
+	PushConf.Ios.PemPath = "test"
 	err := InitAPNSClient()
 
 	assert.Error(t, err)
@@ -440,7 +440,7 @@ func TestAPNSClientDevHost(t *testing.T) {
 	PushConf = config.BuildDefaultPushConf()
 
 	PushConf.Ios.Enabled = true
-	PushConf.Ios.PemKeyPath = "../certificate/certificate-valid.pem"
+	PushConf.Ios.PemPath = "../certificate/certificate-valid.pem"
 	InitAPNSClient()
 
 	assert.Equal(t, apns2.HostDevelopment, ApnsClient.Host)
@@ -451,7 +451,7 @@ func TestAPNSClientProdHost(t *testing.T) {
 
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.Production = true
-	PushConf.Ios.PemKeyPath = "../certificate/certificate-valid.pem"
+	PushConf.Ios.PemPath = "../certificate/certificate-valid.pem"
 	InitAPNSClient()
 
 	assert.Equal(t, apns2.HostProduction, ApnsClient.Host)

@@ -122,7 +122,7 @@ func CheckPushConf() error {
 	}
 
 	if PushConf.Ios.Enabled {
-		if PushConf.Ios.PemKeyPath == "" {
+		if PushConf.Ios.PemPath == "" {
 			return errors.New("Missing iOS certificate path")
 		}
 	}
@@ -141,7 +141,7 @@ func InitAPNSClient() error {
 	if PushConf.Ios.Enabled {
 		var err error
 
-		CertificatePemIos, err = certificate.FromPemFile(PushConf.Ios.PemKeyPath, "")
+		CertificatePemIos, err = certificate.FromPemFile(PushConf.Ios.PemPath, "")
 
 		if err != nil {
 			LogError.Error("Cert Error:", err.Error())
