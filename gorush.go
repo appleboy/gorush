@@ -58,7 +58,7 @@ func main() {
 	}
 
 	if *certificateKeyPath != "" {
-		gorush.PushConf.Ios.PemKeyPath = *certificateKeyPath
+		gorush.PushConf.Ios.PemPath = *certificateKeyPath
 	}
 
 	if *apiKey != "" {

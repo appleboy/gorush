@@ -44,10 +44,9 @@ type SectionAndroid struct {
 
 // SectionIos is sub seciont of config.
 type SectionIos struct {
-	Enabled     bool   `yaml:"enabled"`
-	PemCertPath string `yaml:"pem_cert_path"`
-	PemKeyPath  string `yaml:"pem_key_path"`
-	Production  bool   `yaml:"production"`
+	Enabled    bool   `yaml:"enabled"`
+	PemPath    string `yaml:"pem_path"`
+	Production bool   `yaml:"production"`
 }
 
 // SectionLog is sub seciont of config.
@@ -106,8 +105,7 @@ func BuildDefaultPushConf() ConfYaml {
 
 	// iOS
 	conf.Ios.Enabled = false
-	conf.Ios.PemCertPath = "cert.pem"
-	conf.Ios.PemKeyPath = "key.pem"
+	conf.Ios.PemPath = "key.pem"
 	conf.Ios.Production = false
 
 	// log
