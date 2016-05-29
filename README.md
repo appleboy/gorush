@@ -4,12 +4,34 @@ A push notification server using [Gin](https://github.com/gin-gonic/gin) framewo
 
 [![GoDoc](https://godoc.org/github.com/appleboy/gorush?status.svg)](https://godoc.org/github.com/appleboy/gorush) [![Build Status](https://travis-ci.org/appleboy/gorush.svg?branch=master)](https://travis-ci.org/appleboy/gorush) [![Coverage Status](https://coveralls.io/repos/github/appleboy/gorush/badge.svg?branch=master)](https://coveralls.io/github/appleboy/gorush?branch=master) [![Go Report Card](https://goreportcard.com/badge/github.com/appleboy/gorush)](https://goreportcard.com/report/github.com/appleboy/gorush) [![codebeat badge](https://codebeat.co/badges/0a4eff2d-c9ac-46ed-8fd7-b59942983390)](https://codebeat.co/projects/github-com-appleboy-gorush)
 
+## Contents
+
+- [Support Platform](#support-platform)
+- [Features](#features)
+- [Basic Usage](#basic-usage)
+  - [Download a binary](#download-a-binary)
+  - [Send Android notification](#send-android-notification)
+  - [Send iOS notification](#send-ios-notification)
+- [Run gorush web server](#run-gorush-web-server)
+- [Web API](#web-api)
+  - [GET /api/stat/go](#get-apistatgo)
+  - [GET /api/stat/app](#get-apistatapp)
+  - [POST /api/push](#post-apipush)
+  - [Request body](#request-body)
+  - [iOS alert payload](#ios-alert-payload)
+  - [Android notification payload](#android-notification-payload)
+  - [iOS Example](#ios-example)
+  - [Android Example](#Android-Example)
+  - [Response body](#Response-body)
+- [Run gorush in Docker](#run-gorush-in-docker)
+- [License](#license)
+
 ## Support Platform
 
 * [APNS](https://developer.apple.com/library/ios/documentation/networkinginternet/conceptual/remotenotificationspg/Chapters/ApplePushService.html)
 * [GCM](https://developer.android.com/google/gcm/index.html)
 
-## Feature
+## Features
 
 * Support [Google Cloud Message](https://developers.google.com/cloud-messaging/) using [go-gcm](https://github.com/google/go-gcm) library for Android.
 * Support [HTTP/2](https://http2.github.io/) Apple Push Notification Service using [apns2](https://github.com/sideshow/apns2) library.
