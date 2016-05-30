@@ -141,7 +141,7 @@ func InitAPNSClient() error {
 	if PushConf.Ios.Enabled {
 		var err error
 
-		CertificatePemIos, err = certificate.FromPemFile(PushConf.Ios.PemPath, "")
+		CertificatePemIos, err = certificate.FromPemFile(PushConf.Ios.PemPath, PushConf.Ios.Password)
 
 		if err != nil {
 			LogError.Error("Cert Error:", err.Error())

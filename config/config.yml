@@ -21,6 +21,7 @@ android:
 ios:
   enabled: false
   pem_path: "key.pem"
+  password: ""
   production: false
 
 log:

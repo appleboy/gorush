@@ -23,6 +23,7 @@ func main() {
 	version := flag.Bool("v", false, "gorush version")
 	confPath := flag.String("c", "", "yaml configuration file path for gorush")
 	certificateKeyPath := flag.String("i", "", "iOS certificate key file path for gorush")
+	certificatePassword := flag.String("password", "", "iOS certificate password for gorush")
 	apiKey := flag.String("k", "", "Android api key configuration for gorush")
 	port := flag.String("p", "", "port number for gorush")
 	token := flag.String("t", "", "token string")
@@ -59,6 +60,11 @@ func main() {
 
 	if *certificateKeyPath != "" {
 		gorush.PushConf.Ios.PemPath = *certificateKeyPath
+	}
+
+	if *certificatePassword != "" {
+		log.Printf("Load yaml config file error: '%v'", certificatePassword)
+		gorush.PushConf.Ios.Password = *certificatePassword
 	}
 
 	if *apiKey != "" {

@@ -71,6 +71,7 @@ android:
 ios:
   enabled: false
   pem_path: "key.pem"
+  password: "" # certificate password, default as empty string.
   production: false
 
 log:
@@ -124,6 +125,7 @@ $ gorush -ios -m="your message" -i="your certificate path" -t="device token" -to
 * `-i`: Apple Push Notification Certificate path (`pem` file).
 * `-t`: Device token.
 * `-topic`: The topic of the remote notification.
+* `-password`: The certificate password.
 
 The default endpoint is APNs development. Please add `-production` flag for APNs production push endpoint.
 
