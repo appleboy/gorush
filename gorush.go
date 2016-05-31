@@ -2,9 +2,11 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/gorush"
 	"log"
+	"os"
 )
 
 func checkInput(token, message string) {
@@ -19,27 +21,77 @@ func checkInput(token, message string) {
 
 var Version = "No Version Provided"
 
-func main() {
-	version := flag.Bool("v", false, "gorush version")
-	confPath := flag.String("c", "", "yaml configuration file path for gorush")
-	certificateKeyPath := flag.String("i", "", "iOS certificate key file path for gorush")
-	certificatePassword := flag.String("password", "", "iOS certificate password for gorush")
-	apiKey := flag.String("k", "", "Android api key configuration for gorush")
-	port := flag.String("p", "", "port number for gorush")
-	token := flag.String("t", "", "token string")
-	message := flag.String("m", "", "notification message")
-	android := flag.Bool("android", false, "send android notification")
-	ios := flag.Bool("ios", false, "send ios notification")
-	production := flag.Bool("production", false, "production mode in iOS")
-	topic := flag.String("topic", "", "apns topic in iOS")
+var usageStr = `
+Usage: gorush [options]
 
+Server Options:
+    -p, --port <port>                Use port for clients (default: 8088)
+    -c, --config <file>              Configuration file
+    -m, --message <message>          Notification message
+    -t, --token <token>              Notification token
+iOS Options:
+    -i, --pem <file>                 certificate key file path
+    -P, --password <password>        certificate key password
+    --topic <topic>                  iOS topic
+    --ios                            enabled iOS (default: false)
+    --production                     iOS production mode (default: false)
+Android Options:
+    -k, --key <api_key>              Android API Key
+    --android                        enabled android (default: false)
+Common Options:
+    -h, --help                       Show this message
+    -v, --version                    Show version
+`
+
+// usage will print out the flag options for the server.
+func usage() {
+	fmt.Printf("%s\n", usageStr)
+	os.Exit(0)
+}
+
+func main() {
+	opts := config.ConfYaml{}
+
+	var showVersion bool
+	var configFile string
+	var topic string
+	var message string
+	var token string
+
+	flag.BoolVar(&showVersion, "version", false, "Print version information.")
+	flag.BoolVar(&showVersion, "v", false, "Print version information.")
+	flag.StringVar(&configFile, "c", "", "Configuration file.")
+	flag.StringVar(&configFile, "config", "", "Configuration file.")
+	flag.StringVar(&opts.Ios.PemPath, "i", "", "iOS certificate key file path")
+	flag.StringVar(&opts.Ios.PemPath, "pem", "", "iOS certificate key file path")
+	flag.StringVar(&opts.Ios.Password, "P", "", "iOS certificate password for gorush")
+	flag.StringVar(&opts.Ios.Password, "password", "", "iOS certificate password for gorush")
+	flag.StringVar(&opts.Android.APIKey, "k", "", "Android api key configuration for gorush")
+	flag.StringVar(&opts.Android.APIKey, "key", "", "Android api key configuration for gorush")
+	flag.StringVar(&opts.Core.Port, "p", "", "port number for gorush")
+	flag.StringVar(&opts.Core.Port, "port", "", "port number for gorush")
+	flag.StringVar(&token, "t", "", "token string")
+	flag.StringVar(&token, "token", "", "token string")
+	flag.StringVar(&message, "m", "", "notification message")
+	flag.StringVar(&message, "message", "", "notification message")
+	flag.BoolVar(&opts.Android.Enabled, "android", false, "send android notification")
+	flag.BoolVar(&opts.Ios.Enabled, "ios", false, "send ios notification")
+	flag.BoolVar(&opts.Ios.Production, "production", false, "production mode in iOS")
+	flag.StringVar(&topic, "topic", "", "apns topic in iOS")
+
+	flag.Usage = usage
 	flag.Parse()
 
 	gorush.SetVersion(Version)
 
-	if *version {
+	if len(os.Args) < 2 {
+		usage()
+	}
+
+	// Show version and exit
+	if showVersion {
 		gorush.PrintGoRushVersion()
-		return
+		os.Exit(0)
 	}
 
 	var err error
@@ -48,8 +100,8 @@ func main() {
 	gorush.PushConf = config.BuildDefaultPushConf()
 
 	// load user define config.
-	if *confPath != "" {
-		gorush.PushConf, err = config.LoadConfYaml(*confPath)
+	if configFile != "" {
+		gorush.PushConf, err = config.LoadConfYaml(configFile)
 
 		if err != nil {
 			log.Printf("Load yaml config file error: '%v'", err)
@@ -58,22 +110,21 @@ func main() {
 		}
 	}
 
-	if *certificateKeyPath != "" {
-		gorush.PushConf.Ios.PemPath = *certificateKeyPath
+	if opts.Ios.PemPath != "" {
+		gorush.PushConf.Ios.PemPath = opts.Ios.PemPath
 	}
 
-	if *certificatePassword != "" {
-		log.Printf("Load yaml config file error: '%v'", certificatePassword)
-		gorush.PushConf.Ios.Password = *certificatePassword
+	if opts.Ios.Password != "" {
+		gorush.PushConf.Ios.Password = opts.Ios.Password
 	}
 
-	if *apiKey != "" {
-		gorush.PushConf.Android.APIKey = *apiKey
+	if opts.Android.APIKey != "" {
+		gorush.PushConf.Android.APIKey = opts.Android.APIKey
 	}
 
 	// overwrite server port
-	if *port != "" {
-		gorush.PushConf.Core.Port = *port
+	if opts.Core.Port != "" {
+		gorush.PushConf.Core.Port = opts.Core.Port
 	}
 
 	if err = gorush.InitLog(); err != nil {
@@ -83,12 +134,12 @@ func main() {
 	}
 
 	// send android notification
-	if *android {
-		gorush.PushConf.Android.Enabled = true
+	if opts.Android.Enabled {
+		gorush.PushConf.Android.Enabled = opts.Android.Enabled
 		req := gorush.PushNotification{
-			Tokens:   []string{*token},
+			Tokens:   []string{token},
 			Platform: gorush.PlatFormAndroid,
-			Message:  *message,
+			Message:  message,
 		}
 
 		err := gorush.CheckMessage(req)
@@ -104,20 +155,20 @@ func main() {
 	}
 
 	// send android notification
-	if *ios {
-		if *production {
-			gorush.PushConf.Ios.Production = true
+	if opts.Ios.Enabled {
+		if opts.Ios.Production {
+			gorush.PushConf.Ios.Production = opts.Ios.Production
 		}
 
-		gorush.PushConf.Ios.Enabled = true
+		gorush.PushConf.Ios.Enabled = opts.Ios.Enabled
 		req := gorush.PushNotification{
-			Tokens:   []string{*token},
+			Tokens:   []string{token},
 			Platform: gorush.PlatFormIos,
-			Message:  *message,
+			Message:  message,
 		}
 
-		if *topic != "" {
-			req.Topic = *topic
+		if topic != "" {
+			req.Topic = topic
 		}
 
 		err := gorush.CheckMessage(req)

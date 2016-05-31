@@ -10,6 +10,7 @@ A push notification server using [Gin](https://github.com/gin-gonic/gin) framewo
 - [Features](#features)
 - [Basic Usage](#basic-usage)
   - [Download a binary](#download-a-binary)
+  - [Command Usage](#command-usage)
   - [Send Android notification](#send-android-notification)
   - [Send iOS notification](#send-ios-notification)
 - [Run gorush web server](#run-gorush-web-server)
@@ -100,6 +101,30 @@ How to send push notification using `gorush` command? (Android or iOS)
 ### Download a binary
 
 The pre-compiled binaries can be downloaded from [release page](https://github.com/appleboy/gorush/releases).
+
+### Command Usage
+
+```
+Usage: gorush [options]
+
+Server Options:
+    -p, --port <port>                Use port for clients (default: 8088)
+    -c, --config <file>              Configuration file
+    -m, --message <message>          Notification message
+    -t, --token <token>              Notification token
+iOS Options:
+    -i, --pem <file>                 certificate key file path
+    -P, --password <password>        certificate key password
+    --topic <topic>                  iOS topic
+    --ios                            enabled iOS (default: false)
+    --production                     iOS production mode (default: false)
+Android Options:
+    -k, --key <api_key>              Android API Key
+    --android                        enabled android (default: false)
+Common Options:
+    -h, --help                       Show this message
+    -v, --version                    Show version
+```
 
 ### Send Android notification
 
