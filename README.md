@@ -315,7 +315,7 @@ Request body must has a notifications array. The following is a parameter table 
 |to|string|The value must be a registration token, notification key, or topic.|-|only Android|
 |collapse_key|string|a key for collapsing notifications|-|only Android|
 |delay_while_idle|bool|a flag for device idling|-|only Android|
-|time_to_live|int|expiration of message kept on GCM storage|-|only Android|
+|time_to_live|uint|expiration of message kept on GCM storage|-|only Android|
 |restricted_package_name|string|the package name of the application|-|only Android|
 |dry_run|bool|allows developers to test a request without actually sending a message|-|only Android|
 |notification|string array|payload of a GCM message|-|only Android. See the [detail](#android-notification-payload)|
