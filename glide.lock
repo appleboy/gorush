@@ -1,5 +1,5 @@
 hash: 4e05c4dd1a8106a87fee3b589dd32aecc7ffeb1246bed8f8516b32fe745034d6
-updated: 2016-05-07T23:52:16.479759881+08:00
+updated: 2016-06-04T17:18:47.875491257+08:00
 imports:
 - name: github.com/alecthomas/kingpin
   version: e1543c77ba157565dbf7b3e8e4e15087a120397f
@@ -55,7 +55,7 @@ imports:
 - name: github.com/golang/snappy
   version: d7b1e156f50d3c4664f683603af70e3e47fa0aa2
 - name: github.com/google/go-gcm
-  version: 1708036c4639349562068ad2d4df2364cd0a1004
+  version: 190e93b4cedb43562b5bd558eb1a1bbd38695bcd
 - name: github.com/gorilla/context
   version: a8d44e7d8e4d532b6a27a02dd82abb31cc1b01bd
 - name: github.com/gorilla/mux

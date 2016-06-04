@@ -175,6 +175,7 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 func TestAndroidNotificationStructure(t *testing.T) {
 
 	test := "test"
+	timeToLive := uint(100)
 	req := PushNotification{
 		Tokens:                []string{"a", "b"},
 		Message:               "Welcome",
@@ -183,7 +184,7 @@ func TestAndroidNotificationStructure(t *testing.T) {
 		CollapseKey:           "1",
 		ContentAvailable:      true,
 		DelayWhileIdle:        true,
-		TimeToLive:            100,
+		TimeToLive:            &timeToLive,
 		RestrictedPackageName: test,
 		DryRun:                true,
 		Title:                 test,
@@ -205,7 +206,7 @@ func TestAndroidNotificationStructure(t *testing.T) {
 	assert.Equal(t, "1", notification.CollapseKey)
 	assert.True(t, notification.ContentAvailable)
 	assert.True(t, notification.DelayWhileIdle)
-	assert.Equal(t, 100, int(notification.TimeToLive))
+	assert.Equal(t, uint(100), *notification.TimeToLive)
 	assert.Equal(t, test, notification.RestrictedPackageName)
 	assert.True(t, notification.DryRun)
 	assert.Equal(t, test, notification.Notification.Title)
@@ -499,22 +500,24 @@ func TestGCMMessage(t *testing.T) {
 
 	// the message's TimeToLive field must be an integer
 	// between 0 and 2419200 (4 weeks)
+	timeToLive := uint(2419201)
 	req = PushNotification{
 		Message:    "Test",
 		Platform:   PlatFormAndroid,
 		Tokens:     []string{"XXXXXXXXX"},
-		TimeToLive: 2419201,
+		TimeToLive: &timeToLive,
 	}
 
 	err = CheckMessage(req)
 	assert.Error(t, err)
 
 	// Pass
+	timeToLive = uint(86400)
 	req = PushNotification{
 		Message:    "Test",
 		Platform:   PlatFormAndroid,
 		Tokens:     []string{"XXXXXXXXX"},
-		TimeToLive: 86400,
+		TimeToLive: &timeToLive,
 	}
 
 	err = CheckMessage(req)
@@ -527,11 +530,12 @@ func TestCheckAndroidMessage(t *testing.T) {
 	PushConf.Android.Enabled = true
 	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
 
+	timeToLive := uint(2419201)
 	req := PushNotification{
 		Tokens:     []string{"aaaaaa", "bbbbb"},
 		Platform:   PlatFormAndroid,
 		Message:    "Welcome",
-		TimeToLive: 2419201,
+		TimeToLive: &timeToLive,
 	}
 
 	success := PushToAndroid(req)

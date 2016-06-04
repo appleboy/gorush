@@ -62,7 +62,7 @@ type PushNotification struct {
 	To                    string           `json:"to,omitempty"`
 	CollapseKey           string           `json:"collapse_key,omitempty"`
 	DelayWhileIdle        bool             `json:"delay_while_idle,omitempty"`
-	TimeToLive            uint             `json:"time_to_live,omitempty"`
+	TimeToLive            *uint            `json:"time_to_live,omitempty"`
 	RestrictedPackageName string           `json:"restricted_package_name,omitempty"`
 	DryRun                bool             `json:"dry_run,omitempty"`
 	Notification          gcm.Notification `json:"notification,omitempty"`
@@ -105,7 +105,7 @@ func CheckMessage(req PushNotification) error {
 	}
 
 	// ref: https://developers.google.com/cloud-messaging/http-server-ref
-	if req.Platform == PlatFormAndroid && (req.TimeToLive < 0 || 2419200 < req.TimeToLive) {
+	if req.Platform == PlatFormAndroid && req.TimeToLive != nil && (*req.TimeToLive < uint(0) || uint(2419200) < *req.TimeToLive) {
 		msg = "the message's TimeToLive field must be an integer " +
 			"between 0 and 2419200 (4 weeks)"
 		LogAccess.Debug(msg)
