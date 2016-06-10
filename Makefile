@@ -2,7 +2,7 @@
 
 DEPS := $(wildcard *.go)
 BUILD_IMAGE := "gorush-build"
-PRODUCTION_IMAGE := "gorush-production"
+PRODUCTION_IMAGE := "gorush"
 DEPLOY_ACCOUNT := "appleboy"
 VERSION := $(shell git describe --tags)
 RANDOM := $(shell date '+%Y%m%d%H%M%S%s')
