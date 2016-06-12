@@ -20,7 +20,7 @@ android:
 
 ios:
   enabled: false
-  pem_path: "key.pem"
+  key_path: "key.pem"
   password: ""
   production: false
 

@@ -45,6 +45,7 @@ A push notification server using [Gin](https://github.com/gin-gonic/gin) framewo
 * Support `/api/stat/app` show notification success and failure counts.
 * Support `/api/config` show your [YAML](https://en.wikipedia.org/wiki/YAML) config.
 * Support store app stat to memory, [Redis](http://redis.io/) or [BoltDB](https://github.com/boltdb/bolt).
+* Support `p12` or `pem` formtat of iOS certificate file.
 
 See the [YAML config example](config/config.yml):
 
@@ -71,7 +72,7 @@ android:
 
 ios:
   enabled: false
-  pem_path: "key.pem"
+  key_path: "key.pem"
   password: "" # certificate password, default as empty string.
   production: false
 
@@ -113,13 +114,13 @@ Server Options:
     -m, --message <message>          Notification message
     -t, --token <token>              Notification token
 iOS Options:
-    -i, --pem <file>                 certificate key file path
+    -i, --key <file>                 certificate key file path
     -P, --password <password>        certificate key password
     --topic <topic>                  iOS topic
     --ios                            enabled iOS (default: false)
     --production                     iOS production mode (default: false)
 Android Options:
-    -k, --key <api_key>              Android API Key
+    -k, --apikey <api_key>           Android API Key
     --android                        enabled android (default: false)
 Common Options:
     -h, --help                       Show this message
@@ -147,7 +148,7 @@ $ gorush -ios -m="your message" -i="your certificate path" -t="device token" -to
 ```
 
 * `-m`: Notification message.
-* `-i`: Apple Push Notification Certificate path (`pem` file).
+* `-i`: Apple Push Notification Certificate path (`pem` or `p12` file).
 * `-t`: Device token.
 * `-topic`: The topic of the remote notification.
 * `-password`: The certificate password.

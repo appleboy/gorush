@@ -7,6 +7,7 @@ import (
 	apns "github.com/sideshow/apns2"
 	"github.com/sideshow/apns2/certificate"
 	"github.com/sideshow/apns2/payload"
+	"path/filepath"
 	"time"
 )
 
@@ -122,7 +123,7 @@ func CheckPushConf() error {
 	}
 
 	if PushConf.Ios.Enabled {
-		if PushConf.Ios.PemPath == "" {
+		if PushConf.Ios.KeyPath == "" {
 			return errors.New("Missing iOS certificate path")
 		}
 	}
@@ -140,8 +141,18 @@ func CheckPushConf() error {
 func InitAPNSClient() error {
 	if PushConf.Ios.Enabled {
 		var err error
+		ext := filepath.Ext(PushConf.Ios.KeyPath)
 
-		CertificatePemIos, err = certificate.FromPemFile(PushConf.Ios.PemPath, PushConf.Ios.Password)
+		LogAccess.Debug("certificate ext is ", ext)
+
+		switch ext {
+		case ".p12":
+			CertificatePemIos, err = certificate.FromP12File(PushConf.Ios.KeyPath, PushConf.Ios.Password)
+		case ".pem":
+			CertificatePemIos, err = certificate.FromPemFile(PushConf.Ios.KeyPath, PushConf.Ios.Password)
+		default:
+			err = errors.New("Wrong Certificate key extension.")
+		}
 
 		if err != nil {
 			LogError.Error("Cert Error:", err.Error())

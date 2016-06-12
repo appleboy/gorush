@@ -45,7 +45,7 @@ type SectionAndroid struct {
 // SectionIos is sub seciont of config.
 type SectionIos struct {
 	Enabled    bool   `yaml:"enabled"`
-	PemPath    string `yaml:"pem_path"`
+	KeyPath    string `yaml:"key_path"`
 	Password   string `yaml:"password"`
 	Production bool   `yaml:"production"`
 }
@@ -106,7 +106,7 @@ func BuildDefaultPushConf() ConfYaml {
 
 	// iOS
 	conf.Ios.Enabled = false
-	conf.Ios.PemPath = "key.pem"
+	conf.Ios.KeyPath = "key.pem"
 	conf.Ios.Password = ""
 	conf.Ios.Production = false
 

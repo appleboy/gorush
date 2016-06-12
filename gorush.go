@@ -30,13 +30,13 @@ Server Options:
     -m, --message <message>          Notification message
     -t, --token <token>              Notification token
 iOS Options:
-    -i, --pem <file>                 certificate key file path
+    -i, --key <file>                 certificate key file path
     -P, --password <password>        certificate key password
     --topic <topic>                  iOS topic
     --ios                            enabled iOS (default: false)
     --production                     iOS production mode (default: false)
 Android Options:
-    -k, --key <api_key>              Android API Key
+    -k, --apikey <api_key>           Android API Key
     --android                        enabled android (default: false)
 Common Options:
     -h, --help                       Show this message
@@ -62,12 +62,12 @@ func main() {
 	flag.BoolVar(&showVersion, "v", false, "Print version information.")
 	flag.StringVar(&configFile, "c", "", "Configuration file.")
 	flag.StringVar(&configFile, "config", "", "Configuration file.")
-	flag.StringVar(&opts.Ios.PemPath, "i", "", "iOS certificate key file path")
-	flag.StringVar(&opts.Ios.PemPath, "pem", "", "iOS certificate key file path")
+	flag.StringVar(&opts.Ios.KeyPath, "i", "", "iOS certificate key file path")
+	flag.StringVar(&opts.Ios.KeyPath, "key", "", "iOS certificate key file path")
 	flag.StringVar(&opts.Ios.Password, "P", "", "iOS certificate password for gorush")
 	flag.StringVar(&opts.Ios.Password, "password", "", "iOS certificate password for gorush")
 	flag.StringVar(&opts.Android.APIKey, "k", "", "Android api key configuration for gorush")
-	flag.StringVar(&opts.Android.APIKey, "key", "", "Android api key configuration for gorush")
+	flag.StringVar(&opts.Android.APIKey, "apikey", "", "Android api key configuration for gorush")
 	flag.StringVar(&opts.Core.Port, "p", "", "port number for gorush")
 	flag.StringVar(&opts.Core.Port, "port", "", "port number for gorush")
 	flag.StringVar(&token, "t", "", "token string")
@@ -110,8 +110,8 @@ func main() {
 		}
 	}
 
-	if opts.Ios.PemPath != "" {
-		gorush.PushConf.Ios.PemPath = opts.Ios.PemPath
+	if opts.Ios.KeyPath != "" {
+		gorush.PushConf.Ios.KeyPath = opts.Ios.KeyPath
 	}
 
 	if opts.Ios.Password != "" {
