@@ -2,6 +2,7 @@
 
 DEPS := $(wildcard *.go)
 BUILD_IMAGE := "gorush-build"
+# docker hub project name.
 PRODUCTION_IMAGE := "gorush"
 DEPLOY_ACCOUNT := "appleboy"
 VERSION := $(shell git describe --tags)
