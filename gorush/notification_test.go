@@ -427,7 +427,7 @@ func TestDisabledIosNotifications(t *testing.T) {
 	assert.Equal(t, 2, count)
 }
 
-func TestMissingIosCertificate(t *testing.T) {
+func TestWrongIosCertificateExt(t *testing.T) {
 	PushConf = config.BuildDefaultPushConf()
 
 	PushConf.Ios.Enabled = true
@@ -435,13 +435,14 @@ func TestMissingIosCertificate(t *testing.T) {
 	err := InitAPNSClient()
 
 	assert.Error(t, err)
+	assert.Equal(t, "Wrong Certificate key extension.", err.Error())
 }
 
 func TestAPNSClientDevHost(t *testing.T) {
 	PushConf = config.BuildDefaultPushConf()
 
 	PushConf.Ios.Enabled = true
-	PushConf.Ios.PemPath = "../certificate/certificate-valid.pem"
+	PushConf.Ios.PemPath = "../certificate/certificate-valid.p12"
 	InitAPNSClient()
 
 	assert.Equal(t, apns2.HostDevelopment, ApnsClient.Host)
