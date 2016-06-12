@@ -114,13 +114,13 @@ Server Options:
     -m, --message <message>          Notification message
     -t, --token <token>              Notification token
 iOS Options:
-    -i, --pem <file>                 certificate key file path
+    -i, --key <file>                 certificate key file path
     -P, --password <password>        certificate key password
     --topic <topic>                  iOS topic
     --ios                            enabled iOS (default: false)
     --production                     iOS production mode (default: false)
 Android Options:
-    -k, --key <api_key>              Android API Key
+    -k, --apikey <api_key>           Android API Key
     --android                        enabled android (default: false)
 Common Options:
     -h, --help                       Show this message
@@ -148,7 +148,7 @@ $ gorush -ios -m="your message" -i="your certificate path" -t="device token" -to
 ```
 
 * `-m`: Notification message.
-* `-i`: Apple Push Notification Certificate path (`pem` file).
+* `-i`: Apple Push Notification Certificate path (`pem` or `p12` file).
 * `-t`: Device token.
 * `-topic`: The topic of the remote notification.
 * `-password`: The certificate password.
