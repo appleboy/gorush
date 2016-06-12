@@ -123,7 +123,7 @@ func CheckPushConf() error {
 	}
 
 	if PushConf.Ios.Enabled {
-		if PushConf.Ios.PemPath == "" {
+		if PushConf.Ios.KeyPath == "" {
 			return errors.New("Missing iOS certificate path")
 		}
 	}
@@ -141,15 +141,15 @@ func CheckPushConf() error {
 func InitAPNSClient() error {
 	if PushConf.Ios.Enabled {
 		var err error
-		ext := filepath.Ext(PushConf.Ios.PemPath)
+		ext := filepath.Ext(PushConf.Ios.KeyPath)
 
 		LogAccess.Debug("certificate ext is ", ext)
 
 		switch ext {
 		case ".p12":
-			CertificatePemIos, err = certificate.FromP12File(PushConf.Ios.PemPath, PushConf.Ios.Password)
+			CertificatePemIos, err = certificate.FromP12File(PushConf.Ios.KeyPath, PushConf.Ios.Password)
 		case ".pem":
-			CertificatePemIos, err = certificate.FromPemFile(PushConf.Ios.PemPath, PushConf.Ios.Password)
+			CertificatePemIos, err = certificate.FromPemFile(PushConf.Ios.KeyPath, PushConf.Ios.Password)
 		default:
 			err = errors.New("Wrong Certificate key extension.")
 		}

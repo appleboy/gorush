@@ -72,7 +72,7 @@ android:
 
 ios:
   enabled: false
-  pem_path: "key.pem"
+  key_path: "key.pem"
   password: "" # certificate password, default as empty string.
   production: false
 
