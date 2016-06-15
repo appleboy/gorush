@@ -143,8 +143,6 @@ func InitAPNSClient() error {
 		var err error
 		ext := filepath.Ext(PushConf.Ios.KeyPath)
 
-		LogAccess.Debug("certificate ext is ", ext)
-
 		switch ext {
 		case ".p12":
 			CertificatePemIos, err = certificate.FromP12File(PushConf.Ios.KeyPath, PushConf.Ios.Password)
@@ -311,6 +309,7 @@ func GetIOSNotification(req PushNotification) *apns.Notification {
 
 // PushToIOS provide send notification to APNs server.
 func PushToIOS(req PushNotification) bool {
+	LogAccess.Debug("Start push notification for iOS")
 
 	var isError bool
 
@@ -395,6 +394,8 @@ func GetAndroidNotification(req PushNotification) gcm.HttpMessage {
 
 // PushToAndroid provide send notification to Android server.
 func PushToAndroid(req PushNotification) bool {
+	LogAccess.Debug("Start push notification for Android")
+
 	var APIKey string
 
 	// check message
