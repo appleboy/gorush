@@ -1,8 +1,8 @@
-hash: 4e05c4dd1a8106a87fee3b589dd32aecc7ffeb1246bed8f8516b32fe745034d6
-updated: 2016-06-12T11:08:33.023034602+08:00
+hash: 0806d909c11f06664ce8ab13eb4938a37c8dc26f5b53a8af2f54ccc23cc1579c
+updated: 2016-06-22T09:57:21.99277842+08:00
 imports:
 - name: github.com/alecthomas/kingpin
-  version: e1543c77ba157565dbf7b3e8e4e15087a120397f
+  version: 30de531dd802b2b402bf7dfd89515d6722a56a35
 - name: github.com/alecthomas/template
   version: a0175ee3bccc567396460bf5acd36800cb10c49c
   subpackages:
@@ -11,19 +11,16 @@ imports:
   version: 2efee857e7cfd4f3d0138cc3cbb1b4966962b93a
 - name: github.com/aliafshar/toylog
   version: 11d228569d74fd7a2c9d50016043ccc31e6832ed
-- name: github.com/appleboy/gin-status-api
-  version: 6e9d17f8a41d142221548f0493486dfffc492652
-- name: github.com/appleboy/gofight
-  version: d902822d4cc09742e326960c813fb7f7ed324fcc
 - name: github.com/asdine/storm
-  version: d8dddb265c7e07e17532fc4e24f7bddb39c33d66
+  version: 6e68f8e0b4e06912498cd60a1ca508bdf5ae013f
   subpackages:
   - codec
   - codec/gob
+  - index
 - name: github.com/boltdb/bolt
-  version: d97499360d1ecebc492ea66c7447ea948f417620
+  version: 3f7947a25d970e1e5f512276c14d5dcf731ccd5e
 - name: github.com/buger/jsonparser
-  version: f0ac9350516a2f00f02704daa15e5d1ed5b0b76b
+  version: 183ade1ac7705adf72585f92410fc0912783217a
 - name: github.com/davecgh/go-spew
   version: 5215b55f46b2b919f50a1df0eaa5886afe4e3b3d
   subpackages:
@@ -31,19 +28,15 @@ imports:
 - name: github.com/dchest/siphash
   version: 6d8617816bb5d8268011ffbfb8720f17ce9af63c
 - name: github.com/dgrijalva/jwt-go
-  version: 40bd0f3b4891a9d7f121bfb7b8e8b0525625e262
+  version: f0777076321ab64f6efc15a82d9d23b98539b943
 - name: github.com/dgryski/go-ddmin
   version: f7df7ebd4081e6d5d5efc4c70e9c871c9af4ccc0
 - name: github.com/dustin/go-broadcast
   version: 3bdf6d4a7164a50bc19d5f230e2981d87d2584f1
-- name: github.com/fatih/structs
-  version: e5ca5fe90dcf72d2903310c7d6e0e7c2a13ad7e4
-- name: github.com/fukata/golang-stats-api-handler
-  version: ab9f90f16caab828afda479fd34bfbbbba2efcee
 - name: github.com/fvbock/endless
-  version: dd6ed5d07b55d55cf8342731bbbb96bd20283b7d
+  version: 2cdc20a776897c0f406853c048c33e2c1a9f0ebf
 - name: github.com/gin-gonic/gin
-  version: 542be2fe77724f800fcab7eb6c01a4e597fb8506
+  version: f931d1ea80ae95a6fc739213cdd9399bd2967fb6
   subpackages:
   - binding
   - render
@@ -53,13 +46,13 @@ imports:
   - proto
   - proto/testdata
 - name: github.com/golang/snappy
-  version: d7b1e156f50d3c4664f683603af70e3e47fa0aa2
+  version: d9eb7a3d35ec988b8585d4a0068e462c27d28380
 - name: github.com/google/go-gcm
   version: 190e93b4cedb43562b5bd558eb1a1bbd38695bcd
 - name: github.com/gorilla/context
-  version: a8d44e7d8e4d532b6a27a02dd82abb31cc1b01bd
+  version: aed02d124ae4a0e94fea4541c8effd05bf0c8296
 - name: github.com/gorilla/mux
-  version: 9c19ed558d5df4da88e2ade9c8940d742aef0e7e
+  version: 9fa818a44c2bf1396a17f9d5a3c0f6dd39d2ff8e
 - name: github.com/jpillora/backoff
   version: 0496a6c14df020789376f4d4a261273d5ddb36ec
 - name: github.com/julienschmidt/httprouter
@@ -75,18 +68,19 @@ imports:
 - name: github.com/klauspost/crc32
   version: 19b0b332c9e4516a6370a0456e6182c3b5036720
 - name: github.com/labstack/echo
-  version: e943ed24be65c0716769b88318309c845b7b144c
+  version: fa80ead5e2739b8e63076081e275d80c96cd7ad7
   subpackages:
   - engine
   - test
+  - log
 - name: github.com/labstack/gommon
-  version: 2e62be24dbb1ceb226554aaccfe5a89ec71043b3
+  version: 722aa12d41c236ce78ff48eac1cafe0107ecdc9d
   subpackages:
   - log
   - bytes
   - color
 - name: github.com/mailru/easyjson
-  version: 5ba5887e4b8e695b9ac697dfaefe429157153a43
+  version: 69e532648c145d4ae3b9214d166e20938eae8ef3
   subpackages:
   - jlexer
   - jwriter
@@ -96,11 +90,11 @@ imports:
 - name: github.com/manucorporat/stats
   version: 8f2d6ace262eba462e9beb552382c98be51d807b
 - name: github.com/mattn/go-colorable
-  version: 45ce6a6f60010487dd0dbab368b5fbbed1c14ef0
+  version: 9056b7a9f2d1f2d96498d6d146acd1f9d5ed3d59
 - name: github.com/mattn/go-isatty
   version: 56b76bdf51f7708750eac80fa38b952bb9f32639
 - name: github.com/mattn/go-xmpp
-  version: 12d5633a9d4d91f910e7f6a26b8654c23d5a890f
+  version: aeb80ddc4dc7a688339c4cb746e8a0d79f9a3812
 - name: github.com/pborman/uuid
   version: c55201b036063326c5b1b89ccfe45a184973d073
 - name: github.com/pmezard/go-difflib
@@ -108,16 +102,16 @@ imports:
   subpackages:
   - difflib
 - name: github.com/pquerna/ffjson
-  version: 6cb0d17684c750fa55e8475b02b0a8c3b062efbc
+  version: a16f62ecdaf7d13077d64d3cdb1cc43486119809
   subpackages:
   - fflib/v1
   - fflib/v1/internal
 - name: github.com/Sereal/Sereal
-  version: c6226708d1fbcead06ef8a3b23af0c91925fb612
+  version: 835611bf2e782a6bb3fb2e212038019fb67fe1a9
   subpackages:
   - Go/sereal
 - name: github.com/sideshow/apns2
-  version: 729daff3d4e45239f3b584580aa408572737c5b1
+  version: 873d6f531482befe8177997be72eacf61c72d5a2
   subpackages:
   - certificate
   - payload
@@ -132,17 +126,18 @@ imports:
   - http
   - mock
 - name: github.com/ugorji/go
-  version: a396ed22fc049df733440d90efe17475e3929ccb
+  version: b94837a2404ab90efe9289e77a70694c355739cb
   subpackages:
   - codec
 - name: github.com/valyala/fasthttp
-  version: fcba2aa2f2a878517d0084ba29fcf5c09940dbb5
+  version: 29a4c4d6c1764a7986e68ab18c4b83f0e08c2df8
   subpackages:
+  - fasthttputil
   - expvarhandler
 - name: github.com/valyala/fasttemplate
   version: 3b874956e03f1636d171bda64b130f9135f42cff
 - name: golang.org/x/crypto
-  version: 47ff8dfbc528fea3003fc0ce2d88ffbbfbc46a43
+  version: f3241ce8505855877cc8a9717bd61a0f7c4ea83c
   subpackages:
   - pkcs12
   - ssh/terminal
@@ -157,14 +152,20 @@ imports:
   version: 31c8ff1fb8b79a6947e6565e9a6df535f98a6b94
 - name: gopkg.in/alecthomas/kingpin.v2
   version: 8cccfa8eb2e3183254457fb1749b2667fbc364c7
+- name: gopkg.in/appleboy/gin-status-api.v1
+  version: d41a075a5a6883245b7fdefbefd4fa4d1462e1f1
+- name: gopkg.in/appleboy/gofight.v1
+  version: c44e131161d0a8a4973d27603f415b04685bbd81
 - name: gopkg.in/bsm/ratelimit.v1
   version: db14e161995a5177acef654cb0dd785e8ee8bc22
+- name: gopkg.in/fukata/golang-stats-api-handler.v1
+  version: 90f0b59102629831cc109845475a8d77043412ec
 - name: gopkg.in/gemnasium/logrus-airbrake-hook.v2
   version: 31e6fd4bd5a98d8ee7673d24bc54ec73c31810dd
 - name: gopkg.in/go-playground/validator.v8
   version: c193cecd124b5cc722d7ee5538e945bdb3348435
 - name: gopkg.in/redis.v3
-  version: 5183f8dcde9737db7583dbfa9881800dba26e3fa
+  version: a905127dc89ca51a241eacf70757a40423ab93d0
   subpackages:
   - internal
   - internal/consistenthash

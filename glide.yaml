@@ -4,7 +4,7 @@ import:
 - package: gopkg.in/redis.v3
 - package: github.com/Sirupsen/logrus
   version: v0.10.0
-- package: github.com/appleboy/gin-status-api
+- package: gopkg.in/appleboy/gin-status-api.v1
 - package: github.com/fvbock/endless
 - package: github.com/gin-gonic/gin
 - package: github.com/google/go-gcm
@@ -14,5 +14,5 @@ import:
   - payload
 - package: github.com/stretchr/testify
 - package: github.com/asdine/storm
-- package: github.com/appleboy/gofight
+- package: gopkg.in/appleboy/gofight.v1
 - package: github.com/buger/jsonparser
