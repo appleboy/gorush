@@ -19,6 +19,7 @@ func checkInput(token, message string) {
 	}
 }
 
+// Version control for gorush.
 var Version = "No Version Provided"
 
 var usageStr = `
