@@ -1,5 +1,5 @@
-hash: 0806d909c11f06664ce8ab13eb4938a37c8dc26f5b53a8af2f54ccc23cc1579c
-updated: 2016-06-22T09:57:21.99277842+08:00
+hash: 9aca7e6e492e8151c2c1ba7d36ff7180be424e2ea707ace1958926d5f06968af
+updated: 2016-06-26T11:45:38.922971917+08:00
 imports:
 - name: github.com/alecthomas/kingpin
   version: 30de531dd802b2b402bf7dfd89515d6722a56a35
@@ -17,10 +17,70 @@ imports:
   - codec
   - codec/gob
   - index
+- name: github.com/astaxie/beego
+  version: 88c5dfa6ead42e624c2e7d9e04eab6cb2d07412a
+  subpackages:
+  - context
+  - config
+  - grace
+  - logs
+  - session
+  - toolbox
+  - utils
+  - orm
+- name: github.com/beego/goyaml2
+  version: 5545475820ddd4db3f90a4900d44b65d077d702d
+- name: github.com/beego/x2j
+  version: a0352aadc5420072ebe692481a5d6913d77f8cf0
+- name: github.com/belogik/goes
+  version: e54d722c3aff588e4c737fe11c07359019240824
 - name: github.com/boltdb/bolt
   version: 3f7947a25d970e1e5f512276c14d5dcf731ccd5e
+- name: github.com/bradfitz/gomemcache
+  version: fb1f79c6b65acda83063cbc69f6bba1522558bfc
+  subpackages:
+  - memcache
 - name: github.com/buger/jsonparser
   version: 183ade1ac7705adf72585f92410fc0912783217a
+- name: github.com/BurntSushi/toml
+  version: f0aeabca5a127c4078abb8c8d64298b147264b55
+- name: github.com/clbanning/x2j
+  version: f6421fb8583d19dfa0846d81e33a672addd7beeb
+- name: github.com/codegangsta/inject
+  version: 33e0aa1cb7c019ccc3fbe049a8262a6403d30504
+- name: github.com/codegangsta/negroni
+  version: dcaac9107a7a6ba4cf5143afc145e2b70a1c12c2
+- name: github.com/couchbase/cbauth
+  version: 4a6d537777f57b291a8126f94dfbe3201c1d4efc
+  subpackages:
+  - cbauthimpl
+  - revrpc
+  - metakv
+  - service
+  - saslauthd
+- name: github.com/couchbase/go-couchbase
+  version: e7e0e4cc00545f11130a22025222a48c0bfd4821
+  subpackages:
+  - platform
+  - trace
+- name: github.com/couchbase/go_n1ql
+  version: 6cf4e348b127e21f56e53eb8c3faaea56afdc588
+- name: github.com/couchbase/gomemcached
+  version: 6172a8c61c821c420071fe9e20e74d8e24c8cbd5
+  subpackages:
+  - client
+  - server
+- name: github.com/couchbase/goutils
+  version: 5823a0cbaaa9008406021dc5daf80125ea30bba6
+  subpackages:
+  - logging
+- name: github.com/couchbaselabs/go_n1ql
+  version: 6cf4e348b127e21f56e53eb8c3faaea56afdc588
+- name: github.com/cupcake/rdb
+  version: 90399abcaaff31d7844fbae7f9acb27109946f7f
+  subpackages:
+  - nopdecoder
+  - crc64
 - name: github.com/davecgh/go-spew
   version: 5215b55f46b2b919f50a1df0eaa5886afe4e3b3d
   subpackages:
@@ -33,13 +93,28 @@ imports:
   version: f7df7ebd4081e6d5d5efc4c70e9c871c9af4ccc0
 - name: github.com/dustin/go-broadcast
   version: 3bdf6d4a7164a50bc19d5f230e2981d87d2584f1
+- name: github.com/edsrzf/mmap-go
+  version: 935e0e8a636ca4ba70b713f3e38a19e1b77739e8
 - name: github.com/fvbock/endless
   version: 2cdc20a776897c0f406853c048c33e2c1a9f0ebf
+- name: github.com/garyburd/redigo
+  version: b8dc90050f24c1a73a52f107f3f575be67b21b7c
+  subpackages:
+  - redis
+  - internal
 - name: github.com/gin-gonic/gin
   version: f931d1ea80ae95a6fc739213cdd9399bd2967fb6
   subpackages:
   - binding
   - render
+- name: github.com/go-martini/martini
+  version: c257c412d547ac70fcaf5596c1a50a7cb832c1fc
+- name: github.com/go-sql-driver/mysql
+  version: 3654d25ec346ee8ce71a68431025458d52a38ac0
+- name: github.com/gocraft/web
+  version: 12b4630b4fee3e485b334c4d544bd9dd68fb3d4f
+- name: github.com/goji/param
+  version: 0b4aa9fcd96f890c0ae685fc425d85b80a7bed52
 - name: github.com/golang/protobuf
   version: 2402d76f3d41f928c7902a765dfc872356dd3aad
   subpackages:
@@ -79,10 +154,13 @@ imports:
   - log
   - bytes
   - color
+- name: github.com/lib/pq
+  version: 4dd446efc17690bc53e154025146f73203b18309
+  subpackages:
+  - oid
 - name: github.com/mailru/easyjson
   version: 69e532648c145d4ae3b9214d166e20938eae8ef3
   subpackages:
-  - jlexer
   - jwriter
   - buffer
 - name: github.com/manucorporat/sse
@@ -95,6 +173,41 @@ imports:
   version: 56b76bdf51f7708750eac80fa38b952bb9f32639
 - name: github.com/mattn/go-xmpp
   version: aeb80ddc4dc7a688339c4cb746e8a0d79f9a3812
+- name: github.com/onsi/ginkgo
+  version: 059cec02d342bab423425a99b191186a03255e9e
+  subpackages:
+  - config
+  - internal/codelocation
+  - internal/failer
+  - internal/remote
+  - internal/suite
+  - internal/testingtproxy
+  - internal/writer
+  - reporters
+  - reporters/stenographer
+  - types
+  - ginkgo/convert
+  - ginkgo/interrupthandler
+  - ginkgo/nodot
+  - ginkgo/testrunner
+  - ginkgo/testsuite
+  - ginkgo/watch
+  - internal/leafnodes
+- name: github.com/onsi/gomega
+  version: 0df7b7fdb38123c12a1f569f0affb2c2a7bd72cf
+  subpackages:
+  - internal/assertion
+  - internal/asyncassertion
+  - internal/testingtsupport
+  - matchers
+  - types
+  - internal/oraclematcher
+  - matchers/support/goraph/bipartitegraph
+  - matchers/support/goraph/edge
+  - matchers/support/goraph/node
+  - matchers/support/goraph/util
+- name: github.com/Pallinder/go-randomdata
+  version: 104cc800bd6434e70cb0c3ad08c4541f4f2eb48b
 - name: github.com/pborman/uuid
   version: c55201b036063326c5b1b89ccfe45a184973d073
 - name: github.com/pmezard/go-difflib
@@ -110,6 +223,29 @@ imports:
   version: 835611bf2e782a6bb3fb2e212038019fb67fe1a9
   subpackages:
   - Go/sereal
+- name: github.com/siddontang/go
+  version: 354e14e6c093c661abb29fd28403b3c19cff5514
+  subpackages:
+  - ioutil2
+  - filelock
+  - hack
+  - log
+  - num
+  - snappy
+  - sync2
+- name: github.com/siddontang/ledisdb
+  version: ca344836ab73bdff9b84d75496862d9fa60c09ad
+  subpackages:
+  - config
+  - ledis
+  - rpl
+  - store
+  - store/driver
+  - store/goleveldb
+  - store/leveldb
+  - store/rocksdb
+- name: github.com/siddontang/rdb
+  version: fc89ed2e418d27e3ea76e708e54276d2b44ae9cf
 - name: github.com/sideshow/apns2
   version: 873d6f531482befe8177997be72eacf61c72d5a2
   subpackages:
@@ -117,6 +253,10 @@ imports:
   - payload
 - name: github.com/Sirupsen/logrus
   version: 4b6ea7319e214d98c938f12692336f7ca9348d6b
+- name: github.com/ssdb/gossdb
+  version: 8d1dc1f3aff77506a891268fb787b0ae5e3b351c
+  subpackages:
+  - ssdb
 - name: github.com/stretchr/objx
   version: cbeaeb16a013161a98496fad62933b1d21786672
 - name: github.com/stretchr/testify
@@ -125,6 +265,23 @@ imports:
   - assert
   - http
   - mock
+- name: github.com/syndtr/goleveldb
+  version: fa5b5c78794bc5c18f330361059f871ae8c2b9d6
+  subpackages:
+  - leveldb
+  - leveldb/cache
+  - leveldb/filter
+  - leveldb/iterator
+  - leveldb/opt
+  - leveldb/storage
+  - leveldb/util
+  - leveldb/comparer
+  - leveldb/errors
+  - leveldb/journal
+  - leveldb/memdb
+  - leveldb/table
+- name: github.com/thoas/stats
+  version: 69e3c072eec2df2df41afe6214f62eb940e4cd80
 - name: github.com/ugorji/go
   version: b94837a2404ab90efe9289e77a70694c355739cb
   subpackages:
@@ -136,6 +293,17 @@ imports:
   - expvarhandler
 - name: github.com/valyala/fasttemplate
   version: 3b874956e03f1636d171bda64b130f9135f42cff
+- name: github.com/wendal/errors
+  version: f66c77a7882b399795a8987ebf87ef64a427417e
+- name: github.com/zenazn/goji
+  version: 64eb34159fe53473206c2b3e70fe396a639452f2
+  subpackages:
+  - bind
+  - graceful
+  - web
+  - web/middleware
+  - graceful/listener
+  - web/mutil
 - name: golang.org/x/crypto
   version: f3241ce8505855877cc8a9717bd61a0f7c4ea83c
   subpackages:
