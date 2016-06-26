@@ -17,6 +17,7 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 - [Web API](#web-api)
   - [GET /api/stat/go](#get-apistatgo)
   - [GET /api/stat/app](#get-apistatapp)
+  - [GET /api/sys/stats](#get-sysstats)
   - [POST /api/push](#post-apipush)
   - [Request body](#request-body)
   - [iOS alert payload](#ios-alert-payload)
