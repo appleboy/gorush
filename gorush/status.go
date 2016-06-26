@@ -5,8 +5,12 @@ import (
 	"github.com/appleboy/gorush/storage/memory"
 	"github.com/appleboy/gorush/storage/redis"
 	"github.com/gin-gonic/gin"
+	"github.com/thoas/stats"
 	"net/http"
 )
+
+// Stats provide response time, status code count, etc.
+var Stats = stats.New()
 
 // StatusApp is app status structure
 type StatusApp struct {
@@ -65,4 +69,17 @@ func appStatusHandler(c *gin.Context) {
 	result.Android.PushError = StatStorage.GetAndroidError()
 
 	c.JSON(http.StatusOK, result)
+}
+
+func sysStatsHandler(c *gin.Context) {
+	c.JSON(http.StatusOK, Stats.Data())
+}
+
+// StatMiddleware response time, status code count, etc.
+func StatMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		beginning, recorder := Stats.Begin(c.Writer)
+		c.Next()
+		Stats.End(beginning, recorder)
+	}
 }

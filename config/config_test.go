@@ -49,5 +49,6 @@ func TestDefaultConfig(t *testing.T) {
 	config := BuildDefaultPushConf()
 
 	assert.Equal(t, "8088", config.Core.Port)
+	assert.Equal(t, "/sys/stats", config.API.SysStatURI)
 	assert.False(t, config.Android.Enabled)
 }

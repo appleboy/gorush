@@ -202,3 +202,14 @@ func TestSuccessPushHandler(t *testing.T) {
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }
+
+func TestSysStatsHandler(t *testing.T) {
+	initTest()
+
+	r := gofight.New()
+
+	r.GET("/sys/stats").
+		Run(routerEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+			assert.Equal(t, http.StatusOK, r.Code)
+		})
+}

@@ -13,6 +13,7 @@ api:
   stat_go_uri: "/api/stat/go"
   stat_app_uri: "/api/stat/app"
   config_uri: "/api/config"
+  sys_stat_uri: "/sys/stats"
 
 android:
   enabled: true

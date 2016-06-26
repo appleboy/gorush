@@ -70,10 +70,12 @@ func routerEngine() *gin.Engine {
 	r.Use(gin.Recovery())
 	r.Use(VersionMiddleware())
 	r.Use(LogMiddleware())
+	r.Use(StatMiddleware())
 
 	r.GET(PushConf.API.StatGoURI, api.StatusHandler)
 	r.GET(PushConf.API.StatAppURI, appStatusHandler)
 	r.GET(PushConf.API.ConfigURI, configHandler)
+	r.GET(PushConf.API.SysStatURI, sysStatsHandler)
 	r.POST(PushConf.API.PushURI, pushHandler)
 	r.GET("/", rootHandler)
 
