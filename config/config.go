@@ -13,7 +13,7 @@ type ConfYaml struct {
 	Android SectionAndroid `yaml:"android"`
 	Ios     SectionIos     `yaml:"ios"`
 	Log     SectionLog     `yaml:"log"`
-	Stat    SectionStat    `yaml:stat`
+	Stat    SectionStat    `yaml:"stat"`
 }
 
 // SectionCore is sub seciont of config.
