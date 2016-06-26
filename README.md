@@ -1,6 +1,6 @@
 # gorush
 
-A push notification server using [Gin](https://github.com/gin-gonic/gin) framework written in Go (Golang).
+A push notification micro server using [Gin](https://github.com/gin-gonic/gin) framework written in Go (Golang).
 
 [![GoDoc](https://godoc.org/github.com/appleboy/gorush?status.svg)](https://godoc.org/github.com/appleboy/gorush) [![Build Status](https://travis-ci.org/appleboy/gorush.svg?branch=master)](https://travis-ci.org/appleboy/gorush) [![Coverage Status](https://coveralls.io/repos/github/appleboy/gorush/badge.svg?branch=master)](https://coveralls.io/github/appleboy/gorush?branch=master) [![Go Report Card](https://goreportcard.com/badge/github.com/appleboy/gorush)](https://goreportcard.com/report/github.com/appleboy/gorush) [![codebeat badge](https://codebeat.co/badges/0a4eff2d-c9ac-46ed-8fd7-b59942983390)](https://codebeat.co/projects/github-com-appleboy-gorush)
 
@@ -46,6 +46,7 @@ A push notification server using [Gin](https://github.com/gin-gonic/gin) framewo
 * Support `/api/config` show your [YAML](https://en.wikipedia.org/wiki/YAML) config.
 * Support store app stat to memory, [Redis](http://redis.io/) or [BoltDB](https://github.com/boltdb/bolt).
 * Support `p12` or `pem` formtat of iOS certificate file.
+* Support `/sys/stats` show response time, status code count, etc.
 
 See the [YAML config example](config/config.yml):
 
@@ -65,6 +66,7 @@ api:
   stat_go_uri: "/api/stat/go"
   stat_app_uri: "/api/stat/app"
   config_uri: "/api/config"
+  sys_stat_uri: "/sys/stats"
 
 android:
   enabled: true
@@ -238,6 +240,30 @@ Show success or failure counts information of notification.
     "push_success": 10,
     "push_error": 10
   }
+}
+```
+
+### GET /sys/stats
+
+Show response time, status code count, etc.
+
+```json
+{
+  "pid": 80332,
+  "uptime": "1m42.428010614s",
+  "uptime_sec": 102.428010614,
+  "time": "2016-06-26 12:27:11.675973571 +0800 CST",
+  "unixtime": 1466915231,
+  "status_code_count": { },
+  "total_status_code_count": {
+    "200": 5
+  },
+  "count": 0,
+  "total_count": 5,
+  "total_response_time": "10.422441ms",
+  "total_response_time_sec": 0.010422441000000001,
+  "average_response_time": "2.084488ms",
+  "average_response_time_sec": 0.0020844880000000002
 }
 ```
 
