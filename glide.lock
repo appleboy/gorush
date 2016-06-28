@@ -1,5 +1,5 @@
 hash: 9aca7e6e492e8151c2c1ba7d36ff7180be424e2ea707ace1958926d5f06968af
-updated: 2016-06-26T11:45:38.922971917+08:00
+updated: 2016-06-28T11:30:38.463742812+08:00
 imports:
 - name: github.com/alecthomas/kingpin
   version: 30de531dd802b2b402bf7dfd89515d6722a56a35
@@ -161,6 +161,7 @@ imports:
 - name: github.com/mailru/easyjson
   version: 69e532648c145d4ae3b9214d166e20938eae8ef3
   subpackages:
+  - jlexer
   - jwriter
   - buffer
 - name: github.com/manucorporat/sse
