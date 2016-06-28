@@ -6,6 +6,7 @@ BUILD_IMAGE := "gorush-build"
 PRODUCTION_IMAGE := "gorush"
 DEPLOY_ACCOUNT := "appleboy"
 VERSION := $(shell git describe --tags)
+TARGETS_NOVENDOR := $(shell glide novendor)
 RANDOM := $(shell date '+%Y%m%d%H%M%S%s')
 
 all: build
@@ -68,6 +69,9 @@ bundle:
 
 bundle_update:
 	glide update --all-dependencies --resolve-current
+
+fmt:
+	@echo $(TARGETS_NOVENDOR) | xargs go fmt -w
 
 lint:
 	golint gorush
