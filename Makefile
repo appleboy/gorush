@@ -26,22 +26,22 @@ build: clean
 	sh script/build.sh $(VERSION)
 
 test: redis_test boltdb_test memory_test config_test
-	go test -v -cover -covermode=count -coverprofile=coverage.out ./gorush/...
+	go test -v -cover -covermode=count -coverprofile=coverage.txt ./gorush/...
 
 redis_test: init
-	go test -v -cover -covermode=count -coverprofile=coverage.out ./storage/redis/...
+	go test -v -cover -covermode=count -coverprofile=coverage.txt ./storage/redis/...
 
 boltdb_test: init
-	go test -v -cover -covermode=count -coverprofile=coverage.out ./storage/boltdb/...
+	go test -v -cover -covermode=count -coverprofile=coverage.txt ./storage/boltdb/...
 
 memory_test: init
-	go test -v -cover -covermode=count -coverprofile=coverage.out ./storage/memory/...
+	go test -v -cover -covermode=count -coverprofile=coverage.txt ./storage/memory/...
 
 config_test: init
-	go test -v -cover -covermode=count -coverprofile=coverage.out ./config/...
+	go test -v -cover -covermode=count -coverprofile=coverage.txt ./config/...
 
 html:
-	go tool cover -html=coverage.out && unlink coverage.out
+	go tool cover -html=coverage.txt && unlink coverage.txt
 
 docker_build: clean
 	tar -zcvf build.tar.gz gorush.go gorush config storage Makefile glide.lock glide.yaml
@@ -77,4 +77,4 @@ lint:
 	golint gorush
 
 clean:
-	-rm -rf build.tar.gz gorush.tar.gz bin/* coverage.out gorush.tar.gz gorush/gorush.db storage/boltdb/gorush.db
+	-rm -rf build.tar.gz gorush.tar.gz bin/* coverage.txt gorush.tar.gz gorush/gorush.db storage/boltdb/gorush.db

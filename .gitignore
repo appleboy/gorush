@@ -28,7 +28,7 @@ key.pem
 config.yml
 bin/*
 .DS_Store
-coverage.out
+coverage.txt
 gorush/log/*.log
 build.tar.gz
 gorush.tar.gz
