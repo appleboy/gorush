@@ -30,7 +30,7 @@ install:
   - go get github.com/mattn/goveralls
 
 script:
-  - make test
+  - make coverage
   - $(go env GOPATH | awk 'BEGIN{FS=":"} {print $1}')/bin/goveralls -coverprofile=coverage.txt
     -service=travis-ci -repotoken=$COVERALLS_TOKEN
 
