@@ -25,6 +25,9 @@ endif
 build: clean
 	sh script/build.sh $(VERSION)
 
+coverage:
+	sh go.test.sh atomic
+
 test: redis_test boltdb_test memory_test config_test
 	go test -v -cover -covermode=count -coverprofile=coverage.txt ./gorush/...
 
@@ -41,7 +44,7 @@ config_test: init
 	go test -v -cover -covermode=count -coverprofile=coverage.txt ./config/...
 
 html:
-	go tool cover -html=coverage.txt && unlink coverage.txt
+	go tool cover -html=coverage.txt
 
 docker_build: clean
 	tar -zcvf build.tar.gz gorush.go gorush config storage Makefile glide.lock glide.yaml
