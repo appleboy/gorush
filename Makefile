@@ -71,7 +71,7 @@ bundle_update:
 	glide update --all-dependencies --resolve-current
 
 fmt:
-	@echo $(TARGETS_NOVENDOR) | xargs go fmt -w
+	@echo $(TARGETS_NOVENDOR) | xargs go fmt
 
 lint:
 	golint gorush
