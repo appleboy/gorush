@@ -10,6 +10,8 @@ func TestMemoryEngine(t *testing.T) {
 
 	memory := New()
 
+	assert.Nil(t, memory.Init())
+
 	memory.AddTotalCount(1)
 	val = memory.GetTotalCount()
 	assert.Equal(t, int64(1), val)
