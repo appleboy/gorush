@@ -15,5 +15,6 @@ import:
 - package: github.com/stretchr/testify
 - package: github.com/asdine/storm
 - package: gopkg.in/appleboy/gofight.v1
+  version: v1.0.1
 - package: github.com/buger/jsonparser
 - package: github.com/thoas/stats

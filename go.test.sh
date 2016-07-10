@@ -6,12 +6,13 @@ output() {
   printf "\033[32m"
   echo $1
   printf "\033[0m"
-  exit 0
+  exit 1
 }
 
 coverage_mode=$1
 
 test -z $coverage_mode && output "Usage: $0 coverage_mode"
+test -z $(which glide) && output "glide command not found"
 
 test -f coverage.txt && rm -rf coverage.txt
 echo "mode: ${coverage_mode}" > coverage.txt

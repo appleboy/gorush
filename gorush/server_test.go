@@ -59,7 +59,7 @@ func TestRunTLSServer(t *testing.T) {
 	// otherwise the main thread will complete
 	time.Sleep(5 * time.Millisecond)
 
-	assert.Error(t, RunHTTPServer())
+	gofight.TestRequest(t, "https://localhost:8087/api/stat/go")
 }
 
 func TestRootHandler(t *testing.T) {
