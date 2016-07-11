@@ -7,7 +7,6 @@ PRODUCTION_IMAGE := "gorush"
 DEPLOY_ACCOUNT := "appleboy"
 VERSION := $(shell git describe --tags)
 TARGETS_NOVENDOR := $(shell glide novendor)
-RANDOM := $(shell date '+%Y%m%d%H%M%S%s')
 
 all: build
 
@@ -53,8 +52,8 @@ docker_build: clean
 	docker run --rm $(BUILD_IMAGE) > gorush.tar.gz
 
 docker_test: init
-	docker-compose -p ${RANDOM} -f docker/docker-compose.testing.yml run --rm gorush
-	docker-compose -p ${RANDOM} -f docker/docker-compose.testing.yml down
+	docker-compose -p ${PRODUCTION_IMAGE} -f docker/docker-compose.testing.yml run --rm gorush
+	docker-compose -p ${PRODUCTION_IMAGE} -f docker/docker-compose.testing.yml down
 
 docker_production: docker_build
 	docker build --rm -t $(PRODUCTION_IMAGE) -f docker/Dockerfile.dist .
