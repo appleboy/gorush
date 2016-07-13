@@ -17,7 +17,7 @@ test -z $(which glide) && output "glide command not found"
 test -f coverage.txt && rm -rf coverage.txt
 echo "mode: ${coverage_mode}" > coverage.txt
 
-for d in ./storage/boltdb/... ./storage/redis/... ./storage/memory/... ./config/... ./gorush/...; do
+for d in $(go list ./... | grep -v vendor); do
   go test -v -cover -coverprofile=profile.out -covermode=${coverage_mode} $d
   if [ -f profile.out ]; then
     sed '1d' profile.out >> coverage.txt
