@@ -67,6 +67,7 @@ endif
 	docker push $(DEPLOY_ACCOUNT)/$(PRODUCTION_IMAGE):$(tag)
 
 install:
+	@which glide || (curl https://glide.sh/get | sh)
 	@glide install
 
 update:
