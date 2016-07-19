@@ -1,8 +1,8 @@
 hash: d182f8dc3162313af09e706a0ba4901218d9ccde609ee7d39c6aae5e891f20ee
-updated: 2016-07-10T15:59:10.549227418+08:00
+updated: 2016-07-19T15:42:04.799126082+08:00
 imports:
 - name: github.com/appleboy/gorush
-  version: def178ca0ec2106752c3b4909d99c968567a75ee
+  version: 5b2018147493092e5f15f2f9e42142acf0eebc51
   subpackages:
   - config
   - gorush
@@ -48,9 +48,11 @@ imports:
 - name: github.com/Sirupsen/logrus
   version: 4b6ea7319e214d98c938f12692336f7ca9348d6b
 - name: github.com/stretchr/testify
-  version: d77da356e56a7428ad25149ca77381849a6a5232
+  version: f390dcf405f7b83c997eac1b06768bb9f44dec18
   subpackages:
   - assert
+  - suite
+  - require
 - name: github.com/thoas/stats
   version: 69e3c072eec2df2df41afe6214f62eb940e4cd80
 - name: golang.org/x/crypto

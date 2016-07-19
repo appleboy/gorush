@@ -66,17 +66,17 @@ endif
 	docker tag $(PRODUCTION_IMAGE):latest $(DEPLOY_ACCOUNT)/$(PRODUCTION_IMAGE):$(tag)
 	docker push $(DEPLOY_ACCOUNT)/$(PRODUCTION_IMAGE):$(tag)
 
-bundle:
-	glide install
+install:
+	@glide install
 
-bundle_update:
-	glide update --all-dependencies --resolve-current
+update:
+	@glide up
 
 fmt:
 	@echo $(TARGETS_NOVENDOR) | xargs go fmt
 
 lint:
-	golint gorush
+	@golint -set_exit_status=1 gorush/
 
 clean:
 	-rm -rf build.tar.gz gorush.tar.gz bin/* coverage.txt gorush.tar.gz gorush/gorush.db storage/boltdb/gorush.db

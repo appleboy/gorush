@@ -25,9 +25,10 @@ before_install:
 
 install:
   - export GO15VENDOREXPERIMENT=1
-  - glide install
+  - go get -u github.com/golang/lint/golint
   - go get golang.org/x/tools/cmd/cover
   - go get github.com/mattn/goveralls
+  - make install
 
 script:
   - make coverage
