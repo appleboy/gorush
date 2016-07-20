@@ -41,6 +41,7 @@ EOF
 testing() {
   test -f ${junit_report} && rm -f ${junit_report}
   coverage_mode=$@
+  output "Running ${coverage_mode} mode for coverage."
   for pkg in $packages; do
     f="$workdir/$(echo $pkg | tr / -).cover"
     output "Testing coverage report for ${pkg}"
@@ -78,8 +79,8 @@ case "$1" in
   "")
     show_help ;;
   testing)
-    mode=$2
-    test -z $mode && mode="set"
+    mode="set"
+    test -z $2 || mode=$2
     testing $mode ;;
   coverage)
     generate_cover_report ;;
