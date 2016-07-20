@@ -84,10 +84,11 @@ generate_cloc_report() {
     linux*)
       which cloc || apt-get install cloc ;;
     *)
-      output "unknown: $OSTYPE" 1 ;;
+      curl https://raw.githubusercontent.com/AlDanial/cloc/master/cloc -o /usr/bin/cloc
+      chmod 755 /usr/bin/cloc
   esac
 
-  cloc --by-file --xml --out=${cloc_report} --exclude-dir=vendor,Godeps .
+  cloc --by-file --xml --out=${cloc_report} --exclude-dir=vendor,Godeps,.cover .
 }
 
 case "$1" in
