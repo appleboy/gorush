@@ -25,25 +25,25 @@ build: clean
 	sh script/build.sh $(VERSION)
 
 coverage:
-	@sh go.test.sh atomic | tee junit.txt
+	sh ./script/coverage.sh testing atomic
 
 test: redis_test boltdb_test memory_test config_test
-	go test -v -cover -covermode=count -coverprofile=coverage.txt ./gorush/...
+	go test -v -cover ./gorush/...
 
 redis_test: init
-	go test -v -cover -covermode=count -coverprofile=coverage.txt ./storage/redis/...
+	go test -v -cover ./storage/redis/...
 
 boltdb_test: init
-	go test -v -cover -covermode=count -coverprofile=coverage.txt ./storage/boltdb/...
+	go test -v -cover ./storage/boltdb/...
 
 memory_test: init
-	go test -v -cover -covermode=count -coverprofile=coverage.txt ./storage/memory/...
+	go test -v -cover ./storage/memory/...
 
 config_test: init
-	go test -v -cover -covermode=count -coverprofile=coverage.txt ./config/...
+	go test -v -cover ./config/...
 
 html:
-	go tool cover -html=coverage.txt
+	go tool cover -html=.cover/coverage.txt
 
 docker_build: clean
 	tar -zcvf build.tar.gz gorush.go gorush config storage Makefile glide.lock glide.yaml
@@ -87,16 +87,16 @@ vet:
 	@go vet -n -x ./...
 
 junit_report:
-	cat junit.txt | go-junit-report > report.xml
+	sh ./script/coverage.sh junit
 
 coverage_report:
-	gocov convert coverage.txt | gocov-xml > coverage.xml
+	sh ./script/coverage.sh coverage
 
 lint_report:
-	golint ./... > lint.txt
+	sh ./script/coverage.sh lint
 
 vet_report:
-	go vet -n -x ./... > vet.txt
+	sh ./script/coverage.sh vet
 
 report: junit_report coverage_report lint_report vet_report
 
@@ -106,5 +106,4 @@ clean:
 		gorush.tar.gz \
 		gorush/gorush.db \
 		storage/boltdb/gorush.db \
-		*.txt \
-		*.xml
+		.cover

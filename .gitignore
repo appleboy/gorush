@@ -28,15 +28,10 @@ key.pem
 config.yml
 bin/*
 .DS_Store
-coverage.txt
-coverage.xml
-report.xml
 gorush/log/*.log
 build.tar.gz
 gorush.tar.gz
 gorush.db
 vendor
-lint.txt
-vet.txt
 Dockerfile.tmp
-junit.txt
+.cover
