@@ -25,7 +25,7 @@ build: clean
 	sh script/build.sh $(VERSION)
 
 coverage:
-	sh go.test.sh atomic
+	@sh go.test.sh atomic | tee junit.txt
 
 test: redis_test boltdb_test memory_test config_test
 	go test -v -cover -covermode=count -coverprofile=coverage.txt ./gorush/...
@@ -68,6 +68,10 @@ endif
 
 install:
 	@which glide || (curl https://glide.sh/get | sh)
+	@which go-junit-report || go get -u github.com/jstemmer/go-junit-report
+	@which gocov || go get -u github.com/axw/gocov/gocov
+	@which gocov-xml || go get -u github.com/AlekSi/gocov-xml
+	@which golint || go get -u github.com/golang/lint/golint
 	@glide install
 
 update:
@@ -77,7 +81,30 @@ fmt:
 	@echo $(TARGETS_NOVENDOR) | xargs go fmt
 
 lint:
-	@golint -set_exit_status=1 gorush/
+	@golint -set_exit_status=1 ./...
+
+vet:
+	@go vet -n -x ./...
+
+junit_report:
+	cat junit.txt | go-junit-report > report.xml
+
+coverage_report:
+	gocov convert coverage.txt | gocov-xml > coverage.xml
+
+lint_report:
+	golint ./... > lint.txt
+
+vet_report:
+	go vet -n -x ./... > vet.txt
+
+report: junit_report coverage_report lint_report vet_report
 
 clean:
-	-rm -rf build.tar.gz gorush.tar.gz bin/* coverage.txt gorush.tar.gz gorush/gorush.db storage/boltdb/gorush.db
+	-rm -rf build.tar.gz \
+		gorush.tar.gz bin/* \
+		gorush.tar.gz \
+		gorush/gorush.db \
+		storage/boltdb/gorush.db \
+		*.txt \
+		*.xml

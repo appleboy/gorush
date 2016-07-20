@@ -39,3 +39,4 @@ vendor
 lint.txt
 vet.txt
 Dockerfile.tmp
+junit.txt
