@@ -24,6 +24,7 @@ func PrintGoRushVersion() {
 		version,
 		runtime.Compiler,
 		runtime.Version())
+	fmt.Println()
 }
 
 // VersionMiddleware : add version on header.
