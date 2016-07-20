@@ -22,6 +22,7 @@ junit_report="$workdir/junit.txt"
 junit_xml_report="$workdir/report.xml"
 lint_report="$workdir/lint.txt"
 vet_report="$workdir/vet.txt"
+cloc_report="$workdir/cloc.xml"
 packages=$(go list ./... | grep -v vendor)
 
 test -d $workdir || mkdir -p $workdir
@@ -35,6 +36,7 @@ Generate test coverage statistics for Go packages.
   junit                          Generate coverage xml report for junit plugin
   lint                           Generate Lint report for all packages
   vet                            Generate Vet report for all packages
+  cloc                           Generate Count Lines of Code report for all files
 EOF
 }
 
@@ -75,6 +77,19 @@ generate_vet_report() {
   done
 }
 
+generate_cloc_report() {
+  case "$OSTYPE" in
+    darwin*)
+      which cloc || brew install cloc ;;
+    linux*)
+      which cloc || apt-get install cloc ;;
+    *)
+      output "unknown: $OSTYPE" 1 ;;
+  esac
+
+  cloc --by-file --xml --out=${cloc_report} --exclude-dir=vendor,Godeps .
+}
+
 case "$1" in
   "")
     show_help ;;
@@ -90,6 +105,8 @@ case "$1" in
     generate_lint_report ;;
   vet)
     generate_vet_report ;;
+  cloc)
+    generate_cloc_report ;;
   *)
     show_help ;;
 esac

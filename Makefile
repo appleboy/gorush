@@ -98,7 +98,10 @@ lint_report:
 vet_report:
 	sh ./script/coverage.sh vet
 
-report: junit_report coverage_report lint_report vet_report
+cloc_report:
+	sh ./script/coverage.sh cloc
+
+report: junit_report coverage_report lint_report vet_report cloc_report
 
 clean:
 	-rm -rf build.tar.gz \
