@@ -106,6 +106,24 @@ How to send push notification using `gorush` command? (Android or iOS)
 
 The pre-compiled binaries can be downloaded from [release page](https://github.com/appleboy/gorush/releases).
 
+With `Go` installed
+
+```
+$ go get -u github.com/appleboy/gorush
+```
+
+On linux
+
+```
+$ wget -qO- https://github.com/appleboy/gorush/releases/download/v1.5.0/gorush-v1.5.0-linux-amd64.tar.gz | tar xvz
+```
+
+On OS X
+
+```
+$ wget -qO- https://github.com/appleboy/gorush/releases/download/v1.5.0/gorush-v1.5.0-darwin-amd64.tar.gz | tar xvz
+```
+
 ### Command Usage
 
 ```
