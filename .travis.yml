@@ -31,7 +31,7 @@ install:
 
 script:
   - make coverage
-  - $(go env GOPATH | awk 'BEGIN{FS=":"} {print $1}')/bin/goveralls -coverprofile=coverage.txt
+  - $(go env GOPATH | awk 'BEGIN{FS=":"} {print $1}')/bin/goveralls -coverprofile=.cover/coverage.txt
     -service=travis-ci -repotoken=$COVERALLS_TOKEN
 
 after_success:
@@ -41,4 +41,4 @@ after_success:
     && test "$TRAVIS_PULL_REQUEST" == "false" && cd $TRAVIS_BUILD_DIR && make docker_build
   - test "$TRAVIS_BRANCH" == "master" && test "$TRAVIS_GO_VERSION" == "1.6.2"
     && test "$TRAVIS_PULL_REQUEST" == "false" && cd $TRAVIS_BUILD_DIR && make deploy tag=latest
-  - bash <(curl -s https://codecov.io/bash)
+  - bash <(curl -s https://codecov.io/bash) -f .cover/coverage.txt

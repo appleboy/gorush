@@ -25,25 +25,25 @@ build: clean
 	sh script/build.sh $(VERSION)
 
 coverage:
-	sh go.test.sh atomic
+	sh ./script/coverage.sh testing atomic
 
 test: redis_test boltdb_test memory_test config_test
-	go test -v -cover -covermode=count -coverprofile=coverage.txt ./gorush/...
+	go test -v -cover ./gorush/...
 
 redis_test: init
-	go test -v -cover -covermode=count -coverprofile=coverage.txt ./storage/redis/...
+	go test -v -cover ./storage/redis/...
 
 boltdb_test: init
-	go test -v -cover -covermode=count -coverprofile=coverage.txt ./storage/boltdb/...
+	go test -v -cover ./storage/boltdb/...
 
 memory_test: init
-	go test -v -cover -covermode=count -coverprofile=coverage.txt ./storage/memory/...
+	go test -v -cover ./storage/memory/...
 
 config_test: init
-	go test -v -cover -covermode=count -coverprofile=coverage.txt ./config/...
+	go test -v -cover ./config/...
 
 html:
-	go tool cover -html=coverage.txt
+	go tool cover -html=.cover/coverage.txt
 
 docker_build: clean
 	tar -zcvf build.tar.gz gorush.go gorush config storage Makefile glide.lock glide.yaml
@@ -68,6 +68,10 @@ endif
 
 install:
 	@which glide || (curl https://glide.sh/get | sh)
+	@which go-junit-report || go get -u github.com/jstemmer/go-junit-report
+	@which gocov || go get -u github.com/axw/gocov/gocov
+	@which gocov-xml || go get -u github.com/AlekSi/gocov-xml
+	@which golint || go get -u github.com/golang/lint/golint
 	@glide install
 
 update:
@@ -77,7 +81,32 @@ fmt:
 	@echo $(TARGETS_NOVENDOR) | xargs go fmt
 
 lint:
-	@golint -set_exit_status=1 gorush/
+	@golint -set_exit_status=1 ./...
+
+vet:
+	@go vet -n -x ./...
+
+junit_report:
+	sh ./script/coverage.sh junit
+
+coverage_report:
+	sh ./script/coverage.sh coverage
+
+lint_report:
+	sh ./script/coverage.sh lint
+
+vet_report:
+	sh ./script/coverage.sh vet
+
+cloc_report:
+	sh ./script/coverage.sh cloc
+
+report: junit_report coverage_report lint_report vet_report cloc_report
 
 clean:
-	-rm -rf build.tar.gz gorush.tar.gz bin/* coverage.txt gorush.tar.gz gorush/gorush.db storage/boltdb/gorush.db
+	-rm -rf build.tar.gz \
+		gorush.tar.gz bin/* \
+		gorush.tar.gz \
+		gorush/gorush.db \
+		storage/boltdb/gorush.db \
+		.cover

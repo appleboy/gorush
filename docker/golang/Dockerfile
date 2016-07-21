@@ -3,7 +3,7 @@ FROM golang:1.6.2-alpine
 MAINTAINER Bo-Yi Wu <appleboy.tw@gmail.com>
 
 RUN apk update \
-  && apk add git make curl && rm -rf /var/cache/apk/*
+  && apk add git make curl perl && rm -rf /var/cache/apk/*
 
 # install glide package management.
 RUN curl https://glide.sh/get | sh
