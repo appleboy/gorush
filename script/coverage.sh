@@ -31,6 +31,7 @@ show_help() {
 cat << EOF
 Generate test coverage statistics for Go packages.
 
+  tool                           Install go dependency tools like gocov or golint.
   testing [set|count|atomic]     Run go testing for all packages
   coverage                       Generate coverage report for all packages
   junit                          Generate coverage xml report for junit plugin
@@ -38,6 +39,13 @@ Generate test coverage statistics for Go packages.
   vet                            Generate Vet report for all packages
   cloc                           Generate Count Lines of Code report for all files
 EOF
+}
+
+install_dependency_tool() {
+  which go-junit-report || go get -u github.com/jstemmer/go-junit-report
+  which gocov || go get -u github.com/axw/gocov/gocov
+  which gocov-xml || go get -u github.com/AlekSi/gocov-xml
+  which golint || go get -u github.com/golang/lint/golint
 }
 
 testing() {
@@ -94,6 +102,8 @@ generate_cloc_report() {
 case "$1" in
   "")
     show_help ;;
+  tool)
+    install_dependency_tool ;;
   testing)
     mode="set"
     test -z $2 || mode=$2

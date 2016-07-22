@@ -66,12 +66,8 @@ endif
 	docker tag $(PRODUCTION_IMAGE):latest $(DEPLOY_ACCOUNT)/$(PRODUCTION_IMAGE):$(tag)
 	docker push $(DEPLOY_ACCOUNT)/$(PRODUCTION_IMAGE):$(tag)
 
-install:
+install: tool
 	@which glide || (curl https://glide.sh/get | sh)
-	@which go-junit-report || go get -u github.com/jstemmer/go-junit-report
-	@which gocov || go get -u github.com/axw/gocov/gocov
-	@which gocov-xml || go get -u github.com/AlekSi/gocov-xml
-	@which golint || go get -u github.com/golang/lint/golint
 	@glide install
 
 update:
@@ -80,11 +76,8 @@ update:
 fmt:
 	@echo $(TARGETS_NOVENDOR) | xargs go fmt
 
-lint:
-	@golint -set_exit_status=1 ./...
-
-vet:
-	@go vet -n -x ./...
+tool:
+	sh ./script/coverage.sh tool
 
 junit_report:
 	sh ./script/coverage.sh junit
