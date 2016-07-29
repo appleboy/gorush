@@ -7,6 +7,8 @@ import (
 	apns "github.com/sideshow/apns2"
 	"github.com/sideshow/apns2/certificate"
 	"github.com/sideshow/apns2/payload"
+	"net/http"
+	"net/url"
 	"path/filepath"
 	"time"
 )
@@ -112,6 +114,20 @@ func CheckMessage(req PushNotification) error {
 		LogAccess.Debug(msg)
 		return errors.New(msg)
 	}
+
+	return nil
+}
+
+func SetProxy(proxy string) error {
+
+	proxyUrl, err := url.ParseRequestURI(proxy)
+
+	if err != nil {
+		return err
+	}
+
+	http.DefaultTransport = &http.Transport{Proxy: http.ProxyURL(proxyUrl)}
+	LogAccess.Debug("Set http proxy as " + proxy)
 
 	return nil
 }

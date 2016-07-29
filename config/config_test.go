@@ -62,6 +62,7 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 	assert.Equal(suite.T(), "cert.pem", suite.ConfGorushDefault.Core.CertPath)
 	assert.Equal(suite.T(), "key.pem", suite.ConfGorushDefault.Core.KeyPath)
 	assert.Equal(suite.T(), 100, suite.ConfGorushDefault.Core.MaxNotification)
+	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Core.HTTPProxy)
 
 	// Api
 	assert.Equal(suite.T(), "/api/push", suite.ConfGorushDefault.API.PushURI)
@@ -107,6 +108,7 @@ func (suite *ConfigTestSuite) TestValidateConf() {
 	assert.Equal(suite.T(), "cert.pem", suite.ConfGorush.Core.CertPath)
 	assert.Equal(suite.T(), "key.pem", suite.ConfGorush.Core.KeyPath)
 	assert.Equal(suite.T(), 100, suite.ConfGorush.Core.MaxNotification)
+	assert.Equal(suite.T(), "", suite.ConfGorush.Core.HTTPProxy)
 
 	// Api
 	assert.Equal(suite.T(), "/api/push", suite.ConfGorush.API.PushURI)
