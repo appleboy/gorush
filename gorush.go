@@ -30,6 +30,7 @@ Server Options:
     -c, --config <file>              Configuration file
     -m, --message <message>          Notification message
     -t, --token <token>              Notification token
+    --proxy <proxy>                  Proxy URL (only for GCM)
 iOS Options:
     -i, --key <file>                 certificate key file path
     -P, --password <password>        certificate key password
@@ -58,6 +59,7 @@ func main() {
 	var topic string
 	var message string
 	var token string
+	var proxy string
 
 	flag.BoolVar(&showVersion, "version", false, "Print version information.")
 	flag.BoolVar(&showVersion, "v", false, "Print version information.")
@@ -79,6 +81,7 @@ func main() {
 	flag.BoolVar(&opts.Ios.Enabled, "ios", false, "send ios notification")
 	flag.BoolVar(&opts.Ios.Production, "production", false, "production mode in iOS")
 	flag.StringVar(&topic, "topic", "", "apns topic in iOS")
+	flag.StringVar(&proxy, "proxy", "", "http proxy url")
 
 	flag.Usage = usage
 	flag.Parse()
@@ -99,6 +102,17 @@ func main() {
 
 	// set default parameters.
 	gorush.PushConf = config.BuildDefaultPushConf()
+
+	// set http proxy for GCM
+	if proxy != "" {
+		err = gorush.SetProxy(proxy)
+
+		if err != nil {
+			log.Printf("Set Proxy error: '%v'", err)
+
+			return
+		}
+	}
 
 	// load user define config.
 	if configFile != "" {
