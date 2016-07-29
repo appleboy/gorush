@@ -48,6 +48,7 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 * Support store app stat to memory, [Redis](http://redis.io/) or [BoltDB](https://github.com/boltdb/bolt).
 * Support `p12` or `pem` formtat of iOS certificate file.
 * Support `/sys/stats` show response time, status code count, etc.
+* Support for HTTP proxy to Google server (GCM).
 
 See the [YAML config example](config/config.yml):
 
@@ -61,6 +62,7 @@ core:
   ssl: false
   cert_path: "cert.pem"
   key_path: "key.pem"
+  http_proxy: "" # only working for GCM server
 
 api:
   push_uri: "/api/push"
@@ -134,6 +136,7 @@ Server Options:
     -c, --config <file>              Configuration file
     -m, --message <message>          Notification message
     -t, --token <token>              Notification token
+    --proxy <proxy>                  Proxy URL (only for GCM)
 iOS Options:
     -i, --key <file>                 certificate key file path
     -P, --password <password>        certificate key password
@@ -159,6 +162,7 @@ $ gorush -android -m="your message" -k="API Key" -t="Device token"
 * `-m`: Notification message.
 * `-k`: [Google cloud message](https://developers.google.com/cloud-messaging/) api key
 * `-t`: Device token.
+* `--proxy`: Set http proxy url. (only working for GCM)
 
 ### Send iOS notification
 
