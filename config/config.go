@@ -26,6 +26,7 @@ type SectionCore struct {
 	SSL             bool   `yaml:"ssl"`
 	CertPath        string `yaml:"cert_path"`
 	KeyPath         string `yaml:"key_path"`
+	HTTPProxy       string `yaml:"http_proxy"`
 }
 
 // SectionAPI is sub seciont of config.
@@ -94,6 +95,7 @@ func BuildDefaultPushConf() ConfYaml {
 	conf.Core.CertPath = "cert.pem"
 	conf.Core.KeyPath = "key.pem"
 	conf.Core.MaxNotification = 100
+	conf.Core.HTTPProxy = ""
 
 	// Api
 	conf.API.PushURI = "/api/push"

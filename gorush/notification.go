@@ -127,6 +127,7 @@ func SetProxy(proxy string) error {
 	}
 
 	http.DefaultTransport = &http.Transport{Proxy: http.ProxyURL(proxyUrl)}
+	LogAccess.Debug("Set http proxy as " + proxy)
 
 	return nil
 }

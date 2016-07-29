@@ -103,17 +103,6 @@ func main() {
 	// set default parameters.
 	gorush.PushConf = config.BuildDefaultPushConf()
 
-	// set http proxy for GCM
-	if proxy != "" {
-		err = gorush.SetProxy(proxy)
-
-		if err != nil {
-			log.Printf("Set Proxy error: '%v'", err)
-
-			return
-		}
-	}
-
 	// load user define config.
 	if configFile != "" {
 		gorush.PushConf, err = config.LoadConfYaml(configFile)
@@ -146,6 +135,21 @@ func main() {
 		log.Println(err)
 
 		return
+	}
+
+	// set http proxy for GCM
+	if proxy != "" {
+		err = gorush.SetProxy(proxy)
+
+		if err != nil {
+			gorush.LogError.Fatal("Set Proxy error: ", err)
+		}
+	} else if gorush.PushConf.Core.HTTPProxy != "" {
+		err = gorush.SetProxy(gorush.PushConf.Core.HTTPProxy)
+
+		if err != nil {
+			gorush.LogError.Fatal("Set Proxy error: ", err)
+		}
 	}
 
 	// send android notification
