@@ -22,11 +22,14 @@ ifeq ($(ANDROID_TEST_TOKEN),)
 endif
 	@echo "Already set ANDROID_API_KEY and ANDROID_TEST_TOKEN globale variable."
 
+install:
+	glide install
+
+update:
+	glide update
+
 build: clean
 	sh script/build.sh $(VERSION)
-
-coverage:
-	sh ./script/coverage.sh testing atomic
 
 test: redis_test boltdb_test memory_test config_test
 	go test -v -cover ./gorush/...
@@ -66,12 +69,6 @@ ifeq ($(tag),)
 endif
 	docker tag $(PRODUCTION_IMAGE):latest $(DEPLOY_ACCOUNT)/$(PRODUCTION_IMAGE):$(tag)
 	docker push $(DEPLOY_ACCOUNT)/$(PRODUCTION_IMAGE):$(tag)
-
-install:
-	glide install
-
-update:
-	glide update
 
 fmt:
 	@echo $(TARGETS_NOVENDOR) | xargs go fmt

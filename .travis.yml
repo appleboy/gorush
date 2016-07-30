@@ -2,35 +2,37 @@ sudo: required
 
 language: go
 
+services:
+  - docker
+
 go:
   - 1.5
   - 1.6
   - 1.6.3
   - tip
 
-services:
-  - docker
-  - redis
-
 env:
+  DOCKER_COMPOSE_VERSION: 1.7.1
   global:
     - secure: nnOFadWZodcsJeRHwcPE7wjUk4xZ7oNjrJUPvs1yBDKGOCfga/KbmWpQ85PZiJmmxA7WO1PXpRV0lf+lHKDuAJKiXbQZNZOW8BoFSagRy7/lSicDqeQyJX2zJsjYbM11ZqOCH1uiTMBsNsbaGJTGtwHrbQ84zXJk2WXvDfrvNqlo85cXDHtxkdsqfETgY3S7Gis7VUKmoJKHuhF8ADvsLjaXpg/kgnrhEkTz9AD4oxscMUq3/vkf5wPN9a4uEXDJamKK6N2CKfwGZLwVPGMRIrIL+/gc1vyALGpl5xjC/rMuErESVfzKcUfLgENXL4JEv2IcqfInDqhVL56YG87xlYb4Wsxsm0u1IYDl+v8Frm35SPAz7C5Iha+/Kh1G1ip9AZKkpSS7IxpFOfRe6hmhvXIX00cNCo51ZMp7xBkahiktHveXj7UrqX72y949/+QXgbC0AvV2+4lYnEDydkphlkXH9MDeAVtkbYGUss06U0q19GuL0O8+iZPyBfajdAdS0V0nx7zIYYW42UVuJdRcndcEkaK7PQd0fZlwwZUSXQgqEg8zd+VzxC7tAgtS8LlOU2Ma3Vf4pZiScaZNqpJXPIyD/jPSqNSYQe6WJ6FKRPJw+1ZwN2kAeQMIt1th+08I+23dyolpbULPTkOFudsZoyFkSPhEcDBKNEQdrL7ggTw=
     - secure: MVVH7ilA3r3eLb1I9/KTn3hWaEWOhY8yeF1g2zO09r0oRwEr+NKba/Ey2TpBmkcbFt+CiKMrefzoG9dwHyHm9dFH/1OLBrRAXK3RLV6qyMNw708yOkc7NfH5xK7X7F2u0vWwagK3aVkhTxXGrIQvaEK5jJ2tK3K1uDO5TzUC4TM0hLsgGvyTah89LJBhM4k0OEcAIVmzPO58Ql+RZV3nw03LDtcLofVFNqApCAUJNPrArt9TP/UraPPg/R8WtAS/PMY6IsMRKWj3LjN/J089zfQgiHH6p2wPBQ0n2R2zgisnxjAz5wt6/Dkvo09UqkVWFGX4p6N4t7kxAZoqhRRt+t38qdDip5iloclHGO5eI3/dr30V88Y5ionLL81WsBRqFuMmWrEb86maSMsXWl5yM1qB76Rsh/sPMDRk99Wf9RqhHedJxek6reoUcTBZl9kgXJDlqpjEogyq6qgL0jCCqgl0N6FZAYE/5SvW82MCukZZmko2UXBS/GmU6fhBRGquzOczL43YvVqqV8olZ2qXIdeeX5KeO/SHMUvW3oUnENa6V49K6ZX1f7KG8p8jERTNuDfsdgvZdMSYR2EeDQ7RTU6fhoc3BX4cFyTrS1qImswoBvLCEr54awQXDhgWddZsIWQzCxw6TmD7u25G3YHTsM5Wvs2Gj4z0aJeXFlLSfSQ=
     - secure: jbMSWnlmLHAXtI1A22aDyUvVWbXq1aRjW1EXcMyzAamBMl4c+47lrkoCnHuQaCY4kOWJ4ux7zPrnXL2j0HTqF7ZXzbw0TixG9dm8MK4TEImCcTcR8VQYbCCdiCM+MKy3XTewN2e1lCAzYu4oKO6xt424yvlowuWiunWZ9YVFfKRpXvfWDd9Rt20PYP7cPyqifRdk4aKI8H+hXWGdeRkRoQvZMa1TdFwRmyg0jfrw94xz/GKNLsSXIu3XBY4LSzzBNUmfcIPpK2TuqAyLxb4d/L+OXG5KQZpydLJgE+GGxtqyAcNkK1ps4Qf3ua6DbGVdQ6Zg0db3g5OLu5LsyvO2jQQIPUQbVDRwwHmT2pDRhz8e8VUMGmokgMX2gAXjxJJ3CFPZAaR9VAzhtlQxbrFi5zSU7VAv92XLNNAdQhA+FFQryC/myI0V82reVWUlXMZsKqBdn5Zq7EA2AsW06NxW8REewUb3o9gauz+B8jAAXtIXZEXWVGqVLXLQceokAWQgrhOBKuE8H3Fuq1tT5VqaDcbvPT0LEU4FdSVBd1+JU0W9nJ4SF2nivJ4tCeZRgtKhaoG2n5gwM9L3fSdZTSrcZL4Gn9XfDZL5hV5GezrdGGGMfhtfIllJPFv3TjYNUlo3F2L3QB9D6SQR3VeLXHAB+IHw6VWwkOSqfEQVf4d8kHo=
 
 before_install:
-  - test -d $GOPATH/bin || mkdir -p $GOPATH/bin
-  - curl https://glide.sh/get | sh
+  - sudo apt-get -y update
+  - sudo apt-get -y purge docker-engine
+  - sudo apt-get -y install docker-engine
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
 
 install:
   - export GO15VENDOREXPERIMENT=1
-  - go get -u github.com/golang/lint/golint
-  - go get golang.org/x/tools/cmd/cover
   - go get github.com/mattn/goveralls
-  - make install
 
 script:
-  - make coverage
+  - make docker_test
   - $(go env GOPATH | awk 'BEGIN{FS=":"} {print $1}')/bin/goveralls -coverprofile=.cover/coverage.txt
     -service=travis-ci -repotoken=$COVERALLS_TOKEN
 
