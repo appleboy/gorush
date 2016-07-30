@@ -2,7 +2,10 @@ version: "2"
 
 services:
   gorush:
-    build: ./golang
+    build:
+      context: ./golang
+      args:
+        PROJECT_PATH: $PROJECT_PATH
     links:
       - redis
     privileged: true
@@ -10,7 +13,7 @@ services:
       - ANDROID_API_KEY
       - ANDROID_TEST_TOKEN
     volumes:
-      - ../:/app
+      - ../:$PROJECT_PATH
     command: /bin/sh -c './docker/testing.sh'
 
   redis:

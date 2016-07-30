@@ -1,14 +1,9 @@
-FROM golang:1.6.3-alpine
+FROM appleboy/golang-testing
 
 MAINTAINER Bo-Yi Wu <appleboy.tw@gmail.com>
 
-RUN apk update \
-  && apk add git make curl perl && rm -rf /var/cache/apk/*
+ARG PROJECT_PATH
 
-# install glide package management.
-RUN curl https://glide.sh/get | sh
+ENV PROJECT_PATH=$PROJECT_PATH
 
-RUN mkdir /app && mkdir -p $GOPATH/src/github.com/appleboy
-RUN ln -sf /app $GOPATH/src/github.com/appleboy/gorush
-
-WORKDIR $GOPATH/src/github.com/appleboy/gorush
+WORKDIR $PROJECT_PATH

@@ -7,6 +7,7 @@ PRODUCTION_IMAGE := "gorush"
 DEPLOY_ACCOUNT := "appleboy"
 VERSION := $(shell git describe --tags)
 TARGETS_NOVENDOR := $(shell glide novendor)
+export PROJECT_PATH = /go/src/github.com/appleboy/gorush
 
 all: build
 
@@ -51,8 +52,8 @@ docker_build: clean
 	docker build --rm -t $(BUILD_IMAGE) -f docker/Dockerfile.tmp .
 	docker run --rm $(BUILD_IMAGE) > gorush.tar.gz
 
-docker_test: init
-	docker-compose -p ${PRODUCTION_IMAGE} -f docker/docker-compose.testing.yml run --rm gorush
+docker_test: init clean
+	docker-compose -p ${PRODUCTION_IMAGE} -f docker/docker-compose.testing.yml run gorush
 	docker-compose -p ${PRODUCTION_IMAGE} -f docker/docker-compose.testing.yml down
 
 docker_production: docker_build
@@ -66,35 +67,14 @@ endif
 	docker tag $(PRODUCTION_IMAGE):latest $(DEPLOY_ACCOUNT)/$(PRODUCTION_IMAGE):$(tag)
 	docker push $(DEPLOY_ACCOUNT)/$(PRODUCTION_IMAGE):$(tag)
 
-install: tool
-	@which glide || (curl https://glide.sh/get | sh)
-	@glide install
+install:
+	glide install
 
 update:
-	@glide up
+	glide update
 
 fmt:
 	@echo $(TARGETS_NOVENDOR) | xargs go fmt
-
-tool:
-	sh ./script/coverage.sh tool
-
-junit_report:
-	sh ./script/coverage.sh junit
-
-coverage_report:
-	sh ./script/coverage.sh coverage
-
-lint_report:
-	sh ./script/coverage.sh lint
-
-vet_report:
-	sh ./script/coverage.sh vet
-
-cloc_report:
-	sh ./script/coverage.sh cloc
-
-report: junit_report coverage_report lint_report vet_report cloc_report
 
 clean:
 	-rm -rf build.tar.gz \
