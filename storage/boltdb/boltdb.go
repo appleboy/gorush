@@ -14,7 +14,7 @@ const (
 	AndroidErrorKey   = "gorush-android-error-count"
 )
 
-// Storage implements the storage interface for gorush (https://github.com/appleboy/gorush)
+// New func implements the storage interface for gorush (https://github.com/appleboy/gorush)
 func New(config config.ConfYaml) *Storage {
 	return &Storage{
 		config: config,
