@@ -118,15 +118,16 @@ func CheckMessage(req PushNotification) error {
 	return nil
 }
 
+// SetProxy only working for GCM server.
 func SetProxy(proxy string) error {
 
-	proxyUrl, err := url.ParseRequestURI(proxy)
+	proxyURL, err := url.ParseRequestURI(proxy)
 
 	if err != nil {
 		return err
 	}
 
-	http.DefaultTransport = &http.Transport{Proxy: http.ProxyURL(proxyUrl)}
+	http.DefaultTransport = &http.Transport{Proxy: http.ProxyURL(proxyURL)}
 	LogAccess.Debug("Set http proxy as " + proxy)
 
 	return nil
