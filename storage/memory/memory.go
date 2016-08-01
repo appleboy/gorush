@@ -30,61 +30,74 @@ func New() *Storage {
 	}
 }
 
+// Storage is interface structure
 type Storage struct {
 	stat *statApp
 }
 
+// Init client storage.
 func (s *Storage) Init() error {
 	return nil
 }
 
+// Reset Client storage.
 func (s *Storage) Reset() {
 }
 
+// AddTotalCount record push notification count.
 func (s *Storage) AddTotalCount(count int64) {
 	atomic.AddInt64(&s.stat.TotalCount, count)
 }
 
+// AddIosSuccess record counts of success iOS push notification.
 func (s *Storage) AddIosSuccess(count int64) {
 	atomic.AddInt64(&s.stat.Ios.PushSuccess, count)
 }
 
+// AddIosError record counts of error iOS push notification.
 func (s *Storage) AddIosError(count int64) {
 	atomic.AddInt64(&s.stat.Ios.PushError, count)
 }
 
+// AddAndroidSuccess record counts of success Android push notification.
 func (s *Storage) AddAndroidSuccess(count int64) {
 	atomic.AddInt64(&s.stat.Android.PushSuccess, count)
 }
 
+// AddAndroidError record counts of error Android push notification.
 func (s *Storage) AddAndroidError(count int64) {
 	atomic.AddInt64(&s.stat.Android.PushError, count)
 }
 
+// GetTotalCount show counts of all notification.
 func (s *Storage) GetTotalCount() int64 {
 	count := atomic.LoadInt64(&s.stat.TotalCount)
 
 	return count
 }
 
+// GetIosSuccess show success counts of iOS notification.
 func (s *Storage) GetIosSuccess() int64 {
 	count := atomic.LoadInt64(&s.stat.Ios.PushSuccess)
 
 	return count
 }
 
+// GetIosError show error counts of iOS notification.
 func (s *Storage) GetIosError() int64 {
 	count := atomic.LoadInt64(&s.stat.Ios.PushError)
 
 	return count
 }
 
+// GetAndroidSuccess show success counts of Android notification.
 func (s *Storage) GetAndroidSuccess() int64 {
 	count := atomic.LoadInt64(&s.stat.Android.PushSuccess)
 
 	return count
 }
 
+// GetAndroidError show error counts of Android notification.
 func (s *Storage) GetAndroidError() int64 {
 	count := atomic.LoadInt64(&s.stat.Android.PushError)
 

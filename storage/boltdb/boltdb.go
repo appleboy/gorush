@@ -21,14 +21,17 @@ func New(config config.ConfYaml) *Storage {
 	}
 }
 
+// Storage is interface structure
 type Storage struct {
 	config config.ConfYaml
 }
 
+// Init client storage.
 func (s *Storage) Init() error {
 	return nil
 }
 
+// Reset Client storage.
 func (s *Storage) Reset() {
 	s.setBoltDB(TotalCountKey, 0)
 	s.setBoltDB(IosSuccessKey, 0)
@@ -49,31 +52,37 @@ func (s *Storage) getBoltDB(key string, count *int64) {
 	defer db.Close()
 }
 
+// AddTotalCount record push notification count.
 func (s *Storage) AddTotalCount(count int64) {
 	total := s.GetTotalCount() + count
 	s.setBoltDB(TotalCountKey, total)
 }
 
+// AddIosSuccess record counts of success iOS push notification.
 func (s *Storage) AddIosSuccess(count int64) {
 	total := s.GetIosSuccess() + count
 	s.setBoltDB(IosSuccessKey, total)
 }
 
+// AddIosError record counts of error iOS push notification.
 func (s *Storage) AddIosError(count int64) {
 	total := s.GetIosError() + count
 	s.setBoltDB(IosErrorKey, total)
 }
 
+// AddAndroidSuccess record counts of success Android push notification.
 func (s *Storage) AddAndroidSuccess(count int64) {
 	total := s.GetAndroidSuccess() + count
 	s.setBoltDB(AndroidSuccessKey, total)
 }
 
+// AddAndroidError record counts of error Android push notification.
 func (s *Storage) AddAndroidError(count int64) {
 	total := s.GetAndroidError() + count
 	s.setBoltDB(AndroidErrorKey, total)
 }
 
+// GetTotalCount show counts of all notification.
 func (s *Storage) GetTotalCount() int64 {
 	var count int64
 	s.getBoltDB(TotalCountKey, &count)
@@ -81,6 +90,7 @@ func (s *Storage) GetTotalCount() int64 {
 	return count
 }
 
+// GetIosSuccess show success counts of iOS notification.
 func (s *Storage) GetIosSuccess() int64 {
 	var count int64
 	s.getBoltDB(IosSuccessKey, &count)
@@ -88,6 +98,7 @@ func (s *Storage) GetIosSuccess() int64 {
 	return count
 }
 
+// GetIosError show error counts of iOS notification.
 func (s *Storage) GetIosError() int64 {
 	var count int64
 	s.getBoltDB(IosErrorKey, &count)
@@ -95,6 +106,7 @@ func (s *Storage) GetIosError() int64 {
 	return count
 }
 
+// GetAndroidSuccess show success counts of Android notification.
 func (s *Storage) GetAndroidSuccess() int64 {
 	var count int64
 	s.getBoltDB(AndroidSuccessKey, &count)
@@ -102,6 +114,7 @@ func (s *Storage) GetAndroidSuccess() int64 {
 	return count
 }
 
+// GetAndroidError show error counts of Android notification.
 func (s *Storage) GetAndroidError() int64 {
 	var count int64
 	s.getBoltDB(AndroidErrorKey, &count)
