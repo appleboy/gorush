@@ -16,7 +16,8 @@ const (
 	AndroidErrorKey   = "gorush-android-error-count"
 )
 
-var RedisClient *redis.Client
+//
+var redisClient *redis.Client
 
 // New func implements the storage interface for gorush (https://github.com/appleboy/gorush)
 func New(config config.ConfYaml) *Storage {
@@ -26,22 +27,24 @@ func New(config config.ConfYaml) *Storage {
 }
 
 func getInt64(key string, count *int64) {
-	val, _ := RedisClient.Get(key).Result()
+	val, _ := redisClient.Get(key).Result()
 	*count, _ = strconv.ParseInt(val, 10, 64)
 }
 
+// Storage is interface structure
 type Storage struct {
 	config config.ConfYaml
 }
 
+// Init client storage.
 func (s *Storage) Init() error {
-	RedisClient = redis.NewClient(&redis.Options{
+	redisClient = redis.NewClient(&redis.Options{
 		Addr:     s.config.Stat.Redis.Addr,
 		Password: s.config.Stat.Redis.Password,
 		DB:       s.config.Stat.Redis.DB,
 	})
 
-	_, err := RedisClient.Ping().Result()
+	_, err := redisClient.Ping().Result()
 
 	if err != nil {
 		// redis server error
@@ -53,39 +56,46 @@ func (s *Storage) Init() error {
 	return nil
 }
 
+// Reset Client storage.
 func (s *Storage) Reset() {
-	RedisClient.Set(TotalCountKey, strconv.Itoa(0), 0)
-	RedisClient.Set(IosSuccessKey, strconv.Itoa(0), 0)
-	RedisClient.Set(IosErrorKey, strconv.Itoa(0), 0)
-	RedisClient.Set(AndroidSuccessKey, strconv.Itoa(0), 0)
-	RedisClient.Set(AndroidErrorKey, strconv.Itoa(0), 0)
+	redisClient.Set(TotalCountKey, strconv.Itoa(0), 0)
+	redisClient.Set(IosSuccessKey, strconv.Itoa(0), 0)
+	redisClient.Set(IosErrorKey, strconv.Itoa(0), 0)
+	redisClient.Set(AndroidSuccessKey, strconv.Itoa(0), 0)
+	redisClient.Set(AndroidErrorKey, strconv.Itoa(0), 0)
 }
 
+// AddTotalCount record push notification count.
 func (s *Storage) AddTotalCount(count int64) {
 	total := s.GetTotalCount() + count
-	RedisClient.Set(TotalCountKey, strconv.Itoa(int(total)), 0)
+	redisClient.Set(TotalCountKey, strconv.Itoa(int(total)), 0)
 }
 
+// AddIosSuccess record counts of success iOS push notification.
 func (s *Storage) AddIosSuccess(count int64) {
 	total := s.GetIosSuccess() + count
-	RedisClient.Set(IosSuccessKey, strconv.Itoa(int(total)), 0)
+	redisClient.Set(IosSuccessKey, strconv.Itoa(int(total)), 0)
 }
 
+// AddIosError record counts of error iOS push notification.
 func (s *Storage) AddIosError(count int64) {
 	total := s.GetIosError() + count
-	RedisClient.Set(IosErrorKey, strconv.Itoa(int(total)), 0)
+	redisClient.Set(IosErrorKey, strconv.Itoa(int(total)), 0)
 }
 
+// AddAndroidSuccess record counts of success Android push notification.
 func (s *Storage) AddAndroidSuccess(count int64) {
 	total := s.GetAndroidSuccess() + count
-	RedisClient.Set(AndroidSuccessKey, strconv.Itoa(int(total)), 0)
+	redisClient.Set(AndroidSuccessKey, strconv.Itoa(int(total)), 0)
 }
 
+// AddAndroidError record counts of error Android push notification.
 func (s *Storage) AddAndroidError(count int64) {
 	total := s.GetAndroidError() + count
-	RedisClient.Set(AndroidErrorKey, strconv.Itoa(int(total)), 0)
+	redisClient.Set(AndroidErrorKey, strconv.Itoa(int(total)), 0)
 }
 
+// GetTotalCount show counts of all notification.
 func (s *Storage) GetTotalCount() int64 {
 	var count int64
 	getInt64(TotalCountKey, &count)
@@ -93,6 +103,7 @@ func (s *Storage) GetTotalCount() int64 {
 	return count
 }
 
+// GetIosSuccess show success counts of iOS notification.
 func (s *Storage) GetIosSuccess() int64 {
 	var count int64
 	getInt64(IosSuccessKey, &count)
@@ -100,6 +111,7 @@ func (s *Storage) GetIosSuccess() int64 {
 	return count
 }
 
+// GetIosError show error counts of iOS notification.
 func (s *Storage) GetIosError() int64 {
 	var count int64
 	getInt64(IosErrorKey, &count)
@@ -107,6 +119,7 @@ func (s *Storage) GetIosError() int64 {
 	return count
 }
 
+// GetAndroidSuccess show success counts of Android notification.
 func (s *Storage) GetAndroidSuccess() int64 {
 	var count int64
 	getInt64(AndroidSuccessKey, &count)
@@ -114,6 +127,7 @@ func (s *Storage) GetAndroidSuccess() int64 {
 	return count
 }
 
+// GetAndroidError show error counts of Android notification.
 func (s *Storage) GetAndroidError() int64 {
 	var count int64
 	getInt64(AndroidErrorKey, &count)
