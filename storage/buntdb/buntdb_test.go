@@ -1,4 +1,4 @@
-package boltdb
+package buntdb
 
 import (
 	c "github.com/appleboy/gorush/config"
@@ -11,30 +11,34 @@ func TestBuntDBEngine(t *testing.T) {
 
 	config := c.BuildDefaultPushConf()
 
-	boltDB := New(config)
-	boltDB.Init()
-	boltDB.Reset()
+	buntDB := New(config)
+	buntDB.Init()
+	buntDB.Reset()
 
-	boltDB.AddTotalCount(10)
-	val = boltDB.GetTotalCount()
+	buntDB.AddTotalCount(10)
+	val = buntDB.GetTotalCount()
 	assert.Equal(t, int64(10), val)
-	boltDB.AddTotalCount(10)
-	val = boltDB.GetTotalCount()
+	buntDB.AddTotalCount(10)
+	val = buntDB.GetTotalCount()
 	assert.Equal(t, int64(20), val)
 
-	boltDB.AddIosSuccess(20)
-	val = boltDB.GetIosSuccess()
+	buntDB.AddIosSuccess(20)
+	val = buntDB.GetIosSuccess()
 	assert.Equal(t, int64(20), val)
 
-	boltDB.AddIosError(30)
-	val = boltDB.GetIosError()
+	buntDB.AddIosError(30)
+	val = buntDB.GetIosError()
 	assert.Equal(t, int64(30), val)
 
-	boltDB.AddAndroidSuccess(40)
-	val = boltDB.GetAndroidSuccess()
+	buntDB.AddAndroidSuccess(40)
+	val = buntDB.GetAndroidSuccess()
 	assert.Equal(t, int64(40), val)
 
-	boltDB.AddAndroidError(50)
-	val = boltDB.GetAndroidError()
+	buntDB.AddAndroidError(50)
+	val = buntDB.GetAndroidError()
 	assert.Equal(t, int64(50), val)
+
+	buntDB.Reset()
+	val = buntDB.GetAndroidError()
+	assert.Equal(t, int64(0), val)
 }

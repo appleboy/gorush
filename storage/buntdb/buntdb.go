@@ -1,4 +1,4 @@
-package boltdb
+package buntdb
 
 import (
 	"fmt"
