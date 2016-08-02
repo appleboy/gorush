@@ -3,6 +3,7 @@ package buntdb
 import (
 	c "github.com/appleboy/gorush/config"
 	"github.com/stretchr/testify/assert"
+	"os"
 	"testing"
 )
 
@@ -10,6 +11,10 @@ func TestBuntDBEngine(t *testing.T) {
 	var val int64
 
 	config := c.BuildDefaultPushConf()
+
+	if _, err := os.Stat(config.Stat.BuntDB.Path); os.IsNotExist(err) {
+		os.RemoveAll(config.Stat.BuntDB.Path)
+	}
 
 	buntDB := New(config)
 	buntDB.Init()
