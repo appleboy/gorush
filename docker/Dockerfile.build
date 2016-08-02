@@ -1,9 +1,8 @@
-FROM golang:1.6.3-alpine
+FROM appleboy/golang-testing
 
 MAINTAINER Bo-Yi Wu <appleboy.tw@gmail.com>
 
 ENV VERSION #VERSION#
-RUN apk --update add git make curl
 RUN mkdir -p $GOPATH/src/github.com/appleboy/gorush
 Add build.tar.gz $GOPATH/src/github.com/appleboy/gorush/
 WORKDIR $GOPATH/src/github.com/appleboy/gorush
