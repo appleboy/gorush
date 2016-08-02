@@ -43,6 +43,9 @@ boltdb_test: init
 memory_test: init
 	go test -v -cover ./storage/memory/...
 
+buntdb_test: init
+	go test -v -cover ./storage/buntdb/...
+
 config_test: init
 	go test -v -cover ./config/...
 

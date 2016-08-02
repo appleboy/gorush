@@ -96,6 +96,8 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 
 	assert.Equal(suite.T(), "gorush.db", suite.ConfGorushDefault.Stat.BoltDB.Path)
 	assert.Equal(suite.T(), "gorush", suite.ConfGorushDefault.Stat.BoltDB.Bucket)
+
+	assert.Equal(suite.T(), "gorush.db", suite.ConfGorushDefault.Stat.BuntDB.Path)
 }
 
 func (suite *ConfigTestSuite) TestValidateConf() {
@@ -142,6 +144,8 @@ func (suite *ConfigTestSuite) TestValidateConf() {
 
 	assert.Equal(suite.T(), "gorush.db", suite.ConfGorush.Stat.BoltDB.Path)
 	assert.Equal(suite.T(), "gorush", suite.ConfGorush.Stat.BoltDB.Bucket)
+
+	assert.Equal(suite.T(), "gorush.db", suite.ConfGorush.Stat.BuntDB.Path)
 }
 
 func TestConfigTestSuite(t *testing.T) {
