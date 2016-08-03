@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestRedisEngine(t *testing.T) {
+func TestBoltDBEngine(t *testing.T) {
 	var val int64
 
 	config := c.BuildDefaultPushConf()
@@ -37,4 +37,9 @@ func TestRedisEngine(t *testing.T) {
 	boltDB.AddAndroidError(50)
 	val = boltDB.GetAndroidError()
 	assert.Equal(t, int64(50), val)
+
+	// test reset db
+	boltDB.Reset()
+	val = boltDB.GetAndroidError()
+	assert.Equal(t, int64(0), val)
 }

@@ -48,4 +48,9 @@ func TestRedisEngine(t *testing.T) {
 	redis.AddAndroidError(50)
 	val = redis.GetAndroidError()
 	assert.Equal(t, int64(50), val)
+
+	// test reset db
+	redis.Reset()
+	val = redis.GetAndroidError()
+	assert.Equal(t, int64(0), val)
 }

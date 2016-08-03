@@ -31,4 +31,9 @@ func TestMemoryEngine(t *testing.T) {
 	memory.AddAndroidError(5)
 	val = memory.GetAndroidError()
 	assert.Equal(t, int64(5), val)
+
+	// test reset db
+	memory.Reset()
+	val = memory.GetAndroidError()
+	assert.Equal(t, int64(0), val)
 }
