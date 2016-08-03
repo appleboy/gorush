@@ -43,3 +43,5 @@ stat:
   boltdb:
     path: "gorush.db"
     bucket: "gorush"
+  buntdb:
+    path: "gorush.db"

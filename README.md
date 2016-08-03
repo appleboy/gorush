@@ -45,7 +45,7 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 * Support notification queue and multiple workers.
 * Support `/api/stat/app` show notification success and failure counts.
 * Support `/api/config` show your [YAML](https://en.wikipedia.org/wiki/YAML) config.
-* Support store app stat to memory, [Redis](http://redis.io/) or [BoltDB](https://github.com/boltdb/bolt).
+* Support store app stat to memory, [Redis](http://redis.io/), [BoltDB](https://github.com/boltdb/bolt) or [BuntDB](https://github.com/tidwall/buntdb).
 * Support `p12` or `pem` formtat of iOS certificate file.
 * Support `/sys/stats` show response time, status code count, etc.
 * Support for HTTP proxy to Google server (GCM).
@@ -98,6 +98,8 @@ stat:
   boltdb:
     path: "gorush.db"
     bucket: "gorush"
+  buntdb:
+    path: "gorush.db"
 ```
 
 ## Basic Usage

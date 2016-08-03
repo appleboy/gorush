@@ -1,14 +1,6 @@
-hash: d182f8dc3162313af09e706a0ba4901218d9ccde609ee7d39c6aae5e891f20ee
-updated: 2016-07-19T21:31:48.923940945+08:00
+hash: a723ec6556a185c4a20185378b0e042fd41453232da81489e06307b0ac8feba7
+updated: 2016-08-02T15:01:02.331147237+08:00
 imports:
-- name: github.com/appleboy/gorush
-  version: af78db59b4675cf932aaa71fd45443ac9283bce7
-  subpackages:
-  - config
-  - gorush
-  - storage/boltdb
-  - storage/memory
-  - storage/redis
 - name: github.com/asdine/storm
   version: 00b2f2df7ab7af9db746b826649395628cb5374e
   subpackages:
@@ -55,6 +47,33 @@ imports:
   - require
 - name: github.com/thoas/stats
   version: 69e3c072eec2df2df41afe6214f62eb940e4cd80
+- name: github.com/tidwall/btree
+  version: 7ebb98011b36ffcdcf7a5d8062d6e6c651a49560
+- name: github.com/tidwall/buntdb
+  version: 912f340175491888fdd33687d7a309921b6c1e49
+- name: github.com/tidwall/rtree
+  version: 1737a7bdeb7e5f8303905c5b385f1eeb0f7272ab
+  subpackages:
+  - dims/d1
+  - dims/d10
+  - dims/d11
+  - dims/d12
+  - dims/d13
+  - dims/d14
+  - dims/d15
+  - dims/d16
+  - dims/d17
+  - dims/d18
+  - dims/d19
+  - dims/d2
+  - dims/d20
+  - dims/d3
+  - dims/d4
+  - dims/d5
+  - dims/d6
+  - dims/d7
+  - dims/d8
+  - dims/d9
 - name: golang.org/x/crypto
   version: c2f4947f41766b144bb09066e919466da5eddeae
   subpackages:
