@@ -42,6 +42,11 @@ func (s *Storage) Init() error {
 
 // Reset Client storage.
 func (s *Storage) Reset() {
+	atomic.StoreInt64(&s.stat.TotalCount, 0)
+	atomic.StoreInt64(&s.stat.Ios.PushSuccess, 0)
+	atomic.StoreInt64(&s.stat.Ios.PushError, 0)
+	atomic.StoreInt64(&s.stat.Android.PushSuccess, 0)
+	atomic.StoreInt64(&s.stat.Android.PushError, 0)
 }
 
 // AddTotalCount record push notification count.

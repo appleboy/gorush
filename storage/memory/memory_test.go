@@ -16,6 +16,10 @@ func TestMemoryEngine(t *testing.T) {
 	val = memory.GetTotalCount()
 	assert.Equal(t, int64(1), val)
 
+	memory.AddTotalCount(100)
+	val = memory.GetTotalCount()
+	assert.Equal(t, int64(101), val)
+
 	memory.AddIosSuccess(2)
 	val = memory.GetIosSuccess()
 	assert.Equal(t, int64(2), val)
@@ -34,6 +38,6 @@ func TestMemoryEngine(t *testing.T) {
 
 	// test reset db
 	memory.Reset()
-	val = memory.GetAndroidError()
+	val = memory.GetTotalCount()
 	assert.Equal(t, int64(0), val)
 }
