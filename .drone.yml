@@ -4,7 +4,6 @@ pipeline:
     environment:
       - GOPATH=/go
     commands:
-      - echo $ANDROID_TEST_TOKEN
       - make install
       - coverage all
 
