@@ -1,0 +1,16 @@
+pipeline:
+  build:
+    image: appleboy/golang-testing
+    environment:
+      - GOPATH=/go
+    commands:
+      - echo $ANDROID_TEST_TOKEN
+      - make install
+      - coverage all
+
+services:
+  redis:
+    image: redis:alpine
+
+workspace:
+  path: /go/src/github.com/appleboy/gorush
