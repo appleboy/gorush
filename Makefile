@@ -9,6 +9,12 @@ VERSION := $(shell git describe --tags)
 TARGETS_NOVENDOR := $(shell glide novendor)
 export PROJECT_PATH = /go/src/github.com/appleboy/gorush
 
+ifneq ($(shell uname), Darwin)
+	EXTLDFLAGS = -extldflags "-static" $(null)
+else
+	EXTLDFLAGS =
+endif
+
 all: build
 
 init:
@@ -27,6 +33,9 @@ install:
 
 update:
 	glide update
+
+build_static:
+	go build -ldflags="${EXTLDFLAGS}-s -w -X main.Version=${VERSION}" -o bin/gorush gorush.go
 
 build: clean
 	sh script/build.sh $(VERSION)
@@ -58,20 +67,20 @@ docker_build: clean
 	docker build --rm -t $(BUILD_IMAGE) -f docker/Dockerfile.tmp .
 	docker run --rm $(BUILD_IMAGE) > gorush.tar.gz
 
-docker_test: init clean
-	docker-compose -p ${PRODUCTION_IMAGE} -f docker/docker-compose.testing.yml run gorush
-	docker-compose -p ${PRODUCTION_IMAGE} -f docker/docker-compose.testing.yml down
-
-docker_production: docker_build
+docker_production:
 	docker build --rm -t $(PRODUCTION_IMAGE) -f docker/Dockerfile.dist .
 
-deploy: docker_production
+deploy: docker_build docker_production
 ifeq ($(tag),)
 	@echo "Usage: make $@ tag=<tag>"
 	@exit 1
 endif
 	docker tag $(PRODUCTION_IMAGE):latest $(DEPLOY_ACCOUNT)/$(PRODUCTION_IMAGE):$(tag)
 	docker push $(DEPLOY_ACCOUNT)/$(PRODUCTION_IMAGE):$(tag)
+
+docker_test: init clean
+	docker-compose -p ${PRODUCTION_IMAGE} -f docker/docker-compose.testing.yml run gorush
+	docker-compose -p ${PRODUCTION_IMAGE} -f docker/docker-compose.testing.yml down
 
 fmt:
 	@echo $(TARGETS_NOVENDOR) | xargs go fmt

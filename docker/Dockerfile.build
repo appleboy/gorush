@@ -7,6 +7,6 @@ RUN mkdir -p $GOPATH/src/github.com/appleboy/gorush
 Add build.tar.gz $GOPATH/src/github.com/appleboy/gorush/
 WORKDIR $GOPATH/src/github.com/appleboy/gorush
 RUN make install
-RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w -X main.Version=${VERSION}" -o bin/gorush gorush.go
+RUN CGO_ENABLED=0 make build_static
 
 CMD tar -C bin -czf - gorush

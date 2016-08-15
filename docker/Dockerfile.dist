@@ -1,14 +1,9 @@
-FROM alpine
-
-MAINTAINER Bo-Yi Wu <appleboy.tw@gmail.com>
-
-RUN apk update && apk upgrade \
-  && apk add ca-certificates \
-  && rm -rf /var/cache/apk/*
-
-RUN mkdir /app
-ADD gorush.tar.gz /app/
-ADD config/config.yml /app/config/
-WORKDIR /app
-ENTRYPOINT ["./gorush", "-c", "config/config.yml"]
+FROM centurylink/ca-certs
 EXPOSE 8088
+
+ADD config/config.yml /
+
+ADD gorush.tar.gz /
+
+ENTRYPOINT ["/gorush"]
+CMD ["-c", "config.yml"]
