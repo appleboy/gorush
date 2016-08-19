@@ -7,6 +7,7 @@ import (
 	"github.com/appleboy/gorush/gorush"
 	"log"
 	"os"
+	"strconv"
 )
 
 func checkInput(token, message string) {
@@ -49,6 +50,28 @@ Common Options:
 func usage() {
 	fmt.Printf("%s\n", usageStr)
 	os.Exit(0)
+}
+
+func createPIDFile() error {
+	if !gorush.PushConf.Core.PID.Enabled {
+		return nil
+	}
+	_, err := os.Stat(gorush.PushConf.Core.PID.Path)
+	if os.IsNotExist(err) || gorush.PushConf.Core.PID.Override {
+		currentPid := os.Getpid()
+		file, err := os.Create(gorush.PushConf.Core.PID.Path)
+		if err != nil {
+			return fmt.Errorf("Can't create PID file: %v", err)
+		}
+		defer file.Close()
+		_, err = file.WriteString(strconv.FormatInt(int64(currentPid), 10))
+		if err != nil {
+			return fmt.Errorf("Can'write PID information on %s: %v", gorush.PushConf.Core.PID.Path, err)
+		}
+	} else {
+		return fmt.Errorf("%s already exists", gorush.PushConf.Core.PID.Path)
+	}
+	return nil
 }
 
 func main() {
@@ -204,6 +227,10 @@ func main() {
 	}
 
 	if err = gorush.CheckPushConf(); err != nil {
+		gorush.LogError.Fatal(err)
+	}
+
+	if err = createPIDFile(); err != nil {
 		gorush.LogError.Fatal(err)
 	}
 
