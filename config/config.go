@@ -18,15 +18,16 @@ type ConfYaml struct {
 
 // SectionCore is sub seciont of config.
 type SectionCore struct {
-	Port            string `yaml:"port"`
-	MaxNotification int    `yaml:"max_notification"`
-	WorkerNum       int    `yaml:"worker_num"`
-	QueueNum        int    `yaml:"queue_num"`
-	Mode            string `yaml:"mode"`
-	SSL             bool   `yaml:"ssl"`
-	CertPath        string `yaml:"cert_path"`
-	KeyPath         string `yaml:"key_path"`
-	HTTPProxy       string `yaml:"http_proxy"`
+	Port            string     `yaml:"port"`
+	MaxNotification int        `yaml:"max_notification"`
+	WorkerNum       int        `yaml:"worker_num"`
+	QueueNum        int        `yaml:"queue_num"`
+	Mode            string     `yaml:"mode"`
+	SSL             bool       `yaml:"ssl"`
+	CertPath        string     `yaml:"cert_path"`
+	KeyPath         string     `yaml:"key_path"`
+	HTTPProxy       string     `yaml:"http_proxy"`
+	PID             SectionPID `yaml:"pid"`
 }
 
 // SectionAPI is sub seciont of config.
@@ -88,6 +89,13 @@ type SectionBuntDB struct {
 	Path string `yaml:"path"`
 }
 
+// SectionPID is sub seciont of config.
+type SectionPID struct {
+	Enabled  bool   `yaml:"enabled"`
+	Path     string `yaml:"path"`
+	Override bool   `yaml:"override"`
+}
+
 // BuildDefaultPushConf is default config setting.
 func BuildDefaultPushConf() ConfYaml {
 	var conf ConfYaml
@@ -102,6 +110,9 @@ func BuildDefaultPushConf() ConfYaml {
 	conf.Core.KeyPath = "key.pem"
 	conf.Core.MaxNotification = 100
 	conf.Core.HTTPProxy = ""
+	conf.Core.PID.Enabled = false
+	conf.Core.PID.Path = "gorush.pid"
+	conf.Core.PID.Override = false
 
 	// Api
 	conf.API.PushURI = "/api/push"

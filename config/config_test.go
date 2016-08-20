@@ -63,6 +63,10 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 	assert.Equal(suite.T(), "key.pem", suite.ConfGorushDefault.Core.KeyPath)
 	assert.Equal(suite.T(), 100, suite.ConfGorushDefault.Core.MaxNotification)
 	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Core.HTTPProxy)
+	// Pid
+	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Core.PID.Enabled)
+	assert.Equal(suite.T(), "gorush.pid", suite.ConfGorushDefault.Core.PID.Path)
+	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Core.PID.Override)
 
 	// Api
 	assert.Equal(suite.T(), "/api/push", suite.ConfGorushDefault.API.PushURI)
@@ -111,6 +115,10 @@ func (suite *ConfigTestSuite) TestValidateConf() {
 	assert.Equal(suite.T(), "key.pem", suite.ConfGorush.Core.KeyPath)
 	assert.Equal(suite.T(), 100, suite.ConfGorush.Core.MaxNotification)
 	assert.Equal(suite.T(), "", suite.ConfGorush.Core.HTTPProxy)
+	// Pid
+	assert.Equal(suite.T(), false, suite.ConfGorush.Core.PID.Enabled)
+	assert.Equal(suite.T(), "gorush.pid", suite.ConfGorush.Core.PID.Path)
+	assert.Equal(suite.T(), true, suite.ConfGorush.Core.PID.Override)
 
 	// Api
 	assert.Equal(suite.T(), "/api/push", suite.ConfGorush.API.PushURI)

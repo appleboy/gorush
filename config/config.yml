@@ -8,6 +8,10 @@ core:
   cert_path: "cert.pem"
   key_path: "key.pem"
   http_proxy: ""
+  pid:
+    enabled: false
+    path: "gorush.pid"
+    override: true
 
 api:
   push_uri: "/api/push"
