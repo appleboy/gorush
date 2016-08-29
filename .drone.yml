@@ -1,6 +1,6 @@
 pipeline:
   build:
-    image: appleboy/golang-testing
+    image: appleboy/golang-testing:${GO_VERSION}
     environment:
       - GOPATH=/go
     commands:
@@ -13,3 +13,8 @@ services:
 
 workspace:
   path: /go/src/github.com/appleboy/gorush
+
+matrix:
+  GO_VERSION:
+    - 1.6.3
+    - 1.7
