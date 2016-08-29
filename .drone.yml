@@ -16,5 +16,4 @@ workspace:
 
 matrix:
   GO_VERSION:
-    - 1.6.3
     - 1.7
