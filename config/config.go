@@ -19,9 +19,9 @@ type ConfYaml struct {
 // SectionCore is sub seciont of config.
 type SectionCore struct {
 	Port            string     `yaml:"port"`
-	MaxNotification int        `yaml:"max_notification"`
-	WorkerNum       int        `yaml:"worker_num"`
-	QueueNum        int        `yaml:"queue_num"`
+	MaxNotification int64      `yaml:"max_notification"`
+	WorkerNum       int64      `yaml:"worker_num"`
+	QueueNum        int64      `yaml:"queue_num"`
 	Mode            string     `yaml:"mode"`
 	SSL             bool       `yaml:"ssl"`
 	CertPath        string     `yaml:"cert_path"`
@@ -102,13 +102,13 @@ func BuildDefaultPushConf() ConfYaml {
 
 	// Core
 	conf.Core.Port = "8088"
-	conf.Core.WorkerNum = runtime.NumCPU()
-	conf.Core.QueueNum = 8192
+	conf.Core.WorkerNum = int64(runtime.NumCPU())
+	conf.Core.QueueNum = int64(8192)
 	conf.Core.Mode = "release"
 	conf.Core.SSL = false
 	conf.Core.CertPath = "cert.pem"
 	conf.Core.KeyPath = "key.pem"
-	conf.Core.MaxNotification = 100
+	conf.Core.MaxNotification = int64(100)
 	conf.Core.HTTPProxy = ""
 	conf.Core.PID.Enabled = false
 	conf.Core.PID.Path = "gorush.pid"

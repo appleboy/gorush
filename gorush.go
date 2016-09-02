@@ -236,6 +236,6 @@ func main() {
 
 	gorush.InitAppStatus()
 	gorush.InitAPNSClient()
-	gorush.InitWorkers(gorush.PushConf.Core.WorkerNum, gorush.PushConf.Core.QueueNum)
+	gorush.InitWorkers(int64(gorush.PushConf.Core.WorkerNum), int64(gorush.PushConf.Core.QueueNum))
 	gorush.RunHTTPServer()
 }

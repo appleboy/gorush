@@ -329,7 +329,7 @@ func TestOverwriteAndroidAPIKey(t *testing.T) {
 func TestSenMultipleNotifications(t *testing.T) {
 	PushConf = config.BuildDefaultPushConf()
 
-	InitWorkers(2, 2)
+	InitWorkers(int64(2), 2)
 
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.KeyPath = "../certificate/certificate-valid.pem"

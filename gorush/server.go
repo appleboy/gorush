@@ -40,7 +40,7 @@ func pushHandler(c *gin.Context) {
 		return
 	}
 
-	if len(form.Notifications) > PushConf.Core.MaxNotification {
+	if int64(len(form.Notifications)) > PushConf.Core.MaxNotification {
 		msg = fmt.Sprintf("Number of notifications(%d) over limit(%d)", len(form.Notifications), PushConf.Core.MaxNotification)
 		LogAccess.Debug(msg)
 		abortWithError(c, http.StatusBadRequest, msg)

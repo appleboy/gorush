@@ -151,7 +151,7 @@ func TestEmptyNotifications(t *testing.T) {
 func TestOutOfRangeMaxNotifications(t *testing.T) {
 	initTest()
 
-	PushConf.Core.MaxNotification = 1
+	PushConf.Core.MaxNotification = int64(1)
 
 	r := gofight.New()
 
