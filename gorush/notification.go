@@ -186,10 +186,10 @@ func InitAPNSClient() error {
 }
 
 // InitWorkers for initialize all workers.
-func InitWorkers(workerNum, queueNum int) {
+func InitWorkers(workerNum int64, queueNum int64) {
 	LogAccess.Debug("worker number is ", workerNum, ", queue number is ", queueNum)
 	QueueNotification = make(chan PushNotification, queueNum)
-	for i := 0; i < workerNum; i++ {
+	for i := int64(0); i < workerNum; i++ {
 		go startWorker()
 	}
 }

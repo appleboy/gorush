@@ -55,13 +55,13 @@ func (suite *ConfigTestSuite) SetupTest() {
 func (suite *ConfigTestSuite) TestValidateConfDefault() {
 	// Core
 	assert.Equal(suite.T(), "8088", suite.ConfGorushDefault.Core.Port)
-	assert.Equal(suite.T(), runtime.NumCPU(), suite.ConfGorushDefault.Core.WorkerNum)
-	assert.Equal(suite.T(), 8192, suite.ConfGorushDefault.Core.QueueNum)
+	assert.Equal(suite.T(), int64(runtime.NumCPU()), suite.ConfGorushDefault.Core.WorkerNum)
+	assert.Equal(suite.T(), int64(8192), suite.ConfGorushDefault.Core.QueueNum)
 	assert.Equal(suite.T(), "release", suite.ConfGorushDefault.Core.Mode)
 	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Core.SSL)
 	assert.Equal(suite.T(), "cert.pem", suite.ConfGorushDefault.Core.CertPath)
 	assert.Equal(suite.T(), "key.pem", suite.ConfGorushDefault.Core.KeyPath)
-	assert.Equal(suite.T(), 100, suite.ConfGorushDefault.Core.MaxNotification)
+	assert.Equal(suite.T(), int64(100), suite.ConfGorushDefault.Core.MaxNotification)
 	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Core.HTTPProxy)
 	// Pid
 	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Core.PID.Enabled)
@@ -107,13 +107,13 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 func (suite *ConfigTestSuite) TestValidateConf() {
 	// Core
 	assert.Equal(suite.T(), "8088", suite.ConfGorush.Core.Port)
-	assert.Equal(suite.T(), 8, suite.ConfGorush.Core.WorkerNum)
-	assert.Equal(suite.T(), 8192, suite.ConfGorush.Core.QueueNum)
+	assert.Equal(suite.T(), int64(8), suite.ConfGorush.Core.WorkerNum)
+	assert.Equal(suite.T(), int64(8192), suite.ConfGorush.Core.QueueNum)
 	assert.Equal(suite.T(), "release", suite.ConfGorush.Core.Mode)
 	assert.Equal(suite.T(), false, suite.ConfGorush.Core.SSL)
 	assert.Equal(suite.T(), "cert.pem", suite.ConfGorush.Core.CertPath)
 	assert.Equal(suite.T(), "key.pem", suite.ConfGorush.Core.KeyPath)
-	assert.Equal(suite.T(), 100, suite.ConfGorush.Core.MaxNotification)
+	assert.Equal(suite.T(), int64(100), suite.ConfGorush.Core.MaxNotification)
 	assert.Equal(suite.T(), "", suite.ConfGorush.Core.HTTPProxy)
 	// Pid
 	assert.Equal(suite.T(), false, suite.ConfGorush.Core.PID.Enabled)
