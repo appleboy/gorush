@@ -35,3 +35,4 @@ gorush.db
 vendor
 Dockerfile.tmp
 .cover
+*.pid
