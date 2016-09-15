@@ -5,7 +5,7 @@ BUILD_IMAGE := "gorush-build"
 # docker hub project name.
 PRODUCTION_IMAGE := "gorush"
 DEPLOY_ACCOUNT := "appleboy"
-VERSION := $(shell git describe --tags)
+VERSION := $(shell git describe --tags | git rev-parse --short HEAD)
 TARGETS_NOVENDOR := $(shell glide novendor)
 export PROJECT_PATH = /go/src/github.com/appleboy/gorush
 
