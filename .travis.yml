@@ -11,6 +11,11 @@ go:
   - 1.6.3
   - tip
 
+cache:
+  directories:
+    - vendor
+    - ${HOME}/.glide
+
 env:
   global:
     - DOCKER_COMPOSE_VERSION=1.7.1
