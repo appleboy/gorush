@@ -19,3 +19,4 @@ import:
 - package: github.com/buger/jsonparser
 - package: github.com/thoas/stats
 - package: github.com/tidwall/buntdb
+- package: github.com/syndtr/goleveldb

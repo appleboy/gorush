@@ -1,5 +1,5 @@
-hash: a723ec6556a185c4a20185378b0e042fd41453232da81489e06307b0ac8feba7
-updated: 2016-08-02T15:01:02.331147237+08:00
+hash: 6aef366747559fbcb1075ebe6f923f2e5197544a0b02ce039d5120c7241e8df2
+updated: 2016-09-19T15:54:05.13589289+08:00
 imports:
 - name: github.com/asdine/storm
   version: 00b2f2df7ab7af9db746b826649395628cb5374e
@@ -22,6 +22,8 @@ imports:
   version: 2402d76f3d41f928c7902a765dfc872356dd3aad
   subpackages:
   - proto
+- name: github.com/golang/snappy
+  version: d9eb7a3d35ec988b8585d4a0068e462c27d28380
 - name: github.com/google/go-gcm
   version: 190e93b4cedb43562b5bd558eb1a1bbd38695bcd
 - name: github.com/jpillora/backoff
@@ -45,6 +47,21 @@ imports:
   - assert
   - suite
   - require
+- name: github.com/syndtr/goleveldb
+  version: 6ae1797c0b42b9323fc27ff7dcf568df88f2f33d
+  subpackages:
+  - leveldb
+  - leveldb/cache
+  - leveldb/comparer
+  - leveldb/errors
+  - leveldb/filter
+  - leveldb/iterator
+  - leveldb/journal
+  - leveldb/memdb
+  - leveldb/opt
+  - leveldb/storage
+  - leveldb/table
+  - leveldb/util
 - name: github.com/thoas/stats
   version: 69e3c072eec2df2df41afe6214f62eb940e4cd80
 - name: github.com/tidwall/btree
@@ -103,9 +120,10 @@ imports:
   version: b5e368500d0a508ef8f16e9c2d4025a8a46bcc29
   subpackages:
   - internal
-  - internal/consistenthash
   - internal/hashtag
   - internal/pool
+- name: gopkg.in/redis.v3/internal/consistenthash
+  version: b5e368500d0a508ef8f16e9c2d4025a8a46bcc29
 - name: gopkg.in/yaml.v2
   version: a83829b6f1293c91addabc89d0571c246397bbf4
 testImports:

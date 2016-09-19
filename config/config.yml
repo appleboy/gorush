@@ -49,3 +49,5 @@ stat:
     bucket: "gorush"
   buntdb:
     path: "gorush.db"
+  leveldb:
+    path: "gorush.db"
