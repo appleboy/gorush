@@ -76,7 +76,7 @@ type SectionStat struct {
 type SectionRedis struct {
 	Addr     string `yaml:"addr"`
 	Password string `yaml:"password"`
-	DB       int64  `yaml:"db"`
+	DB       int    `yaml:"db"`
 }
 
 // SectionBoltDB is sub seciont of config.

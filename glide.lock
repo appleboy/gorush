@@ -1,5 +1,5 @@
-hash: 6aef366747559fbcb1075ebe6f923f2e5197544a0b02ce039d5120c7241e8df2
-updated: 2016-09-19T15:54:05.13589289+08:00
+hash: 4ee18de0a09fd239b069a5830dc26083f603fd14e06f8cada4c0934366ee343e
+updated: 2016-09-19T16:53:10.40422002+08:00
 imports:
 - name: github.com/asdine/storm
   version: 00b2f2df7ab7af9db746b826649395628cb5374e
@@ -116,14 +116,8 @@ imports:
   version: 90f0b59102629831cc109845475a8d77043412ec
 - name: gopkg.in/go-playground/validator.v8
   version: c193cecd124b5cc722d7ee5538e945bdb3348435
-- name: gopkg.in/redis.v3
-  version: b5e368500d0a508ef8f16e9c2d4025a8a46bcc29
-  subpackages:
-  - internal
-  - internal/hashtag
-  - internal/pool
-- name: gopkg.in/redis.v3/internal/consistenthash
-  version: b5e368500d0a508ef8f16e9c2d4025a8a46bcc29
+- name: gopkg.in/redis.v4
+  version: 938235994ea88a05678f8060741d5f34ed6a5ff3
 - name: gopkg.in/yaml.v2
   version: a83829b6f1293c91addabc89d0571c246397bbf4
 testImports:
