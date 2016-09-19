@@ -2,6 +2,8 @@ package gorush
 
 import (
 	"github.com/appleboy/gorush/storage/boltdb"
+	"github.com/appleboy/gorush/storage/buntdb"
+	"github.com/appleboy/gorush/storage/leveldb"
 	"github.com/appleboy/gorush/storage/memory"
 	"github.com/appleboy/gorush/storage/redis"
 	"github.com/gin-gonic/gin"
@@ -40,18 +42,22 @@ func InitAppStatus() error {
 		StatStorage = memory.New()
 	case "redis":
 		StatStorage = redis.New(PushConf)
-		err := StatStorage.Init()
-
-		if err != nil {
-			LogError.Error("redis error: " + err.Error())
-
-			return err
-		}
-
 	case "boltdb":
 		StatStorage = boltdb.New(PushConf)
+	case "buntdb":
+		StatStorage = buntdb.New(PushConf)
+	case "leveldb":
+		StatStorage = leveldb.New(PushConf)
 	default:
 		StatStorage = memory.New()
+	}
+
+	err := StatStorage.Init()
+
+	if err != nil {
+		LogError.Error("storage error: " + err.Error())
+
+		return err
 	}
 
 	return nil

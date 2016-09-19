@@ -40,7 +40,7 @@ build_static:
 build: clean
 	sh script/build.sh $(VERSION)
 
-test: redis_test boltdb_test memory_test config_test
+test: redis_test boltdb_test memory_test buntdb_test leveldb_test config_test
 	go test -v -cover ./gorush/...
 
 redis_test: init
@@ -54,6 +54,9 @@ memory_test: init
 
 buntdb_test: init
 	go test -v -cover ./storage/buntdb/...
+
+leveldb_test: init
+	go test -v -cover ./storage/leveldb/...
 
 config_test: init
 	go test -v -cover ./config/...

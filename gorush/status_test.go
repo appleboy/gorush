@@ -120,3 +120,53 @@ func TestStatForBoltDBEngine(t *testing.T) {
 	val = StatStorage.GetAndroidError()
 	assert.Equal(t, int64(500), val)
 }
+
+func TestStatForBuntDBEngine(t *testing.T) {
+	var val int64
+	PushConf.Stat.Engine = "buntdb"
+	InitAppStatus()
+
+	StatStorage.Reset()
+
+	StatStorage.AddTotalCount(100)
+	StatStorage.AddIosSuccess(200)
+	StatStorage.AddIosError(300)
+	StatStorage.AddAndroidSuccess(400)
+	StatStorage.AddAndroidError(500)
+
+	val = StatStorage.GetTotalCount()
+	assert.Equal(t, int64(100), val)
+	val = StatStorage.GetIosSuccess()
+	assert.Equal(t, int64(200), val)
+	val = StatStorage.GetIosError()
+	assert.Equal(t, int64(300), val)
+	val = StatStorage.GetAndroidSuccess()
+	assert.Equal(t, int64(400), val)
+	val = StatStorage.GetAndroidError()
+	assert.Equal(t, int64(500), val)
+}
+
+// func TestStatForLevelDBEngine(t *testing.T) {
+// 	var val int64
+// 	PushConf.Stat.Engine = "leveldb"
+// 	InitAppStatus()
+
+// 	StatStorage.Reset()
+
+// 	StatStorage.AddTotalCount(100)
+// 	StatStorage.AddIosSuccess(200)
+// 	StatStorage.AddIosError(300)
+// 	StatStorage.AddAndroidSuccess(400)
+// 	StatStorage.AddAndroidError(500)
+
+// 	val = StatStorage.GetTotalCount()
+// 	assert.Equal(t, int64(100), val)
+// 	val = StatStorage.GetIosSuccess()
+// 	assert.Equal(t, int64(200), val)
+// 	val = StatStorage.GetIosError()
+// 	assert.Equal(t, int64(300), val)
+// 	val = StatStorage.GetAndroidSuccess()
+// 	assert.Equal(t, int64(400), val)
+// 	val = StatStorage.GetAndroidError()
+// 	assert.Equal(t, int64(500), val)
+// }

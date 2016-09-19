@@ -65,17 +65,18 @@ type SectionLog struct {
 
 // SectionStat is sub seciont of config.
 type SectionStat struct {
-	Engine string        `yaml:"engine"`
-	Redis  SectionRedis  `yaml:"redis"`
-	BoltDB SectionBoltDB `yaml:"boltdb"`
-	BuntDB SectionBuntDB `yaml:"buntdb"`
+	Engine  string         `yaml:"engine"`
+	Redis   SectionRedis   `yaml:"redis"`
+	BoltDB  SectionBoltDB  `yaml:"boltdb"`
+	BuntDB  SectionBuntDB  `yaml:"buntdb"`
+	LevelDB SectionLevelDB `yaml:"leveldb"`
 }
 
 // SectionRedis is sub seciont of config.
 type SectionRedis struct {
 	Addr     string `yaml:"addr"`
 	Password string `yaml:"password"`
-	DB       int64  `yaml:"db"`
+	DB       int    `yaml:"db"`
 }
 
 // SectionBoltDB is sub seciont of config.
@@ -86,6 +87,11 @@ type SectionBoltDB struct {
 
 // SectionBuntDB is sub seciont of config.
 type SectionBuntDB struct {
+	Path string `yaml:"path"`
+}
+
+// SectionLevelDB is sub seciont of config.
+type SectionLevelDB struct {
 	Path string `yaml:"path"`
 }
 
@@ -144,10 +150,11 @@ func BuildDefaultPushConf() ConfYaml {
 	conf.Stat.Redis.Password = ""
 	conf.Stat.Redis.DB = 0
 
-	conf.Stat.BoltDB.Path = "gorush.db"
+	conf.Stat.BoltDB.Path = "bolt.db"
 	conf.Stat.BoltDB.Bucket = "gorush"
 
-	conf.Stat.BuntDB.Path = "gorush.db"
+	conf.Stat.BuntDB.Path = "bunt.db"
+	conf.Stat.LevelDB.Path = "level.db"
 
 	return conf
 }
