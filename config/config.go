@@ -150,11 +150,11 @@ func BuildDefaultPushConf() ConfYaml {
 	conf.Stat.Redis.Password = ""
 	conf.Stat.Redis.DB = 0
 
-	conf.Stat.BoltDB.Path = "gorush.db"
+	conf.Stat.BoltDB.Path = "bolt.db"
 	conf.Stat.BoltDB.Bucket = "gorush"
 
-	conf.Stat.BuntDB.Path = "gorush.db"
-	conf.Stat.LevelDB.Path = "gorush.db"
+	conf.Stat.BuntDB.Path = "bunt.db"
+	conf.Stat.LevelDB.Path = "level.db"
 
 	return conf
 }

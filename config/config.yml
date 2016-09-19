@@ -45,9 +45,9 @@ stat:
     password: ""
     db: 0
   boltdb:
-    path: "gorush.db"
+    path: "bolt.db"
     bucket: "gorush"
   buntdb:
-    path: "gorush.db"
+    path: "bunt.db"
   leveldb:
-    path: "gorush.db"
+    path: "level.db"

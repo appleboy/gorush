@@ -36,3 +36,4 @@ vendor
 Dockerfile.tmp
 .cover
 *.pid
+*.db*
