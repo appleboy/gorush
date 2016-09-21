@@ -7,6 +7,13 @@ pipeline:
       - make install
       - coverage all
 
+  line:
+    image: appleboy/drone-line
+    pull: true
+    to: u359650f919427b5229330c7205c47ee4
+    when:
+      status: [ success, failure ]
+
 services:
   redis:
     image: redis:alpine
