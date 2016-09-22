@@ -27,6 +27,8 @@ pipeline:
     rebuild: true
     mount: [ .glide, vendor ]
     ignore_branch: true
+    when:
+      branch: master
 
 services:
   redis:
