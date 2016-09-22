@@ -1,4 +1,11 @@
 pipeline:
+  # restore the cache from an sftp server
+  restore_cache:
+    image: appleboy/drone-sftp-cache
+    restore: true
+    mount: [ .glide, vendor ]
+    ignore_branch: true
+
   build:
     image: appleboy/golang-testing:${GO_VERSION}
     environment:
@@ -13,6 +20,13 @@ pipeline:
     to: u359650f919427b5229330c7205c47ee4
     when:
       status: [ success, failure ]
+
+  # rebuild the cache on the sftp server
+  rebuild_cache:
+    image: appleboy/drone-sftp-cache
+    rebuild: true
+    mount: [ .glide, vendor ]
+    ignore_branch: true
 
 services:
   redis:
