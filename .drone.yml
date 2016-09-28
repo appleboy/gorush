@@ -21,6 +21,13 @@ pipeline:
     when:
       status: [ success, failure ]
 
+  facebook:
+    image: appleboy/drone-facebook
+    pull: true
+    to: 1234973386524610
+    when:
+      status: [ success, failure ]
+
   # rebuild the cache on the sftp server
   rebuild_cache:
     image: appleboy/drone-sftp-cache
