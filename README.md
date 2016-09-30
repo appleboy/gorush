@@ -260,6 +260,7 @@ Show success or failure counts information of notification.
 
 ```json
 {
+  "version": "v1.6.2",
   "queue_max": 8192,
   "queue_usage": 0,
   "total_count": 77,

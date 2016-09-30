@@ -35,7 +35,7 @@ update:
 	glide update
 
 build_static:
-	go build -ldflags="${EXTLDFLAGS}-s -w -X main.Version=${VERSION}" -o bin/gorush gorush.go
+	go build -ldflags='${EXTLDFLAGS}-s -w -X main.Version=${VERSION}' -o bin/gorush gorush.go
 
 build: clean
 	sh script/build.sh $(VERSION)

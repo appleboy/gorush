@@ -16,6 +16,7 @@ var Stats = stats.New()
 
 // StatusApp is app status structure
 type StatusApp struct {
+	Version    string        `json:"version"`
 	QueueMax   int           `json:"queue_max"`
 	QueueUsage int           `json:"queue_usage"`
 	TotalCount int64         `json:"total_count"`
@@ -66,6 +67,7 @@ func InitAppStatus() error {
 func appStatusHandler(c *gin.Context) {
 	result := StatusApp{}
 
+	result.Version = GetVersion()
 	result.QueueMax = cap(QueueNotification)
 	result.QueueUsage = len(QueueNotification)
 	result.TotalCount = StatStorage.GetTotalCount()

@@ -102,8 +102,16 @@ func TestAPIStatusAppHandler(t *testing.T) {
 
 	r := gofight.New()
 
+	appVersion := "v1.0.0"
+	SetVersion(appVersion)
+
 	r.GET("/api/stat/app").
 		Run(routerEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+			data := []byte(r.Body.String())
+
+			value, _ := jsonparser.GetString(data, "version")
+
+			assert.Equal(t, appVersion, value)
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }
