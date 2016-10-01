@@ -32,8 +32,14 @@ script:
     -service=travis-ci -repotoken=$COVERALLS_TOKEN
 
 after_success:
+  - bash <(curl -s https://codecov.io/bash) -f .cover/coverage.txt
+  # deploy from master
   - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_GO_VERSION" == "1.7.1" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
     docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
-    make deploy tag=latest;
+    make docker_deploy tag=latest;
     fi
-  - bash <(curl -s https://codecov.io/bash) -f .cover/coverage.txt
+  # deploy from tag
+  - if [ "$TRAVIS_GO_VERSION" == "1.7.1" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_TAG" != "" ]; then
+    docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+    make docker_deploy tag=$TRAVIS_TAG;
+    fi

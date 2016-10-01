@@ -73,7 +73,7 @@ docker_build: clean
 docker_production:
 	docker build --rm -t $(PRODUCTION_IMAGE) -f docker/Dockerfile.dist .
 
-deploy: docker_build docker_production
+docker_deploy: docker_build docker_production
 ifeq ($(tag),)
 	@echo "Usage: make $@ tag=<tag>"
 	@exit 1
