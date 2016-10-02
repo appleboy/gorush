@@ -125,13 +125,13 @@ $ go get -u github.com/appleboy/gorush
 On linux
 
 ```
-$ wget -qO- https://github.com/appleboy/gorush/releases/download/v1.6.2/gorush-v1.6.2-linux-amd64.tar.gz | tar xvz
+$ wget -qO- https://github.com/appleboy/gorush/releases/download/v1.6.3/gorush-v1.6.3-linux-amd64.tar.gz | tar xvz
 ```
 
 On OS X
 
 ```
-$ wget -qO- https://github.com/appleboy/gorush/releases/download/v1.6.2/gorush-v1.6.2-darwin-amd64.tar.gz | tar xvz
+$ wget -qO- https://github.com/appleboy/gorush/releases/download/v1.6.3/gorush-v1.6.3-darwin-amd64.tar.gz | tar xvz
 ```
 
 ### Command Usage
