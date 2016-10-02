@@ -20,6 +20,8 @@ pipeline:
     to: u359650f919427b5229330c7205c47ee4
     when:
       status: [ success, failure ]
+      matrix:
+        GO_VERSION: 1.7.1
 
   facebook:
     image: appleboy/drone-facebook
@@ -27,6 +29,8 @@ pipeline:
     to: 1234973386524610
     when:
       status: [ success, failure ]
+      matrix:
+        GO_VERSION: 1.7.1
 
   # rebuild the cache on the sftp server
   rebuild_cache:
