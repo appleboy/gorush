@@ -23,6 +23,15 @@ pipeline:
       matrix:
         GO_VERSION: 1.7.1
 
+  gtalk:
+    image: appleboy/drone-gtalk
+    pull: true
+    to: appleboy.tw@gmail.com
+    when:
+      status: [ success, failure ]
+      matrix:
+        GO_VERSION: 1.7.1
+
   facebook:
     image: appleboy/drone-facebook
     pull: true
@@ -40,6 +49,8 @@ pipeline:
     ignore_branch: true
     when:
       branch: master
+      matrix:
+        GO_VERSION: 1.7.1
 
 services:
   redis:

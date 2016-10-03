@@ -3,11 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/appleboy/gorush/config"
-	"github.com/appleboy/gorush/gorush"
 	"log"
 	"os"
 	"strconv"
+
+	"github.com/appleboy/gorush/config"
+	"github.com/appleboy/gorush/gorush"
 )
 
 func checkInput(token, message string) {
