@@ -41,6 +41,15 @@ pipeline:
       matrix:
         GO_VERSION: 1.7.1
 
+  telegram:
+    image: appleboy/drone-telegram
+    pull: true
+    to: 65382999
+    when:
+      status: [ success, failure ]
+      matrix:
+        GO_VERSION: 1.7.1
+
   # rebuild the cache on the sftp server
   rebuild_cache:
     image: appleboy/drone-sftp-cache
