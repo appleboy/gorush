@@ -538,6 +538,13 @@ $ docker pull appleboy/gorush
 $ docker run --name gorush -p 80:8088 appleboy/gorush
 ```
 
+Run `gorush` with your own config file.
+
+```bash
+$ docker pull appleboy/gorush
+$ docker run --name gorush -v ${PWD}/config.yml:/config.yml -p 80:8088 appleboy/gorush
+```
+
 Testing your gorush server using [httpie](https://github.com/jkbrzt/httpie) command.
 
 ```bash
