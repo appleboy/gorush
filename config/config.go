@@ -133,14 +133,14 @@ func BuildDefaultPushConf() ConfYaml {
 	// Android
 	conf.Android.Enabled = false
 	conf.Android.APIKey = ""
-	conf.Android.MaxRetry = 1
+	conf.Android.MaxRetry = 0
 
 	// iOS
 	conf.Ios.Enabled = false
 	conf.Ios.KeyPath = "key.pem"
 	conf.Ios.Password = ""
 	conf.Ios.Production = false
-	conf.Ios.MaxRetry = 1
+	conf.Ios.MaxRetry = 0
 
 	// log
 	conf.Log.Format = "string"
