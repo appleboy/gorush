@@ -49,6 +49,7 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 * Support `p12` or `pem` formtat of iOS certificate file.
 * Support `/sys/stats` show response time, status code count, etc.
 * Support for HTTP proxy to Google server (GCM).
+* Support retry send notification if server response is fail.
 
 See the [YAML config example](config/config.yml):
 
@@ -78,12 +79,14 @@ api:
 android:
   enabled: true
   apikey: "YOUR_API_KEY"
+  max_retry: 0 # resend fail notification, default value zero is disabled
 
 ios:
   enabled: false
   key_path: "key.pem"
   password: "" # certificate password, default as empty string.
   production: false
+  max_retry: 0 # resend fail notification, default value zero is disabled
 
 log:
   format: "string" # string or json
