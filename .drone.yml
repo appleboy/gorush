@@ -21,7 +21,7 @@ pipeline:
     when:
       status: [ success, failure ]
       matrix:
-        GO_VERSION: 1.7.1
+        GO_VERSION: 1.7.3
 
   gtalk:
     image: appleboy/drone-gtalk
@@ -30,7 +30,7 @@ pipeline:
     when:
       status: [ success, failure ]
       matrix:
-        GO_VERSION: 1.7.1
+        GO_VERSION: 1.7.3
 
   facebook:
     image: appleboy/drone-facebook
@@ -39,7 +39,7 @@ pipeline:
     when:
       status: [ success, failure ]
       matrix:
-        GO_VERSION: 1.7.1
+        GO_VERSION: 1.7.3
 
   telegram:
     image: appleboy/drone-telegram
@@ -48,7 +48,7 @@ pipeline:
     when:
       status: [ success, failure ]
       matrix:
-        GO_VERSION: 1.7.1
+        GO_VERSION: 1.7.3
 
   # rebuild the cache on the sftp server
   rebuild_cache:
@@ -59,7 +59,7 @@ pipeline:
     when:
       branch: master
       matrix:
-        GO_VERSION: 1.7.1
+        GO_VERSION: 1.7.3
 
 services:
   redis:
@@ -70,5 +70,5 @@ workspace:
 
 matrix:
   GO_VERSION:
-    - 1.7.1
+    - 1.7.3
     - 1.6.3
