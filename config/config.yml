@@ -23,12 +23,14 @@ api:
 android:
   enabled: true
   apikey: "YOUR_API_KEY"
+  max_retry: 1
 
 ios:
   enabled: false
   key_path: "key.pem"
   password: ""
   production: false
+  max_retry: 1
 
 log:
   format: "string" # string or json
