@@ -329,6 +329,13 @@ func GetIOSNotification(req PushNotification) *apns.Notification {
 func PushToIOS(req PushNotification) bool {
 	LogAccess.Debug("Start push notification for iOS")
 
+	var retryCount = 0
+	var maxRetry = PushConf.Ios.MaxRetry
+
+	if req.Retry > 0 && req.Retry < maxRetry {
+		maxRetry = req.Retry
+	}
+
 Retry:
 	var isError = false
 	var newTokens []string
@@ -366,12 +373,11 @@ Retry:
 		}
 	}
 
-	if isError == true && req.Retry < PushConf.Ios.MaxRetry {
-		req.Retry++
+	if isError == true && retryCount < maxRetry {
+		retryCount++
 
-		// reset to default
+		// resend fail token
 		req.Tokens = newTokens
-		isError = false
 		goto Retry
 	}
 
@@ -429,6 +435,12 @@ func PushToAndroid(req PushNotification) bool {
 	LogAccess.Debug("Start push notification for Android")
 
 	var APIKey string
+	var retryCount = 0
+	var maxRetry = PushConf.Android.MaxRetry
+
+	if req.Retry > 0 && req.Retry < maxRetry {
+		maxRetry = req.Retry
+	}
 
 	// check message
 	err := CheckMessage(req)
@@ -471,8 +483,8 @@ Retry:
 		LogPush(SucceededPush, req.Tokens[k], req, nil)
 	}
 
-	if isError == true && req.Retry < PushConf.Android.MaxRetry {
-		req.Retry++
+	if isError == true && retryCount < maxRetry {
+		retryCount++
 
 		// resend fail token
 		req.Tokens = newTokens
