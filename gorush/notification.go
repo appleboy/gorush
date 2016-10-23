@@ -59,6 +59,7 @@ type PushNotification struct {
 	ContentAvailable bool     `json:"content_available,omitempty"`
 	Sound            string   `json:"sound,omitempty"`
 	Data             D        `json:"data,omitempty"`
+	Retry            int      `json:"retry,omitempty"`
 
 	// Android
 	APIKey                string           `json:"api_key,omitempty"`
@@ -328,7 +329,9 @@ func GetIOSNotification(req PushNotification) *apns.Notification {
 func PushToIOS(req PushNotification) bool {
 	LogAccess.Debug("Start push notification for iOS")
 
-	var isError bool
+Retry:
+	var isError = false
+	var newTokens []string
 
 	notification := GetIOSNotification(req)
 
@@ -341,8 +344,9 @@ func PushToIOS(req PushNotification) bool {
 		if err != nil {
 			// apns server error
 			LogPush(FailedPush, token, req, err)
-			isError = true
 			StatStorage.AddIosError(1)
+			newTokens = append(newTokens, token)
+			isError = true
 			continue
 		}
 
@@ -351,6 +355,8 @@ func PushToIOS(req PushNotification) bool {
 			// ref: https://github.com/sideshow/apns2/blob/master/response.go#L14-L65
 			LogPush(FailedPush, token, req, errors.New(res.Reason))
 			StatStorage.AddIosError(1)
+			newTokens = append(newTokens, token)
+			isError = true
 			continue
 		}
 
@@ -358,6 +364,15 @@ func PushToIOS(req PushNotification) bool {
 			LogPush(SucceededPush, token, req, nil)
 			StatStorage.AddIosSuccess(1)
 		}
+	}
+
+	if isError == true && req.Retry < PushConf.Ios.MaxRetry {
+		req.Retry++
+
+		// reset to default
+		req.Tokens = newTokens
+		isError = false
+		goto Retry
 	}
 
 	return isError
@@ -414,6 +429,7 @@ func PushToAndroid(req PushNotification) bool {
 	LogAccess.Debug("Start push notification for Android")
 
 	var APIKey string
+	var isError = false
 
 	// check message
 	err := CheckMessage(req)
@@ -423,6 +439,7 @@ func PushToAndroid(req PushNotification) bool {
 		return false
 	}
 
+Retry:
 	notification := GetAndroidNotification(req)
 
 	if APIKey = PushConf.Android.APIKey; req.APIKey != "" {
@@ -442,13 +459,25 @@ func PushToAndroid(req PushNotification) bool {
 	StatStorage.AddAndroidSuccess(int64(res.Success))
 	StatStorage.AddAndroidError(int64(res.Failure))
 
+	var newTokens []string
 	for k, result := range res.Results {
 		if result.Error != "" {
+			isError = true
+			newTokens = append(newTokens, req.Tokens[k])
 			LogPush(FailedPush, req.Tokens[k], req, errors.New(result.Error))
 			continue
 		}
 
 		LogPush(SucceededPush, req.Tokens[k], req, nil)
+	}
+
+	if isError == true && req.Retry < PushConf.Android.MaxRetry {
+		req.Retry++
+
+		// reset to default
+		req.Tokens = newTokens
+		isError = false
+		goto Retry
 	}
 
 	return true
