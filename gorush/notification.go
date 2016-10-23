@@ -429,7 +429,6 @@ func PushToAndroid(req PushNotification) bool {
 	LogAccess.Debug("Start push notification for Android")
 
 	var APIKey string
-	var isError = false
 
 	// check message
 	err := CheckMessage(req)
@@ -440,6 +439,7 @@ func PushToAndroid(req PushNotification) bool {
 	}
 
 Retry:
+	var isError = false
 	notification := GetAndroidNotification(req)
 
 	if APIKey = PushConf.Android.APIKey; req.APIKey != "" {
@@ -474,9 +474,8 @@ Retry:
 	if isError == true && req.Retry < PushConf.Android.MaxRetry {
 		req.Retry++
 
-		// reset to default
+		// resend fail token
 		req.Tokens = newTokens
-		isError = false
 		goto Retry
 	}
 
