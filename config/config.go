@@ -42,8 +42,9 @@ type SectionAPI struct {
 
 // SectionAndroid is sub section of config.
 type SectionAndroid struct {
-	Enabled bool   `yaml:"enabled"`
-	APIKey  string `yaml:"apikey"`
+	Enabled  bool   `yaml:"enabled"`
+	APIKey   string `yaml:"apikey"`
+	MaxRetry int    `yaml:"max_retry"`
 }
 
 // SectionIos is sub section of config.
@@ -52,6 +53,7 @@ type SectionIos struct {
 	KeyPath    string `yaml:"key_path"`
 	Password   string `yaml:"password"`
 	Production bool   `yaml:"production"`
+	MaxRetry   int    `yaml:"max_retry"`
 }
 
 // SectionLog is sub section of config.
@@ -131,12 +133,14 @@ func BuildDefaultPushConf() ConfYaml {
 	// Android
 	conf.Android.Enabled = false
 	conf.Android.APIKey = ""
+	conf.Android.MaxRetry = 1
 
 	// iOS
 	conf.Ios.Enabled = false
 	conf.Ios.KeyPath = "key.pem"
 	conf.Ios.Password = ""
 	conf.Ios.Production = false
+	conf.Ios.MaxRetry = 1
 
 	// log
 	conf.Log.Format = "string"
