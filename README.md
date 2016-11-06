@@ -140,6 +140,13 @@ $ wget -qO- https://github.com/appleboy/gorush/releases/download/v1.6.4/gorush-v
 ### Command Usage
 
 ```
+  ________                              .__
+ /  _____/   ____ _______  __ __  ______|  |__
+/   \  ___  /  _ \\_  __ \|  |  \/  ___/|  |  \
+\    \_\  \(  <_> )|  | \/|  |  /\___ \ |   Y  \
+ \______  / \____/ |__|   |____//____  >|___|  /
+        \/                           \/      \/
+
 Usage: gorush [options]
 
 Server Options:
