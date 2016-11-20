@@ -6,7 +6,7 @@ BUILD_IMAGE := "gorush-build"
 PRODUCTION_IMAGE := "gorush"
 DEPLOY_ACCOUNT := "appleboy"
 ifeq ($(VERSION),)
-	VERSION := $(shell git describe --tags || git rev-parse --short HEAD)
+	VERSION := $(shell git describe --tags --always || git rev-parse --short HEAD)
 endif
 TARGETS_NOVENDOR := $(shell glide novendor)
 export PROJECT_PATH = /go/src/github.com/appleboy/gorush
@@ -97,3 +97,6 @@ clean:
 		gorush/gorush.db \
 		storage/boltdb/gorush.db \
 		.cover
+
+version:
+	@echo $(VERSION)
