@@ -39,6 +39,7 @@ type Alert struct {
 	LocArgs      []string `json:"loc-args,omitempty"`
 	LocKey       string   `json:"loc-key,omitempty"`
 	Title        string   `json:"title,omitempty"`
+	Subtitle     string   `json:"subtitle,omitempty"`
 	TitleLocArgs []string `json:"title-loc-args,omitempty"`
 	TitleLocKey  string   `json:"title-loc-key,omitempty"`
 }
@@ -236,6 +237,11 @@ func iosAlertDictionary(payload *payload.Payload, req PushNotification) *payload
 
 	if len(req.Title) > 0 {
 		payload.AlertTitle(req.Title)
+	}
+
+	// Apple Watch & Safari display this string as part of the notification interface.
+	if len(req.Alert.Subtitle) > 0 {
+		payload.AlertSubtitle(req.Alert.Subtitle)
 	}
 
 	if len(req.Alert.TitleLocKey) > 0 {

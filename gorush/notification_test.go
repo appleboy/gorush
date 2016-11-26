@@ -132,6 +132,7 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 			LaunchImage:  test,
 			LocArgs:      []string{"a", "b"},
 			LocKey:       test,
+			Subtitle:     test,
 			TitleLocArgs: []string{"a", "b"},
 			TitleLocKey:  test,
 		},
@@ -153,6 +154,7 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 	launchImage, _ := jsonparser.GetString(data, "aps", "alert", "launch-image")
 	locKey, _ := jsonparser.GetString(data, "aps", "alert", "loc-key")
 	title, _ := jsonparser.GetString(data, "aps", "alert", "title")
+	subtitle, _ := jsonparser.GetString(data, "aps", "alert", "subtitle")
 	titleLocKey, _ := jsonparser.GetString(data, "aps", "alert", "title-loc-key")
 	aps := dat["aps"].(map[string]interface{})
 	alert := aps["alert"].(map[string]interface{})
@@ -165,6 +167,7 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 	assert.Equal(t, test, launchImage)
 	assert.Equal(t, test, locKey)
 	assert.Equal(t, test, title)
+	assert.Equal(t, test, subtitle)
 	assert.Equal(t, test, titleLocKey)
 	assert.Contains(t, titleLocArgs, "a")
 	assert.Contains(t, titleLocArgs, "b")

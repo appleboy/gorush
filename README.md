@@ -400,6 +400,7 @@ Request body must has a notifications array. The following is a parameter table 
 
 | name           | type             | description                                                                                      | required | note |
 |----------------|------------------|--------------------------------------------------------------------------------------------------|----------|------|
+| subtitle       | string           | Apple Watch & Safari display this string as part of the notification interface.                  | -        |      |
 | action         | string           | The label of the action button. This one is required for Safari Push Notifications.              | -        |      |
 | action-loc-key | string           | If a string is specified, the system displays an alert that includes the Close and View buttons. | -        |      |
 | launch-image   | string           | The filename of an image file in the app bundle, with or without the filename extension.         | -        |      |
