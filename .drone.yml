@@ -33,37 +33,10 @@ pipeline:
       event: [ push ]
       branch: [ master ]
 
-  line:
-    image: appleboy/drone-line
-    pull: true
-    to: u359650f919427b5229330c7205c47ee4
-    when:
-      status: [ success, failure ]
-      matrix:
-        GO_VERSION: 1.7.4
-
-  gtalk:
-    image: appleboy/drone-gtalk
-    pull: true
-    to: appleboy.tw@gmail.com
-    when:
-      status: [ success, failure ]
-      matrix:
-        GO_VERSION: 1.7.4
-
   facebook:
     image: appleboy/drone-facebook
     pull: true
     to: 1234973386524610
-    when:
-      status: [ success, failure ]
-      matrix:
-        GO_VERSION: 1.7.4
-
-  telegram:
-    image: appleboy/drone-telegram
-    pull: true
-    to: 65382999
     when:
       status: [ success, failure ]
       matrix:
