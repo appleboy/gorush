@@ -6,7 +6,7 @@ ENV VERSION #VERSION#
 RUN mkdir -p $GOPATH/src/github.com/appleboy/gorush
 Add build.tar.gz $GOPATH/src/github.com/appleboy/gorush/
 WORKDIR $GOPATH/src/github.com/appleboy/gorush
-RUN make install
-RUN CGO_ENABLED=0 make build_static
+RUN make dep_install
+RUN CGO_ENABLED=0 make build
 
 CMD tar -C bin -czf - gorush
