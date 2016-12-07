@@ -14,8 +14,25 @@ pipeline:
     environment:
       - GOPATH=/go
     commands:
-      - make install
-      - coverage all
+      - make dep_install
+      - coverage testing
+      - coverage coverage
+
+  docker:
+    image: plugins/docker
+    repo: appleboy/gorush
+    tags: [ '${DRONE_TAG}' ]
+    when:
+      event: [ tag ]
+      branch: [ refs/tags/* ]
+
+  docker:
+    image: plugins/docker
+    repo: appleboy/gorush
+    tags: [ 'latest' ]
+    when:
+      event: [ push ]
+      branch: [ master ]
 
   line:
     image: appleboy/drone-line
