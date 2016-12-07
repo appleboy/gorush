@@ -6,9 +6,8 @@ services:
   - docker
 
 go:
-  - 1.5.4
-  - 1.6.3
-  - 1.7.3
+  - 1.6.4
+  - 1.7.4
   - tip
 
 cache:
@@ -39,13 +38,13 @@ script:
 
 after_success:
   - bash <(curl -s https://codecov.io/bash) -f .cover/coverage.txt
-  # deploy from master
-  - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_GO_VERSION" == "1.7.3" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
-    docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
-    make docker_deploy tag=latest;
-    fi
-  # deploy from tag
-  - if [ "$TRAVIS_GO_VERSION" == "1.7.3" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_TAG" != "" ]; then
-    docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
-    make docker_deploy tag=$TRAVIS_TAG;
-    fi
+  # # deploy from master
+  # - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_GO_VERSION" == "1.7.3" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+  #   docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+  #   make docker_deploy tag=latest;
+  #   fi
+  # # deploy from tag
+  # - if [ "$TRAVIS_GO_VERSION" == "1.7.3" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_TAG" != "" ]; then
+  #   docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+  #   make docker_deploy tag=$TRAVIS_TAG;
+  #   fi
