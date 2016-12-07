@@ -3,7 +3,7 @@ sudo: required
 language: go
 
 services:
-  - docker
+  - redis
 
 go:
   - 1.6.4
@@ -25,15 +25,11 @@ before_install:
   - mkdir -p $GOPATH/bin
   - curl https://glide.sh/get | sh
 
-install:
-  - go get github.com/mattn/goveralls
-  - make docker_build
-  - make docker_production
-
 script:
-  - make docker_test
-  - $(go env GOPATH | awk 'BEGIN{FS=":"} {print $1}')/bin/goveralls -coverprofile=.cover/coverage.txt
-    -service=travis-ci -repotoken=$COVERALLS_TOKEN
+  - make dep_install
+  - make vet
+  - make lint
+  - make test
 
 after_success:
   - bash <(curl -s https://codecov.io/bash) -f .cover/coverage.txt

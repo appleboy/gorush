@@ -1,4 +1,4 @@
-.PHONY: all
+.PHONY: all test build fmt vet errcheck lint install update release-dirs release-build release-copy release-check release
 
 export PROJECT_PATH = /go/src/github.com/appleboy/gorush
 
