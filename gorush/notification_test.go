@@ -438,7 +438,7 @@ func TestWrongIosCertificateExt(t *testing.T) {
 	err := InitAPNSClient()
 
 	assert.Error(t, err)
-	assert.Equal(t, "Wrong Certificate key extension.", err.Error())
+	assert.Equal(t, "wrong certificate key extension", err.Error())
 }
 
 func TestAPNSClientDevHost(t *testing.T) {
