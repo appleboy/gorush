@@ -1,3 +1,6 @@
+workspace:
+  path: /go/src/github.com/appleboy/gorush
+
 pipeline:
   # restore the cache from an sftp server
   restore_cache:
@@ -21,7 +24,7 @@ pipeline:
     when:
       status: [ success, failure ]
       matrix:
-        GO_VERSION: 1.7.3
+        GO_VERSION: 1.7.4
 
   gtalk:
     image: appleboy/drone-gtalk
@@ -30,7 +33,7 @@ pipeline:
     when:
       status: [ success, failure ]
       matrix:
-        GO_VERSION: 1.7.3
+        GO_VERSION: 1.7.4
 
   facebook:
     image: appleboy/drone-facebook
@@ -39,7 +42,7 @@ pipeline:
     when:
       status: [ success, failure ]
       matrix:
-        GO_VERSION: 1.7.3
+        GO_VERSION: 1.7.4
 
   telegram:
     image: appleboy/drone-telegram
@@ -48,7 +51,7 @@ pipeline:
     when:
       status: [ success, failure ]
       matrix:
-        GO_VERSION: 1.7.3
+        GO_VERSION: 1.7.4
 
   # rebuild the cache on the sftp server
   rebuild_cache:
@@ -59,16 +62,13 @@ pipeline:
     when:
       branch: master
       matrix:
-        GO_VERSION: 1.7.3
+        GO_VERSION: 1.7.4
 
 services:
   redis:
     image: redis:alpine
 
-workspace:
-  path: /go/src/github.com/appleboy/gorush
-
 matrix:
   GO_VERSION:
-    - 1.7.3
-    - 1.6.3
+    - 1.7.4
+    - 1.6.4
