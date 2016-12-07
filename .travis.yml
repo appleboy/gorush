@@ -31,8 +31,8 @@ script:
   - make lint
   - make test
 
-after_success:
-  - bash <(curl -s https://codecov.io/bash) -f .cover/coverage.txt
+# after_success:
+  # - bash <(curl -s https://codecov.io/bash) -f .cover/coverage.txt
   # # deploy from master
   # - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_GO_VERSION" == "1.7.3" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
   #   docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
