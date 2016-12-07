@@ -37,3 +37,4 @@ Dockerfile.tmp
 .cover
 *.pid
 *.db*
+coverage.txt
