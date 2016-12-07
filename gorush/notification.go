@@ -304,7 +304,8 @@ func GetIOSNotification(req PushNotification) *apns.Notification {
 
 	payload := payload.NewPayload().Alert(req.Message)
 
-	if req.Badge > 0 {
+	// zero value for clear the badge on the app icon.
+	if req.Badge >= 0 {
 		payload.Badge(req.Badge)
 	}
 
