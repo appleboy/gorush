@@ -72,7 +72,7 @@ func TestIOSNotificationStructure(t *testing.T) {
 		Expiration:       time.Now().Unix(),
 		Priority:         "normal",
 		Message:          message,
-		Badge:            1,
+		Badge:            0,
 		Sound:            test,
 		ContentAvailable: true,
 		Data: D{
@@ -108,7 +108,7 @@ func TestIOSNotificationStructure(t *testing.T) {
 	assert.Equal(t, unix, notification.Expiration.Unix())
 	assert.Equal(t, ApnsPriorityLow, notification.Priority)
 	assert.Equal(t, message, alert)
-	assert.Equal(t, 1, int(badge))
+	assert.Equal(t, 0, int(badge))
 	assert.Equal(t, test, sound)
 	assert.Equal(t, 1, int(contentAvailable))
 	assert.Equal(t, "test", key1)
