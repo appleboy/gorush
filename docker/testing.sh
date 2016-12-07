@@ -10,4 +10,4 @@ sed -i"" -e "s/localhost/redis/g" gorush/status_test.go
 sed -i"" -e "s/localhost/redis/g" storage/redis/redis_test.go
 
 echo "install package and testing code coverage."
-make install && coverage all
+make dep_install && coverage all

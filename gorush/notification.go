@@ -168,7 +168,7 @@ func InitAPNSClient() error {
 		case ".pem":
 			CertificatePemIos, err = certificate.FromPemFile(PushConf.Ios.KeyPath, PushConf.Ios.Password)
 		default:
-			err = errors.New("Wrong Certificate key extension.")
+			err = errors.New("wrong certificate key extension")
 		}
 
 		if err != nil {
@@ -287,7 +287,7 @@ func iosAlertDictionary(payload *payload.Payload, req PushNotification) *payload
 
 // GetIOSNotification use for define iOS notificaiton.
 // The iOS Notification Payload
-// ref: https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/TheNotificationPayload.html
+// ref: https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/PayloadKeyReference.html#//apple_ref/doc/uid/TP40008194-CH17-SW1
 func GetIOSNotification(req PushNotification) *apns.Notification {
 	notification := &apns.Notification{
 		ApnsID: req.ApnsID,
