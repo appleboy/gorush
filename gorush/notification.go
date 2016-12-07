@@ -168,7 +168,7 @@ func InitAPNSClient() error {
 		case ".pem":
 			CertificatePemIos, err = certificate.FromPemFile(PushConf.Ios.KeyPath, PushConf.Ios.Password)
 		default:
-			err = errors.New("Wrong Certificate key extension.")
+			err = errors.New("wrong certificate key extension")
 		}
 
 		if err != nil {
