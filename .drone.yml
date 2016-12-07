@@ -15,7 +15,12 @@ pipeline:
       - GOPATH=/go
     commands:
       - make dep_install
+      - make vet
+      - make lint
+      - make build
       - coverage all
+      # build binary for docker image
+      - make docker_binary_build
 
   docker:
     image: plugins/docker
