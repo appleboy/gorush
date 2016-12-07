@@ -15,8 +15,7 @@ pipeline:
       - GOPATH=/go
     commands:
       - make dep_install
-      - coverage testing
-      - coverage coverage
+      - coverage all
 
   docker:
     image: plugins/docker
