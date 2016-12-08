@@ -76,7 +76,7 @@ type PushNotification struct {
 	Expiration int64    `json:"expiration,omitempty"`
 	ApnsID     string   `json:"apns_id,omitempty"`
 	Topic      string   `json:"topic,omitempty"`
-	Badge      int      `json:"badge,omitempty"`
+	Badge      *int     `json:"badge,omitempty"`
 	Category   string   `json:"category,omitempty"`
 	URLArgs    []string `json:"url-args,omitempty"`
 	Alert      Alert    `json:"alert,omitempty"`
@@ -305,8 +305,8 @@ func GetIOSNotification(req PushNotification) *apns.Notification {
 	payload := payload.NewPayload().Alert(req.Message)
 
 	// zero value for clear the badge on the app icon.
-	if req.Badge >= 0 {
-		payload.Badge(req.Badge)
+	if req.Badge != nil && *req.Badge >= 0 {
+		payload.Badge(*req.Badge)
 	}
 
 	if len(req.Sound) > 0 {
