@@ -24,7 +24,7 @@ pipeline:
         chmod +x .codecov &&
         ./.codecov -t ${CODECOV_TOKEN} -f .cover/coverage.txt
       # build binary for docker image
-      - make docker_binary_build
+      - make docker_build
 
   release:
     image: appleboy/golang-testing:${GO_VERSION}
