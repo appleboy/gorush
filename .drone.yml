@@ -19,11 +19,25 @@ pipeline:
       - make lint
       - make build
       - coverage all
+      # send coverage report
       - curl -s https://codecov.io/bash > .codecov &&
         chmod +x .codecov &&
         ./.codecov -t ${CODECOV_TOKEN} -f .cover/coverage.txt
       # build binary for docker image
-      - make docker_binary_build
+      - make docker_build
+
+  release:
+    image: appleboy/golang-testing:${GO_VERSION}
+    pull: true
+    environment:
+      TAGS: netgo
+    commands:
+      - make release
+    when:
+      event: [ tag ]
+      branch: [ refs/tags/* ]
+      matrix:
+        GO_VERSION: 1.7.4
 
   docker:
     image: plugins/docker
@@ -47,6 +61,16 @@ pipeline:
     to: 1234973386524610
     when:
       status: [ success, failure ]
+      matrix:
+        GO_VERSION: 1.7.4
+
+  github:
+    image: plugins/github-release
+    files:
+      - dist/release/*
+    when:
+      event: [ tag ]
+      branch: [ refs/tags/* ]
       matrix:
         GO_VERSION: 1.7.4
 
