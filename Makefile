@@ -1,4 +1,4 @@
-.PHONY: all test build fmt vet errcheck lint install update release-dirs release-build release-copy release-check release
+.PHONY: all gorush test build fmt vet errcheck lint install update release-dirs release-build release-copy release-check release
 
 export PROJECT_PATH = /go/src/github.com/appleboy/gorush
 
@@ -118,43 +118,28 @@ release-check:
 	cd $(DIST)/release; $(foreach file,$(wildcard $(DIST)/release/$(EXECUTABLE)-*),sha256sum $(notdir $(file)) > $(notdir $(file)).sha256;)
 
 
-docker_binary_build:
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)' -o bin/$@
+docker_build:
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -tags '$(TAGS)' -ldflags "$(EXTLDFLAGS)-s -w $(LDFLAGS)" -o bin/$(EXECUTABLE)
 
 docker_image:
 	docker build -t $(DEPLOY_ACCOUNT)/$(DEPLOY_IMAGE) -f Dockerfile .
 
-docker_release: docker_binary_build docker_image
-
-docker_build:
-	tar -zcvf build.tar.gz gorush.go gorush config storage Makefile glide.lock glide.yaml
-	sed -e "s/#VERSION#/$(VERSION)/g" docker/Dockerfile.build > docker/Dockerfile.tmp
-	docker build -t $(BUILD_IMAGE) -f docker/Dockerfile.tmp .
-	docker run --rm $(BUILD_IMAGE) > gorush.tar.gz
-
-docker_production:
-	docker build -t $(EXECUTABLE) -f docker/Dockerfile.dist .
+docker_release: docker_build docker_image
 
 docker_deploy:
 ifeq ($(tag),)
 	@echo "Usage: make $@ tag=<tag>"
 	@exit 1
 endif
-	docker tag $(EXECUTABLE):latest $(DEPLOY_ACCOUNT)/$(EXECUTABLE):$(tag)
+	docker tag $(DEPLOY_ACCOUNT)/$(EXECUTABLE):latest $(DEPLOY_ACCOUNT)/$(EXECUTABLE):$(tag)
 	docker push $(DEPLOY_ACCOUNT)/$(EXECUTABLE):$(tag)
-
-docker_test: init clean
-	docker-compose -p ${EXECUTABLE} -f docker/docker-compose.testing.yml run gorush
-	docker-compose -p ${EXECUTABLE} -f docker/docker-compose.testing.yml down
 
 clean:
 	go clean -x -i ./...
 	find . -name coverage.txt -delete
-	-rm -rf build.tar.gz \
-		gorush.tar.gz bin/* \
-		gorush.tar.gz \
-		gorush/gorush.db \
-		storage/boltdb/gorush.db \
+	find . -name *.tar.gz -delete
+	find . -name *.db -delete
+	-rm -rf bin/* \
 		.cover
 
 version:

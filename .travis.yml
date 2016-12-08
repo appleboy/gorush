@@ -30,6 +30,7 @@ script:
   - make vet
   - make lint
   - make test
+  - make build
 
 # after_success:
   # - bash <(curl -s https://codecov.io/bash) -f .cover/coverage.txt
