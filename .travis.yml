@@ -25,8 +25,10 @@ before_install:
   - mkdir -p $GOPATH/bin
   - curl https://glide.sh/get | sh
 
-script:
+install:
   - make dep_install
+
+script:
   - make vet
   - make lint
   - make test

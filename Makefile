@@ -1,11 +1,8 @@
 .PHONY: all gorush test build fmt vet errcheck lint install update release-dirs release-build release-copy release-check release
 
-export PROJECT_PATH = /go/src/github.com/appleboy/gorush
-
 DIST := dist
 EXECUTABLE := gorush
 
-BUILD_IMAGE := "gorush-build"
 DEPLOY_ACCOUNT := appleboy
 DEPLOY_IMAGE := $(EXECUTABLE)
 
