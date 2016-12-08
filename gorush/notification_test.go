@@ -65,6 +65,7 @@ func TestIOSNotificationStructure(t *testing.T) {
 	var unix = time.Now().Unix()
 
 	test := "test"
+	expectBadge := 0
 	message := "Welcome notification Server"
 	req := PushNotification{
 		ApnsID:           test,
@@ -72,7 +73,7 @@ func TestIOSNotificationStructure(t *testing.T) {
 		Expiration:       time.Now().Unix(),
 		Priority:         "normal",
 		Message:          message,
-		Badge:            0,
+		Badge:            &expectBadge,
 		Sound:            test,
 		ContentAvailable: true,
 		Data: D{
@@ -108,7 +109,8 @@ func TestIOSNotificationStructure(t *testing.T) {
 	assert.Equal(t, unix, notification.Expiration.Unix())
 	assert.Equal(t, ApnsPriorityLow, notification.Priority)
 	assert.Equal(t, message, alert)
-	assert.Equal(t, 0, int(badge))
+	assert.Equal(t, expectBadge, int(badge))
+	assert.Equal(t, expectBadge, *req.Badge)
 	assert.Equal(t, test, sound)
 	assert.Equal(t, 1, int(contentAvailable))
 	assert.Equal(t, "test", key1)
@@ -116,6 +118,72 @@ func TestIOSNotificationStructure(t *testing.T) {
 	assert.Equal(t, test, category)
 	assert.Contains(t, urlArgs, "a")
 	assert.Contains(t, urlArgs, "b")
+}
+
+// Silent Notification which payload’s aps dictionary must not contain the alert, sound, or badge keys.
+// ref: https://goo.gl/m9xyqG
+func TestSendZeroValueForBadgeKey(t *testing.T) {
+	var dat map[string]interface{}
+
+	test := "test"
+	message := "Welcome notification Server"
+	req := PushNotification{
+		ApnsID:           test,
+		Topic:            test,
+		Priority:         "normal",
+		Message:          message,
+		Sound:            test,
+		ContentAvailable: true,
+	}
+
+	notification := GetIOSNotification(req)
+
+	dump, _ := json.Marshal(notification.Payload)
+	data := []byte(string(dump))
+
+	if err := json.Unmarshal(data, &dat); err != nil {
+		log.Println(err)
+		panic(err)
+	}
+
+	alert, _ := jsonparser.GetString(data, "aps", "alert")
+	badge, _ := jsonparser.GetInt(data, "aps", "badge")
+	sound, _ := jsonparser.GetString(data, "aps", "sound")
+	contentAvailable, _ := jsonparser.GetInt(data, "aps", "content-available")
+
+	if req.Badge != nil {
+		t.Errorf("req.Badge must be nil")
+	}
+
+	assert.Equal(t, test, notification.ApnsID)
+	assert.Equal(t, test, notification.Topic)
+	assert.Equal(t, ApnsPriorityLow, notification.Priority)
+	assert.Equal(t, message, alert)
+	assert.Equal(t, 0, int(badge))
+	assert.Equal(t, test, sound)
+	assert.Equal(t, 1, int(contentAvailable))
+
+	// Add Bage
+	expectBadge := 10
+	req.Badge = &expectBadge
+
+	notification = GetIOSNotification(req)
+
+	dump, _ = json.Marshal(notification.Payload)
+	data = []byte(string(dump))
+
+	if err := json.Unmarshal(data, &dat); err != nil {
+		log.Println(err)
+		panic(err)
+	}
+
+	if req.Badge == nil {
+		t.Errorf("req.Badge must be equal %d", *req.Badge)
+	}
+
+	badge, _ = jsonparser.GetInt(data, "aps", "badge")
+	assert.Equal(t, expectBadge, *req.Badge)
+	assert.Equal(t, expectBadge, int(badge))
 }
 
 func TestIOSAlertNotificationStructure(t *testing.T) {
