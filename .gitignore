@@ -38,3 +38,4 @@ Dockerfile.tmp
 *.pid
 *.db*
 coverage.txt
+dist

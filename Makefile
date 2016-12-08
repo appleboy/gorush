@@ -9,7 +9,7 @@ BUILD_IMAGE := "gorush-build"
 DEPLOY_ACCOUNT := appleboy
 DEPLOY_IMAGE := $(EXECUTABLE)
 
-TARGETS ?= linux/*,darwin/*
+TARGETS ?= linux darwin
 PACKAGES ?= $(shell go list ./... | grep -v /vendor/)
 SOURCES ?= $(shell find . -name "*.go" -type f)
 TAGS ?=
@@ -76,9 +76,6 @@ build: $(EXECUTABLE)
 $(EXECUTABLE): $(SOURCES)
 	go build -v -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)' -o bin/$@
 
-corss_build: clean
-	sh script/build.sh $(VERSION)
-
 test:
 	for PKG in $(PACKAGES); do go test -v -cover -coverprofile $$GOPATH/src/$$PKG/coverage.txt $$PKG || exit 1; done;
 
@@ -102,6 +99,24 @@ config_test: init
 
 html:
 	go tool cover -html=.cover/coverage.txt
+
+release: release-dirs release-build release-copy release-check
+
+release-dirs:
+	mkdir -p $(DIST)/binaries $(DIST)/release
+
+release-build:
+	@which gox > /dev/null; if [ $$? -ne 0 ]; then \
+		go get -u github.com/mitchellh/gox; \
+	fi
+	gox -os="$(TARGETS)" -arch="amd64 386" -tags="$(TAGS)" -ldflags="-s -w $(LDFLAGS)" -output="$(DIST)/binaries/$(EXECUTABLE)-$(VERSION)-{{.OS}}-{{.Arch}}"
+
+release-copy:
+	$(foreach file,$(wildcard $(DIST)/binaries/$(EXECUTABLE)-*),cp $(file) $(DIST)/release/$(notdir $(file));)
+
+release-check:
+	cd $(DIST)/release; $(foreach file,$(wildcard $(DIST)/release/$(EXECUTABLE)-*),sha256sum $(notdir $(file)) > $(notdir $(file)).sha256;)
+
 
 docker_binary_build:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)' -o bin/$@
