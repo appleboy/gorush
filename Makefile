@@ -21,11 +21,7 @@ endif
 ifneq ($(DRONE_TAG),)
 	VERSION ?= $(DRONE_TAG)
 else
-	ifneq ($(DRONE_BRANCH),)
-		VERSION ?= $(DRONE_BRANCH)
-	else
-		VERSION ?= $(shell git describe --tags --always || git rev-parse --short HEAD)
-	endif
+	VERSION ?= $(shell git describe --tags --always || git rev-parse --short HEAD)
 endif
 
 all: build
@@ -65,7 +61,7 @@ dep_install:
 dep_update:
 	glide up
 
-install: $(wildcard *.go)
+install: $(SOURCES)
 	go install -v -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)'
 
 build: $(EXECUTABLE)
