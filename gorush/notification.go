@@ -302,7 +302,12 @@ func GetIOSNotification(req PushNotification) *apns.Notification {
 		notification.Priority = apns.PriorityLow
 	}
 
-	payload := payload.NewPayload().Alert(req.Message)
+	payload := payload.NewPayload()
+
+	// add alert object if message length > 0
+	if len(req.Message) > 0 {
+		payload.Alert(req.Message)
+	}
 
 	// zero value for clear the badge on the app icon.
 	if req.Badge != nil && *req.Badge >= 0 {

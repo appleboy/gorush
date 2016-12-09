@@ -186,6 +186,36 @@ func TestSendZeroValueForBadgeKey(t *testing.T) {
 	assert.Equal(t, expectBadge, int(badge))
 }
 
+// Silent Notification:
+// The payload’s aps dictionary must include the content-available key with a value of 1.
+// The payload’s aps dictionary must not contain the alert, sound, or badge keys.
+// ref: https://goo.gl/m9xyqG
+func TestCheckSilentNotification(t *testing.T) {
+	var dat map[string]interface{}
+
+	test := "test"
+	req := PushNotification{
+		ApnsID:           test,
+		Topic:            test,
+		Priority:         "normal",
+		ContentAvailable: true,
+	}
+
+	notification := GetIOSNotification(req)
+
+	dump, _ := json.Marshal(notification.Payload)
+	data := []byte(string(dump))
+
+	if err := json.Unmarshal(data, &dat); err != nil {
+		log.Println(err)
+		panic(err)
+	}
+
+	assert.Nil(t, dat["aps"].(map[string]interface{})["alert"])
+	assert.Nil(t, dat["aps"].(map[string]interface{})["sound"])
+	assert.Nil(t, dat["aps"].(map[string]interface{})["badge"])
+}
+
 func TestIOSAlertNotificationStructure(t *testing.T) {
 	var dat map[string]interface{}
 
