@@ -1,8 +1,6 @@
-hash: f556af81603ead677d8a4395b7a30b82956364273348e8c90f53c0cd0f6b4809
-updated: 2016-12-13T21:51:55.200004656+08:00
+hash: cccd36b5dd331f04f363476ebc21becfa3650945e3fd0b41821871702bc04743
+updated: 2016-12-14T00:05:23.060124146+08:00
 imports:
-- name: github.com/appleboy/endless
-  version: d773d36255895bc52adcfe318727f5e30f401b8e
 - name: github.com/asdine/storm
   version: 00b2f2df7ab7af9db746b826649395628cb5374e
   subpackages:
@@ -11,6 +9,8 @@ imports:
   - index
 - name: github.com/boltdb/bolt
   version: acc803f0ced151102ed51bf824f8709ebd6602bc
+- name: github.com/fvbock/endless
+  version: 2cdc20a776897c0f406853c048c33e2c1a9f0ebf
 - name: github.com/gin-gonic/gin
   version: f931d1ea80ae95a6fc739213cdd9399bd2967fb6
   subpackages:

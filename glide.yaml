@@ -1,8 +1,8 @@
 package: github.com/appleboy/gorush
 import:
 - package: github.com/Sirupsen/logrus
-- package: github.com/appleboy/endless
 - package: github.com/asdine/storm
+- package: github.com/fvbock/endless
 - package: github.com/gin-gonic/gin
 - package: github.com/google/go-gcm
 - package: github.com/sideshow/apns2
