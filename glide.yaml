@@ -1,22 +1,26 @@
 package: github.com/appleboy/gorush
 import:
-- package: gopkg.in/yaml.v2
 - package: github.com/Sirupsen/logrus
-  version: v0.10.0
-- package: gopkg.in/appleboy/gin-status-api.v1
-- package: github.com/fvbock/endless
+- package: github.com/appleboy/endless
+- package: github.com/asdine/storm
 - package: github.com/gin-gonic/gin
 - package: github.com/google/go-gcm
 - package: github.com/sideshow/apns2
   subpackages:
   - certificate
   - payload
-- package: github.com/stretchr/testify
-- package: github.com/asdine/storm
-- package: gopkg.in/appleboy/gofight.v1
-  version: v1.0.1
-- package: github.com/buger/jsonparser
+- package: github.com/syndtr/goleveldb
+  subpackages:
+  - leveldb
 - package: github.com/thoas/stats
 - package: github.com/tidwall/buntdb
-- package: github.com/syndtr/goleveldb
+- package: gopkg.in/appleboy/gin-status-api.v1
 - package: gopkg.in/redis.v4
+- package: gopkg.in/yaml.v2
+testImport:
+- package: github.com/buger/jsonparser
+- package: github.com/stretchr/testify
+  subpackages:
+  - assert
+  - suite
+- package: gopkg.in/appleboy/gofight.v1

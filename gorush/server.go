@@ -2,7 +2,7 @@ package gorush
 
 import (
 	"fmt"
-	"github.com/fvbock/endless"
+	"github.com/appleboy/endless"
 	"github.com/gin-gonic/gin"
 	api "gopkg.in/appleboy/gin-status-api.v1"
 	"net/http"

@@ -1,6 +1,8 @@
-hash: 4ee18de0a09fd239b069a5830dc26083f603fd14e06f8cada4c0934366ee343e
-updated: 2016-09-19T16:53:10.40422002+08:00
+hash: f556af81603ead677d8a4395b7a30b82956364273348e8c90f53c0cd0f6b4809
+updated: 2016-12-13T21:51:55.200004656+08:00
 imports:
+- name: github.com/appleboy/endless
+  version: d773d36255895bc52adcfe318727f5e30f401b8e
 - name: github.com/asdine/storm
   version: 00b2f2df7ab7af9db746b826649395628cb5374e
   subpackages:
@@ -9,10 +11,6 @@ imports:
   - index
 - name: github.com/boltdb/bolt
   version: acc803f0ced151102ed51bf824f8709ebd6602bc
-- name: github.com/buger/jsonparser
-  version: 183ade1ac7705adf72585f92410fc0912783217a
-- name: github.com/fvbock/endless
-  version: 2cdc20a776897c0f406853c048c33e2c1a9f0ebf
 - name: github.com/gin-gonic/gin
   version: f931d1ea80ae95a6fc739213cdd9399bd2967fb6
   subpackages:
@@ -41,12 +39,6 @@ imports:
   - payload
 - name: github.com/Sirupsen/logrus
   version: 4b6ea7319e214d98c938f12692336f7ca9348d6b
-- name: github.com/stretchr/testify
-  version: f390dcf405f7b83c997eac1b06768bb9f44dec18
-  subpackages:
-  - assert
-  - suite
-  - require
 - name: github.com/syndtr/goleveldb
   version: 6ae1797c0b42b9323fc27ff7dcf568df88f2f33d
   subpackages:
@@ -108,8 +100,6 @@ imports:
   - unix
 - name: gopkg.in/appleboy/gin-status-api.v1
   version: d41a075a5a6883245b7fdefbefd4fa4d1462e1f1
-- name: gopkg.in/appleboy/gofight.v1
-  version: 1a36a6d5ab10fba252a9cbecb1bcb72f9a2e6770
 - name: gopkg.in/bsm/ratelimit.v1
   version: db14e161995a5177acef654cb0dd785e8ee8bc22
 - name: gopkg.in/fukata/golang-stats-api-handler.v1
@@ -118,9 +108,18 @@ imports:
   version: c193cecd124b5cc722d7ee5538e945bdb3348435
 - name: gopkg.in/redis.v4
   version: 938235994ea88a05678f8060741d5f34ed6a5ff3
+  subpackages:
+  - internal
+  - internal/consistenthash
+  - internal/errors
+  - internal/hashtag
+  - internal/pool
+  - internal/proto
 - name: gopkg.in/yaml.v2
   version: a83829b6f1293c91addabc89d0571c246397bbf4
 testImports:
+- name: github.com/buger/jsonparser
+  version: 183ade1ac7705adf72585f92410fc0912783217a
 - name: github.com/davecgh/go-spew
   version: 5215b55f46b2b919f50a1df0eaa5886afe4e3b3d
   subpackages:
@@ -129,13 +128,13 @@ testImports:
   version: 451b2ccc9ffda7fd7fad2027b75d93b18ff87cbe
   subpackages:
   - engine
-  - test
   - log
+  - test
 - name: github.com/labstack/gommon
   version: 722aa12d41c236ce78ff48eac1cafe0107ecdc9d
   subpackages:
-  - log
   - color
+  - log
 - name: github.com/mattn/go-colorable
   version: 9056b7a9f2d1f2d96498d6d146acd1f9d5ed3d59
 - name: github.com/mattn/go-isatty
@@ -144,5 +143,13 @@ testImports:
   version: 792786c7400a136282c1664665ae0a8db921c6c2
   subpackages:
   - difflib
+- name: github.com/stretchr/testify
+  version: f390dcf405f7b83c997eac1b06768bb9f44dec18
+  subpackages:
+  - assert
+  - require
+  - suite
 - name: github.com/valyala/fasttemplate
   version: 3b874956e03f1636d171bda64b130f9135f42cff
+- name: gopkg.in/appleboy/gofight.v1
+  version: 1a36a6d5ab10fba252a9cbecb1bcb72f9a2e6770
