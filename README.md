@@ -127,14 +127,20 @@ $ go get -u github.com/appleboy/gorush
 
 On linux
 
-```
-$ wget https://github.com/appleboy/gorush/releases/download/v1.6.5/gorush-v1.6.6-linux-amd64 -O gorush
+```sh
+$ wget https://github.com/appleboy/gorush/releases/download/v1.7.0/gorush-v1.7.0-linux-amd64 -O gorush
 ```
 
 On OS X
 
+```sh
+$ wget https://github.com/appleboy/gorush/releases/download/v1.7.0/gorush-v1.7.0-darwin-amd64 -O gorush
 ```
-$ wget https://github.com/appleboy/gorush/releases/download/v1.6.5/gorush-v1.6.6-darwin-amd64 -O gorush
+
+On Windows
+
+```sh
+$ wget https://github.com/appleboy/gorush/releases/download/v1.7.0/gorush-v1.7.0-windows-amd64.exe -O gorush.exe
 ```
 
 ### Command Usage
