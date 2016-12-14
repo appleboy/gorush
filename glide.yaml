@@ -4,6 +4,7 @@ import:
 - package: github.com/asdine/storm
 - package: github.com/fvbock/endless
 - package: github.com/gin-gonic/gin
+  version: ^1.1.4
 - package: github.com/google/go-gcm
 - package: github.com/sideshow/apns2
   subpackages:

@@ -1,5 +1,5 @@
-hash: 2aaed2a3ef3dad562633bc46fe4b0ccf0df376b396006a368cf0f8942618ae93
-updated: 2016-12-14T21:48:23.383458+08:00
+hash: 54ead355ba6aeef8f2ea2ea1b5a473e2ce21371831e06355001dbc9b4dc18e22
+updated: 2016-12-14T22:43:06.161105893+08:00
 imports:
 - name: github.com/asdine/storm
   version: 00b2f2df7ab7af9db746b826649395628cb5374e
@@ -12,7 +12,7 @@ imports:
 - name: github.com/fvbock/endless
   version: 2cdc20a776897c0f406853c048c33e2c1a9f0ebf
 - name: github.com/gin-gonic/gin
-  version: f931d1ea80ae95a6fc739213cdd9399bd2967fb6
+  version: e2212d40c62a98b388a5eb48ecbdcf88534688ba
   subpackages:
   - binding
   - render
