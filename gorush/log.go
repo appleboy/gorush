@@ -56,12 +56,10 @@ type LogPushEntry struct {
 	Category string `json:"category,omitempty"`
 }
 
-var isTerm = true
+var isTerm bool
 
 func init() {
-	if w, ok := gin.DefaultWriter.(*os.File); !ok || !isatty.IsTerminal(w.Fd()) {
-		isTerm = false
-	}
+	isTerm = isatty.IsTerminal(os.Stdout.Fd())
 }
 
 // InitLog use for initial log module
