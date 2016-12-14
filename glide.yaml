@@ -17,6 +17,8 @@ import:
 - package: gopkg.in/appleboy/gin-status-api.v1
 - package: gopkg.in/redis.v4
 - package: gopkg.in/yaml.v2
+- package: github.com/mattn/go-isatty
+  version: ^0.0.1
 testImport:
 - package: github.com/buger/jsonparser
 - package: github.com/stretchr/testify

@@ -4,10 +4,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/Sirupsen/logrus"
-	"github.com/gin-gonic/gin"
 	"os"
 	"strings"
+
+	"github.com/Sirupsen/logrus"
+	"github.com/gin-gonic/gin"
+	"github.com/mattn/go-isatty"
 )
 
 var (
@@ -52,6 +54,14 @@ type LogPushEntry struct {
 	Badge    int    `json:"badge,omitempty"`
 	Sound    string `json:"sound,omitempty"`
 	Category string `json:"category,omitempty"`
+}
+
+var isTerm = true
+
+func init() {
+	if w, ok := gin.DefaultWriter.(*os.File); !ok || !isatty.IsTerminal(w.Fd()) {
+		isTerm = false
+	}
 }
 
 // InitLog use for initial log module
@@ -145,9 +155,15 @@ func LogRequest(uri string, method string, ip string, contentType string, agent 
 
 		output = string(logJSON)
 	} else {
+		var headerColor string
+
+		if isTerm {
+			headerColor = magenta
+		}
+
 		// format is string
 		output = fmt.Sprintf("|%s header %s| %s %s %s %s %s",
-			magenta, reset,
+			headerColor, reset,
 			log.Method,
 			log.URI,
 			log.IP,
@@ -203,8 +219,10 @@ func hideToken(token string, markLen int) string {
 func LogPush(status, token string, req PushNotification, errPush error) {
 	var plat, platColor, output string
 
-	platColor = colorForPlatForm(req.Platform)
-	plat = typeForPlatForm(req.Platform)
+	if isTerm {
+		platColor = colorForPlatForm(req.Platform)
+		plat = typeForPlatForm(req.Platform)
+	}
 
 	errMsg := ""
 	if errPush != nil {
@@ -228,17 +246,26 @@ func LogPush(status, token string, req PushNotification, errPush error) {
 
 		output = string(logJSON)
 	} else {
+		var typeColor string
 		switch status {
 		case SucceededPush:
+			if isTerm {
+				typeColor = green
+			}
+
 			output = fmt.Sprintf("|%s %s %s| %s%s%s [%s] %s",
-				green, log.Type, reset,
+				typeColor, log.Type, reset,
 				platColor, log.Platform, reset,
 				log.Token,
 				log.Message,
 			)
 		case FailedPush:
+			if isTerm {
+				typeColor = red
+			}
+
 			output = fmt.Sprintf("|%s %s %s| %s%s%s [%s] | %s | Error Message: %s",
-				red, log.Type, reset,
+				typeColor, log.Type, reset,
 				platColor, log.Platform, reset,
 				log.Token,
 				log.Message,

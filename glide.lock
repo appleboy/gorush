@@ -1,5 +1,5 @@
-hash: cccd36b5dd331f04f363476ebc21becfa3650945e3fd0b41821871702bc04743
-updated: 2016-12-14T00:05:23.060124146+08:00
+hash: 2aaed2a3ef3dad562633bc46fe4b0ccf0df376b396006a368cf0f8942618ae93
+updated: 2016-12-14T21:48:23.383458+08:00
 imports:
 - name: github.com/asdine/storm
   version: 00b2f2df7ab7af9db746b826649395628cb5374e
@@ -28,6 +28,8 @@ imports:
   version: 0496a6c14df020789376f4d4a261273d5ddb36ec
 - name: github.com/manucorporat/sse
   version: ee05b128a739a0fb76c7ebd3ae4810c1de808d6d
+- name: github.com/mattn/go-isatty
+  version: 3a115632dcd687f9c8cd01679c83a06a0e21c1f3
 - name: github.com/mattn/go-xmpp
   version: e44d1877bb457f5c3991903e9934a31e55c3a2ad
 - name: github.com/pborman/uuid
@@ -137,8 +139,6 @@ testImports:
   - log
 - name: github.com/mattn/go-colorable
   version: 9056b7a9f2d1f2d96498d6d146acd1f9d5ed3d59
-- name: github.com/mattn/go-isatty
-  version: 56b76bdf51f7708750eac80fa38b952bb9f32639
 - name: github.com/pmezard/go-difflib
   version: 792786c7400a136282c1664665ae0a8db921c6c2
   subpackages:
