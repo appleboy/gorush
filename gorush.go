@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"runtime"
 	"strconv"
 
 	"github.com/appleboy/gorush/config"
@@ -80,6 +81,10 @@ func createPIDFile() error {
 		return fmt.Errorf("%s already exists", gorush.PushConf.Core.PID.Path)
 	}
 	return nil
+}
+
+func init() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
 }
 
 func main() {
