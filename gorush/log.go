@@ -73,13 +73,11 @@ func InitLog() error {
 
 	LogAccess.Formatter = &logrus.TextFormatter{
 		TimestampFormat: "2006/01/02 - 15:04:05",
-		ForceColors:     true,
 		FullTimestamp:   true,
 	}
 
 	LogError.Formatter = &logrus.TextFormatter{
 		TimestampFormat: "2006/01/02 - 15:04:05",
-		ForceColors:     true,
 		FullTimestamp:   true,
 	}
 
