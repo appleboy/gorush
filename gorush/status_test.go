@@ -1,9 +1,16 @@
 package gorush
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
+
+func TestStorageDriverExist(t *testing.T) {
+	PushConf.Stat.Engine = "Test"
+	err := InitAppStatus()
+	assert.Error(t, err)
+}
 
 func TestStatForMemoryEngine(t *testing.T) {
 	var val int64
@@ -75,8 +82,10 @@ func TestStatForRedisEngine(t *testing.T) {
 
 func TestDefaultEngine(t *testing.T) {
 	var val int64
-	PushConf.Stat.Engine = "test"
+	// defaul engine as memory
 	InitAppStatus()
+
+	StatStorage.Reset()
 
 	StatStorage.AddTotalCount(100)
 	StatStorage.AddIosSuccess(200)

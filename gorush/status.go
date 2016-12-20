@@ -1,6 +1,9 @@
 package gorush
 
 import (
+	"errors"
+	"net/http"
+
 	"github.com/appleboy/gorush/storage/boltdb"
 	"github.com/appleboy/gorush/storage/buntdb"
 	"github.com/appleboy/gorush/storage/leveldb"
@@ -8,7 +11,6 @@ import (
 	"github.com/appleboy/gorush/storage/redis"
 	"github.com/gin-gonic/gin"
 	"github.com/thoas/stats"
-	"net/http"
 )
 
 // Stats provide response time, status code count, etc.
@@ -50,12 +52,14 @@ func InitAppStatus() error {
 	case "leveldb":
 		StatStorage = leveldb.New(PushConf)
 	default:
-		StatStorage = memory.New()
+		err := errors.New("can't find storage driver")
+		if err != nil {
+			LogError.Error("storage error: " + err.Error())
+			return err
+		}
 	}
 
-	err := StatStorage.Init()
-
-	if err != nil {
+	if err := StatStorage.Init(); err != nil {
 		LogError.Error("storage error: " + err.Error())
 
 		return err
