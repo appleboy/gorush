@@ -151,15 +151,16 @@ func LogRequest(uri string, method string, ip string, contentType string, agent 
 
 		output = string(logJSON)
 	} else {
-		var headerColor string
+		var headerColor, resetColor string
 
 		if isTerm {
 			headerColor = magenta
+			resetColor = reset
 		}
 
 		// format is string
 		output = fmt.Sprintf("|%s header %s| %s %s %s %s %s",
-			headerColor, reset,
+			headerColor, resetColor,
 			log.Method,
 			log.URI,
 			log.IP,
@@ -213,11 +214,12 @@ func hideToken(token string, markLen int) string {
 
 // LogPush record user push request and server response.
 func LogPush(status, token string, req PushNotification, errPush error) {
-	var plat, platColor, output string
+	var plat, platColor, resetColor, output string
 
 	if isTerm {
 		platColor = colorForPlatForm(req.Platform)
 		plat = typeForPlatForm(req.Platform)
+		resetColor = reset
 	}
 
 	errMsg := ""
@@ -250,8 +252,8 @@ func LogPush(status, token string, req PushNotification, errPush error) {
 			}
 
 			output = fmt.Sprintf("|%s %s %s| %s%s%s [%s] %s",
-				typeColor, log.Type, reset,
-				platColor, log.Platform, reset,
+				typeColor, log.Type, resetColor,
+				platColor, log.Platform, resetColor,
 				log.Token,
 				log.Message,
 			)
@@ -261,8 +263,8 @@ func LogPush(status, token string, req PushNotification, errPush error) {
 			}
 
 			output = fmt.Sprintf("|%s %s %s| %s%s%s [%s] | %s | Error Message: %s",
-				typeColor, log.Type, reset,
-				platColor, log.Platform, reset,
+				typeColor, log.Type, resetColor,
+				platColor, log.Platform, resetColor,
 				log.Token,
 				log.Message,
 				log.Error,
