@@ -35,7 +35,7 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 
 ## Features
 
-* Support [Google Cloud Message](https://developers.google.com/cloud-messaging/) using [go-gcm](https://github.com/google/go-gcm) library for Android.
+* Support [Google Cloud Message](https://developers.google.com/cloud-messaging/) ([Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging/) now) using [go-gcm](https://github.com/google/go-gcm) library for Android.
 * Support [HTTP/2](https://http2.github.io/) Apple Push Notification Service using [apns2](https://github.com/sideshow/apns2) library.
 * Support [YAML](https://github.com/go-yaml/yaml) configuration.
 * Support command line to send single Android or iOS notification.
@@ -184,7 +184,7 @@ $ gorush -android -m="your message" -k="API Key" -t="Device token"
 ```
 
 * `-m`: Notification message.
-* `-k`: [Google cloud message](https://developers.google.com/cloud-messaging/) api key
+* `-k`: [Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging/) api key
 * `-t`: Device token.
 * `--proxy`: Set http proxy url. (only working for GCM)
 
