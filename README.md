@@ -443,21 +443,36 @@ Send normal notification.
     {
       "tokens": ["token_a", "token_b"],
       "platform": 1,
-      "message": "Hello World iOS!",
-      "title": "You got message"
+      "message": "Hello World iOS!"
     }
   ]
 ```
 
-The app icon be badged with the number `9` and that a bundled alert sound be played when the notification is delivered.
+The following payload asks the system to display an alert with a Close button and a single action button.The title and body keys provide the contents of the alert. The “PLAY” string is used to retrieve a localized string from the appropriate Localizable.strings file of the app. The resulting string is used by the alert as the title of an action button. This payload also asks the system to badge the app’s icon with the number 5.
 
 ```json
   "notifications": [
     {
       "tokens": ["token_a", "token_b"],
       "platform": 1,
-      "message": "Hello World iOS!",
-      "title": "You got message",
+      "badge": 5,
+      "alert": {
+        "title" : "Game Request",
+        "body" : "Bob wants to play poker",
+        "action-loc-key" : "PLAY"
+      }
+    }
+  ]
+```
+
+The following payload specifies that the device should display an alert message, plays a sound, and badges the app’s icon.
+
+```json
+  "notifications": [
+    {
+      "tokens": ["token_a", "token_b"],
+      "platform": 1,
+      "message": "You got your emails.",
       "badge": 9,
       "sound": "bingbong.aiff"
     }
@@ -472,7 +487,6 @@ Add other fields which user defined via `data` field.
       "tokens": ["token_a", "token_b"],
       "platform": 1,
       "message": "Hello World iOS!",
-      "title": "You got message",
       "data": {
         "key1": "welcome",
         "key2": 2
