@@ -23,8 +23,8 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
   - [iOS alert payload](#ios-alert-payload)
   - [Android notification payload](#android-notification-payload)
   - [iOS Example](#ios-example)
-  - [Android Example](#Android-Example)
-  - [Response body](#Response-body)
+  - [Android Example](#android-example)
+  - [Response body](#response-body)
 - [Run gorush in Docker](#run-gorush-in-docker)
 - [License](#license)
 
