@@ -380,7 +380,7 @@ Request body must has a notifications array. The following is a parameter table 
 |-------------------------|--------------|---------------------------------------------------------------------------------------------------|----------|---------------------------------------------------------------|
 | tokens                  | string array | device tokens                                                                                     | o        |                                                               |
 | platform                | int          | platform(iOS,Android)                                                                             | o        | 1=iOS, 2=Android                                              |
-| message                 | string       | message for notification                                                                          | o        |                                                               |
+| message                 | string       | message for notification                                                                          | -        |                                                               |
 | title                   | string       | notification title                                                                                | -        |                                                               |
 | priority                | string       | Sets the priority of the message.                                                                 | -        | `normal` or `high`                                            |
 | content_available       | bool         | data messages wake the app by default.                                                            | -        |                                                               |
@@ -406,6 +406,8 @@ Request body must has a notifications array. The following is a parameter table 
 
 | name           | type             | description                                                                                      | required | note |
 |----------------|------------------|--------------------------------------------------------------------------------------------------|----------|------|
+| title          | string           | Apple Watch & Safari display this string as part of the notification interface.                  | -        |      |
+| body           | string           | The text of the alert message.                  | -        |      |
 | subtitle       | string           | Apple Watch & Safari display this string as part of the notification interface.                  | -        |      |
 | action         | string           | The label of the action button. This one is required for Safari Push Notifications.              | -        |      |
 | action-loc-key | string           | If a string is specified, the system displays an alert that includes the Close and View buttons. | -        |      |
@@ -415,7 +417,7 @@ Request body must has a notifications array. The following is a parameter table 
 | title-loc-args | array of strings | Variable string values to appear in place of the format specifiers in title-loc-key.             | -        |      |
 | title-loc-key  | string           | The key to a title string in the Localizable.strings file for the current localization.          | -        |      |
 
-See more detail about [APNs Remote Notification Payload](https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/TheNotificationPayload.html#//apple_ref/doc/uid/TP40008194-CH107-SW1).
+See more detail about [APNs Remote Notification Payload](https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/PayloadKeyReference.html#//apple_ref/doc/uid/TP40008194-CH17-SW1).
 
 ### Android notification payload
 
