@@ -216,6 +216,95 @@ func TestCheckSilentNotification(t *testing.T) {
 	assert.Nil(t, dat["aps"].(map[string]interface{})["badge"])
 }
 
+// URL: https://goo.gl/5xFo3C
+// Example 2
+// {
+//     "aps" : {
+//         "alert" : {
+//             "title" : "Game Request",
+//             "body" : "Bob wants to play poker",
+//             "action-loc-key" : "PLAY"
+//         },
+//         "badge" : 5
+//     },
+//     "acme1" : "bar",
+//     "acme2" : [ "bang",  "whiz" ]
+// }
+func TestAlertStringExample2ForIos(t *testing.T) {
+	var dat map[string]interface{}
+
+	test := "test"
+	title := "Game Request"
+	body := "Bob wants to play poker"
+	actionLocKey := "PLAY"
+	req := PushNotification{
+		ApnsID:   test,
+		Topic:    test,
+		Priority: "normal",
+		Alert: Alert{
+			Title:        title,
+			Body:         body,
+			ActionLocKey: actionLocKey,
+		},
+	}
+
+	notification := GetIOSNotification(req)
+
+	dump, _ := json.Marshal(notification.Payload)
+	data := []byte(string(dump))
+
+	if err := json.Unmarshal(data, &dat); err != nil {
+		log.Println(err)
+		panic(err)
+	}
+
+	assert.Equal(t, title, dat["aps"].(map[string]interface{})["alert"].(map[string]interface{})["title"])
+	assert.Equal(t, body, dat["aps"].(map[string]interface{})["alert"].(map[string]interface{})["body"])
+	assert.Equal(t, actionLocKey, dat["aps"].(map[string]interface{})["alert"].(map[string]interface{})["action-loc-key"])
+}
+
+// URL: https://goo.gl/5xFo3C
+// Example 3
+// {
+//     "aps" : {
+//         "alert" : "You got your emails.",
+//         "badge" : 9,
+//         "sound" : "bingbong.aiff"
+//     },
+//     "acme1" : "bar",
+//     "acme2" : 42
+// }
+func TestAlertStringExample3ForIos(t *testing.T) {
+	var dat map[string]interface{}
+
+	test := "test"
+	badge := 9
+	sound := "bingbong.aiff"
+	req := PushNotification{
+		ApnsID:           test,
+		Topic:            test,
+		Priority:         "normal",
+		ContentAvailable: true,
+		Message:          test,
+		Badge:            &badge,
+		Sound:            sound,
+	}
+
+	notification := GetIOSNotification(req)
+
+	dump, _ := json.Marshal(notification.Payload)
+	data := []byte(string(dump))
+
+	if err := json.Unmarshal(data, &dat); err != nil {
+		log.Println(err)
+		panic(err)
+	}
+
+	assert.Equal(t, sound, dat["aps"].(map[string]interface{})["sound"])
+	assert.Equal(t, float64(badge), dat["aps"].(map[string]interface{})["badge"].(float64))
+	assert.Equal(t, test, dat["aps"].(map[string]interface{})["alert"])
+}
+
 func TestIOSAlertNotificationStructure(t *testing.T) {
 	var dat map[string]interface{}
 

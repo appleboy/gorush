@@ -54,7 +54,7 @@ type PushNotification struct {
 	// Common
 	Tokens           []string `json:"tokens" binding:"required"`
 	Platform         int      `json:"platform" binding:"required"`
-	Message          string   `json:"message" binding:"required"`
+	Message          string   `json:"message,omitempty"`
 	Title            string   `json:"title,omitempty"`
 	Priority         string   `json:"priority,omitempty"`
 	ContentAvailable bool     `json:"content_available,omitempty"`
@@ -237,6 +237,10 @@ func iosAlertDictionary(payload *payload.Payload, req PushNotification) *payload
 
 	if len(req.Title) > 0 {
 		payload.AlertTitle(req.Title)
+	}
+
+	if len(req.Alert.Title) > 0 {
+		payload.AlertTitle(req.Alert.Title)
 	}
 
 	// Apple Watch & Safari display this string as part of the notification interface.
