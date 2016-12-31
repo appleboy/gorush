@@ -38,7 +38,7 @@ endif
 	@echo "Already set ANDROID_API_KEY and ANDROID_TEST_TOKEN globale variable."
 
 fmt:
-	go fmt $(PACKAGES)
+	find . -name "*.go" -type f -not -path "./vendor/*" | xargs gofmt -s -w
 
 vet:
 	go vet $(PACKAGES)
