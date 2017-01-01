@@ -1,5 +1,5 @@
-hash: ce7d84552594e98d857bc22c945f0b5512ef909f6e4960614cfa09ab18e1b7d3
-updated: 2017-01-01T13:34:55.969509665+08:00
+hash: 452014b9f7098fdb075926a6b335fceb1d3673f7b77d85ade9b02bc4b992f879
+updated: 2017-01-01T13:46:07.572629753+08:00
 imports:
 - name: github.com/asdine/storm
   version: d068dc26a6cc4f53186cf51c298c863444148242
@@ -120,6 +120,8 @@ imports:
   - unix
 - name: gopkg.in/appleboy/gin-status-api.v1
   version: d41a075a5a6883245b7fdefbefd4fa4d1462e1f1
+- name: gopkg.in/appleboy/gofight.v2
+  version: beadc315fb676177c07a89c34159b9ca4e1aafd9
 - name: gopkg.in/fukata/golang-stats-api-handler.v1
   version: 90f0b59102629831cc109845475a8d77043412ec
 - name: gopkg.in/go-playground/validator.v8
@@ -151,5 +153,3 @@ testImports:
   - assert
   - require
   - suite
-- name: gopkg.in/appleboy/gofight.v1
-  version: beadc315fb676177c07a89c34159b9ca4e1aafd9
