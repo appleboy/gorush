@@ -1,16 +1,17 @@
 package gorush
 
 import (
-	"github.com/appleboy/gorush/config"
-	"github.com/buger/jsonparser"
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
-	"gopkg.in/appleboy/gofight.v1"
 	"net/http"
 	"os"
 	"runtime"
 	"testing"
 	"time"
+
+	"github.com/appleboy/gorush/config"
+	"github.com/buger/jsonparser"
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
+	"gopkg.in/appleboy/gofight.v2"
 )
 
 var goVersion = runtime.Version()
