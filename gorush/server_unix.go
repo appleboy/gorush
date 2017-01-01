@@ -25,7 +25,8 @@ func RunHTTPServer() error {
 		config.Certificates = make([]tls.Certificate, 1)
 		config.Certificates[0], err = tls.LoadX509KeyPair(PushConf.Core.CertPath, PushConf.Core.KeyPath)
 		if err != nil {
-			LogError.Fatal("Failed to load https cert file: ", err)
+			LogError.Error("Failed to load https cert file: ", err)
+			return err
 		}
 
 		err = gracehttp.Serve(&http.Server{
