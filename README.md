@@ -40,7 +40,7 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 * Support [YAML](https://github.com/go-yaml/yaml) configuration.
 * Support command line to send single Android or iOS notification.
 * Support Web API to send push notification.
-* Support zero downtime restarts for go servers using [endless](https://github.com/fvbock/endless).
+* Support graceful restart & zero downtime deploy using [facebook grace](https://github.com/facebookgo/grace).
 * Support [HTTP/2](https://http2.github.io/) or HTTP/1.1 protocol.
 * Support notification queue and multiple workers.
 * Support `/api/stat/app` show notification success and failure counts.
