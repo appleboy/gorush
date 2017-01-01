@@ -63,6 +63,17 @@ func TestRunTLSServer(t *testing.T) {
 	gofight.TestRequest(t, "https://localhost:8087/api/stat/go")
 }
 
+func TestLoadTLSCertError(t *testing.T) {
+	initTest()
+
+	PushConf.Core.SSL = true
+	PushConf.Core.Port = "8087"
+	PushConf.Core.CertPath = "../config/config.yml"
+	PushConf.Core.KeyPath = "../config/config.yml"
+
+	assert.Error(t, RunHTTPServer())
+}
+
 func TestRootHandler(t *testing.T) {
 	initTest()
 
