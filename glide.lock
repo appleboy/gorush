@@ -1,16 +1,34 @@
-hash: 54ead355ba6aeef8f2ea2ea1b5a473e2ce21371831e06355001dbc9b4dc18e22
-updated: 2016-12-14T22:43:06.161105893+08:00
+hash: ce7d84552594e98d857bc22c945f0b5512ef909f6e4960614cfa09ab18e1b7d3
+updated: 2017-01-01T13:34:55.969509665+08:00
 imports:
 - name: github.com/asdine/storm
-  version: 00b2f2df7ab7af9db746b826649395628cb5374e
+  version: d068dc26a6cc4f53186cf51c298c863444148242
   subpackages:
   - codec
-  - codec/gob
+  - codec/json
   - index
+  - internal
+  - q
 - name: github.com/boltdb/bolt
   version: acc803f0ced151102ed51bf824f8709ebd6602bc
-- name: github.com/fvbock/endless
-  version: 2cdc20a776897c0f406853c048c33e2c1a9f0ebf
+- name: github.com/emirpasic/gods
+  version: ec46b0116df083cba218abbf72522c6d0c065e4e
+  subpackages:
+  - containers
+  - trees
+  - trees/redblacktree
+  - utils
+- name: github.com/facebookgo/clock
+  version: 600d898af40aa09a7a93ecb9265d87b0504b6f03
+- name: github.com/facebookgo/grace
+  version: 5729e484473f52048578af1b80d0008c7024089b
+  subpackages:
+  - gracehttp
+  - gracenet
+- name: github.com/facebookgo/httpdown
+  version: a3b1354551a26449fbe05f5d855937f6e7acbd71
+- name: github.com/facebookgo/stats
+  version: 1b76add642e42c6ffba7211ad7b3939ce654526e
 - name: github.com/gin-gonic/gin
   version: e2212d40c62a98b388a5eb48ecbdcf88534688ba
   subpackages:
@@ -35,12 +53,12 @@ imports:
 - name: github.com/pborman/uuid
   version: c55201b036063326c5b1b89ccfe45a184973d073
 - name: github.com/sideshow/apns2
-  version: eacc6af2afb61c660381cd3b75a6ecc2fefffcdc
+  version: 873d6f531482befe8177997be72eacf61c72d5a2
   subpackages:
   - certificate
   - payload
 - name: github.com/Sirupsen/logrus
-  version: 4b6ea7319e214d98c938f12692336f7ca9348d6b
+  version: d26492970760ca5d33129d2d799e34be5c4782eb
 - name: github.com/syndtr/goleveldb
   version: 6ae1797c0b42b9323fc27ff7dcf568df88f2f33d
   subpackages:
@@ -102,18 +120,15 @@ imports:
   - unix
 - name: gopkg.in/appleboy/gin-status-api.v1
   version: d41a075a5a6883245b7fdefbefd4fa4d1462e1f1
-- name: gopkg.in/bsm/ratelimit.v1
-  version: db14e161995a5177acef654cb0dd785e8ee8bc22
 - name: gopkg.in/fukata/golang-stats-api-handler.v1
   version: 90f0b59102629831cc109845475a8d77043412ec
 - name: gopkg.in/go-playground/validator.v8
   version: c193cecd124b5cc722d7ee5538e945bdb3348435
-- name: gopkg.in/redis.v4
-  version: 938235994ea88a05678f8060741d5f34ed6a5ff3
+- name: gopkg.in/redis.v5
+  version: 8fcba2ea878201b70c5a63dd416141d4ddbc601a
   subpackages:
   - internal
   - internal/consistenthash
-  - internal/errors
   - internal/hashtag
   - internal/pool
   - internal/proto
@@ -126,30 +141,15 @@ testImports:
   version: 5215b55f46b2b919f50a1df0eaa5886afe4e3b3d
   subpackages:
   - spew
-- name: github.com/labstack/echo
-  version: 451b2ccc9ffda7fd7fad2027b75d93b18ff87cbe
-  subpackages:
-  - engine
-  - log
-  - test
-- name: github.com/labstack/gommon
-  version: 722aa12d41c236ce78ff48eac1cafe0107ecdc9d
-  subpackages:
-  - color
-  - log
-- name: github.com/mattn/go-colorable
-  version: 9056b7a9f2d1f2d96498d6d146acd1f9d5ed3d59
 - name: github.com/pmezard/go-difflib
   version: 792786c7400a136282c1664665ae0a8db921c6c2
   subpackages:
   - difflib
 - name: github.com/stretchr/testify
-  version: f390dcf405f7b83c997eac1b06768bb9f44dec18
+  version: 69483b4bd14f5845b5a1e55bca19e954e827f1d0
   subpackages:
   - assert
   - require
   - suite
-- name: github.com/valyala/fasttemplate
-  version: 3b874956e03f1636d171bda64b130f9135f42cff
 - name: gopkg.in/appleboy/gofight.v1
-  version: 1a36a6d5ab10fba252a9cbecb1bcb72f9a2e6770
+  version: beadc315fb676177c07a89c34159b9ca4e1aafd9
