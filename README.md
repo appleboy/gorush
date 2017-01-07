@@ -161,6 +161,7 @@ Server Options:
     -m, --message <message>          Notification message
     -t, --token <token>              Notification token
     --proxy <proxy>                  Proxy URL (only for GCM)
+    --pid <pid path>                 Process identifier path
 iOS Options:
     -i, --key <file>                 certificate key file path
     -P, --password <password>        certificate key password
