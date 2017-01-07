@@ -72,8 +72,7 @@ func createPIDFile() error {
 			return fmt.Errorf("Can't create PID file: %v", err)
 		}
 		defer file.Close()
-		_, err = file.WriteString(strconv.FormatInt(int64(currentPid), 10))
-		if err != nil {
+		if _, err := file.WriteString(strconv.FormatInt(int64(currentPid), 10)); err != nil {
 			return fmt.Errorf("Can'write PID information on %s: %v", gorush.PushConf.Core.PID.Path, err)
 		}
 	} else {
