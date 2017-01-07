@@ -36,10 +36,11 @@ Usage: gorush [options]
 
 Server Options:
     -p, --port <port>                Use port for clients (default: 8088)
-    -c, --config <file>              Configuration file
+    -c, --config <file>              Configuration file path
     -m, --message <message>          Notification message
     -t, --token <token>              Notification token
     --proxy <proxy>                  Proxy URL (only for GCM)
+    --pid <pid path>                 Process identifier path
 iOS Options:
     -i, --key <file>                 certificate key file path
     -P, --password <password>        certificate key password
@@ -93,8 +94,9 @@ func main() {
 
 	flag.BoolVar(&showVersion, "version", false, "Print version information.")
 	flag.BoolVar(&showVersion, "v", false, "Print version information.")
-	flag.StringVar(&configFile, "c", "", "Configuration file.")
-	flag.StringVar(&configFile, "config", "", "Configuration file.")
+	flag.StringVar(&configFile, "c", "", "Configuration file path.")
+	flag.StringVar(&configFile, "config", "", "Configuration file path.")
+	flag.StringVar(&opts.Core.PID.Path, "pid", "", "PID file path.")
 	flag.StringVar(&opts.Ios.KeyPath, "i", "", "iOS certificate key file path")
 	flag.StringVar(&opts.Ios.KeyPath, "key", "", "iOS certificate key file path")
 	flag.StringVar(&opts.Ios.Password, "P", "", "iOS certificate password for gorush")
@@ -235,6 +237,12 @@ func main() {
 
 	if err = gorush.CheckPushConf(); err != nil {
 		gorush.LogError.Fatal(err)
+	}
+
+	if opts.Core.PID.Path != "" {
+		gorush.PushConf.Core.PID.Path = opts.Core.PID.Path
+		gorush.PushConf.Core.PID.Enabled = true
+		gorush.PushConf.Core.PID.Override = true
 	}
 
 	if err = createPIDFile(); err != nil {

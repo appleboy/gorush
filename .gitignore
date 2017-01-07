@@ -25,17 +25,14 @@ _testmain.go
 
 gin-bin
 key.pem
-config.yml
 bin/*
 .DS_Store
 gorush/log/*.log
-build.tar.gz
-gorush.tar.gz
 gorush.db
 vendor
 Dockerfile.tmp
 .cover
-*.pid
 *.db*
 coverage.txt
 dist
+custom
