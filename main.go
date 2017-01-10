@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"strconv"
 
 	"github.com/appleboy/gorush/config"
@@ -65,19 +66,25 @@ func createPIDFile() error {
 	if !gorush.PushConf.Core.PID.Enabled {
 		return nil
 	}
-	_, err := os.Stat(gorush.PushConf.Core.PID.Path)
+
+	pidPath := gorush.PushConf.Core.PID.Path
+	_, err := os.Stat(pidPath)
 	if os.IsNotExist(err) || gorush.PushConf.Core.PID.Override {
 		currentPid := os.Getpid()
-		file, err := os.Create(gorush.PushConf.Core.PID.Path)
+		if err := os.MkdirAll(filepath.Dir(pidPath), os.ModePerm); err != nil {
+			return fmt.Errorf("Can't create PID folder on %v", err)
+		}
+
+		file, err := os.Create(pidPath)
 		if err != nil {
 			return fmt.Errorf("Can't create PID file: %v", err)
 		}
 		defer file.Close()
 		if _, err := file.WriteString(strconv.FormatInt(int64(currentPid), 10)); err != nil {
-			return fmt.Errorf("Can'write PID information on %s: %v", gorush.PushConf.Core.PID.Path, err)
+			return fmt.Errorf("Can'write PID information on %s: %v", pidPath, err)
 		}
 	} else {
-		return fmt.Errorf("%s already exists", gorush.PushConf.Core.PID.Path)
+		return fmt.Errorf("%s already exists", pidPath)
 	}
 	return nil
 }
