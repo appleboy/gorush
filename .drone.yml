@@ -2,6 +2,10 @@ workspace:
   path: /go/src/github.com/appleboy/gorush
 
 pipeline:
+  clone:
+    image: plugins/git
+    tags: true
+
   # restore the cache from an sftp server
   restore_cache:
     image: appleboy/drone-sftp-cache
