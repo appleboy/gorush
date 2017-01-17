@@ -11,7 +11,7 @@ ARCHS ?= amd64 386
 PACKAGES ?= $(shell go list ./... | grep -v /vendor/)
 SOURCES ?= $(shell find . -name "*.go" -type f)
 TAGS ?=
-LDFLAGS += -X 'main.Version=$(VERSION)'
+LDFLAGS ?= -X 'main.Version=$(VERSION)'
 
 ifneq ($(shell uname), Darwin)
 	EXTLDFLAGS = -extldflags "-static" $(null)
@@ -126,6 +126,11 @@ ifeq ($(tag),)
 endif
 	docker tag $(DEPLOY_ACCOUNT)/$(EXECUTABLE):latest $(DEPLOY_ACCOUNT)/$(EXECUTABLE):$(tag)
 	docker push $(DEPLOY_ACCOUNT)/$(EXECUTABLE):$(tag)
+
+coverage:
+	curl -s https://codecov.io/bash > .codecov && \
+	chmod +x .codecov && \
+	./.codecov -f .cover/coverage.txt
 
 clean:
 	go clean -x -i ./...

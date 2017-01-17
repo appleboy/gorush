@@ -24,9 +24,7 @@ pipeline:
       - make build
       - coverage all
       # send coverage report
-      - curl -s https://codecov.io/bash > .codecov &&
-        chmod +x .codecov &&
-        ./.codecov -t ${CODECOV_TOKEN} -f .cover/coverage.txt
+      - make coverage
       # build binary for docker image
       - make docker_build
 
