@@ -7,7 +7,7 @@ import (
 const namespace = "gorush_"
 
 // Metrics implements the prometheus.Metrics interface and
-// exposes gitea metrics for prometheus
+// exposes gorush metrics for prometheus
 type Metrics struct {
 	TotalPushCount *prometheus.Desc
 	IosSuccess     *prometheus.Desc
