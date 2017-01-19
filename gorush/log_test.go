@@ -1,10 +1,11 @@
 package gorush
 
 import (
+	"testing"
+
 	"github.com/Sirupsen/logrus"
 	"github.com/appleboy/gorush/config"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestSetLogLevel(t *testing.T) {

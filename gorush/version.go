@@ -2,8 +2,9 @@ package gorush
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"runtime"
+
+	"github.com/gin-gonic/gin"
 )
 
 var version string

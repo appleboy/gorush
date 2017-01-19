@@ -2,9 +2,10 @@ package leveldb
 
 import (
 	"fmt"
+	"strconv"
+
 	"github.com/appleboy/gorush/config"
 	"github.com/syndtr/goleveldb/leveldb"
-	"strconv"
 )
 
 // Stat variable for redis

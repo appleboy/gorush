@@ -3,14 +3,15 @@ package gorush
 import (
 	"errors"
 	"fmt"
-	"github.com/google/go-gcm"
-	apns "github.com/sideshow/apns2"
-	"github.com/sideshow/apns2/certificate"
-	"github.com/sideshow/apns2/payload"
 	"net/http"
 	"net/url"
 	"path/filepath"
 	"time"
+
+	"github.com/google/go-gcm"
+	apns "github.com/sideshow/apns2"
+	"github.com/sideshow/apns2/certificate"
+	"github.com/sideshow/apns2/payload"
 )
 
 // D provide string array

@@ -1,10 +1,11 @@
 package leveldb
 
 import (
-	c "github.com/appleboy/gorush/config"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
+
+	c "github.com/appleboy/gorush/config"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestLevelDBEngine(t *testing.T) {

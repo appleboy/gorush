@@ -1,10 +1,11 @@
 package buntdb
 
 import (
-	c "github.com/appleboy/gorush/config"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
+
+	c "github.com/appleboy/gorush/config"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestBuntDBEngine(t *testing.T) {

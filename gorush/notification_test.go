@@ -2,15 +2,16 @@ package gorush
 
 import (
 	"encoding/json"
+	"log"
+	"os"
+	"testing"
+	"time"
+
 	"github.com/appleboy/gorush/config"
 	"github.com/buger/jsonparser"
 	"github.com/google/go-gcm"
 	"github.com/sideshow/apns2"
 	"github.com/stretchr/testify/assert"
-	"log"
-	"os"
-	"testing"
-	"time"
 )
 
 func TestDisabledAndroidIosConf(t *testing.T) {

@@ -2,9 +2,10 @@ package buntdb
 
 import (
 	"fmt"
+	"strconv"
+
 	"github.com/appleboy/gorush/config"
 	"github.com/tidwall/buntdb"
-	"strconv"
 )
 
 // Stat variable for redis

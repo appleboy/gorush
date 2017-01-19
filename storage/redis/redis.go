@@ -1,10 +1,11 @@
 package redis
 
 import (
-	"github.com/appleboy/gorush/config"
-	"gopkg.in/redis.v5"
 	"log"
 	"strconv"
+
+	"github.com/appleboy/gorush/config"
+	"gopkg.in/redis.v5"
 )
 
 // Stat variable for redis

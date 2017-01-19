@@ -1,9 +1,10 @@
 package boltdb
 
 import (
+	"testing"
+
 	c "github.com/appleboy/gorush/config"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestBoltDBEngine(t *testing.T) {

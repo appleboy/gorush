@@ -1,9 +1,10 @@
 package redis
 
 import (
+	"testing"
+
 	c "github.com/appleboy/gorush/config"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestRedisServerError(t *testing.T) {
