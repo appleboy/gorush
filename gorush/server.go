@@ -2,10 +2,19 @@ package gorush
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	api "gopkg.in/appleboy/gin-status-api.v1"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	api "gopkg.in/appleboy/gin-status-api.v1"
 )
+
+func init() {
+	// Support metrics
+	m := NewMetrics()
+	prometheus.MustRegister(m)
+}
 
 func abortWithError(c *gin.Context, code int, message string) {
 	c.JSON(code, gin.H{
@@ -58,6 +67,10 @@ func configHandler(c *gin.Context) {
 	c.YAML(http.StatusCreated, PushConf)
 }
 
+func metricsHandler(c *gin.Context) {
+	promhttp.Handler().ServeHTTP(c.Writer, c.Request)
+}
+
 func routerEngine() *gin.Engine {
 	// set server mode
 	gin.SetMode(PushConf.Core.Mode)
@@ -76,6 +89,7 @@ func routerEngine() *gin.Engine {
 	r.GET(PushConf.API.ConfigURI, configHandler)
 	r.GET(PushConf.API.SysStatURI, sysStatsHandler)
 	r.POST(PushConf.API.PushURI, pushHandler)
+	r.GET(PushConf.API.MetricURI, metricsHandler)
 	r.GET("/", rootHandler)
 
 	return r

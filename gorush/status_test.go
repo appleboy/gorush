@@ -2,6 +2,7 @@ package gorush
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -13,6 +14,9 @@ func TestStorageDriverExist(t *testing.T) {
 }
 
 func TestStatForMemoryEngine(t *testing.T) {
+	// wait android push notification response.
+	time.Sleep(5 * time.Second)
+
 	var val int64
 	PushConf.Stat.Engine = "memory"
 	InitAppStatus()
