@@ -1,13 +1,14 @@
 package config
 
 import (
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/suite"
 	"io/ioutil"
 	"log"
 	"os"
 	"runtime"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
 )
 
 // Test file is missing
@@ -74,6 +75,7 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 	assert.Equal(suite.T(), "/api/stat/app", suite.ConfGorushDefault.API.StatAppURI)
 	assert.Equal(suite.T(), "/api/config", suite.ConfGorushDefault.API.ConfigURI)
 	assert.Equal(suite.T(), "/sys/stats", suite.ConfGorushDefault.API.SysStatURI)
+	assert.Equal(suite.T(), "/metrics", suite.ConfGorushDefault.API.MetricURI)
 
 	// Android
 	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Android.Enabled)
@@ -129,6 +131,7 @@ func (suite *ConfigTestSuite) TestValidateConf() {
 	assert.Equal(suite.T(), "/api/stat/app", suite.ConfGorush.API.StatAppURI)
 	assert.Equal(suite.T(), "/api/config", suite.ConfGorush.API.ConfigURI)
 	assert.Equal(suite.T(), "/sys/stats", suite.ConfGorush.API.SysStatURI)
+	assert.Equal(suite.T(), "/metrics", suite.ConfGorush.API.MetricURI)
 
 	// Android
 	assert.Equal(suite.T(), true, suite.ConfGorush.Android.Enabled)

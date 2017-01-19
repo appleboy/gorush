@@ -233,3 +233,14 @@ func TestSysStatsHandler(t *testing.T) {
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }
+
+func TestMetricsHandler(t *testing.T) {
+	initTest()
+
+	r := gofight.New()
+
+	r.GET("/metrics").
+		Run(routerEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+			assert.Equal(t, http.StatusOK, r.Code)
+		})
+}
