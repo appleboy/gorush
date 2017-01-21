@@ -50,6 +50,7 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 * Support `/sys/stats` show response time, status code count, etc.
 * Support for HTTP proxy to Google server (GCM).
 * Support retry send notification if server response is fail.
+* Support expose [prometheus](https://prometheus.io/) metrics.
 
 See the [YAML config example](config/config.yml):
 
@@ -75,6 +76,7 @@ api:
   stat_app_uri: "/api/stat/app"
   config_uri: "/api/config"
   sys_stat_uri: "/sys/stats"
+  metric_uri: "/metrics"
 
 android:
   enabled: true
@@ -160,6 +162,7 @@ Server Options:
     -c, --config <file>              Configuration file
     -m, --message <message>          Notification message
     -t, --token <token>              Notification token
+    --title <title>                  Notification title
     --proxy <proxy>                  Proxy URL (only for GCM)
     --pid <pid path>                 Process identifier path
 iOS Options:
@@ -187,6 +190,7 @@ $ gorush -android -m="your message" -k="API Key" -t="Device token"
 * `-m`: Notification message.
 * `-k`: [Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging/) api key
 * `-t`: Device token.
+* `--title`: Notification title.
 * `--proxy`: Set http proxy url. (only working for GCM)
 
 ### Send iOS notification
@@ -200,8 +204,9 @@ $ gorush -ios -m="your message" -i="your certificate path" -t="device token" -to
 * `-m`: Notification message.
 * `-i`: Apple Push Notification Certificate path (`pem` or `p12` file).
 * `-t`: Device token.
-* `-topic`: The topic of the remote notification.
-* `-password`: The certificate password.
+* `--title`: Notification title.
+* `--topic`: The topic of the remote notification.
+* `--password`: The certificate password.
 
 The default endpoint is APNs development. Please add `-production` flag for APNs production push endpoint.
 
@@ -315,6 +320,12 @@ Show response time, status code count, etc.
   "average_response_time_sec": 0.0020844880000000002
 }
 ```
+
+### GET /metrics
+
+Support expose [prometheus](https://prometheus.io/) metrics.
+
+![metrics screenshot](screenshot/metrics.png)
 
 ### POST /api/push
 
