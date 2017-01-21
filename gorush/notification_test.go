@@ -407,6 +407,16 @@ func TestAndroidNotificationStructure(t *testing.T) {
 	assert.Equal(t, "Welcome", notification.Notification.Body)
 	assert.Equal(t, "1", notification.Data["a"])
 	assert.Equal(t, 2, notification.Data["b"])
+
+	// test empty body
+	req = PushNotification{
+		Tokens: []string{"a", "b"},
+		To:     test,
+	}
+	notification = GetAndroidNotification(req)
+
+	assert.Equal(t, test, notification.To)
+	assert.Equal(t, "", notification.Notification.Body)
 }
 
 func TestPushToIOS(t *testing.T) {
@@ -653,14 +663,6 @@ func TestAPNSClientProdHost(t *testing.T) {
 func TestGCMMessage(t *testing.T) {
 	var req PushNotification
 	var err error
-
-	// the message must not be empty
-	req = PushNotification{
-		Message: "",
-	}
-
-	err = CheckMessage(req)
-	assert.Error(t, err)
 
 	// the message must specify at least one registration ID
 	req = PushNotification{

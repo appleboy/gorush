@@ -86,11 +86,6 @@ type PushNotification struct {
 // CheckMessage for check request message
 func CheckMessage(req PushNotification) error {
 	var msg string
-	if req.Message == "" {
-		msg = "the message must not be empty"
-		LogAccess.Debug(msg)
-		return errors.New(msg)
-	}
 
 	if len(req.Tokens) == 0 {
 		msg = "the message must specify at least one registration ID"
@@ -432,7 +427,7 @@ func GetAndroidNotification(req PushNotification) gcm.HttpMessage {
 	notification.Notification = &req.Notification
 
 	// Set request message if body is empty
-	if len(notification.Notification.Body) == 0 {
+	if len(req.Message) > 0 {
 		notification.Notification.Body = req.Message
 	}
 
