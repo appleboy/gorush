@@ -40,6 +40,7 @@ Server Options:
     -c, --config <file>              Configuration file path
     -m, --message <message>          Notification message
     -t, --token <token>              Notification token
+    --title <title>                  Notification title
     --proxy <proxy>                  Proxy URL (only for GCM)
     --pid <pid path>                 Process identifier path
 iOS Options:
@@ -98,6 +99,7 @@ func main() {
 	var message string
 	var token string
 	var proxy string
+	var title string
 
 	flag.BoolVar(&showVersion, "version", false, "Print version information.")
 	flag.BoolVar(&showVersion, "v", false, "Print version information.")
@@ -116,6 +118,7 @@ func main() {
 	flag.StringVar(&token, "token", "", "token string")
 	flag.StringVar(&message, "m", "", "notification message")
 	flag.StringVar(&message, "message", "", "notification message")
+	flag.StringVar(&title, "title", "", "notification title")
 	flag.BoolVar(&opts.Android.Enabled, "android", false, "send android notification")
 	flag.BoolVar(&opts.Ios.Enabled, "ios", false, "send ios notification")
 	flag.BoolVar(&opts.Ios.Production, "production", false, "production mode in iOS")
@@ -198,6 +201,7 @@ func main() {
 			Tokens:   []string{token},
 			Platform: gorush.PlatFormAndroid,
 			Message:  message,
+			Title:    title,
 		}
 
 		err := gorush.CheckMessage(req)
@@ -223,6 +227,7 @@ func main() {
 			Tokens:   []string{token},
 			Platform: gorush.PlatFormIos,
 			Message:  message,
+			Title:    title,
 		}
 
 		if topic != "" {
