@@ -182,5 +182,13 @@ func LoadConfYaml(confPath string) (ConfYaml, error) {
 		return config, err
 	}
 
+	if config.Core.WorkerNum == int64(0) {
+		config.Core.WorkerNum = int64(runtime.NumCPU())
+	}
+
+	if config.Core.QueueNum == int64(0) {
+		config.Core.QueueNum = int64(8192)
+	}
+
 	return config, nil
 }

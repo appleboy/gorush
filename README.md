@@ -57,8 +57,10 @@ See the [YAML config example](config/config.yml):
 ```yaml
 core:
   port: "8088"
-  worker_num: 8
-  queue_num: 8192
+  # default worker number is runtime.NumCPU()
+  worker_num: 0
+  # default queue number is 8192
+  queue_num: 0
   max_notification: 100
   mode: "release"
   ssl: false
