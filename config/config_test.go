@@ -112,7 +112,7 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 func (suite *ConfigTestSuite) TestValidateConf() {
 	// Core
 	assert.Equal(suite.T(), "8088", suite.ConfGorush.Core.Port)
-	assert.Equal(suite.T(), int64(8), suite.ConfGorush.Core.WorkerNum)
+	assert.Equal(suite.T(), int64(runtime.NumCPU()), suite.ConfGorush.Core.WorkerNum)
 	assert.Equal(suite.T(), int64(8192), suite.ConfGorush.Core.QueueNum)
 	assert.Equal(suite.T(), "release", suite.ConfGorush.Core.Mode)
 	assert.Equal(suite.T(), false, suite.ConfGorush.Core.SSL)
