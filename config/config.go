@@ -176,7 +176,7 @@ func LoadConfYaml(confPath string) (ConfYaml, error) {
 		return config, err
 	}
 
-	err = yaml.Unmarshal([]byte(configFile), &config)
+	err = yaml.Unmarshal(configFile, &config)
 
 	if err != nil {
 		return config, err

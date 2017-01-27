@@ -274,9 +274,9 @@ func LogPush(status, token string, req PushNotification, errPush error) {
 
 	switch status {
 	case SucceededPush:
-		LogAccess.Info(string(output))
+		LogAccess.Info(output)
 	case FailedPush:
-		LogError.Error(string(output))
+		LogError.Error(output)
 	}
 }
 
