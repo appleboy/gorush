@@ -56,6 +56,12 @@ lint:
 	fi
 	for PKG in $(PACKAGES); do golint -set_exit_status $$PKG || exit 1; done;
 
+unconvert:
+	@which unconvert > /dev/null; if [ $$? -ne 0 ]; then \
+		go get -u github.com/mdempsky/unconvert; \
+	fi
+	for PKG in $(PACKAGES); do unconvert -v $$PKG || exit 1; done;
+
 dep_install:
 	glide install
 
