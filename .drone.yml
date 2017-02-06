@@ -39,7 +39,7 @@ pipeline:
       event: [ tag ]
       branch: [ refs/tags/* ]
       matrix:
-        GO_VERSION: 1.7.4
+        GO_VERSION: 1.7.5
 
   docker:
     image: plugins/docker
@@ -64,7 +64,7 @@ pipeline:
     when:
       status: [ success, failure ]
       matrix:
-        GO_VERSION: 1.7.4
+        GO_VERSION: 1.7.5
 
   github:
     image: plugins/github-release
@@ -74,7 +74,7 @@ pipeline:
       event: [ tag ]
       branch: [ refs/tags/* ]
       matrix:
-        GO_VERSION: 1.7.4
+        GO_VERSION: 1.7.5
 
   # rebuild the cache on the sftp server
   rebuild_cache:
@@ -85,7 +85,7 @@ pipeline:
     when:
       branch: master
       matrix:
-        GO_VERSION: 1.7.4
+        GO_VERSION: 1.7.5
 
 services:
   redis:
@@ -93,5 +93,5 @@ services:
 
 matrix:
   GO_VERSION:
-    - 1.7.4
+    - 1.7.5
     - 1.6.4
