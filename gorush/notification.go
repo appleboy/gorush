@@ -74,13 +74,14 @@ type PushNotification struct {
 	Notification          gcm.Notification `json:"notification,omitempty"`
 
 	// iOS
-	Expiration int64    `json:"expiration,omitempty"`
-	ApnsID     string   `json:"apns_id,omitempty"`
-	Topic      string   `json:"topic,omitempty"`
-	Badge      *int     `json:"badge,omitempty"`
-	Category   string   `json:"category,omitempty"`
-	URLArgs    []string `json:"url-args,omitempty"`
-	Alert      Alert    `json:"alert,omitempty"`
+	Expiration     int64    `json:"expiration,omitempty"`
+	ApnsID         string   `json:"apns_id,omitempty"`
+	Topic          string   `json:"topic,omitempty"`
+	Badge          *int     `json:"badge,omitempty"`
+	Category       string   `json:"category,omitempty"`
+	URLArgs        []string `json:"url-args,omitempty"`
+	Alert          Alert    `json:"alert,omitempty"`
+	MutableContent bool     `json:"mutable-content,omitempty"`
 }
 
 // CheckMessage for check request message
@@ -312,6 +313,10 @@ func GetIOSNotification(req PushNotification) *apns.Notification {
 	// zero value for clear the badge on the app icon.
 	if req.Badge != nil && *req.Badge >= 0 {
 		payload.Badge(*req.Badge)
+	}
+
+	if req.MutableContent {
+		payload.MutableContent()
 	}
 
 	if len(req.Sound) > 0 {
