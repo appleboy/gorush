@@ -1,4 +1,4 @@
-package: github.com/appleboy/gorush
+package: github.com/jaraxasoftware/gorush
 import:
 - package: github.com/Sirupsen/logrus
   version: ^0.11.0

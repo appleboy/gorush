@@ -4,7 +4,7 @@ import (
 	"crypto/tls"
 
 	"github.com/Sirupsen/logrus"
-	"github.com/appleboy/gorush/config"
+	"github.com/jaraxasoftware/gorush/config"
 	apns "github.com/sideshow/apns2"
 )
 

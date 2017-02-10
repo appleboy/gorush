@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/appleboy/gorush/config"
+	"github.com/jaraxasoftware/gorush/config"
 	"github.com/buger/jsonparser"
 	"github.com/google/go-gcm"
 	"github.com/sideshow/apns2"

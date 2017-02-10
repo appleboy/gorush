@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/appleboy/gorush/config"
+	"github.com/jaraxasoftware/gorush/config"
 	"github.com/syndtr/goleveldb/leveldb"
 )
 

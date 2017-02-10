@@ -3,7 +3,7 @@
 DIST := dist
 EXECUTABLE := gorush
 
-DEPLOY_ACCOUNT := appleboy
+DEPLOY_ACCOUNT := jaraxasoftware
 DEPLOY_IMAGE := $(EXECUTABLE)
 
 TARGETS ?= linux darwin windows
