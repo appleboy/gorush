@@ -1,8 +1,8 @@
-hash: c60a490412b9aa452b4adf49ae6b15499e8b41256c664b3ad586ae1a3ee0d453
-updated: 2017-01-19T12:06:41.763509116+08:00
+hash: 1d53f3e0071e8efc2c94d89a1b3da19c411ee780a65c029e1682e6756f39e355
+updated: 2017-02-10T12:24:04.337257101+08:00
 imports:
 - name: github.com/asdine/storm
-  version: faf2c5d33aa0f572fa56e03de17c87b278b976c6
+  version: c40e8d95426a80b23797ca9818ff2142a9401ddf
   subpackages:
   - codec
   - codec/json
@@ -14,9 +14,9 @@ imports:
   subpackages:
   - quantile
 - name: github.com/boltdb/bolt
-  version: a705895fdad108f053eae7ee011ed94a0541ee13
+  version: e9cf4fae01b5a8ff89d0ec6b32f0d9c9f79aefdd
 - name: github.com/emirpasic/gods
-  version: ec46b0116df083cba218abbf72522c6d0c065e4e
+  version: fc3e4a43ff31b0accc20d750d64ea4b45ee61a5e
   subpackages:
   - containers
   - trees
@@ -53,7 +53,7 @@ imports:
 - name: github.com/mattn/go-isatty
   version: 3a115632dcd687f9c8cd01679c83a06a0e21c1f3
 - name: github.com/mattn/go-xmpp
-  version: f4550b5399387339df5ce4c3f88c1ef85333bdd5
+  version: 325c112042ffd34aa24365590d3a6fdd1a79c011
 - name: github.com/matttproud/golang_protobuf_extensions
   version: c12348ce28de40eed0136aa2b644d0ee0650e56c
   subpackages:
@@ -76,14 +76,14 @@ imports:
   - internal/bitbucket.org/ww/goautoneg
   - model
 - name: github.com/prometheus/procfs
-  version: fcdb11ccb4389efb1b210b7ffb623ab71c5fdd60
+  version: 1878d9fbb537119d24b21ca07effd591627cd160
 - name: github.com/sideshow/apns2
   version: c23f4b07d9e47aa490ff76001001decc688243f8
   subpackages:
   - certificate
   - payload
 - name: github.com/Sirupsen/logrus
-  version: d26492970760ca5d33129d2d799e34be5c4782eb
+  version: c078b1e43f58d563c74cebe63c85789e76ddb627
 - name: github.com/syndtr/goleveldb
   version: 23851d93a2292dcc56e71a18ec9e0624d84a0f65
   subpackages:
@@ -106,7 +106,7 @@ imports:
 - name: github.com/tidwall/buntdb
   version: 74dc10171b7549022c818bd212a9ddea151db02e
 - name: github.com/tidwall/gjson
-  version: e3f249f4fdf33c278edeb770426a6f83c954ae64
+  version: 09d1c5c5bc64e094394dfe2150220d906c55ac37
 - name: github.com/tidwall/grect
   version: ba9a043346eba55344e40d66a5e74cfda3a9d293
 - name: github.com/tidwall/match
@@ -114,7 +114,7 @@ imports:
 - name: github.com/tidwall/rtree
   version: d4a8a3d30d5729f85edfba1745241f3a621d0359
 - name: golang.org/x/crypto
-  version: c3b1d0d6d8690eaebe3064711b026770cc37efa3
+  version: 453249f01cfeb54c3d549ddb75ff152ca243f9d8
   subpackages:
   - pkcs12
   - pkcs12/internal/rc2
@@ -125,7 +125,7 @@ imports:
   - http2
   - http2/hpack
 - name: golang.org/x/sys
-  version: 8f0908ab3b2457e2e15403d3697c9ef5cb4b57a9
+  version: 7a6e5648d140666db5d920909e082ca00a87ba2c
   subpackages:
   - unix
 - name: gopkg.in/appleboy/gin-status-api.v1
@@ -137,7 +137,7 @@ imports:
 - name: gopkg.in/go-playground/validator.v8
   version: c193cecd124b5cc722d7ee5538e945bdb3348435
 - name: gopkg.in/redis.v5
-  version: 8829ddcd8bdb333e477cc845946c4b9b2ef66280
+  version: 2fe9c5cc0a8da9faeba3a45511a4ece8f7e37dc2
   subpackages:
   - internal
   - internal/consistenthash
@@ -145,10 +145,10 @@ imports:
   - internal/pool
   - internal/proto
 - name: gopkg.in/yaml.v2
-  version: 31c299268d302dd0aa9a0dcf765a3d58971ac83f
+  version: a3f3340b5840cee44f372bddb5880fcbc419b46a
 testImports:
 - name: github.com/buger/jsonparser
-  version: 8ffcad59d1149936a8d17ba2a9c0f714b47b7069
+  version: 5b691c8ebc4af5191baa426561d62f1b5115d6e5
 - name: github.com/davecgh/go-spew
   version: 5215b55f46b2b919f50a1df0eaa5886afe4e3b3d
   subpackages:
