@@ -8,6 +8,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	api "gopkg.in/appleboy/gin-status-api.v1"
+	apns "github.com/sideshow/apns2"
 )
 
 func init() {
@@ -33,6 +34,7 @@ func rootHandler(c *gin.Context) {
 func pushHandler(c *gin.Context) {
 	var form RequestPush
 	var msg string
+	var sync bool
 
 	if err := c.BindJSON(&form); err != nil {
 		msg = "Missing notifications field."
@@ -55,12 +57,34 @@ func pushHandler(c *gin.Context) {
 		return
 	}
 
-	// queue notification.
-	go queueNotification(form)
+	sync = form.Sync
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": "ok",
-	})
+	if sync {
+		isError := false
+		var apnsFailedResults *map[string]*apns.Response
+		for i := 0; i < len(form.Notifications); i++ {
+			var isErrorLoop bool
+			notification := form.Notifications[i]
+			switch notification.Platform {
+			case PlatFormIos:
+				apnsFailedResults, isErrorLoop = PushToIOSWithErrorResult(notification)
+			case PlatFormAndroid:
+				PushToAndroid(notification)
+			}
+			isError = isError || isErrorLoop
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"success": "ok",
+			"apnsFailedResults": apnsFailedResults,
+		})
+	} else {
+		// queue notification.
+		go queueNotification(form)
+
+		c.JSON(http.StatusOK, gin.H{
+			"success": "ok",
+		})
+	}
 }
 
 func configHandler(c *gin.Context) {

@@ -48,6 +48,7 @@ type Alert struct {
 // RequestPush support multiple notification request.
 type RequestPush struct {
 	Notifications []PushNotification `json:"notifications" binding:"required"`
+	Sync          bool               `json:"sync,omitempty"`
 }
 
 // PushNotification is single notification request
@@ -344,6 +345,13 @@ func GetIOSNotification(req PushNotification) *apns.Notification {
 
 // PushToIOS provide send notification to APNs server.
 func PushToIOS(req PushNotification) bool {
+	var isError bool
+	_, isError = PushToIOSWithErrorResult(req)
+	return isError
+}
+
+// PushToIOSWithErrorResult provide send notification to APNs server and return response array for failed requests.
+func PushToIOSWithErrorResult(req PushNotification)  (*map[string]*apns.Response,bool) {
 	LogAccess.Debug("Start push notification for iOS")
 
 	var retryCount = 0
@@ -356,6 +364,8 @@ func PushToIOS(req PushNotification) bool {
 Retry:
 	var isError = false
 	var newTokens []string
+	var returnResultList map[string]*apns.Response
+	returnResultList = make(map[string]*apns.Response)
 
 	notification := GetIOSNotification(req)
 
@@ -370,6 +380,7 @@ Retry:
 			LogPush(FailedPush, token, req, err)
 			StatStorage.AddIosError(1)
 			newTokens = append(newTokens, token)
+			returnResultList[token] = res
 			isError = true
 			continue
 		}
@@ -380,6 +391,7 @@ Retry:
 			LogPush(FailedPush, token, req, errors.New(res.Reason))
 			StatStorage.AddIosError(1)
 			newTokens = append(newTokens, token)
+			returnResultList[token] = res
 			isError = true
 			continue
 		}
@@ -398,7 +410,7 @@ Retry:
 		goto Retry
 	}
 
-	return isError
+	return &returnResultList,isError
 }
 
 // GetAndroidNotification use for define Android notificaiton.
