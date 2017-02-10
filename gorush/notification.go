@@ -461,6 +461,13 @@ func GetAndroidNotification(req PushNotification) gcm.HttpMessage {
 
 // PushToAndroid provide send notification to Android server.
 func PushToAndroid(req PushNotification) bool {
+	var isError bool
+	_, isError = PushToAndroidWithErrorResult(req)
+	return isError
+}
+
+// PushToAndroidWithErrorResult provide send notification to Android server.
+func PushToAndroidWithErrorResult(req PushNotification) (*map[string]string,bool) {
 	LogAccess.Debug("Start push notification for Android")
 
 	var APIKey string
@@ -476,7 +483,7 @@ func PushToAndroid(req PushNotification) bool {
 
 	if err != nil {
 		LogError.Error("request error: " + err.Error())
-		return false
+		return nil, true
 	}
 
 Retry:
@@ -493,7 +500,7 @@ Retry:
 		// GCM server error
 		LogError.Error("GCM server error: " + err.Error())
 
-		return false
+		return nil, true
 	}
 
 	LogAccess.Debug(fmt.Sprintf("Android Success count: %d, Failure count: %d", res.Success, res.Failure))
@@ -501,13 +508,17 @@ Retry:
 	StatStorage.AddAndroidError(int64(res.Failure))
 
 	var newTokens []string
+	var returnResultList map[string]string
+	returnResultList = make(map[string]string)
 	for k, result := range res.Results {
 		if result.Error != "" {
 			isError = true
 			newTokens = append(newTokens, req.Tokens[k])
+			returnResultList[req.Tokens[k]] = result.Error
 			LogPush(FailedPush, req.Tokens[k], req, errors.New(result.Error))
 			continue
 		}
+		delete(returnResultList, req.Tokens[k])
 
 		LogPush(SucceededPush, req.Tokens[k], req, nil)
 	}
@@ -520,5 +531,5 @@ Retry:
 		goto Retry
 	}
 
-	return true
+	return &returnResultList, isError
 }

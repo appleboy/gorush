@@ -61,21 +61,37 @@ func pushHandler(c *gin.Context) {
 
 	if sync {
 		isError := false
-		var apnsFailedResults *map[string]*apns.Response
+		var apnsFailedResults map[string]*apns.Response
+		var gcmFailedResults map[string]string
+		apnsFailedResults = make(map[string]*apns.Response)
+		gcmFailedResults = make(map[string]string)
 		for i := 0; i < len(form.Notifications); i++ {
 			var isErrorLoop bool
+			var apnsFailedResultsLoop *map[string]*apns.Response
+			var gcmFailedResultsLoop *map[string]string
 			notification := form.Notifications[i]
 			switch notification.Platform {
 			case PlatFormIos:
-				apnsFailedResults, isErrorLoop = PushToIOSWithErrorResult(notification)
+				apnsFailedResultsLoop, isErrorLoop = PushToIOSWithErrorResult(notification)
+				if apnsFailedResultsLoop != nil {
+					for k, v := range *apnsFailedResultsLoop {
+						apnsFailedResults[k] = v
+					}
+				}
 			case PlatFormAndroid:
-				PushToAndroid(notification)
+				gcmFailedResultsLoop, isErrorLoop = PushToAndroidWithErrorResult(notification)
+				if gcmFailedResultsLoop != nil {
+					for k, v := range *gcmFailedResultsLoop {
+						gcmFailedResults[k] = v
+					}
+				}
 			}
 			isError = isError || isErrorLoop
 		}
 		c.JSON(http.StatusOK, gin.H{
 			"success": "ok",
 			"apnsFailedResults": apnsFailedResults,
+			"gcmFailedResults": gcmFailedResults,
 		})
 	} else {
 		// queue notification.
