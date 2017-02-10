@@ -135,6 +135,7 @@ func TestSendZeroValueForBadgeKey(t *testing.T) {
 		Message:          message,
 		Sound:            test,
 		ContentAvailable: true,
+		MutableContent:   true,
 	}
 
 	notification := GetIOSNotification(req)
@@ -151,6 +152,7 @@ func TestSendZeroValueForBadgeKey(t *testing.T) {
 	badge, _ := jsonparser.GetInt(data, "aps", "badge")
 	sound, _ := jsonparser.GetString(data, "aps", "sound")
 	contentAvailable, _ := jsonparser.GetInt(data, "aps", "content-available")
+	mutableContent, _ := jsonparser.GetInt(data, "aps", "mutable-content")
 
 	if req.Badge != nil {
 		t.Errorf("req.Badge must be nil")
@@ -163,6 +165,7 @@ func TestSendZeroValueForBadgeKey(t *testing.T) {
 	assert.Equal(t, 0, int(badge))
 	assert.Equal(t, test, sound)
 	assert.Equal(t, 1, int(contentAvailable))
+	assert.Equal(t, 1, int(mutableContent))
 
 	// Add Bage
 	expectBadge := 10
