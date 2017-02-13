@@ -17,6 +17,10 @@ var (
 	CertificatePemIos tls.Certificate
 	// ApnsClient is apns client
 	ApnsClient *apns.Client
+	// VoipCertificatePemIos is ios certificate file
+	VoipCertificatePemIos tls.Certificate
+	// VoipApnsClient is apns client
+	VoipApnsClient *apns.Client
 	// LogAccess is log server request log
 	LogAccess *logrus.Logger
 	// LogError is log server error log

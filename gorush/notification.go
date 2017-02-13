@@ -83,6 +83,7 @@ type PushNotification struct {
 	URLArgs        []string `json:"url-args,omitempty"`
 	Alert          Alert    `json:"alert,omitempty"`
 	MutableContent bool     `json:"mutable-content,omitempty"`
+	Voip           bool     `json:"voip,omitempty"`
 }
 
 // CheckMessage for check request message
@@ -179,6 +180,32 @@ func InitAPNSClient() error {
 			ApnsClient = apns.NewClient(CertificatePemIos).Production()
 		} else {
 			ApnsClient = apns.NewClient(CertificatePemIos).Development()
+		}
+	}
+
+	if PushConf.Ios.VoipEnabled {
+		var err error
+		ext := filepath.Ext(PushConf.Ios.VoipKeyPath)
+
+		switch ext {
+		case ".p12":
+			VoipCertificatePemIos, err = certificate.FromP12File(PushConf.Ios.VoipKeyPath, PushConf.Ios.VoipPassword)
+		case ".pem":
+			VoipCertificatePemIos, err = certificate.FromPemFile(PushConf.Ios.VoipKeyPath, PushConf.Ios.VoipPassword)
+		default:
+			err = errors.New("wrong VoIP certificate key extension")
+		}
+
+		if err != nil {
+			LogError.Error("Cert Error:", err.Error())
+
+			return err
+		}
+
+		if PushConf.Ios.VoipProduction {
+			VoipApnsClient = apns.NewClient(VoipCertificatePemIos).Production()
+		} else {
+			VoipApnsClient = apns.NewClient(VoipCertificatePemIos).Development()
 		}
 	}
 
@@ -373,7 +400,14 @@ Retry:
 		notification.DeviceToken = token
 
 		// send ios notification
-		res, err := ApnsClient.Push(notification)
+		var res *apns.Response
+		var err error
+
+		if req.Voip {
+			res, err = VoipApnsClient.Push(notification)
+		} else {
+			res, err = ApnsClient.Push(notification)
+		}
 
 		if err != nil {
 			// apns server error

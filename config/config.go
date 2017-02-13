@@ -50,11 +50,15 @@ type SectionAndroid struct {
 
 // SectionIos is sub section of config.
 type SectionIos struct {
-	Enabled    bool   `yaml:"enabled"`
-	KeyPath    string `yaml:"key_path"`
-	Password   string `yaml:"password"`
-	Production bool   `yaml:"production"`
-	MaxRetry   int    `yaml:"max_retry"`
+	Enabled        bool   `yaml:"enabled"`
+	KeyPath        string `yaml:"key_path"`
+	Password       string `yaml:"password"`
+	Production     bool   `yaml:"production"`
+	VoipEnabled    bool   `yaml:"voip_enabled"`
+	VoipKeyPath    string `yaml:"voip_key_path"`
+	VoipPassword   string `yaml:"voip_password"`
+	VoipProduction bool   `yaml:"voip_production"`
+	MaxRetry       int    `yaml:"max_retry"`
 }
 
 // SectionLog is sub section of config.
@@ -142,6 +146,10 @@ func BuildDefaultPushConf() ConfYaml {
 	conf.Ios.KeyPath = "key.pem"
 	conf.Ios.Password = ""
 	conf.Ios.Production = false
+	conf.Ios.VoipEnabled = false
+	conf.Ios.VoipKeyPath = "voipkey.pem"
+	conf.Ios.VoipPassword = ""
+	conf.Ios.VoipProduction = false
 	conf.Ios.MaxRetry = 0
 
 	// log

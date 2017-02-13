@@ -33,6 +33,10 @@ ios:
   key_path: "key.pem"
   password: ""
   production: false
+  voip_enabled: false
+  voip_key_path: "voipkey.pem"
+  voip_password: ""
+  voip_production: false
   max_retry: 0
 
 log:

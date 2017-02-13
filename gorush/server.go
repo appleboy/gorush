@@ -73,7 +73,16 @@ func pushHandler(c *gin.Context) {
 			notification := form.Notifications[i]
 			switch notification.Platform {
 			case PlatFormIos:
-				if PushConf.Ios.Enabled {
+				var enabled bool
+				var notEnabledMessage string
+				if notification.Voip {
+					enabled = PushConf.Ios.VoipEnabled
+					notEnabledMessage = "VoIP iOS is not enabled in configuration"
+				} else {
+					enabled = PushConf.Ios.Enabled
+					notEnabledMessage = "iOS is not enabled in configuration"
+				}
+				if enabled {
 					apnsFailedResultsLoop, isErrorLoop = PushToIOSWithErrorResult(notification)
 					if apnsFailedResultsLoop != nil {
 						for k, v := range *apnsFailedResultsLoop {
@@ -83,7 +92,7 @@ func pushHandler(c *gin.Context) {
 				} else {
 					for _, token := range notification.Tokens {
 						time := apns.Time{time.Now()}
-						response := apns.Response{StatusCode: 500, Reason: "iOS is not enabled in configuration", Timestamp: time}
+						response := apns.Response{StatusCode: 500, Reason: notEnabledMessage, Timestamp: time}
 						apnsFailedResults[token] = &response
 					}
 				}
