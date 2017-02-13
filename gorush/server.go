@@ -3,6 +3,7 @@ package gorush
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus"
@@ -37,7 +38,7 @@ func pushHandler(c *gin.Context) {
 	var sync bool
 
 	if err := c.BindJSON(&form); err != nil {
-		msg = "Missing notifications field."
+		msg = "Missing notifications field. "
 		LogAccess.Debug(msg)
 		abortWithError(c, http.StatusBadRequest, msg)
 		return
@@ -72,18 +73,32 @@ func pushHandler(c *gin.Context) {
 			notification := form.Notifications[i]
 			switch notification.Platform {
 			case PlatFormIos:
-				apnsFailedResultsLoop, isErrorLoop = PushToIOSWithErrorResult(notification)
-				if apnsFailedResultsLoop != nil {
-					for k, v := range *apnsFailedResultsLoop {
-						apnsFailedResults[k] = v
+				if PushConf.Ios.Enabled {
+					apnsFailedResultsLoop, isErrorLoop = PushToIOSWithErrorResult(notification)
+					if apnsFailedResultsLoop != nil {
+						for k, v := range *apnsFailedResultsLoop {
+							apnsFailedResults[k] = v
+						}
+					}
+				} else {
+					for _, token := range notification.Tokens {
+						time := apns.Time{time.Now()}
+						response := apns.Response{StatusCode: 500, Reason: "iOS is not enabled in configuration", Timestamp: time}
+						apnsFailedResults[token] = &response
 					}
 				}
 			case PlatFormAndroid:
-				gcmFailedResultsLoop, isErrorLoop = PushToAndroidWithErrorResult(notification)
-				if gcmFailedResultsLoop != nil {
-					for k, v := range *gcmFailedResultsLoop {
-						gcmFailedResults[k] = v
+				if PushConf.Android.Enabled {
+					gcmFailedResultsLoop, isErrorLoop = PushToAndroidWithErrorResult(notification)
+					if gcmFailedResultsLoop != nil {
+						for k, v := range *gcmFailedResultsLoop {
+							gcmFailedResults[k] = v
+						}
 					}
+				} else {
+					for _, token := range notification.Tokens {
+						gcmFailedResults[token] = "Android is not enabled in configuration"
+					}					
 				}
 			}
 			isError = isError || isErrorLoop

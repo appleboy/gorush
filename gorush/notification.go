@@ -95,7 +95,7 @@ func CheckMessage(req PushNotification) error {
 		return errors.New(msg)
 	}
 
-	if len(req.Tokens) == PlatFormIos && len(req.Tokens[0]) == 0 {
+	if req.Platform == PlatFormIos && len(req.Tokens[0]) == 0 {
 		msg = "the token must not be empty"
 		LogAccess.Debug(msg)
 		return errors.New(msg)
@@ -482,8 +482,14 @@ func PushToAndroidWithErrorResult(req PushNotification) (*map[string]string,bool
 	err := CheckMessage(req)
 
 	if err != nil {
-		LogError.Error("request error: " + err.Error())
-		return nil, true
+		error := "request error: " + err.Error()
+		LogError.Error(error)
+		var returnResultList map[string]string
+		returnResultList = make(map[string]string)
+		for _,token := range req.Tokens {
+			returnResultList[token] = error
+		}
+		return &returnResultList, true
 	}
 
 Retry:
@@ -498,9 +504,14 @@ Retry:
 
 	if err != nil {
 		// GCM server error
-		LogError.Error("GCM server error: " + err.Error())
-
-		return nil, true
+		error := "GCM server error: " + err.Error()
+		LogError.Error(error)
+		var returnResultList map[string]string
+		returnResultList = make(map[string]string)
+		for _,token := range req.Tokens {
+			returnResultList[token] = error
+		}
+		return &returnResultList, true
 	}
 
 	LogAccess.Debug(fmt.Sprintf("Android Success count: %d, Failure count: %d", res.Success, res.Failure))
