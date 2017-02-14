@@ -1,8 +1,8 @@
-hash: 1d53f3e0071e8efc2c94d89a1b3da19c411ee780a65c029e1682e6756f39e355
-updated: 2017-02-10T12:24:04.337257101+08:00
+hash: bebf6dc340226b048bddac1d1937191be2181b87f028e44b2d76779ee7f1f4dc
+updated: 2017-02-14T02:14:54.6843891+01:00
 imports:
 - name: github.com/asdine/storm
-  version: c40e8d95426a80b23797ca9818ff2142a9401ddf
+  version: faf2c5d33aa0f572fa56e03de17c87b278b976c6
   subpackages:
   - codec
   - codec/json
@@ -50,6 +50,11 @@ imports:
   version: f24585d1c70490c0920ab34924f54f726e1416c7
 - name: github.com/manucorporat/sse
   version: ee05b128a739a0fb76c7ebd3ae4810c1de808d6d
+- name: github.com/martijnc/gowebpush
+  version: ae7846d0bd7fa3d9fcba6262cce046a15f3049c4
+  subpackages:
+  - ece
+  - webpush
 - name: github.com/mattn/go-isatty
   version: 3a115632dcd687f9c8cd01679c83a06a0e21c1f3
 - name: github.com/mattn/go-xmpp
@@ -116,6 +121,7 @@ imports:
 - name: golang.org/x/crypto
   version: 453249f01cfeb54c3d549ddb75ff152ca243f9d8
   subpackages:
+  - hkdf
   - pkcs12
   - pkcs12/internal/rc2
 - name: golang.org/x/net

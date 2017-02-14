@@ -39,6 +39,11 @@ ios:
   voip_production: false
   max_retry: 0
 
+web:
+  enabled: false
+  apikey: "YOUR_GCM_API_KEY"
+  max_retry: 0
+
 log:
   format: "string" # string or json
   access_log: "stdout"

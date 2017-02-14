@@ -5,6 +5,7 @@ import (
 
 	"github.com/Sirupsen/logrus"
 	"github.com/jaraxasoftware/gorush/config"
+	"github.com/jaraxasoftware/gorush/web"
 	apns "github.com/sideshow/apns2"
 )
 
@@ -21,6 +22,8 @@ var (
 	VoipCertificatePemIos tls.Certificate
 	// VoipApnsClient is apns client
 	VoipApnsClient *apns.Client
+	// WebClient is web client
+	WebClient *web.Client
 	// LogAccess is log server request log
 	LogAccess *logrus.Logger
 	// LogError is log server error log

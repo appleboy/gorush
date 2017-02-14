@@ -199,7 +199,7 @@ func main() {
 		gorush.PushConf.Android.Enabled = opts.Android.Enabled
 		req := gorush.PushNotification{
 			Tokens:   []string{token},
-			Platform: gorush.PlatFormAndroid,
+			Platform: gorush.PlatformAndroid,
 			Message:  message,
 			Title:    title,
 		}
@@ -225,7 +225,7 @@ func main() {
 		gorush.PushConf.Ios.Enabled = opts.Ios.Enabled
 		req := gorush.PushNotification{
 			Tokens:   []string{token},
-			Platform: gorush.PlatFormIos,
+			Platform: gorush.PlatformIos,
 			Message:  message,
 			Title:    title,
 		}
@@ -263,6 +263,7 @@ func main() {
 
 	gorush.InitAppStatus()
 	gorush.InitAPNSClient()
+	gorush.InitWebClient()
 	gorush.InitWorkers(gorush.PushConf.Core.WorkerNum, gorush.PushConf.Core.QueueNum)
 	gorush.RunHTTPServer()
 }

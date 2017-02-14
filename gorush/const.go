@@ -1,10 +1,12 @@
 package gorush
 
 const (
-	// PlatFormIos constant is 1 for iOS
-	PlatFormIos = iota + 1
-	// PlatFormAndroid constant is 2 for Android
-	PlatFormAndroid
+	// PlatformIos constant is 1 for iOS
+	PlatformIos = iota + 1
+	// PlatformAndroid constant is 2 for Android
+	PlatformAndroid
+	// PlatformWeb constant is 3 for Web
+	PlatformWeb
 )
 
 const (

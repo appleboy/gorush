@@ -13,6 +13,7 @@ type ConfYaml struct {
 	API     SectionAPI     `yaml:"api"`
 	Android SectionAndroid `yaml:"android"`
 	Ios     SectionIos     `yaml:"ios"`
+	Web     SectionWeb     `yaml:"web"`
 	Log     SectionLog     `yaml:"log"`
 	Stat    SectionStat    `yaml:"stat"`
 }
@@ -58,6 +59,13 @@ type SectionIos struct {
 	VoipKeyPath    string `yaml:"voip_key_path"`
 	VoipPassword   string `yaml:"voip_password"`
 	VoipProduction bool   `yaml:"voip_production"`
+	MaxRetry       int    `yaml:"max_retry"`
+}
+
+// SectionWeb is sub section of config.
+type SectionWeb struct {
+	Enabled        bool   `yaml:"enabled"`
+	APIKey         string `yaml:"apikey"`
 	MaxRetry       int    `yaml:"max_retry"`
 }
 
@@ -151,6 +159,9 @@ func BuildDefaultPushConf() ConfYaml {
 	conf.Ios.VoipPassword = ""
 	conf.Ios.VoipProduction = false
 	conf.Ios.MaxRetry = 0
+
+	// Web
+	conf.Web.Enabled = false
 
 	// log
 	conf.Log.Format = "string"

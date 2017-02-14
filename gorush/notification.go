@@ -8,14 +8,12 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/jaraxasoftware/gorush/web"
 	"github.com/google/go-gcm"
 	apns "github.com/sideshow/apns2"
 	"github.com/sideshow/apns2/certificate"
 	"github.com/sideshow/apns2/payload"
 )
-
-// D provide string array
-type D map[string]interface{}
 
 const (
 	// ApnsPriorityLow will tell APNs to send the push message at a time that takes
@@ -51,25 +49,33 @@ type RequestPush struct {
 	Sync          bool               `json:"sync,omitempty"`
 }
 
+type Subscription struct {
+	Endpoint  string    `json:"endpoint" binding:"required"`
+	Key       string    `json:"key" binding:"required"`
+	Auth      string    `json:"auth" binding:"required"`
+}
+
 // PushNotification is single notification request
 type PushNotification struct {
 	// Common
-	Tokens           []string `json:"tokens" binding:"required"`
-	Platform         int      `json:"platform" binding:"required"`
-	Message          string   `json:"message,omitempty"`
-	Title            string   `json:"title,omitempty"`
-	Priority         string   `json:"priority,omitempty"`
-	ContentAvailable bool     `json:"content_available,omitempty"`
-	Sound            string   `json:"sound,omitempty"`
-	Data             D        `json:"data,omitempty"`
-	Retry            int      `json:"retry,omitempty"`
+	Platform         int                     `json:"platform" binding:"required"`
+	Message          string                  `json:"message,omitempty"`
+	Title            string                  `json:"title,omitempty"`
+	Priority         string                  `json:"priority,omitempty"`
+	ContentAvailable bool                    `json:"content_available,omitempty"`
+	Sound            string                  `json:"sound,omitempty"`
+	Data             map[string]interface{}  `json:"data,omitempty"`
+	Retry            int                     `json:"retry,omitempty"`
+	// Android + iOS
+	Tokens           []string `json:"tokens,omitempty`
+	// Android + web
+	APIKey           string   `json:"api_key,omitempty"`
+	TimeToLive       *uint    `json:"time_to_live,omitempty"`
 
 	// Android
-	APIKey                string           `json:"api_key,omitempty"`
 	To                    string           `json:"to,omitempty"`
 	CollapseKey           string           `json:"collapse_key,omitempty"`
 	DelayWhileIdle        bool             `json:"delay_while_idle,omitempty"`
-	TimeToLive            *uint            `json:"time_to_live,omitempty"`
 	RestrictedPackageName string           `json:"restricted_package_name,omitempty"`
 	DryRun                bool             `json:"dry_run,omitempty"`
 	Notification          gcm.Notification `json:"notification,omitempty"`
@@ -84,36 +90,47 @@ type PushNotification struct {
 	Alert          Alert    `json:"alert,omitempty"`
 	MutableContent bool     `json:"mutable-content,omitempty"`
 	Voip           bool     `json:"voip,omitempty"`
+
+	// Web
+	Subscriptions  []Subscription `json:"subscriptions,omitempty"`
 }
 
 // CheckMessage for check request message
 func CheckMessage(req PushNotification) error {
 	var msg string
 
-	if len(req.Tokens) == 0 {
-		msg = "the message must specify at least one registration ID"
-		LogAccess.Debug(msg)
-		return errors.New(msg)
-	}
+    if req.Platform == PlatformIos || req.Platform == PlatformAndroid {
+		if len(req.Tokens) == 0 {
+			msg = "the message must specify at least one registration ID"
+			LogAccess.Debug(msg)
+			return errors.New(msg)
+		}
 
-	if req.Platform == PlatFormIos && len(req.Tokens[0]) == 0 {
-		msg = "the token must not be empty"
-		LogAccess.Debug(msg)
-		return errors.New(msg)
-	}
+		if req.Platform == PlatformIos && len(req.Tokens[0]) == 0 {
+			msg = "the token must not be empty"
+			LogAccess.Debug(msg)
+			return errors.New(msg)
+		}
 
-	if req.Platform == PlatFormAndroid && len(req.Tokens) > 1000 {
-		msg = "the message may specify at most 1000 registration IDs"
-		LogAccess.Debug(msg)
-		return errors.New(msg)
-	}
+		if req.Platform == PlatformAndroid && len(req.Tokens) > 1000 {
+			msg = "the message may specify at most 1000 registration IDs"
+			LogAccess.Debug(msg)
+			return errors.New(msg)
+		}
 
-	// ref: https://developers.google.com/cloud-messaging/http-server-ref
-	if req.Platform == PlatFormAndroid && req.TimeToLive != nil && (*req.TimeToLive < uint(0) || uint(2419200) < *req.TimeToLive) {
-		msg = "the message's TimeToLive field must be an integer " +
-			"between 0 and 2419200 (4 weeks)"
-		LogAccess.Debug(msg)
-		return errors.New(msg)
+		// ref: https://developers.google.com/cloud-messaging/http-server-ref
+		if req.Platform == PlatformAndroid && req.TimeToLive != nil && (*req.TimeToLive < uint(0) || uint(2419200) < *req.TimeToLive) {
+			msg = "the message's TimeToLive field must be an integer " +
+				"between 0 and 2419200 (4 weeks)"
+			LogAccess.Debug(msg)
+			return errors.New(msg)
+		}
+	} else if req.Platform == PlatformWeb {
+		if len(req.Subscriptions) == 0 {
+			msg = "the message must specify at least one subscription"
+			LogAccess.Debug(msg)
+			return errors.New(msg)
+		}
 	}
 
 	return nil
@@ -136,8 +153,8 @@ func SetProxy(proxy string) error {
 
 // CheckPushConf provide check your yml config.
 func CheckPushConf() error {
-	if !PushConf.Ios.Enabled && !PushConf.Android.Enabled {
-		return errors.New("Please enable iOS or Android config in yml config")
+	if !PushConf.Ios.VoipEnabled && !PushConf.Ios.Enabled && !PushConf.Android.Enabled && !PushConf.Web.Enabled {
+		return errors.New("Please enable iOS, VoIP iOS, Android or Web config in yml config")
 	}
 
 	if PushConf.Ios.Enabled {
@@ -146,9 +163,21 @@ func CheckPushConf() error {
 		}
 	}
 
+	if PushConf.Ios.VoipEnabled {
+		if PushConf.Ios.VoipKeyPath == "" {
+			return errors.New("Missing VoIP iOS certificate path")
+		}
+	}
+
 	if PushConf.Android.Enabled {
 		if PushConf.Android.APIKey == "" {
 			return errors.New("Missing Android API Key")
+		}
+	}
+
+	if PushConf.Web.Enabled {
+		if PushConf.Web.APIKey == "" {
+			return errors.New("Missing GCM API Key for Chrome")
 		}
 	}
 
@@ -212,6 +241,16 @@ func InitAPNSClient() error {
 	return nil
 }
 
+// InitWebClient use for initialize APNs Client.
+func InitWebClient() error {
+	if PushConf.Web.Enabled {
+		//var err error
+		WebClient = web.NewClient(PushConf.Web.APIKey)
+	}
+
+	return nil
+}
+
 // InitWorkers for initialize all workers.
 func InitWorkers(workerNum int64, queueNum int64) {
 	LogAccess.Debug("worker number is ", workerNum, ", queue number is ", queueNum)
@@ -225,10 +264,12 @@ func startWorker() {
 	for {
 		notification := <-QueueNotification
 		switch notification.Platform {
-		case PlatFormIos:
+		case PlatformIos:
 			PushToIOS(notification)
-		case PlatFormAndroid:
+		case PlatformAndroid:
 			PushToAndroid(notification)
+		case PlatformWeb:
+			PushToWeb(notification)
 		}
 	}
 }
@@ -238,11 +279,14 @@ func queueNotification(req RequestPush) int {
 	var count int
 	for _, notification := range req.Notifications {
 		switch notification.Platform {
-		case PlatFormIos:
-			if !PushConf.Ios.Enabled {
+		case PlatformIos:
+			if !PushConf.Ios.Enabled && !notification.Voip {
 				continue
 			}
-		case PlatFormAndroid:
+			if !PushConf.Ios.VoipEnabled && notification.Voip {
+				continue
+			}
+		case PlatformAndroid:
 			if !PushConf.Android.Enabled {
 				continue
 			}
@@ -388,6 +432,22 @@ func PushToIOSWithErrorResult(req PushNotification)  (*map[string]*apns.Response
 		maxRetry = req.Retry
 	}
 
+	// check message
+	err := CheckMessage(req)
+
+	if err != nil {
+		errorString := "request error: " + err.Error()
+		LogError.Error(errorString)
+		var returnResultList map[string]*apns.Response
+		returnResultList = make(map[string]*apns.Response)
+		for _,token := range req.Tokens {
+			time := apns.Time{time.Now()}
+			response := apns.Response{StatusCode: 500, Reason: errorString, Timestamp: time}
+			returnResultList[token] = &response
+		}
+		return &returnResultList, true
+	}
+
 Retry:
 	var isError = false
 	var newTokens []string
@@ -516,12 +576,12 @@ func PushToAndroidWithErrorResult(req PushNotification) (*map[string]string,bool
 	err := CheckMessage(req)
 
 	if err != nil {
-		error := "request error: " + err.Error()
-		LogError.Error(error)
+		errorString := "request error: " + err.Error()
+		LogError.Error(errorString)
 		var returnResultList map[string]string
 		returnResultList = make(map[string]string)
 		for _,token := range req.Tokens {
-			returnResultList[token] = error
+			returnResultList[token] = errorString
 		}
 		return &returnResultList, true
 	}
@@ -538,12 +598,12 @@ Retry:
 
 	if err != nil {
 		// GCM server error
-		error := "GCM server error: " + err.Error()
-		LogError.Error(error)
+		errorString := "GCM server error: " + err.Error()
+		LogError.Error(errorString)
 		var returnResultList map[string]string
 		returnResultList = make(map[string]string)
 		for _,token := range req.Tokens {
-			returnResultList[token] = error
+			returnResultList[token] = errorString
 		}
 		return &returnResultList, true
 	}
@@ -577,4 +637,73 @@ Retry:
 	}
 
 	return &returnResultList, isError
+}
+
+func GetWebNotification(req PushNotification, subscription *Subscription) *web.Notification {
+	notification := &web.Notification{
+		Payload: &req.Data,
+		Subscription: &web.Subscription{
+			Endpoint: subscription.Endpoint, 
+			Key: subscription.Key, 
+			Auth: subscription.Auth,
+		},
+		TimeToLive: req.TimeToLive,
+	}
+	return notification
+}
+
+// PushToAndroid provide send notification to Android server.
+func PushToWeb(req PushNotification) bool {
+	var isError bool
+	_, isError = PushToWebWithErrorResult(req)
+	return isError
+}
+
+// PushToAndroidWithErrorResult provide send notification to Android server.
+func PushToWebWithErrorResult(req PushNotification) (*map[string]string,bool) {
+	LogAccess.Debug("Start push notification for Web")
+
+	var retryCount = 0
+	var maxRetry = PushConf.Web.MaxRetry
+
+	if req.Retry > 0 && req.Retry < maxRetry {
+		maxRetry = req.Retry
+	}
+
+	// check message
+	err := CheckMessage(req)
+
+	if err != nil {
+		errorString := "request error: " + err.Error()
+		LogError.Error(errorString)
+		var returnResultList map[string]string
+		returnResultList = make(map[string]string)
+		for _,token := range req.Tokens {
+			returnResultList[token] = errorString
+		}
+		return &returnResultList, true
+	}
+
+Retry:
+	var isError = false
+	var returnResultList map[string]string
+	returnResultList = make(map[string]string)
+
+	for _, subscription := range req.Subscriptions {
+		notification := GetWebNotification(req, &subscription)
+		_, err := WebClient.Push(notification)
+		if (err != nil) {
+			fmt.Println(err)
+		}
+	}
+
+	if isError == true && retryCount < maxRetry {
+		retryCount++
+
+		// resend fail token
+		//FIXME
+		//req.Tokens = newTokens
+		goto Retry
+	}	
+	return	&returnResultList, isError
 }

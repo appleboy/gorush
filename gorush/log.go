@@ -172,22 +172,22 @@ func LogRequest(uri string, method string, ip string, contentType string, agent 
 	LogAccess.Info(output)
 }
 
-func colorForPlatForm(platform int) string {
+func colorForPlatform(platform int) string {
 	switch platform {
-	case PlatFormIos:
+	case PlatformIos:
 		return blue
-	case PlatFormAndroid:
+	case PlatformAndroid:
 		return yellow
 	default:
 		return reset
 	}
 }
 
-func typeForPlatForm(platform int) string {
+func typeForPlatform(platform int) string {
 	switch platform {
-	case PlatFormIos:
+	case PlatformIos:
 		return "ios"
-	case PlatFormAndroid:
+	case PlatformAndroid:
 		return "android"
 	default:
 		return ""
@@ -217,8 +217,8 @@ func LogPush(status, token string, req PushNotification, errPush error) {
 	var plat, platColor, resetColor, output string
 
 	if isTerm {
-		platColor = colorForPlatForm(req.Platform)
-		plat = typeForPlatForm(req.Platform)
+		platColor = colorForPlatform(req.Platform)
+		plat = typeForPlatform(req.Platform)
 		resetColor = reset
 	}
 

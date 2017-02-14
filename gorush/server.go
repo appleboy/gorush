@@ -64,15 +64,19 @@ func pushHandler(c *gin.Context) {
 		isError := false
 		var apnsFailedResults map[string]*apns.Response
 		var gcmFailedResults map[string]string
+		var webFailedResults map[string]string
 		apnsFailedResults = make(map[string]*apns.Response)
 		gcmFailedResults = make(map[string]string)
+		webFailedResults = make(map[string]string)
 		for i := 0; i < len(form.Notifications); i++ {
 			var isErrorLoop bool
 			var apnsFailedResultsLoop *map[string]*apns.Response
 			var gcmFailedResultsLoop *map[string]string
+			var webFailedResultsLoop *map[string]string
 			notification := form.Notifications[i]
+
 			switch notification.Platform {
-			case PlatFormIos:
+			case PlatformIos:
 				var enabled bool
 				var notEnabledMessage string
 				if notification.Voip {
@@ -96,7 +100,7 @@ func pushHandler(c *gin.Context) {
 						apnsFailedResults[token] = &response
 					}
 				}
-			case PlatFormAndroid:
+			case PlatformAndroid:
 				if PushConf.Android.Enabled {
 					gcmFailedResultsLoop, isErrorLoop = PushToAndroidWithErrorResult(notification)
 					if gcmFailedResultsLoop != nil {
@@ -109,6 +113,19 @@ func pushHandler(c *gin.Context) {
 						gcmFailedResults[token] = "Android is not enabled in configuration"
 					}					
 				}
+			case PlatformWeb:
+				if PushConf.Web.Enabled {
+					webFailedResultsLoop, isErrorLoop = PushToWebWithErrorResult(notification)
+					if webFailedResultsLoop != nil {
+						for k, v := range *webFailedResultsLoop {
+							webFailedResults[k] = v
+						}
+					}
+				} else {
+					for _, token := range notification.Tokens {
+						webFailedResults[token] = "Web is not enabled in configuration"
+					}					
+				}
 			}
 			isError = isError || isErrorLoop
 		}
@@ -116,6 +133,7 @@ func pushHandler(c *gin.Context) {
 			"success": "ok",
 			"apnsFailedResults": apnsFailedResults,
 			"gcmFailedResults": gcmFailedResults,
+			"webFailedResults": webFailedResults,
 		})
 	} else {
 		// queue notification.

@@ -448,7 +448,7 @@ func TestPushToAndroidWrongAPIKey(t *testing.T) {
 
 	req := PushNotification{
 		Tokens:   []string{"aaaaaa", "bbbbb"},
-		Platform: PlatFormAndroid,
+		Platform: PlatformAndroid,
 		Message:  "Welcome",
 	}
 
@@ -464,7 +464,7 @@ func TestPushToAndroidWrongToken(t *testing.T) {
 
 	req := PushNotification{
 		Tokens:   []string{"aaaaaa", "bbbbb"},
-		Platform: PlatFormAndroid,
+		Platform: PlatformAndroid,
 		Message:  "Welcome",
 	}
 
@@ -484,7 +484,7 @@ func TestPushToAndroidRightTokenForJSONLog(t *testing.T) {
 
 	req := PushNotification{
 		Tokens:   []string{androidToken, "bbbbb"},
-		Platform: PlatFormAndroid,
+		Platform: PlatformAndroid,
 		Message:  "Welcome",
 	}
 
@@ -502,7 +502,7 @@ func TestPushToAndroidRightTokenForStringLog(t *testing.T) {
 
 	req := PushNotification{
 		Tokens:   []string{androidToken, "bbbbb"},
-		Platform: PlatFormAndroid,
+		Platform: PlatformAndroid,
 		Message:  "Welcome",
 	}
 
@@ -520,7 +520,7 @@ func TestOverwriteAndroidAPIKey(t *testing.T) {
 
 	req := PushNotification{
 		Tokens:   []string{androidToken, "bbbbb"},
-		Platform: PlatFormAndroid,
+		Platform: PlatformAndroid,
 		Message:  "Welcome",
 		// overwrite android api key
 		APIKey: "1234",
@@ -549,13 +549,13 @@ func TestSenMultipleNotifications(t *testing.T) {
 			//ios
 			{
 				Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
-				Platform: PlatFormIos,
+				Platform: PlatformIos,
 				Message:  "Welcome",
 			},
 			// android
 			{
 				Tokens:   []string{androidToken, "bbbbb"},
-				Platform: PlatFormAndroid,
+				Platform: PlatformAndroid,
 				Message:  "Welcome",
 			},
 		},
@@ -582,13 +582,13 @@ func TestDisabledAndroidNotifications(t *testing.T) {
 			//ios
 			{
 				Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
-				Platform: PlatFormIos,
+				Platform: PlatformIos,
 				Message:  "Welcome",
 			},
 			// android
 			{
 				Tokens:   []string{androidToken, "bbbbb"},
-				Platform: PlatFormAndroid,
+				Platform: PlatformAndroid,
 				Message:  "Welcome",
 			},
 		},
@@ -615,13 +615,13 @@ func TestDisabledIosNotifications(t *testing.T) {
 			//ios
 			{
 				Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
-				Platform: PlatFormIos,
+				Platform: PlatformIos,
 				Message:  "Welcome",
 			},
 			// android
 			{
 				Tokens:   []string{androidToken, "bbbbb"},
-				Platform: PlatFormAndroid,
+				Platform: PlatformAndroid,
 				Message:  "Welcome",
 			},
 		},
@@ -688,7 +688,7 @@ func TestGCMMessage(t *testing.T) {
 	// the message may specify at most 1000 registration IDs
 	req = PushNotification{
 		Message:  "Test",
-		Platform: PlatFormAndroid,
+		Platform: PlatformAndroid,
 		Tokens:   make([]string, 1001),
 	}
 
@@ -700,7 +700,7 @@ func TestGCMMessage(t *testing.T) {
 	timeToLive := uint(2419201)
 	req = PushNotification{
 		Message:    "Test",
-		Platform:   PlatFormAndroid,
+		Platform:   PlatformAndroid,
 		Tokens:     []string{"XXXXXXXXX"},
 		TimeToLive: &timeToLive,
 	}
@@ -712,7 +712,7 @@ func TestGCMMessage(t *testing.T) {
 	timeToLive = uint(86400)
 	req = PushNotification{
 		Message:    "Test",
-		Platform:   PlatFormAndroid,
+		Platform:   PlatformAndroid,
 		Tokens:     []string{"XXXXXXXXX"},
 		TimeToLive: &timeToLive,
 	}
@@ -730,7 +730,7 @@ func TestCheckAndroidMessage(t *testing.T) {
 	timeToLive := uint(2419201)
 	req := PushNotification{
 		Tokens:     []string{"aaaaaa", "bbbbb"},
-		Platform:   PlatFormAndroid,
+		Platform:   PlatformAndroid,
 		Message:    "Welcome",
 		TimeToLive: &timeToLive,
 	}
