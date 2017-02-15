@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/jaraxasoftware/gorush/web"
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -64,15 +65,15 @@ func pushHandler(c *gin.Context) {
 		isError := false
 		var apnsFailedResults map[string]*apns.Response
 		var gcmFailedResults map[string]string
-		var webFailedResults map[string]string
+		var webFailedResults map[string]*web.Response
 		apnsFailedResults = make(map[string]*apns.Response)
 		gcmFailedResults = make(map[string]string)
-		webFailedResults = make(map[string]string)
+		webFailedResults = make(map[string]*web.Response)
 		for i := 0; i < len(form.Notifications); i++ {
 			var isErrorLoop bool
 			var apnsFailedResultsLoop *map[string]*apns.Response
 			var gcmFailedResultsLoop *map[string]string
-			var webFailedResultsLoop *map[string]string
+			var webFailedResultsLoop *map[string]*web.Response
 			notification := form.Notifications[i]
 
 			switch notification.Platform {
@@ -123,7 +124,8 @@ func pushHandler(c *gin.Context) {
 					}
 				} else {
 					for _, token := range notification.Tokens {
-						webFailedResults[token] = "Web is not enabled in configuration"
+						response := web.Response{StatusCode: 500, Body: "Web is not enabled in configuration"}
+						webFailedResults[token] = &response
 					}					
 				}
 			}

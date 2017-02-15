@@ -9,6 +9,7 @@ import (
 	"strings"
 	"strconv"
 	"errors"
+	"io/ioutil"
 	"github.com/martijnc/gowebpush/ece"
 	"github.com/martijnc/gowebpush/webpush"
 )
@@ -24,6 +25,7 @@ type Client struct {
 
 type Response struct {
 	StatusCode   int
+	Body         string
 }
 
 type Subscription struct {
@@ -112,9 +114,11 @@ func (c *Client) Push(n *Notification) (*Response, error) {
 		return nil, err
 	}
 	defer response.Body.Close()
+	body, err := ioutil.ReadAll(response.Body)
 
 	fmt.Println("Status Code: " + strconv.Itoa(response.StatusCode))
 	pushResponse.StatusCode = response.StatusCode
+	pushResponse.Body = string(body)
 	if response.StatusCode != 201 {
 		return &pushResponse, errors.New("Push endpoint returned incorrect status code: " + strconv.Itoa(response.StatusCode))
 	}

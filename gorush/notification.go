@@ -660,7 +660,7 @@ func PushToWeb(req PushNotification) bool {
 }
 
 // PushToAndroidWithErrorResult provide send notification to Android server.
-func PushToWebWithErrorResult(req PushNotification) (*map[string]string,bool) {
+func PushToWebWithErrorResult(req PushNotification) (*map[string]*web.Response,bool) {
 	LogAccess.Debug("Start push notification for Web")
 
 	var retryCount = 0
@@ -676,26 +676,39 @@ func PushToWebWithErrorResult(req PushNotification) (*map[string]string,bool) {
 	if err != nil {
 		errorString := "request error: " + err.Error()
 		LogError.Error(errorString)
-		var returnResultList map[string]string
-		returnResultList = make(map[string]string)
-		for _,token := range req.Tokens {
-			returnResultList[token] = errorString
+		var returnResultList map[string]*web.Response
+		returnResultList = make(map[string]*web.Response)
+		for _,subscription := range req.Subscriptions {
+			response := web.Response{StatusCode: 500, Body: errorString}
+			returnResultList[subscription.Endpoint] = &response
 		}
 		return &returnResultList, true
 	}
 
 Retry:
 	var isError = false
-	var returnResultList map[string]string
-	returnResultList = make(map[string]string)
+	var returnResultList map[string]*web.Response
+	successCount := 0
+	failureCount := 0
+	returnResultList = make(map[string]*web.Response)
 
 	for _, subscription := range req.Subscriptions {
 		notification := GetWebNotification(req, &subscription)
-		_, err := WebClient.Push(notification)
-		if (err != nil) {
+		response , err := WebClient.Push(notification)
+		if err != nil {
+			failureCount++
+			LogPush(FailedPush, subscription.Endpoint, req, err)
 			fmt.Println(err)
+			returnResultList[subscription.Endpoint] = response
+		} else {
+			successCount++
+			LogPush(SucceededPush, subscription.Endpoint, req, nil)
 		}
 	}
+
+	LogAccess.Debug(fmt.Sprintf("Web Success count: %d, Failure count: %d", successCount, failureCount))
+	StatStorage.AddWebSuccess(int64(successCount))
+	StatStorage.AddWebError(int64(failureCount))
 
 	if isError == true && retryCount < maxRetry {
 		retryCount++

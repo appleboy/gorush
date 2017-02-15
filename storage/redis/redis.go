@@ -15,6 +15,8 @@ const (
 	IosErrorKey       = "gorush-ios-error-count"
 	AndroidSuccessKey = "gorush-android-success-count"
 	AndroidErrorKey   = "gorush-android-error-count"
+	WebSuccessKey     = "gorush-web-success-count"
+	WebErrorKey       = "gorush-web-error-count"
 )
 
 //
@@ -64,6 +66,8 @@ func (s *Storage) Reset() {
 	redisClient.Set(IosErrorKey, strconv.Itoa(0), 0)
 	redisClient.Set(AndroidSuccessKey, strconv.Itoa(0), 0)
 	redisClient.Set(AndroidErrorKey, strconv.Itoa(0), 0)
+	redisClient.Set(WebSuccessKey, strconv.Itoa(0), 0)
+	redisClient.Set(WebErrorKey, strconv.Itoa(0), 0)
 }
 
 // AddTotalCount record push notification count.
@@ -94,6 +98,18 @@ func (s *Storage) AddAndroidSuccess(count int64) {
 func (s *Storage) AddAndroidError(count int64) {
 	total := s.GetAndroidError() + count
 	redisClient.Set(AndroidErrorKey, strconv.Itoa(int(total)), 0)
+}
+
+// AddWebSuccess record counts of success Web push notification.
+func (s *Storage) AddWebSuccess(count int64) {
+	total := s.GetWebSuccess() + count
+	redisClient.Set(WebSuccessKey, strconv.Itoa(int(total)), 0)
+}
+
+// AddWebError record counts of error Web push notification.
+func (s *Storage) AddWebError(count int64) {
+	total := s.GetWebError() + count
+	redisClient.Set(WebErrorKey, strconv.Itoa(int(total)), 0)
 }
 
 // GetTotalCount show counts of all notification.
@@ -132,6 +148,22 @@ func (s *Storage) GetAndroidSuccess() int64 {
 func (s *Storage) GetAndroidError() int64 {
 	var count int64
 	getInt64(AndroidErrorKey, &count)
+
+	return count
+}
+
+// GetWebSuccess show success counts of Web notification.
+func (s *Storage) GetWebSuccess() int64 {
+	var count int64
+	getInt64(WebSuccessKey, &count)
+
+	return count
+}
+
+// GetWebError show error counts of Web notification.
+func (s *Storage) GetWebError() int64 {
+	var count int64
+	getInt64(WebErrorKey, &count)
 
 	return count
 }

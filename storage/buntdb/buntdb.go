@@ -15,6 +15,8 @@ const (
 	IosErrorKey       = "gorush-ios-error-count"
 	AndroidSuccessKey = "gorush-android-success-count"
 	AndroidErrorKey   = "gorush-android-error-count"
+	WebSuccessKey     = "gorush-web-success-count"
+	WebErrorKey       = "gorush-web-error-count"
 )
 
 // New func implements the storage interface for gorush (https://github.com/appleboy/gorush)
@@ -94,6 +96,18 @@ func (s *Storage) AddAndroidError(count int64) {
 	s.setBuntDB(AndroidErrorKey, total)
 }
 
+// AddWebSuccess record counts of success Web push notification.
+func (s *Storage) AddWebSuccess(count int64) {
+	total := s.GetWebSuccess() + count
+	s.setBuntDB(WebSuccessKey, total)
+}
+
+// AddWebError record counts of error Web push notification.
+func (s *Storage) AddWebError(count int64) {
+	total := s.GetWebError() + count
+	s.setBuntDB(WebErrorKey, total)
+}
+
 // GetTotalCount show counts of all notification.
 func (s *Storage) GetTotalCount() int64 {
 	var count int64
@@ -130,6 +144,22 @@ func (s *Storage) GetAndroidSuccess() int64 {
 func (s *Storage) GetAndroidError() int64 {
 	var count int64
 	s.getBuntDB(AndroidErrorKey, &count)
+
+	return count
+}
+
+// GetWebSuccess show success counts of Web notification.
+func (s *Storage) GetWebSuccess() int64 {
+	var count int64
+	s.getBuntDB(WebSuccessKey, &count)
+
+	return count
+}
+
+// GetWebError show error counts of Web notification.
+func (s *Storage) GetWebError() int64 {
+	var count int64
+	s.getBuntDB(WebErrorKey, &count)
 
 	return count
 }

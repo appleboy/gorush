@@ -9,6 +9,7 @@ type statApp struct {
 	TotalCount int64         `json:"total_count"`
 	Ios        IosStatus     `json:"ios"`
 	Android    AndroidStatus `json:"android"`
+	Web        WebStatus     `json:"web"`
 }
 
 // AndroidStatus is android structure
@@ -19,6 +20,12 @@ type AndroidStatus struct {
 
 // IosStatus is iOS structure
 type IosStatus struct {
+	PushSuccess int64 `json:"push_success"`
+	PushError   int64 `json:"push_error"`
+}
+
+// WebStatus is web structure
+type WebStatus struct {
 	PushSuccess int64 `json:"push_success"`
 	PushError   int64 `json:"push_error"`
 }
@@ -47,6 +54,8 @@ func (s *Storage) Reset() {
 	atomic.StoreInt64(&s.stat.Ios.PushError, 0)
 	atomic.StoreInt64(&s.stat.Android.PushSuccess, 0)
 	atomic.StoreInt64(&s.stat.Android.PushError, 0)
+	atomic.StoreInt64(&s.stat.Web.PushSuccess, 0)
+	atomic.StoreInt64(&s.stat.Web.PushError, 0)
 }
 
 // AddTotalCount record push notification count.
@@ -72,6 +81,16 @@ func (s *Storage) AddAndroidSuccess(count int64) {
 // AddAndroidError record counts of error Android push notification.
 func (s *Storage) AddAndroidError(count int64) {
 	atomic.AddInt64(&s.stat.Android.PushError, count)
+}
+
+// AddWebSuccess record counts of success Web push notification.
+func (s *Storage) AddWebSuccess(count int64) {
+	atomic.AddInt64(&s.stat.Web.PushSuccess, count)
+}
+
+// AddWebError record counts of error Web push notification.
+func (s *Storage) AddWebError(count int64) {
+	atomic.AddInt64(&s.stat.Web.PushError, count)
 }
 
 // GetTotalCount show counts of all notification.
@@ -105,6 +124,20 @@ func (s *Storage) GetAndroidSuccess() int64 {
 // GetAndroidError show error counts of Android notification.
 func (s *Storage) GetAndroidError() int64 {
 	count := atomic.LoadInt64(&s.stat.Android.PushError)
+
+	return count
+}
+
+// GetWebSuccess show success counts of Web notification.
+func (s *Storage) GetWebSuccess() int64 {
+	count := atomic.LoadInt64(&s.stat.Web.PushSuccess)
+
+	return count
+}
+
+// GetWebError show error counts of Web notification.
+func (s *Storage) GetWebError() int64 {
+	count := atomic.LoadInt64(&s.stat.Web.PushError)
 
 	return count
 }

@@ -15,6 +15,8 @@ const (
 	IosErrorKey       = "gorush-ios-error-count"
 	AndroidSuccessKey = "gorush-android-success-count"
 	AndroidErrorKey   = "gorush-android-error-count"
+	WebSuccessKey     = "gorush-web-success-count"
+	WebErrorKey       = "gorush-web-error-count"
 )
 
 var dbPath string
@@ -62,6 +64,8 @@ func (s *Storage) Reset() {
 	setLevelDB(IosErrorKey, 0)
 	setLevelDB(AndroidSuccessKey, 0)
 	setLevelDB(AndroidErrorKey, 0)
+	setLevelDB(WebSuccessKey, 0)
+	setLevelDB(WebErrorKey, 0)
 }
 
 // AddTotalCount record push notification count.
@@ -92,6 +96,18 @@ func (s *Storage) AddAndroidSuccess(count int64) {
 func (s *Storage) AddAndroidError(count int64) {
 	total := s.GetAndroidError() + count
 	setLevelDB(AndroidErrorKey, total)
+}
+
+// AddWebSuccess record counts of success Web push notification.
+func (s *Storage) AddWebSuccess(count int64) {
+	total := s.GetWebSuccess() + count
+	setLevelDB(WebSuccessKey, total)
+}
+
+// AddWebError record counts of error Web push notification.
+func (s *Storage) AddWebError(count int64) {
+	total := s.GetWebError() + count
+	setLevelDB(WebErrorKey, total)
 }
 
 // GetTotalCount show counts of all notification.
@@ -130,6 +146,22 @@ func (s *Storage) GetAndroidSuccess() int64 {
 func (s *Storage) GetAndroidError() int64 {
 	var count int64
 	getLevelDB(AndroidErrorKey, &count)
+
+	return count
+}
+
+// GetWebSuccess show success counts of Web notification.
+func (s *Storage) GetWebSuccess() int64 {
+	var count int64
+	getLevelDB(WebSuccessKey, &count)
+
+	return count
+}
+
+// GetWebError show error counts of Web notification.
+func (s *Storage) GetWebError() int64 {
+	var count int64
+	getLevelDB(WebErrorKey, &count)
 
 	return count
 }
