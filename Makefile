@@ -5,6 +5,8 @@ EXECUTABLE := gorush
 
 DEPLOY_ACCOUNT := jaraxasoftware
 DEPLOY_IMAGE := $(EXECUTABLE)
+CONTAINER := js-gorush
+PORT := 8088
 
 TARGETS ?= linux darwin windows
 ARCHS ?= amd64 386
@@ -132,6 +134,41 @@ ifeq ($(tag),)
 endif
 	docker tag $(DEPLOY_ACCOUNT)/$(EXECUTABLE):latest $(DEPLOY_ACCOUNT)/$(EXECUTABLE):$(tag)
 	docker push $(DEPLOY_ACCOUNT)/$(EXECUTABLE):$(tag)
+
+docker_stop:
+	@if [ $(shell docker ps -a | grep -ci $(CONTAINER)) -eq 1 ]; then \
+		docker stop $(CONTAINER) > /dev/null 2>&1; \
+	fi
+
+docker_rm: docker_stop
+	@if [ $(shell docker ps -a | grep -ci $(CONTAINER)) -eq 1 ]; then \
+		docker rm $(CONTAINER) > /dev/null 2>&1; \
+	fi
+
+docker_rmi: docker_rm
+ifeq ($(tag),)
+	@if [ $(shell docker images | grep -ci $(DEPLOY_ACCOUNT)/$(EXECUTABLE)) -eq 1 ]; then \
+		docker rmi $(DEPLOY_ACCOUNT)/$(EXECUTABLE):latest > /dev/null 2>&1; \
+		docker rmi centurylink/ca-certs:latest > /dev/null 2>&1; \
+	fi
+else
+	@if [ $(shell docker images | grep -ci $(DEPLOY_ACCOUNT)/$(EXECUTABLE)) -eq 1 ]; then \
+		docker rmi $(DEPLOY_ACCOUNT)/$(EXECUTABLE):$(tag) > /dev/null 2>&1; \
+		docker rmi centurylink/ca-certs:latest > /dev/null 2>&1; \
+	fi
+endif
+
+docker_run: docker_rm
+	docker run -ti -d --name $(CONTAINER) --restart always \
+	-p ${PORT}:8088 \
+	-v ${CURDIR}/config:/config:ro \
+	$(DEPLOY_ACCOUNT)/$(EXECUTABLE):latest /gorush -c /config/config.yml
+
+docker_test:
+	curl \
+	-XGET \
+	-H "Accept: application/json" \
+ 	"localhost:$(PORT)/api/stat/go" | python -mjson.tool
 
 coverage:
 	curl -s https://codecov.io/bash > .codecov && \
