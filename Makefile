@@ -62,12 +62,6 @@ unconvert:
 	fi
 	for PKG in $(PACKAGES); do unconvert -v $$PKG || exit 1; done;
 
-dep_install:
-	glide install
-
-dep_update:
-	glide up
-
 install: $(SOURCES)
 	go install -v -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)'
 
