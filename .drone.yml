@@ -6,19 +6,11 @@ pipeline:
     image: plugins/git
     tags: true
 
-  # restore the cache from an sftp server
-  restore_cache:
-    image: appleboy/drone-sftp-cache
-    restore: true
-    mount: [ .glide, vendor ]
-    ignore_branch: true
-
   build:
     image: appleboy/golang-testing:${GO_VERSION}
     environment:
       - GOPATH=/go
     commands:
-      - make dep_install
       - make vet
       - make lint
       - make build
@@ -73,17 +65,6 @@ pipeline:
     when:
       event: [ tag ]
       branch: [ refs/tags/* ]
-      matrix:
-        GO_VERSION: 1.7.5
-
-  # rebuild the cache on the sftp server
-  rebuild_cache:
-    image: appleboy/drone-sftp-cache
-    rebuild: true
-    mount: [ .glide, vendor ]
-    ignore_branch: true
-    when:
-      branch: master
       matrix:
         GO_VERSION: 1.7.5
 
