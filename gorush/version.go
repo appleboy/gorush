@@ -32,7 +32,7 @@ func PrintGoRushVersion() {
 func VersionMiddleware() gin.HandlerFunc {
 	// Set out header value for each response
 	return func(c *gin.Context) {
-		c.Writer.Header().Set("Server-Version", "GoRush/"+version)
+		c.Header("X-DRONE-VERSION", version)
 		c.Next()
 	}
 }
