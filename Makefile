@@ -48,7 +48,7 @@ deps:
 	go get github.com/campoy/embedmd
 
 embedmd:
-	embedmd -d **/*.md
+	embedmd -d *.md
 
 errcheck:
 	@which errcheck > /dev/null; if [ $$? -ne 0 ]; then \
