@@ -54,13 +54,12 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 
 See the [YAML config example](config/config.yml):
 
+[embedmd]:# (config/config.yml yaml)
 ```yaml
 core:
   port: "8088"
-  # default worker number is runtime.NumCPU()
-  worker_num: 0
-  # default queue number is 8192
-  queue_num: 0
+  worker_num: 0 # default worker number is runtime.NumCPU()
+  queue_num: 0 # default queue number is 8192
   max_notification: 100
   mode: "release"
   ssl: false
@@ -68,7 +67,7 @@ core:
   key_path: "key.pem"
   http_proxy: "" # only working for GCM server
   pid:
-    enabled: true
+    enabled: false
     path: "gorush.pid"
     override: true
 

@@ -44,6 +44,12 @@ fmt:
 vet:
 	go vet $(PACKAGES)
 
+deps:
+	go get github.com/campoy/embedmd
+
+embedmd:
+	embedmd -d **/*.md
+
 errcheck:
 	@which errcheck > /dev/null; if [ $$? -ne 0 ]; then \
 		go get -u github.com/kisielk/errcheck; \
