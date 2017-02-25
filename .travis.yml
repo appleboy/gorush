@@ -9,7 +9,7 @@ go:
   - 1.6.x
   - 1.7.x
   - 1.8.x
-  - tip
+  - master
 
 env:
   global:
@@ -18,6 +18,8 @@ env:
     - secure: jbMSWnlmLHAXtI1A22aDyUvVWbXq1aRjW1EXcMyzAamBMl4c+47lrkoCnHuQaCY4kOWJ4ux7zPrnXL2j0HTqF7ZXzbw0TixG9dm8MK4TEImCcTcR8VQYbCCdiCM+MKy3XTewN2e1lCAzYu4oKO6xt424yvlowuWiunWZ9YVFfKRpXvfWDd9Rt20PYP7cPyqifRdk4aKI8H+hXWGdeRkRoQvZMa1TdFwRmyg0jfrw94xz/GKNLsSXIu3XBY4LSzzBNUmfcIPpK2TuqAyLxb4d/L+OXG5KQZpydLJgE+GGxtqyAcNkK1ps4Qf3ua6DbGVdQ6Zg0db3g5OLu5LsyvO2jQQIPUQbVDRwwHmT2pDRhz8e8VUMGmokgMX2gAXjxJJ3CFPZAaR9VAzhtlQxbrFi5zSU7VAv92XLNNAdQhA+FFQryC/myI0V82reVWUlXMZsKqBdn5Zq7EA2AsW06NxW8REewUb3o9gauz+B8jAAXtIXZEXWVGqVLXLQceokAWQgrhOBKuE8H3Fuq1tT5VqaDcbvPT0LEU4FdSVBd1+JU0W9nJ4SF2nivJ4tCeZRgtKhaoG2n5gwM9L3fSdZTSrcZL4Gn9XfDZL5hV5GezrdGGGMfhtfIllJPFv3TjYNUlo3F2L3QB9D6SQR3VeLXHAB+IHw6VWwkOSqfEQVf4d8kHo=
 
 script:
+  - make deps
+  - make embedmd
   - make vet
   - make lint
   - make test

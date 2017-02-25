@@ -11,9 +11,11 @@ pipeline:
     environment:
       - GOPATH=/go
     commands:
+      - make deps
       - make vet
       - make lint
       - make build
+      - make embedmd
       - coverage all
       # send coverage report
       - make coverage

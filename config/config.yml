@@ -1,15 +1,13 @@
 core:
   port: "8088"
-  # default worker number is runtime.NumCPU()
-  worker_num: 0
-  # default queue number is 8192
-  queue_num: 0
+  worker_num: 0 # default worker number is runtime.NumCPU()
+  queue_num: 0 # default queue number is 8192
   max_notification: 100
   mode: "release"
   ssl: false
   cert_path: "cert.pem"
   key_path: "key.pem"
-  http_proxy: ""
+  http_proxy: "" # only working for GCM server
   pid:
     enabled: false
     path: "gorush.pid"
@@ -26,25 +24,25 @@ api:
 android:
   enabled: true
   apikey: "YOUR_API_KEY"
-  max_retry: 0
+  max_retry: 0 # resend fail notification, default value zero is disabled
 
 ios:
   enabled: false
   key_path: "key.pem"
-  password: ""
+  password: "" # certificate password, default as empty string.
   production: false
-  max_retry: 0
+  max_retry: 0 # resend fail notification, default value zero is disabled
 
 log:
   format: "string" # string or json
-  access_log: "stdout"
+  access_log: "stdout" # stdout: output to console, or define log path like "log/access_log"
   access_level: "debug"
-  error_log: "stderr"
+  error_log: "stderr" # stderr: output to console, or define log path like "log/error_log"
   error_level: "error"
   hide_token: true
 
 stat:
-  engine: "memory"
+  engine: "memory" # support memory, redis, boltdb, buntdb or leveldb
   redis:
     addr: "localhost:6379"
     password: ""
