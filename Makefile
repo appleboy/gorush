@@ -51,19 +51,19 @@ embedmd:
 	embedmd -d *.md
 
 errcheck:
-	@which errcheck > /dev/null; if [ $$? -ne 0 ]; then \
+	@hash errcheck > /hashnull 2>&1; if [ $$? -ne 0 ]; then \
 		go get -u github.com/kisielk/errcheck; \
 	fi
 	errcheck $(PACKAGES)
 
 lint:
-	@which golint > /dev/null; if [ $$? -ne 0 ]; then \
+	@hash golint > /hashnull 2>&1; if [ $$? -ne 0 ]; then \
 		go get -u github.com/golang/lint/golint; \
 	fi
 	for PKG in $(PACKAGES); do golint -set_exit_status $$PKG || exit 1; done;
 
 unconvert:
-	@which unconvert > /dev/null; if [ $$? -ne 0 ]; then \
+	@hash unconvert > /hashnull 2>&1; if [ $$? -ne 0 ]; then \
 		go get -u github.com/mdempsky/unconvert; \
 	fi
 	for PKG in $(PACKAGES); do unconvert -v $$PKG || exit 1; done;
@@ -106,7 +106,7 @@ release-dirs:
 	mkdir -p $(DIST)/binaries $(DIST)/release
 
 release-build:
-	@which gox > /dev/null; if [ $$? -ne 0 ]; then \
+	@hash gox > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
 		go get -u github.com/mitchellh/gox; \
 	fi
 	gox -os="$(TARGETS)" -arch="$(ARCHS)" -tags="$(TAGS)" -ldflags="$(EXTLDFLAGS)-s -w $(LDFLAGS)" -output="$(DIST)/binaries/$(EXECUTABLE)-$(VERSION)-{{.OS}}-{{.Arch}}"
