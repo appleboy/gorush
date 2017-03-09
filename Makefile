@@ -51,19 +51,19 @@ embedmd:
 	embedmd -d *.md
 
 errcheck:
-	@hash errcheck > /hashnull 2>&1; if [ $$? -ne 0 ]; then \
+	@hash errcheck > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
 		go get -u github.com/kisielk/errcheck; \
 	fi
 	errcheck $(PACKAGES)
 
 lint:
-	@hash golint > /hashnull 2>&1; if [ $$? -ne 0 ]; then \
+	@hash golint > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
 		go get -u github.com/golang/lint/golint; \
 	fi
 	for PKG in $(PACKAGES); do golint -set_exit_status $$PKG || exit 1; done;
 
 unconvert:
-	@hash unconvert > /hashnull 2>&1; if [ $$? -ne 0 ]; then \
+	@hash unconvert > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
 		go get -u github.com/mdempsky/unconvert; \
 	fi
 	for PKG in $(PACKAGES); do unconvert -v $$PKG || exit 1; done;
