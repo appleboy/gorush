@@ -8,6 +8,7 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 
 - [Support Platform](#support-platform)
 - [Features](#features)
+- [Memory Usage](#memory-usage)
 - [Basic Usage](#basic-usage)
   - [Download a binary](#download-a-binary)
   - [Command Usage](#command-usage)
@@ -113,6 +114,12 @@ stat:
   leveldb:
     path: "level.db"
 ```
+
+## Memory Usage
+
+Memory average usage: **10Mb**
+
+![memory usage](screenshot/memory_usage.png)
 
 ## Basic Usage
 
