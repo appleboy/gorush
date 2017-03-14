@@ -8,6 +8,7 @@ Forked from [gorush](https://github.com/appleboy/gorush)
 
 - [Support Platform](#support-platform)
 - [Features](#features)
+- [Memory Usage](#memory-usage)
 - [Basic Usage](#basic-usage)
   - [Download a binary](#download-a-binary)
   - [Command Usage](#command-usage)
@@ -54,13 +55,12 @@ Forked from [gorush](https://github.com/appleboy/gorush)
 
 See the [YAML config example](config/config.yml):
 
+[embedmd]:# (config/config.yml yaml)
 ```yaml
 core:
   port: "8088"
-  # default worker number is runtime.NumCPU()
-  worker_num: 0
-  # default queue number is 8192
-  queue_num: 0
+  worker_num: 0 # default worker number is runtime.NumCPU()
+  queue_num: 0 # default queue number is 8192
   max_notification: 100
   mode: "release"
   ssl: false
@@ -68,7 +68,7 @@ core:
   key_path: "key.pem"
   http_proxy: "" # only working for GCM server
   pid:
-    enabled: true
+    enabled: false
     path: "gorush.pid"
     override: true
 
@@ -114,6 +114,12 @@ stat:
   leveldb:
     path: "level.db"
 ```
+
+## Memory Usage
+
+Memory average usage: **10Mb**
+
+![memory usage](screenshot/memory_usage.png)
 
 ## Basic Usage
 

@@ -46,29 +46,29 @@ fmt:
 vet:
 	go vet $(PACKAGES)
 
+deps:
+	go get github.com/campoy/embedmd
+
+embedmd:
+	embedmd -d *.md
+
 errcheck:
-	@which errcheck > /dev/null; if [ $$? -ne 0 ]; then \
+	@hash errcheck > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
 		go get -u github.com/kisielk/errcheck; \
 	fi
 	errcheck $(PACKAGES)
 
 lint:
-	@which golint > /dev/null; if [ $$? -ne 0 ]; then \
+	@hash golint > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
 		go get -u github.com/golang/lint/golint; \
 	fi
 	for PKG in $(PACKAGES); do golint -set_exit_status $$PKG || exit 1; done;
 
 unconvert:
-	@which unconvert > /dev/null; if [ $$? -ne 0 ]; then \
+	@hash unconvert > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
 		go get -u github.com/mdempsky/unconvert; \
 	fi
 	for PKG in $(PACKAGES); do unconvert -v $$PKG || exit 1; done;
-
-dep_install:
-	glide install
-
-dep_update:
-	glide up
 
 install: $(SOURCES)
 	go install -v -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)'
@@ -108,7 +108,7 @@ release-dirs:
 	mkdir -p $(DIST)/binaries $(DIST)/release
 
 release-build:
-	@which gox > /dev/null; if [ $$? -ne 0 ]; then \
+	@hash gox > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
 		go get -u github.com/mitchellh/gox; \
 	fi
 	gox -os="$(TARGETS)" -arch="$(ARCHS)" -tags="$(TAGS)" -ldflags="$(EXTLDFLAGS)-s -w $(LDFLAGS)" -output="$(DIST)/binaries/$(EXECUTABLE)-$(VERSION)-{{.OS}}-{{.Arch}}"

@@ -1,0 +1,81 @@
+workspace:
+  path: /go/src/github.com/appleboy/gorush
+
+pipeline:
+  clone:
+    image: plugins/git
+    tags: true
+
+  build:
+    image: appleboy/golang-testing:${GO_VERSION}
+    environment:
+      - GOPATH=/go
+    commands:
+      - make deps
+      - make vet
+      - make lint
+      - make build
+      - make embedmd
+      - coverage all
+      # send coverage report
+      - make coverage
+      # build binary for docker image
+      - make docker_build
+
+  release:
+    image: appleboy/golang-testing:${GO_VERSION}
+    pull: true
+    environment:
+      TAGS: netgo
+    commands:
+      - make release
+    when:
+      event: [ tag ]
+      branch: [ refs/tags/* ]
+      matrix:
+        GO_VERSION: 1.8.0
+
+  docker:
+    image: plugins/docker
+    repo: appleboy/gorush
+    tags: [ '${DRONE_TAG}' ]
+    when:
+      event: [ tag ]
+      branch: [ refs/tags/* ]
+
+  docker:
+    image: plugins/docker
+    repo: appleboy/gorush
+    tags: [ 'latest' ]
+    when:
+      event: [ push ]
+      branch: [ master ]
+
+  facebook:
+    image: appleboy/drone-facebook
+    pull: true
+    to: 1234973386524610
+    when:
+      status: [ success, failure ]
+      matrix:
+        GO_VERSION: 1.8.0
+
+  github:
+    image: plugins/github-release
+    files:
+      - dist/release/*
+    when:
+      event: [ tag ]
+      branch: [ refs/tags/* ]
+      matrix:
+        GO_VERSION: 1.8.0
+
+services:
+  redis:
+    image: redis:alpine
+
+matrix:
+  GO_VERSION:
+    - 1.8.0
+    - 1.7.5
+    - 1.6.4
