@@ -33,6 +33,7 @@ Forked from [gorush](https://github.com/appleboy/gorush)
 
 * [APNS](https://developer.apple.com/library/ios/documentation/networkinginternet/conceptual/remotenotificationspg/Chapters/ApplePushService.html)
 * [GCM](https://developer.android.com/google/gcm/index.html)
+* [Push API](https://w3c.github.io/push-api/)
 
 ## Features
 
@@ -52,6 +53,7 @@ Forked from [gorush](https://github.com/appleboy/gorush)
 * Support for HTTP proxy to Google server (GCM).
 * Support retry send notification if server response is fail.
 * Support expose [prometheus](https://prometheus.io/) metrics.
+* Support [Push API](https://w3c.github.io/push-api/) using [gowebpush](https://github.com/martijnc/gowebpush) package
 
 See the [YAML config example](config/config.yml):
 
