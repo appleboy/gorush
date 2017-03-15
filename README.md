@@ -90,6 +90,15 @@ ios:
   key_path: "key.pem"
   password: "" # certificate password, default as empty string.
   production: false
+  voip_enabled: false
+  voip_key_path: "voipkey.pem"
+  voip_password: ""
+  voip_production: false
+  max_retry: 0 # resend fail notification, default value zero is disabled
+
+web:
+  enabled: false
+  apikey: "YOUR_GCM_API_KEY"
   max_retry: 0 # resend fail notification, default value zero is disabled
 
 log:
@@ -394,18 +403,26 @@ See more example about [iOS](#ios-example) or [Android](#android-example).
 
 ### Request body
 
-Request body must has a notifications array. The following is a parameter table for each notification.
+Request body is a JSON containing the following fields.
+
+| name          | type         | description                                                     | required | note                                                                       |
+|---------------|--------------|-----------------------------------------------------------------|----------|----------------------------------------------------------------------------|
+| notifications | object array | Notifications that are being sent                               | o        |                                                                            |
+| sync          | bool         | Wait for push services responses before replying to the request | -        | Error messages are only returned when this is true. Default value is false |
+
+The following is a parameter table for each notification in the notifications array.
 
 | name                    | type         | description                                                                                       | required | note                                                          |
 |-------------------------|--------------|---------------------------------------------------------------------------------------------------|----------|---------------------------------------------------------------|
-| tokens                  | string array | device tokens                                                                                     | o        |                                                               |
-| platform                | int          | platform(iOS,Android)                                                                             | o        | 1=iOS, 2=Android                                              |
+| tokens                  | string array | device tokens                                                                                     | o        | Required if platform is 1 or 2                                |
+| subscriptions           | object array | Web Push subscription objects                                                                     | o        | Required if platform is 3                                     |
+| platform                | int          | platform(iOS,Android)                                                                             | o        | 1=iOS, 2=Android, 3=Web                                       |
 | message                 | string       | message for notification                                                                          | -        |                                                               |
 | title                   | string       | notification title                                                                                | -        |                                                               |
 | priority                | string       | Sets the priority of the message.                                                                 | -        | `normal` or `high`                                            |
 | content_available       | bool         | data messages wake the app by default.                                                            | -        |                                                               |
 | sound                   | string       | sound type                                                                                        | -        |                                                               |
-| data                    | string array | extensible partition                                                                              | -        |                                                               |
+| data                    | string array | extensible partition                                                                              | -        | payload for Web is taken from this field                      |
 | retry                   | int          | retry send notification if fail response from server. Value must be small than `max_retry` field. | -        |                                                               |
 | api_key                 | string       | Android api key                                                                                   | -        | only Android                                                  |
 | to                      | string       | The value must be a registration token, notification key, or topic.                               | -        | only Android                                                  |
@@ -421,7 +438,8 @@ Request body must has a notifications array. The following is a parameter table 
 | badge                   | int          | badge count                                                                                       | -        | only iOS                                                      |
 | category                | string       | the UIMutableUserNotificationCategory object                                                      | -        | only iOS                                                      |
 | alert                   | string array | payload of a iOS message                                                                          | -        | only iOS. See the [detail](#ios-alert-payload)                |
-| mutable_content       | bool         | enable Notification Service app extension.                                                            | -        | only iOS(10.0+).
+| mutable_content         | bool         | enable Notification Service app extension.                                                        | -        | only iOS(10.0+).                                              |
+| voip                    | bool         | send VoIP push instead of normal push.                                                            | -        | only iOS.                                                     |
 
 ### iOS alert payload
 
@@ -454,6 +472,16 @@ See more detail about [APNs Remote Notification Payload](https://developer.apple
 | title_loc_args | string | Indicates the string value to replace format specifiers in title string for localization.                 | -        |      |
 
 See more detail about [GCM server reference](https://developers.google.com/cloud-messaging/http-server-ref#send-downstream).
+
+### Web Push subscription
+
+| name      | type   | description                                                                | required | note |
+|-----------|--------|----------------------------------------------------------------------------|----------|------|
+| endpoint  | string | Endpoint URL from PushSubscription browser object.                         | o        |      |
+| key       | string | P-256 ECDH Diffie-Hellman public key from PushSubscription browser object. | o        |      |
+| auth      | string | Authentication secret from PushSubscription browser object.                | o        |      |
+
+See more detail about [PushSubscription interface](https://w3c.github.io/push-api/#pushsubscription-interface)
 
 ### iOS Example
 
