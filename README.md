@@ -39,6 +39,7 @@ Forked from [gorush](https://github.com/appleboy/gorush)
 
 * Support [Google Cloud Message](https://developers.google.com/cloud-messaging/) ([Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging/) now) using [go-gcm](https://github.com/google/go-gcm) library for Android.
 * Support [HTTP/2](https://http2.github.io/) Apple Push Notification Service using [apns2](https://github.com/sideshow/apns2) library.
+* Support [Push API](https://w3c.github.io/push-api/) using [gowebpush](https://github.com/martijnc/gowebpush) package
 * Support [YAML](https://github.com/go-yaml/yaml) configuration.
 * Support command line to send single Android or iOS notification.
 * Support Web API to send push notification.
@@ -53,7 +54,6 @@ Forked from [gorush](https://github.com/appleboy/gorush)
 * Support for HTTP proxy to Google server (GCM).
 * Support retry send notification if server response is fail.
 * Support expose [prometheus](https://prometheus.io/) metrics.
-* Support [Push API](https://w3c.github.io/push-api/) using [gowebpush](https://github.com/martijnc/gowebpush) package
 
 See the [YAML config example](config/config.yml):
 
@@ -546,6 +546,22 @@ Add other fields which user defined via `data` field.
   ]
 ```
 
+Send VoIP push.
+
+```json
+  "notifications": [
+    {
+      "tokens": ["token_a", "token_b"],
+      "platform": 1,
+      "message": "Hello VoIP iOS!",
+	  "voip": true,
+      "data": {
+        "key1": "Incoming call",
+        "key2": "Peter"
+      }
+    }
+  ]
+```
 ### Android Example
 
 Send normal notification.
@@ -596,6 +612,31 @@ Add other fields which user defined via `data` field.
   ]
 ```
 
+### Web Example
+
+Send normal notification.
+
+```json
+  "notifications": [
+    {
+      "subscriptions": [{
+        "endpoint": "endpoint_a",
+        "key": "key_a",
+        "auth": "auth_a"
+      },{
+        "endpoint": "endpoint_b",
+        "key": "key_b",
+        "auth": "auth_b"
+      }],
+      "platform": 3,
+      "data": {
+        "message": "Hello World Web!",
+        "title": "You got message"
+      }
+    }
+  ]
+```
+
 ### Response body
 
 Error response message table:
@@ -606,11 +647,55 @@ Error response message table:
 | 400         | Notifications field is empty.              |
 | 400         | Number of notifications(50) over limit(10) |
 
-Success response:
+Success response on async request:
 
 ```json
 {
-  "success": "ok"
+  "success": "ok",
+}
+```
+
+Success response on sync request:
+
+```json
+{
+  "apnsFailedResults": {},
+  "gcmFailedResults": {},
+  "success": "ok",
+  "webFailedResults": {}
+}
+```
+
+Response with some fails for each platform on sync request:
+
+```json
+{
+  "apnsFailedResults": {
+    "apns_token_a": {
+      "StatusCode": 400,
+      "Reason": "BadDeviceToken",
+      "ApnsID": "apns_id_a",
+      "Timestamp": "0001-01-01T00:00:00Z"
+    }
+  },
+  "gcmFailedResults": {
+    "gcm_token_a": "InvalidRegistration"
+  },
+  "success": "ok",
+  "webFailedResults": {
+    "chrome_endpoint_a": {
+      "StatusCode": 400,
+      "Body": "<HTML>\n<HEAD>\n<TITLE>UnauthorizedRegistration</TITLE>\n</HEAD>\n<BODY BGCOLOR=\"#FFFFFF\" TEXT=\"#000000\">\n<H1>UnauthorizedRegistration</H1>\n<H2>Error 400</H2>\n</BODY>\n</HTML>\n"
+    },
+    "firefox_endpoint_a": {
+      "StatusCode": 410,
+      "Body": "{\"code\": 410, \"errno\": 106, \"error\": \"\", \"more_info\": \"http://autopush.readthedocs.io/en/latest/http.html#error-codes\", \"message\": \"Request did not validate No such subscription\"}"
+    },
+    "firefox_endpoint_b": {
+      "StatusCode": 404,
+      "Body": "{\"code\": 404, \"errno\": 102, \"error\": \"Not Found\", \"more_info\": \"http://autopush.readthedocs.io/en/latest/http.html#error-codes\", \"message\": \"Request did not validate invalid token\"}"
+    }
+  }
 }
 ```
 
