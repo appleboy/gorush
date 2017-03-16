@@ -554,7 +554,7 @@ Send VoIP push.
       "tokens": ["token_a", "token_b"],
       "platform": 1,
       "message": "Hello VoIP iOS!",
-	  "voip": true,
+      "voip": true,
       "data": {
         "key1": "Incoming call",
         "key2": "Peter"
