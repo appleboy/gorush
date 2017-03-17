@@ -149,11 +149,15 @@ docker_rmi: docker_rm
 ifeq ($(tag),)
 	@if [ $(shell docker images | grep -ci $(DEPLOY_ACCOUNT)/$(EXECUTABLE)) -eq 1 ]; then \
 		docker rmi $(DEPLOY_ACCOUNT)/$(EXECUTABLE):latest > /dev/null 2>&1; \
+	fi;
+	@if [ $(shell docker images | grep -ci centurylink/ca-certs) -eq 1 ]; then \
 		docker rmi centurylink/ca-certs:latest > /dev/null 2>&1; \
 	fi
 else
 	@if [ $(shell docker images | grep -ci $(DEPLOY_ACCOUNT)/$(EXECUTABLE)) -eq 1 ]; then \
 		docker rmi $(DEPLOY_ACCOUNT)/$(EXECUTABLE):$(tag) > /dev/null 2>&1; \
+	fi;
+	@if [ $(shell docker images | grep -ci centurylink/ca-certs) -eq 1 ]; then \
 		docker rmi centurylink/ca-certs:latest > /dev/null 2>&1; \
 	fi
 endif
