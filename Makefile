@@ -170,6 +170,12 @@ docker_test:
 	-H "Accept: application/json" \
  	"localhost:$(PORT)/api/stat/go" | python -mjson.tool
 
+docker_save:
+	docker save $(DEPLOY_ACCOUNT)/$(EXECUTABLE) | gzip > $(DEPLOY_ACCOUNT)_$(EXECUTABLE).tar.gz
+
+docker_load:
+	gunzip < $(DEPLOY_ACCOUNT)_$(EXECUTABLE).tar.gz | docker load
+
 coverage:
 	curl -s https://codecov.io/bash > .codecov && \
 	chmod +x .codecov && \
