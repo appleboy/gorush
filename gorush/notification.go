@@ -286,7 +286,7 @@ func iosAlertDictionary(payload *payload.Payload, req PushNotification) *payload
 	return payload
 }
 
-// GetIOSNotification use for define iOS notificaiton.
+// GetIOSNotification use for define iOS notification.
 // The iOS Notification Payload
 // ref: https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/PayloadKeyReference.html#//apple_ref/doc/uid/TP40008194-CH17-SW1
 func GetIOSNotification(req PushNotification) *apns.Notification {
@@ -401,7 +401,7 @@ Retry:
 	return isError
 }
 
-// GetAndroidNotification use for define Android notificaiton.
+// GetAndroidNotification use for define Android notification.
 // HTTP Connection Server Reference for Android
 // https://developers.google.com/cloud-messaging/http-server-ref
 func GetAndroidNotification(req PushNotification) gcm.HttpMessage {
