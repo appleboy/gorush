@@ -123,22 +123,28 @@
 			"revisionTime": "2015-10-06T22:16:25Z"
 		},
 		{
-			"checksumSHA1": "RsNwOto8G8aXIiRrlFn4dtU9q/g=",
+			"checksumSHA1": "vPTW4XEbp0oKyrZRqBAcx+QMSr8=",
 			"path": "github.com/gin-gonic/gin",
-			"revision": "e2212d40c62a98b388a5eb48ecbdcf88534688ba",
-			"revisionTime": "2016-12-04T22:13:08Z"
+			"revision": "ad2dacedd654cdc1c1526971fe83c118318975ba",
+			"revisionTime": "2017-03-24T12:43:23Z",
+			"version": "=develop",
+			"versionExact": "develop"
 		},
 		{
-			"checksumSHA1": "UsILDoIB2S7ra+w2fMdb85mX3HM=",
+			"checksumSHA1": "wEYVkapMAF7S2iVWlWzLHu598dE=",
 			"path": "github.com/gin-gonic/gin/binding",
-			"revision": "e2212d40c62a98b388a5eb48ecbdcf88534688ba",
-			"revisionTime": "2016-12-04T22:13:08Z"
+			"revision": "ad2dacedd654cdc1c1526971fe83c118318975ba",
+			"revisionTime": "2017-03-24T12:43:23Z",
+			"version": "=develop",
+			"versionExact": "develop"
 		},
 		{
-			"checksumSHA1": "PHv9FNb7YavJWtAHcY6ZgXmkmHs=",
+			"checksumSHA1": "L0jAVQ9YZsoU1RpJDcKFdMEnLUs=",
 			"path": "github.com/gin-gonic/gin/render",
-			"revision": "e2212d40c62a98b388a5eb48ecbdcf88534688ba",
-			"revisionTime": "2016-12-04T22:13:08Z"
+			"revision": "ad2dacedd654cdc1c1526971fe83c118318975ba",
+			"revisionTime": "2017-03-24T12:43:23Z",
+			"version": "=develop",
+			"versionExact": "develop"
 		},
 		{
 			"checksumSHA1": "kBeNcaKk56FguvPSUCEaH6AxpRc=",
@@ -399,6 +405,12 @@
 			"revisionTime": "2016-09-03T21:37:29Z"
 		},
 		{
+			"checksumSHA1": "MxLnUmfrP+r5HfCZM29+WPKebn8=",
+			"path": "github.com/ugorji/go/codec",
+			"revision": "708a42d246822952f38190a8d8c4e6b16a0e600c",
+			"revisionTime": "2017-03-12T11:21:14Z"
+		},
+		{
 			"checksumSHA1": "KeaQhXgb4KlZWJM7aIgcJwCKNOg=",
 			"path": "golang.org/x/crypto/pkcs12",
 			"revision": "453249f01cfeb54c3d549ddb75ff152ca243f9d8",
@@ -463,6 +475,12 @@
 			"path": "gopkg.in/fukata/golang-stats-api-handler.v1",
 			"revision": "90f0b59102629831cc109845475a8d77043412ec",
 			"revisionTime": "2016-03-25T10:38:24Z"
+		},
+		{
+			"checksumSHA1": "pyAPYrymvmZl0M/Mr4yfjOQjA8I=",
+			"path": "gopkg.in/gin-contrib/sse.v0",
+			"revision": "22d885f9ecc78bf4ee5d72b937e4bbcdc58e8cae",
+			"revisionTime": "2017-01-09T09:34:21Z"
 		},
 		{
 			"checksumSHA1": "39V1idWER42Lmcmg2Uy40wMzOlo=",
