@@ -17,11 +17,10 @@ func init() {
 }
 
 func abortWithError(c *gin.Context, code int, message string) {
-	c.JSON(code, gin.H{
+	c.AbortWithStatusJSON(code, gin.H{
 		"code":    code,
 		"message": message,
 	})
-	c.Abort()
 }
 
 func rootHandler(c *gin.Context) {
