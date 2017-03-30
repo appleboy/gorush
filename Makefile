@@ -41,6 +41,22 @@ endif
 fmt:
 	find . -name "*.go" -type f -not -path "./vendor/*" | xargs gofmt -s -w
 
+.PHONY: fmt-check
+fmt-check:
+	@if git diff --quiet --exit-code; then \
+		$(MAKE) fmt && git diff --exit-code || { \
+			git checkout .; \
+			echo; \
+			echo "Please run 'make fmt' and commit the result"; \
+			echo; \
+			false; } >&2; \
+	else { \
+		echo; \
+		echo "'make fmt-check' cannot be run with unstaged changes"; \
+		echo; \
+		false; } >&2; \
+	fi
+
 vet:
 	go vet $(PACKAGES)
 
@@ -76,7 +92,7 @@ build: $(EXECUTABLE)
 $(EXECUTABLE): $(SOURCES)
 	go build -v -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)' -o bin/$@
 
-test:
+test: fmt-check
 	for PKG in $(PACKAGES); do go test -v -cover -coverprofile $$GOPATH/src/$$PKG/coverage.txt $$PKG || exit 1; done;
 
 redis_test: init
