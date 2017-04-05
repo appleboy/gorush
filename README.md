@@ -52,13 +52,14 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 * Support for HTTP proxy to Google server (GCM).
 * Support retry send notification if server response is fail.
 * Support expose [prometheus](https://prometheus.io/) metrics.
+* Support install TLS certificates from [Let's Encrypt](https://letsencrypt.org/) automatically.
 
 See the [YAML config example](config/config.yml):
 
 [embedmd]:# (config/config.yml yaml)
 ```yaml
 core:
-  port: "8088"
+  port: "8088" # ignore this port number if auto_tls is enabled (listen 443).
   worker_num: 0 # default worker number is runtime.NumCPU()
   queue_num: 0 # default queue number is 8192
   max_notification: 100
@@ -71,6 +72,10 @@ core:
     enabled: false
     path: "gorush.pid"
     override: true
+  auto_tls:
+    enabled: false # Automatically install TLS certificates from Let's Encrypt.
+    folder: ".cache" # folder for storing TLS certificates
+    host: "" # which domains the Let's Encrypt will attempt
 
 api:
   push_uri: "/api/push"
@@ -233,7 +238,7 @@ $ gorush -c config.yml
 Get go status of api server using [httpie](https://github.com/jkbrzt/httpie) tool:
 
 ```bash
-$ http -v --verify=no --json GET https://localhost:8088/api/stat/go
+$ http -v --verify=no --json GET http://localhost:8088/api/stat/go
 ```
 
 ## Web API

@@ -10,10 +10,10 @@ import (
 )
 
 // RunHTTPServer provide run http or https protocol.
-func RunHTTPServer() error {
-	var err error
-
-	if PushConf.Core.SSL && PushConf.Core.CertPath != "" && PushConf.Core.KeyPath != "" {
+func RunHTTPServer() (err error) {
+	if PushConf.Core.AutoTLS.Enabled {
+		err = gracehttp.Serve(autoTLSServer())
+	} else if PushConf.Core.SSL && PushConf.Core.CertPath != "" && PushConf.Core.KeyPath != "" {
 		config := &tls.Config{
 			MinVersion: tls.VersionTLS10,
 		}
@@ -41,5 +41,5 @@ func RunHTTPServer() error {
 		})
 	}
 
-	return err
+	return
 }

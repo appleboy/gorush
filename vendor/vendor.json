@@ -411,6 +411,18 @@
 			"revisionTime": "2017-03-12T11:21:14Z"
 		},
 		{
+			"checksumSHA1": "didOyrMN69DzlBd+BPSC28G2YG0=",
+			"path": "golang.org/x/crypto/acme",
+			"revision": "c78caca803c95773f48a844d3dcab04b9bc4d6dd",
+			"revisionTime": "2017-04-04T15:27:40Z"
+		},
+		{
+			"checksumSHA1": "yfiamzDHcZXb6irWt7DfHVxCs44=",
+			"path": "golang.org/x/crypto/acme/autocert",
+			"revision": "c78caca803c95773f48a844d3dcab04b9bc4d6dd",
+			"revisionTime": "2017-04-04T15:27:40Z"
+		},
+		{
 			"checksumSHA1": "KeaQhXgb4KlZWJM7aIgcJwCKNOg=",
 			"path": "golang.org/x/crypto/pkcs12",
 			"revision": "453249f01cfeb54c3d549ddb75ff152ca243f9d8",
@@ -427,6 +439,12 @@
 			"path": "golang.org/x/net/context",
 			"revision": "6b27048ae5e6ad1ef927e72e437531493de612fe",
 			"revisionTime": "2017-02-17T08:49:01Z"
+		},
+		{
+			"checksumSHA1": "WHc3uByvGaMcnSoI21fhzYgbOgg=",
+			"path": "golang.org/x/net/context/ctxhttp",
+			"revision": "ffcf1bedda3b04ebb15a168a59800a73d6dc0f4d",
+			"revisionTime": "2017-03-29T01:43:45Z"
 		},
 		{
 			"checksumSHA1": "LC+mzxnIrUS9Kr4s7shpY+A9J2o=",

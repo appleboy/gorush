@@ -1,12 +1,14 @@
 package gorush
 
 import (
+	"crypto/tls"
 	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"golang.org/x/crypto/acme/autocert"
 	api "gopkg.in/appleboy/gin-status-api.v1"
 )
 
@@ -68,6 +70,20 @@ func configHandler(c *gin.Context) {
 
 func metricsHandler(c *gin.Context) {
 	promhttp.Handler().ServeHTTP(c.Writer, c.Request)
+}
+
+func autoTLSServer() *http.Server {
+	m := autocert.Manager{
+		Prompt:     autocert.AcceptTOS,
+		HostPolicy: autocert.HostWhitelist(PushConf.Core.AutoTLS.Host),
+		Cache:      autocert.DirCache(PushConf.Core.AutoTLS.Folder),
+	}
+
+	return &http.Server{
+		Addr:      ":https",
+		TLSConfig: &tls.Config{GetCertificate: m.GetCertificate},
+		Handler:   routerEngine(),
+	}
 }
 
 func routerEngine() *gin.Engine {

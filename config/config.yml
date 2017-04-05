@@ -1,5 +1,5 @@
 core:
-  port: "8088"
+  port: "8088" # ignore this port number if auto_tls is enabled (listen 443).
   worker_num: 0 # default worker number is runtime.NumCPU()
   queue_num: 0 # default queue number is 8192
   max_notification: 100
@@ -12,6 +12,10 @@ core:
     enabled: false
     path: "gorush.pid"
     override: true
+  auto_tls:
+    enabled: false # Automatically install TLS certificates from Let's Encrypt.
+    folder: ".cache" # folder for storing TLS certificates
+    host: "" # which domains the Let's Encrypt will attempt
 
 api:
   push_uri: "/api/push"
