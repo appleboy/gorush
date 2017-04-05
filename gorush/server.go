@@ -1,6 +1,7 @@
 package gorush
 
 import (
+	"crypto/tls"
 	"fmt"
 	"net/http"
 
