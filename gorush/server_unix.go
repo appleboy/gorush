@@ -7,13 +7,25 @@ import (
 	"net/http"
 
 	"github.com/facebookgo/grace/gracehttp"
+	"golang.org/x/crypto/acme/autocert"
 )
 
 // RunHTTPServer provide run http or https protocol.
-func RunHTTPServer() error {
-	var err error
+func RunHTTPServer() (err error) {
+	if PushConf.Core.AutoTLS.Enabled {
+		m := autocert.Manager{
+			Prompt:     autocert.AcceptTOS,
+			HostPolicy: autocert.HostWhitelist(PushConf.Core.AutoTLS.Host),
+			Cache:      autocert.DirCache(PushConf.Core.AutoTLS.Folder),
+		}
 
-	if PushConf.Core.SSL && PushConf.Core.CertPath != "" && PushConf.Core.KeyPath != "" {
+		s := &http.Server{
+			Addr:      ":https",
+			TLSConfig: &tls.Config{GetCertificate: m.GetCertificate},
+			Handler:   routerEngine(),
+		}
+		err = gracehttp.Serve(s)
+	} else if PushConf.Core.SSL && PushConf.Core.CertPath != "" && PushConf.Core.KeyPath != "" {
 		config := &tls.Config{
 			MinVersion: tls.VersionTLS10,
 		}
@@ -41,5 +53,5 @@ func RunHTTPServer() error {
 		})
 	}
 
-	return err
+	return
 }

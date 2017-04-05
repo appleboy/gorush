@@ -12,6 +12,10 @@ core:
     enabled: false
     path: "gorush.pid"
     override: true
+  auto_tls:
+    enabled: false # Automatically install TLS certificates from Let's Encrypt.
+    folder: ".cache" # folder for storing TLS certificates
+    host: "" # which domains the Let's Encrypt will attempt
 
 api:
   push_uri: "/api/push"

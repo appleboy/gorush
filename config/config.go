@@ -19,16 +19,24 @@ type ConfYaml struct {
 
 // SectionCore is sub section of config.
 type SectionCore struct {
-	Port            string     `yaml:"port"`
-	MaxNotification int64      `yaml:"max_notification"`
-	WorkerNum       int64      `yaml:"worker_num"`
-	QueueNum        int64      `yaml:"queue_num"`
-	Mode            string     `yaml:"mode"`
-	SSL             bool       `yaml:"ssl"`
-	CertPath        string     `yaml:"cert_path"`
-	KeyPath         string     `yaml:"key_path"`
-	HTTPProxy       string     `yaml:"http_proxy"`
-	PID             SectionPID `yaml:"pid"`
+	Port            string         `yaml:"port"`
+	MaxNotification int64          `yaml:"max_notification"`
+	WorkerNum       int64          `yaml:"worker_num"`
+	QueueNum        int64          `yaml:"queue_num"`
+	Mode            string         `yaml:"mode"`
+	SSL             bool           `yaml:"ssl"`
+	CertPath        string         `yaml:"cert_path"`
+	KeyPath         string         `yaml:"key_path"`
+	HTTPProxy       string         `yaml:"http_proxy"`
+	PID             SectionPID     `yaml:"pid"`
+	AutoTLS         SectionAutoTLS `yaml:"auto_tls"`
+}
+
+// SectionAutoTLS support Let's Encrypt setting.
+type SectionAutoTLS struct {
+	Enabled bool   `yaml:"enabled"`
+	Folder  string `yaml:"folder"`
+	Host    string `yaml:"host"`
 }
 
 // SectionAPI is sub section of config.
@@ -123,6 +131,9 @@ func BuildDefaultPushConf() ConfYaml {
 	conf.Core.PID.Enabled = false
 	conf.Core.PID.Path = "gorush.pid"
 	conf.Core.PID.Override = false
+	conf.Core.AutoTLS.Enabled = false
+	conf.Core.AutoTLS.Folder = ".cache"
+	conf.Core.AutoTLS.Host = ""
 
 	// Api
 	conf.API.PushURI = "/api/push"

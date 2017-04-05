@@ -68,6 +68,9 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Core.PID.Enabled)
 	assert.Equal(suite.T(), "gorush.pid", suite.ConfGorushDefault.Core.PID.Path)
 	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Core.PID.Override)
+	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Core.AutoTLS.Enabled)
+	assert.Equal(suite.T(), ".cache", suite.ConfGorushDefault.Core.AutoTLS.Folder)
+	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Core.AutoTLS.Host)
 
 	// Api
 	assert.Equal(suite.T(), "/api/push", suite.ConfGorushDefault.API.PushURI)
@@ -124,6 +127,9 @@ func (suite *ConfigTestSuite) TestValidateConf() {
 	assert.Equal(suite.T(), false, suite.ConfGorush.Core.PID.Enabled)
 	assert.Equal(suite.T(), "gorush.pid", suite.ConfGorush.Core.PID.Path)
 	assert.Equal(suite.T(), true, suite.ConfGorush.Core.PID.Override)
+	assert.Equal(suite.T(), false, suite.ConfGorush.Core.AutoTLS.Enabled)
+	assert.Equal(suite.T(), ".cache", suite.ConfGorush.Core.AutoTLS.Folder)
+	assert.Equal(suite.T(), "", suite.ConfGorush.Core.AutoTLS.Host)
 
 	// Api
 	assert.Equal(suite.T(), "/api/push", suite.ConfGorush.API.PushURI)
