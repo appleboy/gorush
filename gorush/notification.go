@@ -87,6 +87,13 @@ type PushNotification struct {
 	MutableContent bool     `json:"mutable-content,omitempty"`
 }
 
+// Done decrements the WaitGroup counter.
+func (p *PushNotification) Done() {
+	if p.wg != nil {
+		p.wg.Done()
+	}
+}
+
 // CheckMessage for check request message
 func CheckMessage(req PushNotification) error {
 	var msg string
@@ -231,7 +238,6 @@ func queueNotification(req RequestPush) int {
 		wg.Add(1)
 		notification.wg = &wg
 		QueueNotification <- notification
-
 		count += len(notification.Tokens)
 	}
 
@@ -360,9 +366,7 @@ func GetIOSNotification(req PushNotification) *apns.Notification {
 // PushToIOS provide send notification to APNs server.
 func PushToIOS(req PushNotification) bool {
 	LogAccess.Debug("Start push notification for iOS")
-	if req.wg != nil {
-		defer req.wg.Done()
-	}
+	defer req.Done()
 	var retryCount = 0
 	var maxRetry = PushConf.Ios.MaxRetry
 
@@ -467,9 +471,7 @@ func GetAndroidNotification(req PushNotification) gcm.HttpMessage {
 // PushToAndroid provide send notification to Android server.
 func PushToAndroid(req PushNotification) bool {
 	LogAccess.Debug("Start push notification for Android")
-	if req.wg != nil {
-		defer req.wg.Done()
-	}
+	defer req.Done()
 	var APIKey string
 	var retryCount = 0
 	var maxRetry = PushConf.Android.MaxRetry
