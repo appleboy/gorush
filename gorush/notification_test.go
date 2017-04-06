@@ -604,6 +604,42 @@ func TestDisabledAndroidNotifications(t *testing.T) {
 	assert.Equal(t, 1, count)
 }
 
+func TestSyncModeForNotifications(t *testing.T) {
+	PushConf = config.BuildDefaultPushConf()
+
+	PushConf.Ios.Enabled = true
+	PushConf.Ios.KeyPath = "../certificate/certificate-valid.pem"
+	InitAPNSClient()
+
+	PushConf.Android.Enabled = true
+	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+
+	// enable sync mode
+	PushConf.Core.Sync = true
+
+	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
+
+	req := RequestPush{
+		Notifications: []PushNotification{
+			//ios
+			{
+				Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
+				Platform: PlatFormIos,
+				Message:  "Welcome",
+			},
+			// android
+			{
+				Tokens:   []string{androidToken, "bbbbb"},
+				Platform: PlatFormAndroid,
+				Message:  "Welcome",
+			},
+		},
+	}
+
+	count := queueNotification(req)
+	assert.Equal(t, 3, count)
+}
+
 func TestDisabledIosNotifications(t *testing.T) {
 	PushConf = config.BuildDefaultPushConf()
 

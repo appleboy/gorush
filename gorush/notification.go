@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"sync"
 	"time"
 
 	"github.com/google/go-gcm"
@@ -63,6 +64,7 @@ type PushNotification struct {
 	Sound            string   `json:"sound,omitempty"`
 	Data             D        `json:"data,omitempty"`
 	Retry            int      `json:"retry,omitempty"`
+	wg               *sync.WaitGroup
 
 	// Android
 	APIKey                string           `json:"api_key,omitempty"`
@@ -83,6 +85,13 @@ type PushNotification struct {
 	URLArgs        []string `json:"url-args,omitempty"`
 	Alert          Alert    `json:"alert,omitempty"`
 	MutableContent bool     `json:"mutable-content,omitempty"`
+}
+
+// Done decrements the WaitGroup counter.
+func (p *PushNotification) Done() {
+	if p.wg != nil {
+		p.wg.Done()
+	}
 }
 
 // CheckMessage for check request message
@@ -214,6 +223,7 @@ func startWorker() {
 // queueNotification add notification to queue list.
 func queueNotification(req RequestPush) int {
 	var count int
+	wg := sync.WaitGroup{}
 	for _, notification := range req.Notifications {
 		switch notification.Platform {
 		case PlatFormIos:
@@ -225,9 +235,14 @@ func queueNotification(req RequestPush) int {
 				continue
 			}
 		}
+		wg.Add(1)
+		notification.wg = &wg
 		QueueNotification <- notification
-
 		count += len(notification.Tokens)
+	}
+
+	if PushConf.Core.Sync {
+		wg.Wait()
 	}
 
 	StatStorage.AddTotalCount(int64(count))
@@ -351,7 +366,7 @@ func GetIOSNotification(req PushNotification) *apns.Notification {
 // PushToIOS provide send notification to APNs server.
 func PushToIOS(req PushNotification) bool {
 	LogAccess.Debug("Start push notification for iOS")
-
+	defer req.Done()
 	var retryCount = 0
 	var maxRetry = PushConf.Ios.MaxRetry
 
@@ -456,7 +471,7 @@ func GetAndroidNotification(req PushNotification) gcm.HttpMessage {
 // PushToAndroid provide send notification to Android server.
 func PushToAndroid(req PushNotification) bool {
 	LogAccess.Debug("Start push notification for Android")
-
+	defer req.Done()
 	var APIKey string
 	var retryCount = 0
 	var maxRetry = PushConf.Android.MaxRetry
@@ -486,7 +501,6 @@ Retry:
 	if err != nil {
 		// GCM server error
 		LogError.Error("GCM server error: " + err.Error())
-
 		return false
 	}
 
