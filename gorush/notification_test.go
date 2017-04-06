@@ -28,11 +28,17 @@ func TestMissingIOSCertificate(t *testing.T) {
 
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.KeyPath = ""
-
 	err := CheckPushConf()
 
 	assert.Error(t, err)
 	assert.Equal(t, "Missing iOS certificate path", err.Error())
+
+	PushConf.Ios.KeyPath = "test.pem"
+	err = CheckPushConf()
+
+	assert.Error(t, err)
+	assert.Equal(t, "certificate file does not exist", err.Error())
+
 }
 
 func TestMissingAndroidAPIKey(t *testing.T) {
@@ -54,7 +60,7 @@ func TestCorrectConf(t *testing.T) {
 	PushConf.Android.APIKey = "xxxxx"
 
 	PushConf.Ios.Enabled = true
-	PushConf.Ios.KeyPath = "xxxxx"
+	PushConf.Ios.KeyPath = "../certificate/certificate-valid.pem"
 
 	err := CheckPushConf()
 
