@@ -56,11 +56,11 @@ func pushHandler(c *gin.Context) {
 		return
 	}
 
-	// queue notification.
-	go queueNotification(form)
+	counts := queueNotification(form)
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": "ok",
+		"counts":  counts,
 	})
 }
 

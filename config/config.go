@@ -24,6 +24,7 @@ type SectionCore struct {
 	WorkerNum       int64          `yaml:"worker_num"`
 	QueueNum        int64          `yaml:"queue_num"`
 	Mode            string         `yaml:"mode"`
+	Sync            bool           `yaml:"sync"`
 	SSL             bool           `yaml:"ssl"`
 	CertPath        string         `yaml:"cert_path"`
 	KeyPath         string         `yaml:"key_path"`
@@ -123,6 +124,7 @@ func BuildDefaultPushConf() ConfYaml {
 	conf.Core.WorkerNum = int64(runtime.NumCPU())
 	conf.Core.QueueNum = int64(8192)
 	conf.Core.Mode = "release"
+	conf.Core.Sync = false
 	conf.Core.SSL = false
 	conf.Core.CertPath = "cert.pem"
 	conf.Core.KeyPath = "key.pem"
