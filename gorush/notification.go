@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"os"
 	"path/filepath"
 	"time"
 
@@ -141,6 +142,11 @@ func CheckPushConf() error {
 	if PushConf.Ios.Enabled {
 		if PushConf.Ios.KeyPath == "" {
 			return errors.New("Missing iOS certificate path")
+		}
+
+		// check certificate file exist
+		if _, err := os.Stat(PushConf.Ios.KeyPath); os.IsNotExist(err) {
+			return errors.New("certificate file does not exist")
 		}
 	}
 
