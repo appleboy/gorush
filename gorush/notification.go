@@ -360,7 +360,9 @@ func GetIOSNotification(req PushNotification) *apns.Notification {
 // PushToIOS provide send notification to APNs server.
 func PushToIOS(req PushNotification) bool {
 	LogAccess.Debug("Start push notification for iOS")
-	defer req.wg.Done()
+	if req.wg != nil {
+		defer req.wg.Done()
+	}
 	var retryCount = 0
 	var maxRetry = PushConf.Ios.MaxRetry
 
@@ -465,7 +467,9 @@ func GetAndroidNotification(req PushNotification) gcm.HttpMessage {
 // PushToAndroid provide send notification to Android server.
 func PushToAndroid(req PushNotification) bool {
 	LogAccess.Debug("Start push notification for Android")
-	defer req.wg.Done()
+	if req.wg != nil {
+		defer req.wg.Done()
+	}
 	var APIKey string
 	var retryCount = 0
 	var maxRetry = PushConf.Android.MaxRetry
