@@ -586,6 +586,52 @@ Success response:
 
 ```json
 {
+  "counts": 60,
+  "logs": [],
+  "success": "ok"
+}
+```
+
+If you need error logs from sending fail notifications, please set `sync` as `true` on yaml config.
+
+```diff
+core:
+  port: "8088" # ignore this port number if auto_tls is enabled (listen 443).
+  worker_num: 0 # default worker number is runtime.NumCPU()
+  queue_num: 0 # default queue number is 8192
+  max_notification: 100
+- sync: false 
++ sync: true
+```
+
+See the following error format.
+
+```json
+{
+  "counts": 60,
+  "logs": [
+    {
+      "type": "failed-push",
+      "platform": "android",
+      "token": "*******",
+      "message": "Hello World Android!",
+      "error": "InvalidRegistration"
+    },
+    {
+      "type": "failed-push",
+      "platform": "ios",
+      "token": "*****",
+      "message": "Hello World iOS1111!",
+      "error": "Post https://api.push.apple.com/3/device/bbbbb: remote error: tls: revoked certificate"
+    },
+    {
+      "type": "failed-push",
+      "platform": "ios",
+      "token": "*******",
+      "message": "Hello World iOS222!",
+      "error": "Post https://api.push.apple.com/3/device/token_b: remote error: tls: revoked certificate"
+    }
+  ],
   "success": "ok"
 }
 ```
