@@ -65,6 +65,7 @@ type PushNotification struct {
 	Data             D        `json:"data,omitempty"`
 	Retry            int      `json:"retry,omitempty"`
 	wg               *sync.WaitGroup
+	log              *[]LogPushEntry
 
 	// Android
 	APIKey                string           `json:"api_key,omitempty"`
@@ -87,10 +88,24 @@ type PushNotification struct {
 	MutableContent bool     `json:"mutable-content,omitempty"`
 }
 
-// Done decrements the WaitGroup counter.
-func (p *PushNotification) Done() {
+// WaitDone decrements the WaitGroup counter.
+func (p *PushNotification) WaitDone() {
 	if p.wg != nil {
 		p.wg.Done()
+	}
+}
+
+// AddWaitCount increments the WaitGroup counter.
+func (p *PushNotification) AddWaitCount() {
+	if p.wg != nil {
+		p.wg.Add(1)
+	}
+}
+
+// AddLog record fail log of notification
+func (p *PushNotification) AddLog(log LogPushEntry) {
+	if p.log != nil {
+		*p.log = append(*p.log, log)
 	}
 }
 
@@ -221,9 +236,10 @@ func startWorker() {
 }
 
 // queueNotification add notification to queue list.
-func queueNotification(req RequestPush) int {
+func queueNotification(req RequestPush) (int, []LogPushEntry) {
 	var count int
 	wg := sync.WaitGroup{}
+	newNotification := []PushNotification{}
 	for _, notification := range req.Notifications {
 		switch notification.Platform {
 		case PlatFormIos:
@@ -235,8 +251,16 @@ func queueNotification(req RequestPush) int {
 				continue
 			}
 		}
-		wg.Add(1)
-		notification.wg = &wg
+		newNotification = append(newNotification, notification)
+	}
+
+	log := make([]LogPushEntry, 0, count)
+	for _, notification := range newNotification {
+		if PushConf.Core.Sync {
+			notification.wg = &wg
+			notification.log = &log
+			notification.AddWaitCount()
+		}
 		QueueNotification <- notification
 		count += len(notification.Tokens)
 	}
@@ -247,7 +271,7 @@ func queueNotification(req RequestPush) int {
 
 	StatStorage.AddTotalCount(int64(count))
 
-	return count
+	return count, log
 }
 
 func iosAlertDictionary(payload *payload.Payload, req PushNotification) *payload.Payload {
@@ -366,7 +390,9 @@ func GetIOSNotification(req PushNotification) *apns.Notification {
 // PushToIOS provide send notification to APNs server.
 func PushToIOS(req PushNotification) bool {
 	LogAccess.Debug("Start push notification for iOS")
-	defer req.Done()
+	if PushConf.Core.Sync {
+		defer req.WaitDone()
+	}
 	var retryCount = 0
 	var maxRetry = PushConf.Ios.MaxRetry
 
@@ -389,6 +415,9 @@ Retry:
 		if err != nil {
 			// apns server error
 			LogPush(FailedPush, token, req, err)
+			if PushConf.Core.Sync {
+				req.AddLog(getLogPushEntry(FailedPush, token, req, err))
+			}
 			StatStorage.AddIosError(1)
 			newTokens = append(newTokens, token)
 			isError = true
@@ -399,6 +428,9 @@ Retry:
 			// error message:
 			// ref: https://github.com/sideshow/apns2/blob/master/response.go#L14-L65
 			LogPush(FailedPush, token, req, errors.New(res.Reason))
+			if PushConf.Core.Sync {
+				req.AddLog(getLogPushEntry(FailedPush, token, req, errors.New(res.Reason)))
+			}
 			StatStorage.AddIosError(1)
 			newTokens = append(newTokens, token)
 			isError = true
@@ -471,7 +503,9 @@ func GetAndroidNotification(req PushNotification) gcm.HttpMessage {
 // PushToAndroid provide send notification to Android server.
 func PushToAndroid(req PushNotification) bool {
 	LogAccess.Debug("Start push notification for Android")
-	defer req.Done()
+	if PushConf.Core.Sync {
+		defer req.WaitDone()
+	}
 	var APIKey string
 	var retryCount = 0
 	var maxRetry = PushConf.Android.MaxRetry
@@ -514,6 +548,9 @@ Retry:
 			isError = true
 			newTokens = append(newTokens, req.Tokens[k])
 			LogPush(FailedPush, req.Tokens[k], req, errors.New(result.Error))
+			if PushConf.Core.Sync {
+				req.AddLog(getLogPushEntry(FailedPush, req.Tokens[k], req, errors.New(result.Error)))
+			}
 			continue
 		}
 

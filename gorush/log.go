@@ -39,21 +39,6 @@ type LogPushEntry struct {
 	Token    string `json:"token"`
 	Message  string `json:"message"`
 	Error    string `json:"error"`
-
-	// Android
-	To                    string `json:"to,omitempty"`
-	CollapseKey           string `json:"collapse_key,omitempty"`
-	DelayWhileIdle        bool   `json:"delay_while_idle,omitempty"`
-	TimeToLive            uint   `json:"time_to_live,omitempty"`
-	RestrictedPackageName string `json:"restricted_package_name,omitempty"`
-	DryRun                bool   `json:"dry_run,omitempty"`
-
-	// iOS
-	ApnsID   string `json:"apns_id,omitempty"`
-	Topic    string `json:"topic,omitempty"`
-	Badge    int    `json:"badge,omitempty"`
-	Sound    string `json:"sound,omitempty"`
-	Category string `json:"category,omitempty"`
 }
 
 var isTerm bool
@@ -212,17 +197,11 @@ func hideToken(token string, markLen int) string {
 	return result
 }
 
-// LogPush record user push request and server response.
-func LogPush(status, token string, req PushNotification, errPush error) {
-	var plat, platColor, resetColor, output string
+func getLogPushEntry(status, token string, req PushNotification, errPush error) LogPushEntry {
+	var errMsg string
 
-	if isTerm {
-		platColor = colorForPlatForm(req.Platform)
-		plat = typeForPlatForm(req.Platform)
-		resetColor = reset
-	}
+	plat := typeForPlatForm(req.Platform)
 
-	errMsg := ""
 	if errPush != nil {
 		errMsg = errPush.Error()
 	}
@@ -231,13 +210,25 @@ func LogPush(status, token string, req PushNotification, errPush error) {
 		token = hideToken(token, 10)
 	}
 
-	log := &LogPushEntry{
+	return LogPushEntry{
 		Type:     status,
 		Platform: plat,
 		Token:    token,
 		Message:  req.Message,
 		Error:    errMsg,
 	}
+}
+
+// LogPush record user push request and server response.
+func LogPush(status, token string, req PushNotification, errPush error) {
+	var platColor, resetColor, output string
+
+	if isTerm {
+		platColor = colorForPlatForm(req.Platform)
+		resetColor = reset
+	}
+
+	log := getLogPushEntry(status, token, req, errPush)
 
 	if PushConf.Log.Format == "json" {
 		logJSON, _ := json.Marshal(log)

@@ -567,8 +567,9 @@ func TestSenMultipleNotifications(t *testing.T) {
 		},
 	}
 
-	count := queueNotification(req)
+	count, logs := queueNotification(req)
 	assert.Equal(t, 3, count)
+	assert.Equal(t, 0, len(logs))
 }
 
 func TestDisabledAndroidNotifications(t *testing.T) {
@@ -600,8 +601,9 @@ func TestDisabledAndroidNotifications(t *testing.T) {
 		},
 	}
 
-	count := queueNotification(req)
+	count, logs := queueNotification(req)
 	assert.Equal(t, 1, count)
+	assert.Equal(t, 0, len(logs))
 }
 
 func TestSyncModeForNotifications(t *testing.T) {
@@ -636,8 +638,9 @@ func TestSyncModeForNotifications(t *testing.T) {
 		},
 	}
 
-	count := queueNotification(req)
+	count, logs := queueNotification(req)
 	assert.Equal(t, 3, count)
+	assert.Equal(t, 2, len(logs))
 }
 
 func TestDisabledIosNotifications(t *testing.T) {
@@ -669,8 +672,9 @@ func TestDisabledIosNotifications(t *testing.T) {
 		},
 	}
 
-	count := queueNotification(req)
+	count, logs := queueNotification(req)
 	assert.Equal(t, 2, count)
+	assert.Equal(t, 0, len(logs))
 }
 
 func TestWrongIosCertificateExt(t *testing.T) {
