@@ -63,7 +63,7 @@ core:
   worker_num: 0 # default worker number is runtime.NumCPU()
   queue_num: 0 # default queue number is 8192
   max_notification: 100
-  sync: false # set true if you need error logs from send fail of notifications.
+  sync: false # set true if you need get error message from fail push notification in API response.
   mode: "release"
   ssl: false
   cert_path: "cert.pem"
