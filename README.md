@@ -123,7 +123,7 @@ stat:
 
 ## Memory Usage
 
-Memory average usage: **28Mb**
+Memory average usage: **28Mb** (the total bytes of memory obtained from the OS.)
 
 ![memory usage](screenshot/memory.png)
 
