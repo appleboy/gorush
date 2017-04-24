@@ -123,9 +123,15 @@ stat:
 
 ## Memory Usage
 
-Memory average usage: **10Mb**
+Memory average usage: **28Mb** (the total bytes of memory obtained from the OS.)
 
-![memory usage](screenshot/memory_usage.png)
+![memory usage](screenshot/memory.png)
+
+Test Command:
+
+```sh
+$ for i in {1..9999999}; do bat -b.N=1000 -b.C=100 POST localhost:8088/api/push notifications:=@notification.json; sleep 1;  done
+```
 
 ## Basic Usage
 
