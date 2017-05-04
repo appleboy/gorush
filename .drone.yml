@@ -36,8 +36,6 @@ pipeline:
     when:
       event: [ tag ]
       branch: [ refs/tags/* ]
-      matrix:
-        GO_VERSION: 1.8.0
 
   docker:
     image: plugins/docker
@@ -65,8 +63,6 @@ pipeline:
     when:
       event: [ tag ]
       branch: [ refs/tags/* ]
-      matrix:
-        GO_VERSION: 1.8.0
 
   facebook:
     image: appleboy/drone-facebook
@@ -75,8 +71,6 @@ pipeline:
     to: 1234973386524610
     when:
       status: [ success, failure ]
-      matrix:
-        GO_VERSION: 1.8.0
 
 services:
   redis:
