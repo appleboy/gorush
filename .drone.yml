@@ -10,7 +10,7 @@ clone:
 
 pipeline:
   build:
-    image: appleboy/golang-testing:${GO_VERSION}
+    image: appleboy/golang-testing
     secrets: [ codecov_token, android_test_token, android_api_key ]
     environment:
       - GOPATH=/srv/app
@@ -27,7 +27,7 @@ pipeline:
       - make docker_build
 
   release:
-    image: appleboy/golang-testing:${GO_VERSION}
+    image: appleboy/golang-testing
     pull: true
     environment:
       TAGS: netgo
@@ -81,8 +81,3 @@ pipeline:
 services:
   redis:
     image: redis:alpine
-
-matrix:
-  GO_VERSION:
-    - 1.8.0
-    - 1.7.5
