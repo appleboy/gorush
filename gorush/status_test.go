@@ -41,7 +41,7 @@ func TestStatForMemoryEngine(t *testing.T) {
 
 func TestRedisServerSuccess(t *testing.T) {
 	PushConf.Stat.Engine = "redis"
-	PushConf.Stat.Redis.Addr = "localhost:6379"
+	PushConf.Stat.Redis.Addr = "redis:6379"
 
 	err := InitAppStatus()
 
@@ -50,7 +50,7 @@ func TestRedisServerSuccess(t *testing.T) {
 
 func TestRedisServerError(t *testing.T) {
 	PushConf.Stat.Engine = "redis"
-	PushConf.Stat.Redis.Addr = "localhost:6370"
+	PushConf.Stat.Redis.Addr = "redis:6370"
 
 	err := InitAppStatus()
 
@@ -60,7 +60,7 @@ func TestRedisServerError(t *testing.T) {
 func TestStatForRedisEngine(t *testing.T) {
 	var val int64
 	PushConf.Stat.Engine = "redis"
-	PushConf.Stat.Redis.Addr = "localhost:6379"
+	PushConf.Stat.Redis.Addr = "redis:6379"
 	InitAppStatus()
 
 	StatStorage.Init()

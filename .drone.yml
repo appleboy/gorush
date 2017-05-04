@@ -1,16 +1,19 @@
 workspace:
-  path: /go/src/github.com/appleboy/gorush
+  base: /srv/app
+  path: src/github.com/appleboy/gorush
 
-pipeline:
-  clone:
+clone:
+  git:
     image: plugins/git
     depth: 50
     tags: true
 
+pipeline:
   build:
-    image: appleboy/golang-testing:${GO_VERSION}
+    image: appleboy/golang-testing
+    secrets: [ codecov_token, android_test_token, android_api_key ]
     environment:
-      - GOPATH=/go
+      - GOPATH=/srv/app
     commands:
       - make deps
       - make vet
@@ -24,7 +27,7 @@ pipeline:
       - make docker_build
 
   release:
-    image: appleboy/golang-testing:${GO_VERSION}
+    image: appleboy/golang-testing
     pull: true
     environment:
       TAGS: netgo
@@ -39,6 +42,7 @@ pipeline:
   docker:
     image: plugins/docker
     repo: appleboy/gorush
+    secrets: [ docker_username, docker_password ]
     tags: [ '${DRONE_TAG}' ]
     when:
       event: [ tag ]
@@ -47,23 +51,15 @@ pipeline:
   docker:
     image: plugins/docker
     repo: appleboy/gorush
+    secrets: [ docker_username, docker_password ]
     tags: [ 'latest' ]
     when:
       event: [ push ]
       branch: [ master ]
 
-  facebook:
-    image: appleboy/drone-facebook
-    pull: true
-    to: 1234973386524610
-    when:
-      status: [ success, failure ]
-      matrix:
-        GO_VERSION: 1.8.0
-
   github:
     image: plugins/github-release
-    api_key: ${GITHUB_RELEASE_API_KEY}
+    secrets: [ github_token ]
     files:
       - dist/release/*
     when:
@@ -72,11 +68,16 @@ pipeline:
       matrix:
         GO_VERSION: 1.8.0
 
+  facebook:
+    image: appleboy/drone-facebook
+    secrets: [ fb_page_token, fb_verify_token ]
+    pull: true
+    to: 1234973386524610
+    when:
+      status: [ success, failure ]
+      matrix:
+        GO_VERSION: 1.8.0
+
 services:
   redis:
     image: redis:alpine
-
-matrix:
-  GO_VERSION:
-    - 1.8.0
-    - 1.7.5
