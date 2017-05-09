@@ -1,5 +1,5 @@
 hash: bebf6dc340226b048bddac1d1937191be2181b87f028e44b2d76779ee7f1f4dc
-updated: 2017-02-14T02:14:54.6843891+01:00
+updated: 2017-05-09T18:39:29.227875+02:00
 imports:
 - name: github.com/asdine/storm
   version: faf2c5d33aa0f572fa56e03de17c87b278b976c6
@@ -56,7 +56,7 @@ imports:
   - ece
   - webpush
 - name: github.com/mattn/go-isatty
-  version: 3a115632dcd687f9c8cd01679c83a06a0e21c1f3
+  version: fc9e8d8ef48496124e79ae0df75490096eccf6fe
 - name: github.com/mattn/go-xmpp
   version: 325c112042ffd34aa24365590d3a6fdd1a79c011
 - name: github.com/matttproud/golang_protobuf_extensions
@@ -83,12 +83,12 @@ imports:
 - name: github.com/prometheus/procfs
   version: 1878d9fbb537119d24b21ca07effd591627cd160
 - name: github.com/sideshow/apns2
-  version: c23f4b07d9e47aa490ff76001001decc688243f8
+  version: 6ffbf017e660feff7df81e68de6482e263fae288
   subpackages:
   - certificate
   - payload
 - name: github.com/Sirupsen/logrus
-  version: c078b1e43f58d563c74cebe63c85789e76ddb627
+  version: ba1b36c82c5e05c4f912a88eab0dcd91a171688f
 - name: github.com/syndtr/goleveldb
   version: 23851d93a2292dcc56e71a18ec9e0624d84a0f65
   subpackages:
@@ -128,6 +128,7 @@ imports:
   version: f315505cf3349909cdf013ea56690da34e96a451
   subpackages:
   - context
+  - context/ctxhttp
   - http2
   - http2/hpack
 - name: golang.org/x/sys
@@ -143,7 +144,7 @@ imports:
 - name: gopkg.in/go-playground/validator.v8
   version: c193cecd124b5cc722d7ee5538e945bdb3348435
 - name: gopkg.in/redis.v5
-  version: 2fe9c5cc0a8da9faeba3a45511a4ece8f7e37dc2
+  version: a16aeec10ff407b1e7be6dd35797ccf5426ef0f0
   subpackages:
   - internal
   - internal/consistenthash

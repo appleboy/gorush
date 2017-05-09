@@ -40,6 +40,8 @@ type SectionAPI struct {
 	ConfigURI  string `yaml:"config_uri"`
 	SysStatURI string `yaml:"sys_stat_uri"`
 	MetricURI  string `yaml:"metric_uri"`
+	PingURI    string `yaml:"ping_uri"`
+	TestURI    string `yaml:"test_uri"`
 }
 
 // SectionAndroid is sub section of config.

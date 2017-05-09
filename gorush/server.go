@@ -155,6 +155,22 @@ func metricsHandler(c *gin.Context) {
 	promhttp.Handler().ServeHTTP(c.Writer, c.Request)
 }
 
+func pingHandler(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"status": "StatsPingSuccessful",
+		"statusCode": "200",
+		"statusMessage": "Ping successful",
+	})	
+}
+
+func testHandler(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"status": "StatsTestSuccessful",
+		"statusCode": "200",
+		"statusMessage": "Test successful",
+	})	
+}
+
 func routerEngine() *gin.Engine {
 	// set server mode
 	gin.SetMode(PushConf.Core.Mode)
@@ -174,6 +190,8 @@ func routerEngine() *gin.Engine {
 	r.GET(PushConf.API.SysStatURI, sysStatsHandler)
 	r.POST(PushConf.API.PushURI, pushHandler)
 	r.GET(PushConf.API.MetricURI, metricsHandler)
+	r.GET(PushConf.API.PingURI, pingHandler)
+	r.GET(PushConf.API.TestURI, testHandler)
 	r.GET("/", rootHandler)
 
 	return r

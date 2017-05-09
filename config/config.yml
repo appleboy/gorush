@@ -14,12 +14,14 @@ core:
     override: true
 
 api:
-  push_uri: "/api/push"
-  stat_go_uri: "/api/stat/go"
-  stat_app_uri: "/api/stat/app"
-  config_uri: "/api/config"
+  push_uri: "/send"
+  stat_go_uri: "/stat/go"
+  stat_app_uri: "/stat/app"
+  config_uri: "/config"
   sys_stat_uri: "/sys/stats"
   metric_uri: "/metrics"
+  ping_uri: "/stats/ping"
+  test_uri: "/stats/test"
 
 android:
   enabled: true
