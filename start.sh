@@ -1,11 +1,11 @@
 #!/bin/bash
 
-PLATFORM_IP="$( ipconfig getifaddr en0 )"
+#PLATFORM_IP="$( ipconfig getifaddr en0 )"
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 DEPLOY_ACCOUNT="jaraxasoftware"
 EXECUTABLE="gorush"
 CONTAINER=js-gorush
-PORT=8088
+PORT=10421
 
 # Remove previous container
 docker rm $CONTAINER > /dev/null 2>&1

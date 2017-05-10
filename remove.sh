@@ -3,7 +3,6 @@
 DEPLOY_ACCOUNT="jaraxasoftware"
 EXECUTABLE="gorush"
 CONTAINER=js-gorush
-PORT=8088
 
 # Stop a docker container
 docker stop $CONTAINER > /dev/null 2>&1;
