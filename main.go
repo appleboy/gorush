@@ -210,7 +210,10 @@ func main() {
 			gorush.LogError.Fatal(err)
 		}
 
-		gorush.InitAppStatus()
+		if err := gorush.InitAppStatus(); err != nil {
+			return
+		}
+
 		gorush.PushToAndroid(req)
 
 		return
@@ -240,8 +243,13 @@ func main() {
 			gorush.LogError.Fatal(err)
 		}
 
-		gorush.InitAppStatus()
-		gorush.InitAPNSClient()
+		if err := gorush.InitAppStatus(); err != nil {
+			return
+		}
+
+		if err := gorush.InitAPNSClient(); err != nil {
+			return
+		}
 		gorush.PushToIOS(req)
 
 		return
@@ -261,8 +269,17 @@ func main() {
 		gorush.LogError.Fatal(err)
 	}
 
-	gorush.InitAppStatus()
-	gorush.InitAPNSClient()
+	if err = gorush.InitAppStatus(); err != nil {
+		return
+	}
+
+	if err = gorush.InitAPNSClient(); err != nil {
+		return
+	}
+
 	gorush.InitWorkers(gorush.PushConf.Core.WorkerNum, gorush.PushConf.Core.QueueNum)
-	gorush.RunHTTPServer()
+
+	if err = gorush.RunHTTPServer(); err != nil {
+		gorush.LogError.Fatal(err)
+	}
 }
