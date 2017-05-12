@@ -255,10 +255,12 @@
 			"revisionTime": "2017-02-16T22:32:56Z"
 		},
 		{
-			"checksumSHA1": "980httoMt2EXTX/XQJCLkCJZkhQ=",
+			"checksumSHA1": "iICAK15yh57U3UpWEOTdAQcvT5o=",
 			"path": "github.com/sideshow/apns2",
-			"revision": "c23f4b07d9e47aa490ff76001001decc688243f8",
-			"revisionTime": "2017-01-05T14:10:18Z"
+			"revision": "6ffbf017e660feff7df81e68de6482e263fae288",
+			"revisionTime": "2017-04-24T10:10:45Z",
+			"version": "v0.9",
+			"versionExact": "v0.9"
 		},
 		{
 			"checksumSHA1": "c3x81Xq+gIn5JBgs1eCTVeRwDDo=",

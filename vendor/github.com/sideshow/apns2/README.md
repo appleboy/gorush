@@ -19,16 +19,16 @@ APNS/2 is a go package designed for simple, flexible and fast Apple Push Notific
 - Make sure you have [Go](https://golang.org/doc/install) installed and have set your [GOPATH](https://golang.org/doc/code.html#GOPATH).
 - Download and install the dependencies:
 
-  ```sh
+```sh
 go get -u golang.org/x/net/http2
 go get -u golang.org/x/crypto/pkcs12
-  ```
+```
 
 - Install apns2:
 
-  ```sh
+```sh
 go get -u github.com/sideshow/apns2
-  ```
+```
 
 ## Example
 
@@ -71,7 +71,7 @@ func main() {
 At a minimum, a _Notification_ needs a _DeviceToken_, a _Topic_ and a _Payload_.
 
 ```go
-notification := &Notification{
+notification := &apns2.Notification{
   DeviceToken: "11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7",
   Topic: "com.sideshow.Apns2",
   Payload: []byte(`{"aps":{"alert":"Hello!"}}`),
@@ -83,7 +83,7 @@ You can also set an optional _ApnsID_, _Expiration_ or _Priority_.
 ```go
 notification.ApnsID =  "40636A2C-C093-493E-936A-2A4333C06DEA"
 notification.Expiration = time.Now()
-notification.Priority = apns.PriorityLow
+notification.Priority = apns2.PriorityLow
 ```
 
 ## Payload
@@ -93,7 +93,7 @@ You can use raw bytes for the `notification.Payload` as above, or you can use th
 ```go
 // {"aps":{"alert":"hello","badge":1},"key":"val"}
 
-payload := NewPayload().Alert("hello").Badge(1).Custom("key", "val")
+payload := apns2.NewPayload().Alert("hello").Badge(1).Custom("key", "val")
 
 notification.Payload = payload
 client.Push(notification)
@@ -122,6 +122,20 @@ if res.Sent() {
 } else {
   fmt.Printf("Not Sent: %v %v %v\n", res.StatusCode, res.ApnsID, res.Reason)
 }
+```
+
+## Context & Timeouts
+
+For better control over request cancelations and timeouts APNS/2 supports
+contexts. Using a context can be helpful if you want to cancel all pushes when
+the parent process is cancelled, or need finer grained control over individual
+push timeouts. See the [Google post](https://blog.golang.org/context) for more
+information on contexts.
+
+```go
+ctx, cancel = context.WithTimeout(context.Background(), 10 * time.Second)
+res, err := client.PushWithContext(ctx, notification)
+defer cancel()
 ```
 
 ## Command line tool
