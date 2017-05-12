@@ -32,7 +32,7 @@ var (
 	// HTTPClientTimeout specifies a time limit for requests made by the
 	// HTTPClient. The timeout includes connection time, any redirects,
 	// and reading the response body.
-	HTTPClientTimeout = 30 * time.Second
+	HTTPClientTimeout = 60 * time.Second
 )
 
 // Client represents a connection with the APNs
@@ -93,9 +93,23 @@ func (c *Client) Production() *Client {
 // transparently before sending the notification. It will return a Response
 // indicating whether the notification was accepted or rejected by the APNs
 // gateway, or an error if something goes wrong.
+//
+// Use PushWithContext if you need better cancelation and timeout control.
 func (c *Client) Push(n *Notification) (*Response, error) {
-	payload, err := json.Marshal(n)
+	return c.PushWithContext(nil, n)
+}
 
+// PushWithContext sends a Notification to the APNs gateway. Context carries a
+// deadline and a cancelation signal and allows you to close long running
+// requests when the context timeout is exceeded. Context can be nil, for
+// backwards compatibility.
+//
+// If the underlying http.Client is not currently connected, this method will
+// attempt to reconnect transparently before sending the notification. It will
+// return a Response indicating whether the notification was accepted or
+// rejected by the APNs gateway, or an error if something goes wrong.
+func (c *Client) PushWithContext(ctx Context, n *Notification) (*Response, error) {
+	payload, err := json.Marshal(n)
 	if err != nil {
 		return nil, err
 	}
@@ -103,7 +117,8 @@ func (c *Client) Push(n *Notification) (*Response, error) {
 	url := fmt.Sprintf("%v/3/device/%v", c.Host, n.DeviceToken)
 	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(payload))
 	setHeaders(req, n)
-	httpRes, err := c.HTTPClient.Do(req)
+
+	httpRes, err := c.requestWithContext(ctx, req)
 	if err != nil {
 		return nil, err
 	}
