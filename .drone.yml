@@ -37,32 +37,37 @@ pipeline:
       event: [ tag ]
       branch: [ refs/tags/* ]
 
-  docker:
+  publish_latest:
     image: plugins/docker
-    repo: appleboy/gorush
-    secrets: [ docker_username, docker_password ]
-    tags: [ '${DRONE_TAG}' ]
-    when:
-      event: [ tag ]
-      branch: [ refs/tags/* ]
-
-  docker:
-    image: plugins/docker
-    repo: appleboy/gorush
-    secrets: [ docker_username, docker_password ]
+    repo: ${DRONE_REPO}
     tags: [ 'latest' ]
+    secrets: [ docker_username, docker_password ]
     when:
       event: [ push ]
       branch: [ master ]
+      local: false
 
-  github:
+  publish_tag:
+    image: plugins/docker
+    repo: ${DRONE_REPO}
+    tags: [ '${DRONE_TAG}' ]
+    secrets: [ docker_username, docker_password ]
+    group: release
+    when:
+      event: [ tag ]
+      branch: [ refs/tags/* ]
+      local: false
+
+  release_tag:
     image: plugins/github-release
-    secrets: [ github_token ]
+    secrets: [ github_release_api_key ]
+    group: release
     files:
       - dist/release/*
     when:
       event: [ tag ]
       branch: [ refs/tags/* ]
+      local: false
 
   facebook:
     image: appleboy/drone-facebook
