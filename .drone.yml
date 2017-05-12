@@ -30,6 +30,7 @@ pipeline:
     image: appleboy/golang-testing
     pull: true
     environment:
+      GOPATH: /srv/app
       TAGS: netgo
     commands:
       - make release
