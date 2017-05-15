@@ -36,17 +36,6 @@ pipeline:
       event: [ tag ]
       branch: [ refs/tags/* ]
 
-  publish_test:
-    image: plugins/docker
-    pull: true
-    repo: ${DRONE_REPO}
-    tags: [ 'latest' ]
-    secrets: [ docker_username, docker_password ]
-    group: release
-    when:
-      event: [ pull_request ]
-      local: false
-
   publish_latest:
     image: plugins/docker
     pull: true
