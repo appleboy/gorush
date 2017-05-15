@@ -40,7 +40,7 @@ pipeline:
     image: plugins/docker
     pull: true
     repo: ${DRONE_REPO}
-    tags: [ '${DRONE_TAG}' ]
+    tags: [ 'latest' ]
     secrets: [ docker_username, docker_password ]
     group: release
     when:
