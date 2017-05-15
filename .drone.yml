@@ -37,7 +37,7 @@ pipeline:
       branch: [ refs/tags/* ]
 
   publish_test:
-    image: plugin/docker
+    image: plugins/docker
     pull: true
     repo: ${DRONE_REPO}
     tags: [ '${DRONE_TAG}' ]
@@ -48,7 +48,7 @@ pipeline:
       local: false
 
   publish_latest:
-    image: plugin/docker
+    image: plugins/docker
     pull: true
     repo: ${DRONE_REPO}
     tags: [ 'latest' ]
@@ -59,7 +59,7 @@ pipeline:
       local: false
 
   publish_tag:
-    image: plugin/docker
+    image: plugins/docker
     pull: true
     repo: ${DRONE_REPO}
     tags: [ '${DRONE_TAG}' ]
