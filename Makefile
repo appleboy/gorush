@@ -134,7 +134,7 @@ docker_build:
 docker_image:
 	docker build -t $(DEPLOY_ACCOUNT)/$(DEPLOY_IMAGE) -f Dockerfile .
 
-docker_release: docker_image
+docker_release: docker_build docker_image
 
 docker_deploy:
 ifeq ($(tag),)
