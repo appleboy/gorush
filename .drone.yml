@@ -36,8 +36,20 @@ pipeline:
       event: [ tag ]
       branch: [ refs/tags/* ]
 
+  publish_test:
+    image: appleboy/drone-docker
+    pull: true
+    repo: ${DRONE_REPO}
+    tags: [ '${DRONE_TAG}' ]
+    secrets: [ docker_username, docker_password ]
+    group: release
+    when:
+      event: [ pull_request ]
+      local: false
+
   publish_latest:
     image: appleboy/drone-docker
+    pull: true
     repo: ${DRONE_REPO}
     tags: [ 'latest' ]
     secrets: [ docker_username, docker_password ]
@@ -48,6 +60,7 @@ pipeline:
 
   publish_tag:
     image: appleboy/drone-docker
+    pull: true
     repo: ${DRONE_REPO}
     tags: [ '${DRONE_TAG}' ]
     secrets: [ docker_username, docker_password ]
