@@ -23,8 +23,6 @@ pipeline:
       - coverage all
       # send coverage report
       - make coverage
-      # build binary for docker image
-      - make docker_build
 
   release:
     image: appleboy/golang-testing
@@ -39,7 +37,7 @@ pipeline:
       branch: [ refs/tags/* ]
 
   publish_latest:
-    image: plugins/docker
+    image: appleboy/drone-docker
     repo: ${DRONE_REPO}
     tags: [ 'latest' ]
     secrets: [ docker_username, docker_password ]
@@ -49,7 +47,7 @@ pipeline:
       local: false
 
   publish_tag:
-    image: plugins/docker
+    image: appleboy/drone-docker
     repo: ${DRONE_REPO}
     tags: [ '${DRONE_TAG}' ]
     secrets: [ docker_username, docker_password ]
