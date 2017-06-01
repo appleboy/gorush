@@ -165,12 +165,6 @@
 			"revisionTime": "2017-02-15T23:32:05Z"
 		},
 		{
-			"checksumSHA1": "pJ0oMI3iC3VIo5kTeibCezrKg/s=",
-			"path": "github.com/google/go-gcm",
-			"revision": "f387343038b10aec84c22f3809773a30630c12e8",
-			"revisionTime": "2017-02-14T17:04:21Z"
-		},
-		{
 			"checksumSHA1": "oqpLCsrXQdvns4RtmcO61+4BiQk=",
 			"path": "github.com/jpillora/backoff",
 			"revision": "f24585d1c70490c0920ab34924f54f726e1416c7",
