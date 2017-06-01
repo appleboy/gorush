@@ -8,7 +8,7 @@ core:
   ssl: false
   cert_path: "cert.pem"
   key_path: "key.pem"
-  http_proxy: "" # only working for GCM server
+  http_proxy: "" # only working for FCM server
   pid:
     enabled: false
     path: "gorush.pid"
