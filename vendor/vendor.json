@@ -9,6 +9,12 @@
 			"revisionTime": "2017-02-15T16:43:24Z"
 		},
 		{
+			"checksumSHA1": "DuVew6znkXuUG1wjGQF+pUyXrHU=",
+			"path": "github.com/appleboy/go-fcm",
+			"revision": "5f2cb2866531e4e37c7a9ff5fb7a1536e1ffc566",
+			"revisionTime": "2017-06-01T07:42:50Z"
+		},
+		{
 			"checksumSHA1": "Ab7MUtqX0iq2PUzzBxWpgzPSydw=",
 			"path": "github.com/asdine/storm",
 			"revision": "de95a2ead13a0ec4cff5e37d21decd48b54a078f",
@@ -67,12 +73,6 @@
 			"path": "github.com/davecgh/go-spew/spew",
 			"revision": "346938d642f2ec3594ed81d874461961cd0faa76",
 			"revisionTime": "2016-10-29T20:57:26Z"
-		},
-		{
-			"checksumSHA1": "Xqz4X1+t8MTsmX2guYh7RUj9ZvI=",
-			"path": "github.com/edganiukov/fcm",
-			"revision": "cbdb173263e8c5ed323ce370b57d1ee5f743b758",
-			"revisionTime": "2017-03-11T15:33:24Z"
 		},
 		{
 			"checksumSHA1": "rRYbBQkVsd/+EIryahsywNi34Lo=",
@@ -165,40 +165,16 @@
 			"revisionTime": "2017-02-15T23:32:05Z"
 		},
 		{
-			"checksumSHA1": "oqpLCsrXQdvns4RtmcO61+4BiQk=",
-			"path": "github.com/jpillora/backoff",
-			"revision": "f24585d1c70490c0920ab34924f54f726e1416c7",
-			"revisionTime": "2016-12-23T01:09:21Z"
-		},
-		{
-			"checksumSHA1": "b0T0Hzd+zYk+OCDTFMps+jwa/nY=",
-			"path": "github.com/manucorporat/sse",
-			"revision": "ee05b128a739a0fb76c7ebd3ae4810c1de808d6d",
-			"revisionTime": "2016-01-26T18:01:36Z"
-		},
-		{
 			"checksumSHA1": "Jyv1TH1YHrCVewmVE8FgSh1+92s=",
 			"path": "github.com/mattn/go-isatty",
 			"revision": "dda3de49cbfcec471bd7a70e6cc01fcc3ff90109",
 			"revisionTime": "2017-02-16T23:59:08Z"
 		},
 		{
-			"checksumSHA1": "+ALxEZ4CWoD1Rd6FIN/FFn2NDUU=",
-			"path": "github.com/mattn/go-xmpp",
-			"revision": "325c112042ffd34aa24365590d3a6fdd1a79c011",
-			"revisionTime": "2017-01-28T00:53:20Z"
-		},
-		{
 			"checksumSHA1": "bKMZjd2wPw13VwoE7mBeSv5djFA=",
 			"path": "github.com/matttproud/golang_protobuf_extensions/pbutil",
 			"revision": "c12348ce28de40eed0136aa2b644d0ee0650e56c",
 			"revisionTime": "2016-04-24T11:30:07Z"
-		},
-		{
-			"checksumSHA1": "Se195FlZ160eaEk/uVx4KdTPSxU=",
-			"path": "github.com/pborman/uuid",
-			"revision": "1b00554d822231195d1babd97ff4a781231955c9",
-			"revisionTime": "2017-01-12T15:04:04Z"
 		},
 		{
 			"checksumSHA1": "LuFv4/jlrmFNnDb/5SCSEPAM9vU=",

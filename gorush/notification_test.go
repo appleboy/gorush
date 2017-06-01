@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/appleboy/go-fcm"
 	"github.com/appleboy/gorush/config"
 	"github.com/buger/jsonparser"
-	"github.com/edganiukov/fcm"
 	"github.com/sideshow/apns2"
 	"github.com/stretchr/testify/assert"
 )
