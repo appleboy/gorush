@@ -65,11 +65,5 @@ func (msg *Message) Validate() error {
 	if msg.To == "" && (msg.Condition == "" || opCnt > 2) && len(msg.RegistrationIDs) == 0 {
 		return ErrInvalidTarget
 	}
-	if len(msg.RegistrationIDs) > 1000 {
-		return ErrToManyRegIDs
-	}
-	if *msg.TimeToLive > uint(2419200) {
-		return ErrInvalidTimeToLive
-	}
 	return nil
 }
