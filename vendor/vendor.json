@@ -69,6 +69,12 @@
 			"revisionTime": "2016-10-29T20:57:26Z"
 		},
 		{
+			"checksumSHA1": "Xqz4X1+t8MTsmX2guYh7RUj9ZvI=",
+			"path": "github.com/edganiukov/fcm",
+			"revision": "cbdb173263e8c5ed323ce370b57d1ee5f743b758",
+			"revisionTime": "2017-03-11T15:33:24Z"
+		},
+		{
 			"checksumSHA1": "rRYbBQkVsd/+EIryahsywNi34Lo=",
 			"path": "github.com/emirpasic/gods/containers",
 			"revision": "fc3e4a43ff31b0accc20d750d64ea4b45ee61a5e",
