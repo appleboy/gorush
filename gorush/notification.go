@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/edganiukov/fcm"
+	"github.com/appleboy/go-fcm"
 	apns "github.com/sideshow/apns2"
 	"github.com/sideshow/apns2/certificate"
 	"github.com/sideshow/apns2/payload"

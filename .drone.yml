@@ -20,6 +20,7 @@ pipeline:
       - make lint
       - make build
       - make embedmd
+      - make test-vendor
       - coverage all
       # send coverage report
       - make coverage

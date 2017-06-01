@@ -1,29 +1,35 @@
-# fcm
+# go-fcm
+
 [![GoDoc](https://godoc.org/github.com/edganiukov/fcm?status.svg)](https://godoc.org/github.com/edganiukov/fcm)
 [![Build Status](https://travis-ci.org/edganiukov/fcm.svg?branch=master)](https://travis-ci.org/edganiukov/fcm)
 [![Go Report Card](https://goreportcard.com/badge/github.com/edganiukov/fcm)](https://goreportcard.com/report/github.com/edganiukov/fcm)
+
+This project was forked from [github.com/edganiukov/fcmfcm](https://github.com/edganiukov/fcm).
 
 Golang client library for Firebase Cloud Messaging. Implemented only [HTTP client](https://firebase.google.com/docs/cloud-messaging/http-server-ref#downstream).
 
 More information on [Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging/)
 
-### Getting Started
--------------------
+## Getting Started
+
 To install fcm, use `go get`:
 
 ```bash
-go get github.com/edganiukov/fcm
+go get github.com/appleboy/go-fcm
 ```
+
 or `govendor`:
 
 ```bash
-govendor fetch github.com/edganiukov/fcm
+govendor fetch github.com/appleboy/go-fcm
 ```
+
 or other tool for vendoring.
 
-### Sample Usage
-----------------
+## Sample Usage
+
 Here is a simple example illustrating how to use FCM library:
+
 ```go
 package main
 
