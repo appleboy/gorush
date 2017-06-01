@@ -131,7 +131,7 @@ func CheckMessage(req PushNotification) error {
 		return errors.New(msg)
 	}
 
-	// ref: https://developers.google.com/cloud-messaging/http-server-ref
+	// ref: https://firebase.google.com/docs/cloud-messaging/http-server-ref
 	if req.Platform == PlatFormAndroid && req.TimeToLive != nil && (*req.TimeToLive < uint(0) || uint(2419200) < *req.TimeToLive) {
 		msg = "the message's TimeToLive field must be an integer " +
 			"between 0 and 2419200 (4 weeks)"
@@ -456,7 +456,7 @@ Retry:
 
 // GetAndroidNotification use for define Android notification.
 // HTTP Connection Server Reference for Android
-// https://developers.google.com/cloud-messaging/http-server-ref
+// https://firebase.google.com/docs/cloud-messaging/http-server-ref
 func GetAndroidNotification(req PushNotification) *fcm.Message {
 	notification := &fcm.Message{
 		To:                    req.To,
