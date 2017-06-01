@@ -38,12 +38,12 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 
 ## Support Platform
 
-* [APNS](https://developer.apple.com/library/ios/documentation/networkinginternet/conceptual/remotenotificationspg/Chapters/ApplePushService.html)
-* [GCM](https://developer.android.com/google/gcm/index.html)
+* [APNS](https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/APNSOverview.html)
+* [FCM](https://firebase.google.com/)
 
 ## Features
 
-* Support [Google Cloud Message](https://developers.google.com/cloud-messaging/) using [go-gcm](https://github.com/google/go-gcm) library for Android.
+* Support [Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging) using [fcm](https://github.com/edganiukov/fcm) library for Android.
 * Support [HTTP/2](https://http2.github.io/) Apple Push Notification Service using [apns2](https://github.com/sideshow/apns2) library.
 * Support [YAML](https://github.com/go-yaml/yaml) configuration.
 * Support command line to send single Android or iOS notification.
@@ -56,7 +56,7 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 * Support store app stat to memory, [Redis](http://redis.io/), [BoltDB](https://github.com/boltdb/bolt), [BuntDB](https://github.com/tidwall/buntdb) or [LevelDB](https://github.com/syndtr/goleveldb).
 * Support `p12` or `pem` formtat of iOS certificate file.
 * Support `/sys/stats` show response time, status code count, etc.
-* Support for HTTP proxy to Google server (GCM).
+* Support for HTTP proxy to Google server (FCM).
 * Support retry send notification if server response is fail.
 * Support expose [prometheus](https://prometheus.io/) metrics.
 * Support install TLS certificates from [Let's Encrypt](https://letsencrypt.org/) automatically.
@@ -75,7 +75,7 @@ core:
   ssl: false
   cert_path: "cert.pem"
   key_path: "key.pem"
-  http_proxy: "" # only working for GCM server
+  http_proxy: "" # only working for FCM server
   pid:
     enabled: false
     path: "gorush.pid"
@@ -190,7 +190,7 @@ Server Options:
     -m, --message <message>          Notification message
     -t, --token <token>              Notification token
     --title <title>                  Notification title
-    --proxy <proxy>                  Proxy URL (only for GCM)
+    --proxy <proxy>                  Proxy URL (only for FCM)
     --pid <pid path>                 Process identifier path
 iOS Options:
     -i, --key <file>                 certificate key file path
@@ -215,10 +215,10 @@ $ gorush -android -m="your message" -k="API Key" -t="Device token"
 ```
 
 * `-m`: Notification message.
-* `-k`: [Google Cloud Messaging](https://developers.google.com/cloud-messaging) api key
+* `-k`: [Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging) api key
 * `-t`: Device token.
 * `--title`: Notification title.
-* `--proxy`: Set http proxy url. (only working for GCM)
+* `--proxy`: Set http proxy url. (only working for FCM)
 
 ### Send iOS notification
 
@@ -430,10 +430,10 @@ Request body must has a notifications array. The following is a parameter table 
 | to                      | string       | The value must be a registration token, notification key, or topic.                               | -        | only Android                                                  |
 | collapse_key            | string       | a key for collapsing notifications                                                                | -        | only Android                                                  |
 | delay_while_idle        | bool         | a flag for device idling                                                                          | -        | only Android                                                  |
-| time_to_live            | uint         | expiration of message kept on GCM storage                                                         | -        | only Android                                                  |
+| time_to_live            | uint         | expiration of message kept on FCM storage                                                         | -        | only Android                                                  |
 | restricted_package_name | string       | the package name of the application                                                               | -        | only Android                                                  |
 | dry_run                 | bool         | allows developers to test a request without actually sending a message                            | -        | only Android                                                  |
-| notification            | string array | payload of a GCM message                                                                          | -        | only Android. See the [detail](#android-notification-payload) |
+| notification            | string array | payload of a FCM message                                                                          | -        | only Android. See the [detail](#android-notification-payload) |
 | expiration              | int          | expiration for notification                                                                       | -        | only iOS                                                      |
 | apns_id                 | string       | A canonical UUID that identifies the notification                                                 | -        | only iOS                                                      |
 | topic                   | string       | topic of the remote notification                                                                  | -        | only iOS                                                      |
@@ -457,7 +457,7 @@ Request body must has a notifications array. The following is a parameter table 
 | title-loc-args | array of strings | Variable string values to appear in place of the format specifiers in title-loc-key.             | -        |      |
 | title-loc-key  | string           | The key to a title string in the Localizable.strings file for the current localization.          | -        |      |
 
-See more detail about [APNs Remote Notification Payload](https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/PayloadKeyReference.html#//apple_ref/doc/uid/TP40008194-CH17-SW1).
+See more detail about [APNs Remote Notification Payload](https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/PayloadKeyReference.html).
 
 ### Android notification payload
 
@@ -472,7 +472,7 @@ See more detail about [APNs Remote Notification Payload](https://developer.apple
 | title_loc_key  | string | Indicates the key to the title string for localization.                                                   | -        |      |
 | title_loc_args | string | Indicates the string value to replace format specifiers in title string for localization.                 | -        |      |
 
-See more detail about [GCM server reference](https://developers.google.com/cloud-messaging/http-server-ref#send-downstream).
+See more detail about [Firebase Cloud Messaging HTTP Protocol reference](https://firebase.google.com/docs/cloud-messaging/http-server-ref#send-downstream).
 
 ### iOS Example
 

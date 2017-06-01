@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/google/go-gcm"
+	"github.com/edganiukov/fcm"
 	apns "github.com/sideshow/apns2"
 	"github.com/sideshow/apns2/certificate"
 	"github.com/sideshow/apns2/payload"
@@ -75,7 +75,7 @@ type PushNotification struct {
 	TimeToLive            *uint            `json:"time_to_live,omitempty"`
 	RestrictedPackageName string           `json:"restricted_package_name,omitempty"`
 	DryRun                bool             `json:"dry_run,omitempty"`
-	Notification          gcm.Notification `json:"notification,omitempty"`
+	Notification          fcm.Notification `json:"notification,omitempty"`
 
 	// iOS
 	Expiration     int64    `json:"expiration,omitempty"`
@@ -142,7 +142,7 @@ func CheckMessage(req PushNotification) error {
 	return nil
 }
 
-// SetProxy only working for GCM server.
+// SetProxy only working for FCM server.
 func SetProxy(proxy string) error {
 
 	proxyURL, err := url.ParseRequestURI(proxy)
@@ -457,8 +457,8 @@ Retry:
 // GetAndroidNotification use for define Android notification.
 // HTTP Connection Server Reference for Android
 // https://developers.google.com/cloud-messaging/http-server-ref
-func GetAndroidNotification(req PushNotification) gcm.HttpMessage {
-	notification := gcm.HttpMessage{
+func GetAndroidNotification(req PushNotification) *fcm.Message {
+	notification := &fcm.Message{
 		To:                    req.To,
 		CollapseKey:           req.CollapseKey,
 		ContentAvailable:      req.ContentAvailable,
@@ -468,7 +468,7 @@ func GetAndroidNotification(req PushNotification) gcm.HttpMessage {
 		DryRun:                req.DryRun,
 	}
 
-	notification.RegistrationIds = req.Tokens
+	notification.RegistrationIDs = req.Tokens
 
 	if len(req.Priority) > 0 && req.Priority == "high" {
 		notification.Priority = "high"
@@ -530,11 +530,17 @@ Retry:
 		APIKey = req.APIKey
 	}
 
-	res, err := gcm.SendHttp(APIKey, notification)
-
+	client, err := fcm.NewClient(APIKey)
 	if err != nil {
-		// GCM server error
-		LogError.Error("GCM server error: " + err.Error())
+		// FCM server error
+		LogError.Error("FCM server error: " + err.Error())
+		return false
+	}
+
+	res, err := client.Send(notification)
+	if err != nil {
+		// FCM server error
+		LogError.Error("FCM server error: " + err.Error())
 		return false
 	}
 
@@ -544,12 +550,12 @@ Retry:
 
 	var newTokens []string
 	for k, result := range res.Results {
-		if result.Error != "" {
+		if result.Error != nil {
 			isError = true
 			newTokens = append(newTokens, req.Tokens[k])
-			LogPush(FailedPush, req.Tokens[k], req, errors.New(result.Error))
+			LogPush(FailedPush, req.Tokens[k], req, result.Error)
 			if PushConf.Core.Sync {
-				req.AddLog(getLogPushEntry(FailedPush, req.Tokens[k], req, errors.New(result.Error)))
+				req.AddLog(getLogPushEntry(FailedPush, req.Tokens[k], req, result.Error))
 			}
 			continue
 		}

@@ -9,7 +9,7 @@ import (
 
 	"github.com/appleboy/gorush/config"
 	"github.com/buger/jsonparser"
-	"github.com/google/go-gcm"
+	"github.com/edganiukov/fcm"
 	"github.com/sideshow/apns2"
 	"github.com/stretchr/testify/assert"
 )
@@ -393,7 +393,7 @@ func TestAndroidNotificationStructure(t *testing.T) {
 			"a": "1",
 			"b": 2,
 		},
-		Notification: gcm.Notification{
+		Notification: fcm.Notification{
 			Color: test,
 			Tag:   test,
 		},
@@ -709,7 +709,7 @@ func TestAPNSClientProdHost(t *testing.T) {
 	assert.Equal(t, apns2.HostProduction, ApnsClient.Host)
 }
 
-func TestGCMMessage(t *testing.T) {
+func TestFCMMessage(t *testing.T) {
 	var req PushNotification
 	var err error
 
