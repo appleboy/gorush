@@ -389,6 +389,13 @@ func GetIOSNotification(req PushNotification) *apns.Notification {
 
 // PushToIOS provide send notification to APNs server.
 func PushToIOS(req PushNotification) bool {
+	var isError bool
+	_, isError = PushToIOSWithErrorResult(req)
+	return isError
+}
+
+// PushToIOSWithErrorResult provide send notification to APNs server and return response array for failed requests.
+func PushToIOSWithErrorResult(req PushNotification)  (*map[string]*apns.Response,bool) {
 	LogAccess.Debug("Start push notification for iOS")
 	if PushConf.Core.Sync {
 		defer req.WaitDone()
@@ -403,6 +410,8 @@ func PushToIOS(req PushNotification) bool {
 Retry:
 	var isError = false
 	var newTokens []string
+	var returnResultList map[string]*apns.Response
+	returnResultList = make(map[string]*apns.Response)
 
 	notification := GetIOSNotification(req)
 
@@ -420,6 +429,7 @@ Retry:
 			}
 			StatStorage.AddIosError(1)
 			newTokens = append(newTokens, token)
+			returnResultList[token] = res
 			isError = true
 			continue
 		}
@@ -433,6 +443,7 @@ Retry:
 			}
 			StatStorage.AddIosError(1)
 			newTokens = append(newTokens, token)
+			returnResultList[token] = res
 			isError = true
 			continue
 		}
@@ -451,7 +462,7 @@ Retry:
 		goto Retry
 	}
 
-	return isError
+	return &returnResultList,isError
 }
 
 // GetAndroidNotification use for define Android notification.
