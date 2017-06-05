@@ -14,6 +14,7 @@ pipeline:
     secrets: [ codecov_token, android_test_token, android_api_key ]
     environment:
       - GOPATH=/srv/app
+      - PATH=$${PATH}:/srv/app/bin
     commands:
       - make deps
       - make vet
