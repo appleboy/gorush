@@ -21,6 +21,8 @@ pipeline:
       - make build
       - make embedmd
       - make test-vendor
+      - make misspell-check
+      - make fmt-check
       - coverage all
       # send coverage report
       - make coverage
