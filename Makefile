@@ -89,6 +89,17 @@ build: $(EXECUTABLE)
 $(EXECUTABLE): $(SOURCES)
 	go build -v -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)' -o bin/$@
 
+misspell-check:
+	@hash misspell > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
+		go get -u github.com/client9/misspell/cmd/misspell; \
+	fi
+	@diff=$$(misspell $(GOFILES)); \
+	if [ -n "$$diff" ]; then \
+		echo "Please fix the misspelling:"; \
+		echo "$${diff}"; \
+		exit 1; \
+	fi;
+
 test: fmt-check
 	for PKG in $(PACKAGES); do go test -v -cover -coverprofile $$GOPATH/src/$$PKG/coverage.txt $$PKG || exit 1; done;
 
