@@ -40,6 +40,7 @@ Server Options:
     -c, --config <file>              Configuration file path
     -m, --message <message>          Notification message
     -t, --token <token>              Notification token
+    -e, --engine <engine>            Storage engine (memory, redis ...)
     --title <title>                  Notification title
     --proxy <proxy>                  Proxy URL (only for GCM)
     --pid <pid path>                 Process identifier path
@@ -116,6 +117,8 @@ func main() {
 	flag.StringVar(&opts.Core.Port, "port", "", "port number for gorush")
 	flag.StringVar(&token, "t", "", "token string")
 	flag.StringVar(&token, "token", "", "token string")
+	flag.StringVar(&opts.Stat.Engine, "e", "", "store engine")
+	flag.StringVar(&opts.Stat.Engine, "engine", "", "store engine")
 	flag.StringVar(&message, "m", "", "notification message")
 	flag.StringVar(&message, "message", "", "notification message")
 	flag.StringVar(&title, "title", "", "notification title")
@@ -166,6 +169,10 @@ func main() {
 
 	if opts.Android.APIKey != "" {
 		gorush.PushConf.Android.APIKey = opts.Android.APIKey
+	}
+
+	if opts.Stat.Engine != "" {
+		gorush.PushConf.Stat.Engine = opts.Stat.Engine
 	}
 
 	// overwrite server port
