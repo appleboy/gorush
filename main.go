@@ -44,6 +44,7 @@ Server Options:
     --title <title>                  Notification title
     --proxy <proxy>                  Proxy URL (only for GCM)
     --pid <pid path>                 Process identifier path
+    --redis-addr <redis addr>        Redis addr (default: localhost:6379)
 iOS Options:
     -i, --key <file>                 certificate key file path
     -P, --password <password>        certificate key password
@@ -119,6 +120,7 @@ func main() {
 	flag.StringVar(&token, "token", "", "token string")
 	flag.StringVar(&opts.Stat.Engine, "e", "", "store engine")
 	flag.StringVar(&opts.Stat.Engine, "engine", "", "store engine")
+	flag.StringVar(&opts.Stat.Redis.Addr, "redis-addr", "", "redis addr")
 	flag.StringVar(&message, "m", "", "notification message")
 	flag.StringVar(&message, "message", "", "notification message")
 	flag.StringVar(&title, "title", "", "notification title")
@@ -173,6 +175,10 @@ func main() {
 
 	if opts.Stat.Engine != "" {
 		gorush.PushConf.Stat.Engine = opts.Stat.Engine
+	}
+
+	if opts.Stat.Redis.Addr != "" {
+		gorush.PushConf.Stat.Redis.Addr = opts.Stat.Redis.Addr
 	}
 
 	// overwrite server port
