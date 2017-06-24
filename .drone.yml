@@ -80,7 +80,7 @@ pipeline:
     pull: true
     to: 1234973386524610
     when:
-      status: [ success, failure ]
+      status: [ changed, failure ]
 
 services:
   redis:
