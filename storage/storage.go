@@ -1,4 +1,4 @@
-package gorush
+package storage
 
 // Storage interface
 type Storage interface {
