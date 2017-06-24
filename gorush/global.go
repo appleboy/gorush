@@ -3,8 +3,10 @@ package gorush
 import (
 	"crypto/tls"
 
-	"github.com/Sirupsen/logrus"
 	"github.com/appleboy/gorush/config"
+	"github.com/appleboy/gorush/storage"
+
+	"github.com/Sirupsen/logrus"
 	apns "github.com/sideshow/apns2"
 )
 
@@ -22,5 +24,5 @@ var (
 	// LogError is log server error log
 	LogError *logrus.Logger
 	// StatStorage implements the storage interface
-	StatStorage Storage
+	StatStorage storage.Storage
 )
