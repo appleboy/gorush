@@ -6,8 +6,8 @@ import (
 	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/storage"
 
-	"github.com/Sirupsen/logrus"
 	apns "github.com/sideshow/apns2"
+	"github.com/sirupsen/logrus"
 )
 
 var (
