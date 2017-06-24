@@ -3,12 +3,6 @@
 	"ignore": "test",
 	"package": [
 		{
-			"checksumSHA1": "XFl7nlkh1EUa3RvYEsT8Q4O1Mvc=",
-			"path": "github.com/Sirupsen/logrus",
-			"revision": "7f4b1adc791766938c29457bed0703fb9134421a",
-			"revisionTime": "2017-02-15T16:43:24Z"
-		},
-		{
 			"checksumSHA1": "DuVew6znkXuUG1wjGQF+pUyXrHU=",
 			"path": "github.com/appleboy/go-fcm",
 			"revision": "5f2cb2866531e4e37c7a9ff5fb7a1536e1ffc566",
