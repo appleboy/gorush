@@ -7,9 +7,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/Sirupsen/logrus"
 	"github.com/gin-gonic/gin"
 	"github.com/mattn/go-isatty"
+	"github.com/sirupsen/logrus"
 )
 
 var (
