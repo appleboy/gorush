@@ -52,11 +52,8 @@ func InitAppStatus() error {
 	case "leveldb":
 		StatStorage = leveldb.New(PushConf)
 	default:
-		err := errors.New("can't find storage driver")
-		if err != nil {
-			LogError.Error("storage error: " + err.Error())
-			return err
-		}
+		LogError.Error("storage error: can't find storage driver")
+		return errors.New("can't find storage driver")
 	}
 
 	if err := StatStorage.Init(); err != nil {
