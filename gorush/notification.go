@@ -393,16 +393,21 @@ func PushToIOS(req PushNotification) bool {
 	if PushConf.Core.Sync {
 		defer req.WaitDone()
 	}
-	var retryCount = 0
-	var maxRetry = PushConf.Ios.MaxRetry
+
+	var (
+		retryCount = 0
+		maxRetry   = PushConf.Ios.MaxRetry
+	)
 
 	if req.Retry > 0 && req.Retry < maxRetry {
 		maxRetry = req.Retry
 	}
 
 Retry:
-	var isError = false
-	var newTokens []string
+	var (
+		isError   = false
+		newTokens []string
+	)
 
 	notification := GetIOSNotification(req)
 
@@ -506,9 +511,12 @@ func PushToAndroid(req PushNotification) bool {
 	if PushConf.Core.Sync {
 		defer req.WaitDone()
 	}
-	var APIKey string
-	var retryCount = 0
-	var maxRetry = PushConf.Android.MaxRetry
+
+	var (
+		APIKey     string
+		retryCount = 0
+		maxRetry   = PushConf.Android.MaxRetry
+	)
 
 	if req.Retry > 0 && req.Retry < maxRetry {
 		maxRetry = req.Retry
