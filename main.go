@@ -95,13 +95,15 @@ func createPIDFile() error {
 func main() {
 	opts := config.ConfYaml{}
 
-	var showVersion bool
-	var configFile string
-	var topic string
-	var message string
-	var token string
-	var proxy string
-	var title string
+	var (
+		showVersion bool
+		configFile  string
+		topic       string
+		message     string
+		token       string
+		proxy       string
+		title       string
+	)
 
 	flag.BoolVar(&showVersion, "version", false, "Print version information.")
 	flag.BoolVar(&showVersion, "v", false, "Print version information.")
