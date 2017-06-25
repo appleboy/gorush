@@ -1,6 +1,6 @@
 workspace:
-  base: /srv/app
-  path: src/github.com/appleboy/gorush
+  base: /go/src
+  path: github.com/appleboy/gorush
 
 clone:
   git:
@@ -12,10 +12,7 @@ pipeline:
   build:
     image: appleboy/golang-testing
     secrets: [ codecov_token, android_test_token, android_api_key ]
-    environment:
-      - GOPATH=/srv/app
     commands:
-      - export PATH=$${PATH}:/srv/app/bin
       - make deps
       - make vet
       - make lint
