@@ -26,74 +26,73 @@ type HandlersChain []HandlerFunc
 
 // Last returns the last handler in the chain. ie. the last handler is the main own.
 func (c HandlersChain) Last() HandlerFunc {
-	length := len(c)
-	if length > 0 {
+	if length := len(c); length > 0 {
 		return c[length-1]
 	}
 	return nil
 }
 
-type (
-	RoutesInfo []RouteInfo
-	RouteInfo  struct {
-		Method  string
-		Path    string
-		Handler string
-	}
+type RouteInfo struct {
+	Method  string
+	Path    string
+	Handler string
+}
 
-	// Engine is the framework's instance, it contains the muxer, middleware and configuration settings.
-	// Create an instance of Engine, by using New() or Default()
-	Engine struct {
-		RouterGroup
-		delims      render.Delims
-		HTMLRender  render.HTMLRender
-		FuncMap     template.FuncMap
-		allNoRoute  HandlersChain
-		allNoMethod HandlersChain
-		noRoute     HandlersChain
-		noMethod    HandlersChain
-		pool        sync.Pool
-		trees       methodTrees
+type RoutesInfo []RouteInfo
 
-		// Enables automatic redirection if the current route can't be matched but a
-		// handler for the path with (without) the trailing slash exists.
-		// For example if /foo/ is requested but a route only exists for /foo, the
-		// client is redirected to /foo with http status code 301 for GET requests
-		// and 307 for all other request methods.
-		RedirectTrailingSlash bool
+// Engine is the framework's instance, it contains the muxer, middleware and configuration settings.
+// Create an instance of Engine, by using New() or Default()
+type Engine struct {
+	RouterGroup
+	delims           render.Delims
+	secureJsonPrefix string
+	HTMLRender       render.HTMLRender
+	FuncMap          template.FuncMap
+	allNoRoute       HandlersChain
+	allNoMethod      HandlersChain
+	noRoute          HandlersChain
+	noMethod         HandlersChain
+	pool             sync.Pool
+	trees            methodTrees
 
-		// If enabled, the router tries to fix the current request path, if no
-		// handle is registered for it.
-		// First superfluous path elements like ../ or // are removed.
-		// Afterwards the router does a case-insensitive lookup of the cleaned path.
-		// If a handle can be found for this route, the router makes a redirection
-		// to the corrected path with status code 301 for GET requests and 307 for
-		// all other request methods.
-		// For example /FOO and /..//Foo could be redirected to /foo.
-		// RedirectTrailingSlash is independent of this option.
-		RedirectFixedPath bool
+	// Enables automatic redirection if the current route can't be matched but a
+	// handler for the path with (without) the trailing slash exists.
+	// For example if /foo/ is requested but a route only exists for /foo, the
+	// client is redirected to /foo with http status code 301 for GET requests
+	// and 307 for all other request methods.
+	RedirectTrailingSlash bool
 
-		// If enabled, the router checks if another method is allowed for the
-		// current route, if the current request can not be routed.
-		// If this is the case, the request is answered with 'Method Not Allowed'
-		// and HTTP status code 405.
-		// If no other Method is allowed, the request is delegated to the NotFound
-		// handler.
-		HandleMethodNotAllowed bool
-		ForwardedByClientIP    bool
+	// If enabled, the router tries to fix the current request path, if no
+	// handle is registered for it.
+	// First superfluous path elements like ../ or // are removed.
+	// Afterwards the router does a case-insensitive lookup of the cleaned path.
+	// If a handle can be found for this route, the router makes a redirection
+	// to the corrected path with status code 301 for GET requests and 307 for
+	// all other request methods.
+	// For example /FOO and /..//Foo could be redirected to /foo.
+	// RedirectTrailingSlash is independent of this option.
+	RedirectFixedPath bool
 
-		// #726 #755 If enabled, it will thrust some headers starting with
-		// 'X-AppEngine...' for better integration with that PaaS.
-		AppEngine bool
+	// If enabled, the router checks if another method is allowed for the
+	// current route, if the current request can not be routed.
+	// If this is the case, the request is answered with 'Method Not Allowed'
+	// and HTTP status code 405.
+	// If no other Method is allowed, the request is delegated to the NotFound
+	// handler.
+	HandleMethodNotAllowed bool
+	ForwardedByClientIP    bool
 
-		// If enabled, the url.RawPath will be used to find parameters.
-		UseRawPath bool
-		// If true, the path value will be unescaped.
-		// If UseRawPath is false (by default), the UnescapePathValues effectively is true,
-		// as url.Path gonna be used, which is already unescaped.
-		UnescapePathValues bool
-	}
-)
+	// #726 #755 If enabled, it will thrust some headers starting with
+	// 'X-AppEngine...' for better integration with that PaaS.
+	AppEngine bool
+
+	// If enabled, the url.RawPath will be used to find parameters.
+	UseRawPath bool
+	// If true, the path value will be unescaped.
+	// If UseRawPath is false (by default), the UnescapePathValues effectively is true,
+	// as url.Path gonna be used, which is already unescaped.
+	UnescapePathValues bool
+}
 
 var _ IRouter = &Engine{}
 
@@ -123,6 +122,7 @@ func New() *Engine {
 		UnescapePathValues:     true,
 		trees:                  make(methodTrees, 0, 9),
 		delims:                 render.Delims{"{{", "}}"},
+		secureJsonPrefix:       "while(1);",
 	}
 	engine.RouterGroup.engine = engine
 	engine.pool.New = func() interface{} {
@@ -144,6 +144,11 @@ func (engine *Engine) allocateContext() *Context {
 
 func (engine *Engine) Delims(left, right string) *Engine {
 	engine.delims = render.Delims{left, right}
+	return engine
+}
+
+func (engine *Engine) SecureJsonPrefix(prefix string) *Engine {
+	engine.secureJsonPrefix = prefix
 	return engine
 }
 
@@ -286,7 +291,7 @@ func (engine *Engine) RunUnix(file string) (err error) {
 	return
 }
 
-// Conforms to the http.Handler interface.
+// ServeHTTP conforms to the http.Handler interface.
 func (engine *Engine) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	c := engine.pool.Get().(*Context)
 	c.writermem.reset(w)
@@ -298,7 +303,7 @@ func (engine *Engine) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	engine.pool.Put(c)
 }
 
-// Re-enter a context that has been rewritten.
+// HandleContext re-enter a context that has been rewritten.
 // This can be done by setting c.Request.Path to your new target.
 // Disclaimer: You can loop yourself to death with this, use wisely.
 func (engine *Engine) HandleContext(c *Context) {
@@ -346,7 +351,6 @@ func (engine *Engine) handleHTTPRequest(context *Context) {
 		}
 	}
 
-	// TODO: unit test
 	if engine.HandleMethodNotAllowed {
 		for _, tree := range engine.trees {
 			if tree.method != httpMethod {

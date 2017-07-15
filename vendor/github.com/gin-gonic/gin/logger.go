@@ -25,14 +25,17 @@ var (
 	disableColor = false
 )
 
+// DisableConsoleColor disables color output in the console
 func DisableConsoleColor() {
 	disableColor = true
 }
 
+// ErrorLogger returns a handlerfunc for any error type
 func ErrorLogger() HandlerFunc {
 	return ErrorLoggerT(ErrorTypeAny)
 }
 
+// ErrorLoggerT returns a handlerfunc for a given error type
 func ErrorLoggerT(typ ErrorType) HandlerFunc {
 	return func(c *Context) {
 		c.Next()
@@ -74,6 +77,7 @@ func LoggerWithWriter(out io.Writer, notlogged ...string) HandlerFunc {
 		// Start timer
 		start := time.Now()
 		path := c.Request.URL.Path
+		raw := c.Request.URL.RawQuery
 
 		// Process request
 		c.Next()
@@ -93,6 +97,10 @@ func LoggerWithWriter(out io.Writer, notlogged ...string) HandlerFunc {
 				methodColor = colorForMethod(method)
 			}
 			comment := c.Errors.ByType(ErrorTypePrivate).String()
+
+			if raw != "" {
+				path = path + "?" + raw
+			}
 
 			fmt.Fprintf(out, "[GIN] %v |%s %3d %s| %13v | %15s |%s  %s %-7s %s\n%s",
 				end.Format("2006/01/02 - 15:04:05"),
