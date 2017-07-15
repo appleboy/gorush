@@ -129,28 +129,22 @@
 			"revisionTime": "2017-01-09T09:34:21Z"
 		},
 		{
-			"checksumSHA1": "cpELhz30Sco7IBwvI6FyuShnjnQ=",
+			"checksumSHA1": "YYaHHK72ywsjJG11nEnz6JdGqSg=",
 			"path": "github.com/gin-gonic/gin",
-			"revision": "d459835d2b077e44f7c9b453505ee29881d5d12d",
-			"revisionTime": "2017-07-02T09:28:26Z",
-			"version": "v1.2",
-			"versionExact": "v1.2"
+			"revision": "5cb25a6410a299dcc31e7f31b41c60c90e30b3f6",
+			"revisionTime": "2017-07-14T17:28:16Z"
 		},
 		{
-			"checksumSHA1": "wEYVkapMAF7S2iVWlWzLHu598dE=",
+			"checksumSHA1": "A09l4+1MIuaXhh3Nn6aoOm+rr3Q=",
 			"path": "github.com/gin-gonic/gin/binding",
-			"revision": "ad2dacedd654cdc1c1526971fe83c118318975ba",
-			"revisionTime": "2017-03-24T12:43:23Z",
-			"version": "=develop",
-			"versionExact": "develop"
+			"revision": "5cb25a6410a299dcc31e7f31b41c60c90e30b3f6",
+			"revisionTime": "2017-07-14T17:28:16Z"
 		},
 		{
-			"checksumSHA1": "M3FwiqpVbXwo9t2FyI5/gKxCDKY=",
+			"checksumSHA1": "8UlyJTegyrXbE8UErbf2lH7X4AM=",
 			"path": "github.com/gin-gonic/gin/render",
-			"revision": "6613cdbf74a2597c335b6f34bc7722fbbd4588e5",
-			"revisionTime": "2017-07-04T02:08:41Z",
-			"version": "=develop",
-			"versionExact": "develop"
+			"revision": "5cb25a6410a299dcc31e7f31b41c60c90e30b3f6",
+			"revisionTime": "2017-07-14T17:28:16Z"
 		},
 		{
 			"checksumSHA1": "kBeNcaKk56FguvPSUCEaH6AxpRc=",
@@ -163,6 +157,12 @@
 			"path": "github.com/golang/snappy",
 			"revision": "553a641470496b2327abcac10b36396bd98e45c9",
 			"revisionTime": "2017-02-15T23:32:05Z"
+		},
+		{
+			"checksumSHA1": "zUqmflfIz8HkMYZDjYk2CV3sbk0=",
+			"path": "github.com/json-iterator/go",
+			"revision": "8b0360418449ea45a97fd198b3ee29dcbf4dca65",
+			"revisionTime": "2017-07-13T11:01:45Z"
 		},
 		{
 			"checksumSHA1": "Jyv1TH1YHrCVewmVE8FgSh1+92s=",

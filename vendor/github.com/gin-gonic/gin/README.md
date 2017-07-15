@@ -1,6 +1,6 @@
 # Gin Web Framework
 
-<img align="right" src="https://raw.githubusercontent.com/gin-gonic/gin/master/logo.jpg">
+<img align="right" width="159px" src="https://raw.githubusercontent.com/gin-gonic/logo/master/color.png">
 
 [![Build Status](https://travis-ci.org/gin-gonic/gin.svg)](https://travis-ci.org/gin-gonic/gin)
  [![codecov](https://codecov.io/gh/gin-gonic/gin/branch/master/graph/badge.svg)](https://codecov.io/gh/gin-gonic/gin)
@@ -13,7 +13,8 @@ Gin is a web framework written in Go (Golang). It features a martini-like API wi
 ![Gin console logger](https://gin-gonic.github.io/gin/other/console.png)
 
 ```sh
-$ cat test.go
+# assume the following codes in example.go file
+$ cat example.go
 ```
 
 ```go
@@ -30,6 +31,11 @@ func main() {
 	})
 	r.Run() // listen and serve on 0.0.0.0:8080
 }
+```
+
+```
+# run example.go and visit 0.0.0.0:8080/ping on browser
+$ go run example.go
 ```
 
 ## Benchmarks
@@ -101,6 +107,38 @@ import "github.com/gin-gonic/gin"
 
 ```go
 import "net/http"
+```
+
+### Use a vendor tool like [Govendor](https://github.com/kardianos/govendor)
+
+1. `go get` govendor
+
+```sh
+$ go get github.com/kardianos/govendor
+```
+2. Create your project folder and `cd` inside
+
+```sh
+$ mkdir -p ~/go/src/github.com/myusername/project && cd "$_"
+```
+
+3. Vendor init your project and add gin
+
+```sh
+$ govendor init
+$ govendor fetch github.com/gin-gonic/gin@v1.2
+```
+
+4. Copy a starting template inside your project
+
+```sh
+$ curl https://raw.githubusercontent.com/gin-gonic/gin/master/examples/basic/main.go > main.go
+```
+
+5. Run your project
+
+```sh
+$ go run main.go
 ```
 
 ## API Examples
@@ -238,7 +276,7 @@ func main() {
 		file, _ := c.FormFile("file")
 		log.Println(file.Filename)
 
-		c.String(http.StatusOK, fmt.Printf("'%s' uploaded!", file.Filename))
+		c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!", file.Filename))
 	})
 	router.Run(":8080")
 }
@@ -267,7 +305,7 @@ func main() {
 		for _, file := range files {
 			log.Println(file.Filename)
 		}
-		c.String(http.StatusOK, fmt.Printf("%d files uploaded!", len(files)))
+		c.String(http.StatusOK, fmt.Sprintf("%d files uploaded!", len(files)))
 	})
 	router.Run(":8080")
 }
@@ -433,7 +471,7 @@ func startPage(c *gin.Context) {
 	var person Person
 	// If `GET`, only `Form` binding engine (`query`) used.
 	// If `POST`, first checks the `content-type` for `JSON` or `XML`, then uses `Form` (`form-data`).
-	// See more at https://github.com/gin-gonic/gin/blob/develop/binding/binding.go#L45
+	// See more at https://github.com/gin-gonic/gin/blob/master/binding/binding.go#L48
 	if c.Bind(&person) == nil {
 		log.Println(person.Name)
 		log.Println(person.Address)
@@ -441,6 +479,52 @@ func startPage(c *gin.Context) {
 
 	c.String(200, "Success")
 }
+```
+
+### Bind HTML checkboxes
+
+See the [detail information](https://github.com/gin-gonic/gin/issues/129#issuecomment-124260092)
+
+main.go
+
+```go
+...
+
+type myForm struct {
+    Colors []string `form:"colors[]"`
+}
+
+...
+
+func formHandler(c *gin.Context) {
+    var fakeForm myForm
+    c.Bind(&fakeForm)
+    c.JSON(200, gin.H{"color": fakeForm.Colors})
+}
+
+...
+
+```
+
+form.html
+
+```html
+<form action="/" method="POST">
+    <p>Check some colors</p>
+    <label for="red">Red</label>
+    <input type="checkbox" name="colors[]" value="red" id="red" />
+    <label for="green">Green</label>
+    <input type="checkbox" name="colors[]" value="green" id="green" />
+    <label for="blue">Blue</label>
+    <input type="checkbox" name="colors[]" value="blue" id="blue" />
+    <input type="submit" />
+</form>
+```
+
+result:
+
+```
+{"color":["red","green","blue"]}
 ```
 
 ### Multipart/Urlencoded binding
@@ -520,6 +604,29 @@ func main() {
 	r.Run(":8080")
 }
 ```
+
+#### SecureJSON
+
+Using SecureJSON to prevent json hijacking. Default prepends `"while(1),"` to response body if the given struct is array values.
+
+```go
+func main() {
+	r := gin.Default()
+
+	// You can also use your own secure json prefix
+	// r.SecureJsonPrefix(")]}',\n")
+
+	r.GET("/someJSON", func(c *gin.Context) {
+		names := []string{"lena", "austin", "foo"}
+
+		// Will output  :   while(1);["lena","austin","foo"]
+		c.SecureJSON(http.StatusOK, names)
+	})
+
+	// Listen and serve on 0.0.0.0:8080
+	r.Run(":8080")
+}
+```  
 
 ### Serving static files
 
@@ -607,6 +714,8 @@ templates/users/index.tmpl
 {{ end }}
 ```
 
+#### Custom Template renderer
+
 You can also use your own html template render
 
 ```go
@@ -620,6 +729,8 @@ func main() {
 }
 ```
 
+#### Custom Delimiters
+
 You may use custom delims
 
 ```go
@@ -628,7 +739,7 @@ You may use custom delims
 	r.LoadHTMLGlob("/path/to/templates"))
 ```  
 
-#### Add custom template funcs
+#### Custom Template Funcs
 
 main.go
 
@@ -878,7 +989,7 @@ func main() {
 		Cache:      autocert.DirCache("/var/www/.cache"),
 	}
 
-	log.Fatal(autotls.RunWithManager(r, m))
+	log.Fatal(autotls.RunWithManager(r, &m))
 }
 ```
 
@@ -956,20 +1067,7 @@ func main() {
 }
 ```
 
-## Contributing 
-
-- With issues:
-  - Use the search tool before opening a new issue.
-  - Please provide source code and commit sha if you found a bug.
-  - Review existing issues and provide feedback or react to them.
-- With pull requests:
-  - Open your pull request against develop
-  - Your pull request should have no more than two commits, if not you should squash them.
-  - It should pass all tests in the available continuous integrations systems such as TravisCI.
-  - You should add/modify tests to cover your proposed code changes.
-  - If your pull request contains a new feature, please document it on the README.
-
-## Users
+## Users  [![Sourcegraph](https://sourcegraph.com/github.com/gin-gonic/gin/-/badge.svg)](https://sourcegraph.com/github.com/gin-gonic/gin?badge)
 
 Awesome project lists using [Gin](https://github.com/gin-gonic/gin) web framework.
 
