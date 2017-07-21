@@ -31,7 +31,7 @@ pipeline:
     files:
       - .cover/coverage.txt
     when:
-      event: [ push ]
+      event: [ push, pull_request ]
       status: [ success ]
 
   release:
