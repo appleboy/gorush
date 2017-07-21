@@ -11,7 +11,7 @@ clone:
 pipeline:
   build:
     image: appleboy/golang-testing
-    secrets: [ codecov_token, android_test_token, android_api_key ]
+    secrets: [ android_test_token, android_api_key ]
     commands:
       - make deps
       - make vet
