@@ -173,11 +173,6 @@ endif
 	docker tag $(DEPLOY_ACCOUNT)/$(EXECUTABLE):latest $(DEPLOY_ACCOUNT)/$(EXECUTABLE):$(tag)
 	docker push $(DEPLOY_ACCOUNT)/$(EXECUTABLE):$(tag)
 
-coverage:
-	curl -s https://codecov.io/bash > .codecov && \
-	chmod +x .codecov && \
-	./.codecov -f .cover/coverage.txt
-
 clean:
 	go clean -x -i ./...
 	find . -name coverage.txt -delete
