@@ -22,8 +22,17 @@ pipeline:
       - make misspell-check
       - make fmt-check
       - coverage all
-      # send coverage report
-      - make coverage
+
+  codecov:
+    image: robertstettner/drone-codecov
+    secrets:
+      - source: codecov_token
+        target: plugin_token
+    files:
+      - .cover/coverage.txt
+    when:
+      event: [ push ]
+      status: [ success ]
 
   release:
     image: appleboy/golang-testing
