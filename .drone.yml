@@ -25,9 +25,7 @@ pipeline:
 
   codecov:
     image: robertstettner/drone-codecov
-    secrets:
-      - source: codecov_token
-        target: plugin_token
+    secrets: [ codecov_token ]
     files:
       - .cover/coverage.txt
     when:
