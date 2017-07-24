@@ -29,7 +29,7 @@ func (s *server) Send(ctx context.Context, in *pb.NotificationRequest) (*pb.Noti
 		APIKey:   in.Key,
 	}
 
-	gorush.SendNotification(notification)
+	go gorush.SendNotification(notification)
 
 	return &pb.NotificationReply{
 		Success: false,
