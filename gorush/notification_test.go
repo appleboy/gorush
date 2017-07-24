@@ -475,7 +475,7 @@ func TestPushToAndroidWrongToken(t *testing.T) {
 	}
 
 	success := PushToAndroid(req)
-	assert.True(t, success)
+	assert.False(t, success)
 }
 
 func TestPushToAndroidRightTokenForJSONLog(t *testing.T) {
@@ -489,7 +489,7 @@ func TestPushToAndroidRightTokenForJSONLog(t *testing.T) {
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
 	req := PushNotification{
-		Tokens:   []string{androidToken, "bbbbb"},
+		Tokens:   []string{androidToken},
 		Platform: PlatFormAndroid,
 		Message:  "Welcome",
 	}
@@ -513,7 +513,7 @@ func TestPushToAndroidRightTokenForStringLog(t *testing.T) {
 	}
 
 	success := PushToAndroid(req)
-	assert.True(t, success)
+	assert.False(t, success)
 }
 
 func TestOverwriteAndroidAPIKey(t *testing.T) {
