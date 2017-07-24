@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"golang.org/x/sync/errgroup"
 	"log"
 	"os"
 	"path/filepath"
@@ -10,6 +11,7 @@ import (
 
 	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/gorush"
+	"github.com/appleboy/gorush/rpc"
 )
 
 func checkInput(token, message string) {
@@ -294,7 +296,18 @@ func main() {
 
 	gorush.InitWorkers(gorush.PushConf.Core.WorkerNum, gorush.PushConf.Core.QueueNum)
 
-	if err = gorush.RunHTTPServer(); err != nil {
+	var g errgroup.Group
+
+	g.Go(func() error {
+		// Run httpd server
+		return gorush.RunHTTPServer()
+	})
+	g.Go(func() error {
+		// Run gRPC internal server
+		return rpc.RunGRPCServer()
+	})
+
+	if err = g.Wait(); err != nil {
 		gorush.LogError.Fatal(err)
 	}
 }
