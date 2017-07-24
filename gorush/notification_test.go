@@ -459,8 +459,9 @@ func TestPushToAndroidWrongAPIKey(t *testing.T) {
 		Message:  "Welcome",
 	}
 
-	isError := PushToAndroid(req)
-	assert.True(t, isError)
+	// FCM server error: 401 error: 401 Unauthorized
+	err := PushToAndroid(req)
+	assert.False(t, err)
 }
 
 func TestPushToAndroidWrongToken(t *testing.T) {
@@ -533,8 +534,9 @@ func TestOverwriteAndroidAPIKey(t *testing.T) {
 		APIKey: "1234",
 	}
 
-	isError := PushToAndroid(req)
-	assert.True(t, isError)
+	// FCM server error: 401 error: 401 Unauthorized
+	err := PushToAndroid(req)
+	assert.False(t, err)
 }
 
 func TestSenMultipleNotifications(t *testing.T) {
