@@ -13,15 +13,20 @@ func InitWorkers(workerNum int64, queueNum int64) {
 	}
 }
 
+// SendNotification is send message to iOS or Android
+func SendNotification(msg PushNotification) {
+	switch msg.Platform {
+	case PlatFormIos:
+		PushToIOS(msg)
+	case PlatFormAndroid:
+		PushToAndroid(msg)
+	}
+}
+
 func startWorker() {
 	for {
 		notification := <-QueueNotification
-		switch notification.Platform {
-		case PlatFormIos:
-			PushToIOS(notification)
-		case PlatFormAndroid:
-			PushToAndroid(notification)
-		}
+		SendNotification(notification)
 	}
 }
 

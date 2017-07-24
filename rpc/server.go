@@ -29,16 +29,10 @@ func (s *server) Send(ctx context.Context, in *pb.NotificationRequest) (*pb.Noti
 		APIKey:   in.Key,
 	}
 
-	success := false
-	switch notification.Platform {
-	case gorush.PlatFormIos:
-		success = gorush.PushToIOS(notification)
-	case gorush.PlatFormAndroid:
-		success = gorush.PushToAndroid(notification)
-	}
+	gorush.SendNotification(notification)
 
 	return &pb.NotificationReply{
-		Success: success,
+		Success: false,
 		Counts:  int32(len(notification.Tokens)),
 	}, nil
 }
