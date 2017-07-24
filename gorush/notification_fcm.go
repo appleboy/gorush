@@ -126,5 +126,5 @@ Retry:
 		goto Retry
 	}
 
-	return !isError
+	return isError
 }

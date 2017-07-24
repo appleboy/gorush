@@ -442,6 +442,7 @@ func TestPushToIOS(t *testing.T) {
 		Message:  "Welcome",
 	}
 
+	// send fail
 	isError := PushToIOS(req)
 	assert.True(t, isError)
 }
@@ -458,8 +459,9 @@ func TestPushToAndroidWrongAPIKey(t *testing.T) {
 		Message:  "Welcome",
 	}
 
-	success := PushToAndroid(req)
-	assert.False(t, success)
+	// FCM server error: 401 error: 401 Unauthorized
+	err := PushToAndroid(req)
+	assert.False(t, err)
 }
 
 func TestPushToAndroidWrongToken(t *testing.T) {
@@ -474,8 +476,8 @@ func TestPushToAndroidWrongToken(t *testing.T) {
 		Message:  "Welcome",
 	}
 
-	success := PushToAndroid(req)
-	assert.False(t, success)
+	isError := PushToAndroid(req)
+	assert.True(t, isError)
 }
 
 func TestPushToAndroidRightTokenForJSONLog(t *testing.T) {
@@ -494,8 +496,8 @@ func TestPushToAndroidRightTokenForJSONLog(t *testing.T) {
 		Message:  "Welcome",
 	}
 
-	success := PushToAndroid(req)
-	assert.True(t, success)
+	isError := PushToAndroid(req)
+	assert.False(t, isError)
 }
 
 func TestPushToAndroidRightTokenForStringLog(t *testing.T) {
@@ -512,8 +514,8 @@ func TestPushToAndroidRightTokenForStringLog(t *testing.T) {
 		Message:  "Welcome",
 	}
 
-	success := PushToAndroid(req)
-	assert.False(t, success)
+	isError := PushToAndroid(req)
+	assert.True(t, isError)
 }
 
 func TestOverwriteAndroidAPIKey(t *testing.T) {
@@ -532,8 +534,9 @@ func TestOverwriteAndroidAPIKey(t *testing.T) {
 		APIKey: "1234",
 	}
 
-	success := PushToAndroid(req)
-	assert.False(t, success)
+	// FCM server error: 401 error: 401 Unauthorized
+	err := PushToAndroid(req)
+	assert.False(t, err)
 }
 
 func TestSenMultipleNotifications(t *testing.T) {
@@ -781,8 +784,8 @@ func TestCheckAndroidMessage(t *testing.T) {
 		TimeToLive: &timeToLive,
 	}
 
-	success := PushToAndroid(req)
-	assert.False(t, success)
+	err := PushToAndroid(req)
+	assert.False(t, err)
 }
 
 func TestSetProxyURL(t *testing.T) {
