@@ -18,6 +18,10 @@ core:
     folder: ".cache" # folder for storing TLS certificates
     host: "" # which domains the Let's Encrypt will attempt
 
+grpc:
+  enabled: false
+  port: 50051
+
 api:
   push_uri: "/api/push"
   stat_go_uri: "/api/stat/go"

@@ -15,6 +15,7 @@ type ConfYaml struct {
 	Ios     SectionIos     `yaml:"ios"`
 	Log     SectionLog     `yaml:"log"`
 	Stat    SectionStat    `yaml:"stat"`
+	GRPC    SectionGRPC    `yaml:"grpc"`
 }
 
 // SectionCore is sub section of config.
@@ -115,6 +116,12 @@ type SectionPID struct {
 	Override bool   `yaml:"override"`
 }
 
+// SectionGRPC is sub section of config.
+type SectionGRPC struct {
+	Enabled bool   `yaml:"enabled"`
+	Port    string `yaml:"port"`
+}
+
 // BuildDefaultPushConf is default config setting.
 func BuildDefaultPushConf() ConfYaml {
 	var conf ConfYaml
@@ -165,17 +172,19 @@ func BuildDefaultPushConf() ConfYaml {
 	conf.Log.ErrorLevel = "error"
 	conf.Log.HideToken = true
 
+	// Stat Engine
 	conf.Stat.Engine = "memory"
 	conf.Stat.Redis.Addr = "localhost:6379"
 	conf.Stat.Redis.Password = ""
 	conf.Stat.Redis.DB = 0
-
 	conf.Stat.BoltDB.Path = "bolt.db"
 	conf.Stat.BoltDB.Bucket = "gorush"
-
 	conf.Stat.BuntDB.Path = "bunt.db"
 	conf.Stat.LevelDB.Path = "level.db"
 
+	// gRPC Server
+	conf.GRPC.Enabled = false
+	conf.GRPC.Port = "50051"
 	return conf
 }
 
