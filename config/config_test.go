@@ -111,6 +111,10 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 
 	assert.Equal(suite.T(), "bunt.db", suite.ConfGorushDefault.Stat.BuntDB.Path)
 	assert.Equal(suite.T(), "level.db", suite.ConfGorushDefault.Stat.LevelDB.Path)
+
+	// gRPC
+	assert.Equal(suite.T(), false, suite.ConfGorushDefault.GRPC.Enabled)
+	assert.Equal(suite.T(), "50051", suite.ConfGorushDefault.GRPC.Port)
 }
 
 func (suite *ConfigTestSuite) TestValidateConf() {
@@ -171,6 +175,10 @@ func (suite *ConfigTestSuite) TestValidateConf() {
 
 	assert.Equal(suite.T(), "bunt.db", suite.ConfGorush.Stat.BuntDB.Path)
 	assert.Equal(suite.T(), "level.db", suite.ConfGorush.Stat.LevelDB.Path)
+
+	// gRPC
+	assert.Equal(suite.T(), false, suite.ConfGorush.GRPC.Enabled)
+	assert.Equal(suite.T(), "50051", suite.ConfGorush.GRPC.Port)
 }
 
 func TestConfigTestSuite(t *testing.T) {

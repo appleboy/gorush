@@ -45,7 +45,12 @@ func (s *server) Send(ctx context.Context, in *pb.NotificationRequest) (*pb.Noti
 
 // RunGRPCServer run gorush grpc server
 func RunGRPCServer() error {
-	lis, err := net.Listen("tcp", port)
+	if !gorush.PushConf.GRPC.Enabled {
+		gorush.LogAccess.Debug("gRPC server is disabled.")
+		return nil
+	}
+
+	lis, err := net.Listen("tcp", ":"+gorush.PushConf.GRPC.Port)
 	if err != nil {
 		gorush.LogError.Error("failed to listen: %v", err)
 		return err
@@ -54,6 +59,7 @@ func RunGRPCServer() error {
 	pb.RegisterGorushServer(s, &server{})
 	// Register reflection service on gRPC server.
 	reflection.Register(s)
+	gorush.LogAccess.Debug("gRPC server is running on " + gorush.PushConf.GRPC.Port + " port.")
 	if err := s.Serve(lis); err != nil {
 		gorush.LogError.Error("failed to serve: %v", err)
 		return err
