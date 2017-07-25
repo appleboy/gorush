@@ -290,13 +290,18 @@ func main() {
 		return
 	}
 
-	if err = gorush.InitAPNSClient(); err != nil {
-		return
-	}
-
 	gorush.InitWorkers(gorush.PushConf.Core.WorkerNum, gorush.PushConf.Core.QueueNum)
 
 	var g errgroup.Group
+
+	g.Go(func() error {
+		return gorush.InitAPNSClient()
+	})
+
+	g.Go(func() error {
+		_, err := gorush.InitFCMClient(gorush.PushConf.Android.APIKey)
+		return err
+	})
 
 	g.Go(func() error {
 		// Run httpd server
