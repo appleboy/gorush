@@ -29,23 +29,6 @@ func TestMissingKeyForInitFCMClient(t *testing.T) {
 	assert.Equal(t, "Missing Android API Key", err.Error())
 }
 
-func TestPushToAndroidWrongAPIKey(t *testing.T) {
-	PushConf = config.BuildDefaultPushConf()
-
-	PushConf.Android.Enabled = true
-	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY") + "a"
-
-	req := PushNotification{
-		Tokens:   []string{"aaaaaa", "bbbbb"},
-		Platform: PlatFormAndroid,
-		Message:  "Welcome",
-	}
-
-	// FCM server send message error: 401 error: 401 Unauthorized
-	err := PushToAndroid(req)
-	assert.False(t, err)
-}
-
 func TestPushToAndroidWrongToken(t *testing.T) {
 	PushConf = config.BuildDefaultPushConf()
 
