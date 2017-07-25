@@ -1,6 +1,7 @@
 package gorush
 
 import (
+	"log"
 	"os"
 	"testing"
 
@@ -8,9 +9,18 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestMissingKeyForInitFCMClient(t *testing.T) {
-	config.BuildDefaultPushConf()
+func init() {
+	PushConf = config.BuildDefaultPushConf()
+	if err := InitLog(); err != nil {
+		log.Fatal(err)
+	}
 
+	if err := InitAppStatus(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func TestMissingKeyForInitFCMClient(t *testing.T) {
 	client, err := InitFCMClient("")
 
 	assert.Nil(t, client)
@@ -47,9 +57,9 @@ func TestPushToAndroidWrongToken(t *testing.T) {
 		Message:  "Welcome",
 	}
 
-	// FCM server send message error: 401 error: 401 Unauthorized
-	err := PushToAndroid(req)
-	assert.False(t, err)
+	// Android Success count: 0, Failure count: 2
+	isError := PushToAndroid(req)
+	assert.True(t, isError)
 }
 
 func TestPushToAndroidRightTokenForJSONLog(t *testing.T) {
@@ -106,7 +116,7 @@ func TestOverwriteAndroidAPIKey(t *testing.T) {
 		APIKey: "1234",
 	}
 
-	// FCM server error: 401 error: 401 Unauthorized
+	// FCM server error: 401 error: 401 Unauthorized (Wrong API Key)
 	err := PushToAndroid(req)
 	assert.False(t, err)
 }

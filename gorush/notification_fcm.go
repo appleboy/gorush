@@ -20,7 +20,7 @@ func InitFCMClient(key string) (*fcm.Client, error) {
 	}
 
 	if FCMClient == nil {
-		FCMClient, err = fcm.NewClient(PushConf.Android.APIKey)
+		FCMClient, err = fcm.NewClient(key)
 		return FCMClient, err
 	}
 
