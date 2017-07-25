@@ -1,6 +1,7 @@
 package gorush
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"testing"
