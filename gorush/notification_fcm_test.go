@@ -67,6 +67,7 @@ func TestPushToAndroidRightTokenForJSONLog(t *testing.T) {
 
 	PushConf.Android.Enabled = true
 	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+	fmt.Println(PushConf.Android.APIKey)
 	// log for json
 	PushConf.Log.Format = "json"
 
