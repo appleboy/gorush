@@ -15,6 +15,7 @@ SOURCES ?= $(shell find . -name "*.go" -type f)
 TAGS ?=
 LDFLAGS ?= -X 'main.Version=$(VERSION)'
 TMPDIR := $(shell mktemp -d 2>/dev/null || mktemp -d -t 'tempdir')
+NODE_PROTOC_PLUGIN := $(shell which grpc_tools_node_protoc_plugin)
 
 ifneq ($(shell uname), Darwin)
 	EXTLDFLAGS = -extldflags "-static" $(null)
@@ -180,6 +181,14 @@ clean:
 	find . -name *.db -delete
 	-rm -rf bin/* \
 		.cover
+
+rpc/example/node/gorush_grpc_pb.js: rpc/proto/gorush.proto
+	protoc -I rpc/proto rpc/proto/gorush.proto --js_out=import_style=commonjs,binary:rpc/example/node/ --grpc_out=rpc/example/node/ --plugin=protoc-gen-grpc=$(NODE_PROTOC_PLUGIN)
+
+rpc/proto/gorush.pb.go: rpc/proto/gorush.proto
+	protoc -I rpc/proto rpc/proto/gorush.proto --go_out=plugins=grpc:rpc/proto
+
+generate_proto: rpc/proto/gorush.pb.go rpc/example/node/gorush_grpc_pb.js
 
 version:
 	@echo $(VERSION)
