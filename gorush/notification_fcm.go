@@ -1,10 +1,31 @@
 package gorush
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/appleboy/go-fcm"
 )
+
+// InitFCMClient use for initialize FCM Client.
+func InitFCMClient(key string) (*fcm.Client, error) {
+	var err error
+
+	if key == "" {
+		return nil, errors.New("Missing Android API Key")
+	}
+
+	if key != PushConf.Android.APIKey {
+		return fcm.NewClient(key)
+	}
+
+	if FCMClient == nil {
+		FCMClient, err = fcm.NewClient(key)
+		return FCMClient, err
+	}
+
+	return FCMClient, nil
+}
 
 // GetAndroidNotification use for define Android notification.
 // HTTP Connection Server Reference for Android
@@ -60,7 +81,7 @@ func PushToAndroid(req PushNotification) bool {
 	}
 
 	var (
-		APIKey     string
+		client     *fcm.Client
 		retryCount = 0
 		maxRetry   = PushConf.Android.MaxRetry
 	)
@@ -79,13 +100,15 @@ func PushToAndroid(req PushNotification) bool {
 
 Retry:
 	var isError = false
+
 	notification := GetAndroidNotification(req)
 
-	if APIKey = PushConf.Android.APIKey; req.APIKey != "" {
-		APIKey = req.APIKey
+	if req.APIKey != "" {
+		client, err = InitFCMClient(req.APIKey)
+	} else {
+		client, err = InitFCMClient(PushConf.Android.APIKey)
 	}
 
-	client, err := fcm.NewClient(APIKey)
 	if err != nil {
 		// FCM server error
 		LogError.Error("FCM server error: " + err.Error())
@@ -94,8 +117,8 @@ Retry:
 
 	res, err := client.Send(notification)
 	if err != nil {
-		// FCM server error
-		LogError.Error("FCM server error: " + err.Error())
+		// Send Message error
+		LogError.Error("FCM server send message error: " + err.Error())
 		return false
 	}
 
