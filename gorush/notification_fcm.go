@@ -20,6 +20,7 @@ func InitFCMClient(key string) (*fcm.Client, error) {
 	}
 
 	if FCMClient == nil {
+		fmt.Println("create new client:" + key)
 		FCMClient, err = fcm.NewClient(key)
 		return FCMClient, err
 	}
