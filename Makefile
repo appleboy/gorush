@@ -182,13 +182,13 @@ clean:
 	-rm -rf bin/* \
 		.cover
 
-rpc/example/node/gorush_grpc_pb.js: rpc/proto/gorush.proto
+rpc/example/node/gorush_*_pb.js: rpc/proto/gorush.proto
 	protoc -I rpc/proto rpc/proto/gorush.proto --js_out=import_style=commonjs,binary:rpc/example/node/ --grpc_out=rpc/example/node/ --plugin=protoc-gen-grpc=$(NODE_PROTOC_PLUGIN)
 
 rpc/proto/gorush.pb.go: rpc/proto/gorush.proto
 	protoc -I rpc/proto rpc/proto/gorush.proto --go_out=plugins=grpc:rpc/proto
 
-generate_proto: rpc/proto/gorush.pb.go rpc/example/node/gorush_grpc_pb.js
+generate_proto: rpc/proto/gorush.pb.go rpc/example/node/gorush_*_pb.js
 
 version:
 	@echo $(VERSION)
