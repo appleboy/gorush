@@ -40,6 +40,7 @@ type IosStatus struct {
 
 // InitAppStatus for initialize app status
 func InitAppStatus() error {
+	LogAccess.Debug("Init App Status Engine as ", PushConf.Stat.Engine)
 	switch PushConf.Stat.Engine {
 	case "memory":
 		StatStorage = memory.New()

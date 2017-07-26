@@ -16,6 +16,8 @@ func init() {
 		log.Fatal(err)
 	}
 
+	InitWorkers(PushConf.Core.WorkerNum, PushConf.Core.QueueNum)
+
 	if err := InitAppStatus(); err != nil {
 		log.Fatal(err)
 	}

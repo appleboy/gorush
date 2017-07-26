@@ -8,10 +8,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func init() {
-	PushConf = config.BuildDefaultPushConf()
-	InitWorkers(PushConf.Core.WorkerNum, PushConf.Core.QueueNum)
-}
 func TestCorrectConf(t *testing.T) {
 	PushConf = config.BuildDefaultPushConf()
 
