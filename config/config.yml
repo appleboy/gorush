@@ -19,7 +19,7 @@ core:
     host: "" # which domains the Let's Encrypt will attempt
 
 grpc:
-  enabled: false
+  enabled: false # enabale gRPC server
   port: 50051
 
 api:

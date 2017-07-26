@@ -33,6 +33,7 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
   - [iOS Example](#ios-example)
   - [Android Example](#android-example)
   - [Response body](#response-body)
+- [Run gRPC service](#run-grpc-service)
 - [Run gorush in Docker](#run-gorush-in-docker)
 - [Run gorush in Kubernetes](#run-gorush-in-kubernetes)
 - [License](#license)
@@ -61,6 +62,7 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 * Support retry send notification if server response is fail.
 * Support expose [prometheus](https://prometheus.io/) metrics.
 * Support install TLS certificates from [Let's Encrypt](https://letsencrypt.org/) automatically.
+* Support send notification through [RPC](https://en.wikipedia.org/wiki/Remote_procedure_call) protocol, we use [gRPC](https://grpc.io/) as default framework.
 
 See the [YAML config example](config/config.yml):
 
@@ -87,7 +89,7 @@ core:
     host: "" # which domains the Let's Encrypt will attempt
 
 grpc:
-  enabled: false
+  enabled: false # enabale gRPC server
   port: 50051
 
 api:
@@ -652,6 +654,73 @@ See the following error format.
   ],
   "success": "ok"
 }
+```
+
+## Run gRPC service
+
+Gorush support [gRPC](https://grpc.io/) service. You can enable the gRPC in `config.yml`, default as disabled. The following example code for Golang to send single notification.
+
+[embedmd]:# (rpc/example/go/client.go go)
+```go
+package main
+
+import (
+	"log"
+
+	pb "github.com/appleboy/gorush/rpc/proto"
+	"golang.org/x/net/context"
+	"google.golang.org/grpc"
+)
+
+const (
+	address = "localhost:50051"
+)
+
+func main() {
+	// Set up a connection to the server.
+	conn, err := grpc.Dial(address, grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+	defer conn.Close()
+	c := pb.NewGorushClient(conn)
+
+	r, err := c.Send(context.Background(), &pb.NotificationRequest{
+		Platform: 2,
+		Tokens:   []string{"1234567890"},
+		Message:  "test message",
+	})
+	if err != nil {
+		log.Fatalf("could not greet: %v", err)
+	}
+	log.Printf("Success: %t\n", r.Success)
+	log.Printf("Count: %d\n", r.Counts)
+}
+```
+
+See the Node.js example and see more detail frome [README](rpc/example/node/README.md): 
+
+[embedmd]:# (rpc/example/node/client.js js)
+```js
+var messages = require('./gorush_pb');
+var services = require('./gorush_grpc_pb');
+
+var grpc = require('grpc');
+
+function main() {
+  var client = new services.GorushClient('localhost:50051',
+    grpc.credentials.createInsecure());
+  var request = new messages.NotificationRequest();
+  request.setPlatform(2);
+  request.setTokensList(["1234567890"]);
+  request.setMessage("Hello!!");
+  client.send(request, function (err, response) {
+    console.log('Success:', response.getSuccess());
+    console.log('Counts:', response.getCounts());
+  });
+}
+
+main();
 ```
 
 ## Run gorush in Docker
