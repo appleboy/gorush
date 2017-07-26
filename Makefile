@@ -1,5 +1,3 @@
-.PHONY: all gorush test build fmt vet errcheck lint install update release-dirs release-build release-copy release-check release
-
 DIST := dist
 EXECUTABLE := gorush
 
@@ -29,6 +27,7 @@ else
 	VERSION ?= $(shell git describe --tags --always || git rev-parse --short HEAD)
 endif
 
+.PHONY: all
 all: build
 
 init:
@@ -82,9 +81,11 @@ unconvert:
 	fi
 	for PKG in $(PACKAGES); do unconvert -v $$PKG || exit 1; done;
 
+.PHONY: install
 install: $(SOURCES)
 	go install -v -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)'
 
+.PHONY: build
 build: $(EXECUTABLE)
 
 $(EXECUTABLE): $(SOURCES)
