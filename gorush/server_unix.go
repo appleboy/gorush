@@ -11,6 +11,11 @@ import (
 
 // RunHTTPServer provide run http or https protocol.
 func RunHTTPServer() (err error) {
+	if !PushConf.Core.Enabled {
+		LogAccess.Debug("httpd server is disabled.")
+		return nil
+	}
+
 	LogAccess.Debug("HTTPD server is running on " + PushConf.Core.Port + " port.")
 	if PushConf.Core.AutoTLS.Enabled {
 		err = gracehttp.Serve(autoTLSServer())

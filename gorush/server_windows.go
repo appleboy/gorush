@@ -8,6 +8,11 @@ import (
 
 // RunHTTPServer provide run http or https protocol.
 func RunHTTPServer() (err error) {
+	if !PushConf.Core.Enabled {
+		LogAccess.Debug("httpd server is disabled.")
+		return nil
+	}
+
 	if PushConf.Core.AutoTLS.Enabled {
 		s := autoTLSServer()
 		err = s.ListenAndServeTLS("", "")

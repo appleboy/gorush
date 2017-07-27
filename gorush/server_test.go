@@ -255,3 +255,12 @@ func TestMetricsHandler(t *testing.T) {
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }
+
+func TestDisabledHTTPServer(t *testing.T) {
+	initTest()
+	PushConf.Core.Enabled = false
+	err := RunHTTPServer()
+	PushConf.Core.Enabled = true
+
+	assert.Nil(t, err)
+}
