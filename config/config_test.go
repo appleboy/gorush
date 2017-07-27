@@ -56,6 +56,7 @@ func (suite *ConfigTestSuite) SetupTest() {
 func (suite *ConfigTestSuite) TestValidateConfDefault() {
 	// Core
 	assert.Equal(suite.T(), "8088", suite.ConfGorushDefault.Core.Port)
+	assert.Equal(suite.T(), true, suite.ConfGorushDefault.Core.Enabled)
 	assert.Equal(suite.T(), int64(runtime.NumCPU()), suite.ConfGorushDefault.Core.WorkerNum)
 	assert.Equal(suite.T(), int64(8192), suite.ConfGorushDefault.Core.QueueNum)
 	assert.Equal(suite.T(), "release", suite.ConfGorushDefault.Core.Mode)
@@ -120,6 +121,7 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 func (suite *ConfigTestSuite) TestValidateConf() {
 	// Core
 	assert.Equal(suite.T(), "8088", suite.ConfGorush.Core.Port)
+	assert.Equal(suite.T(), true, suite.ConfGorush.Core.Enabled)
 	assert.Equal(suite.T(), int64(runtime.NumCPU()), suite.ConfGorush.Core.WorkerNum)
 	assert.Equal(suite.T(), int64(8192), suite.ConfGorush.Core.QueueNum)
 	assert.Equal(suite.T(), "release", suite.ConfGorush.Core.Mode)
