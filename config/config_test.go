@@ -55,6 +55,7 @@ func (suite *ConfigTestSuite) SetupTest() {
 
 func (suite *ConfigTestSuite) TestValidateConfDefault() {
 	// Core
+	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Core.Address)
 	assert.Equal(suite.T(), "8088", suite.ConfGorushDefault.Core.Port)
 	assert.Equal(suite.T(), true, suite.ConfGorushDefault.Core.Enabled)
 	assert.Equal(suite.T(), int64(runtime.NumCPU()), suite.ConfGorushDefault.Core.WorkerNum)

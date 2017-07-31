@@ -21,6 +21,7 @@ type ConfYaml struct {
 // SectionCore is sub section of config.
 type SectionCore struct {
 	Enabled         bool           `yaml:"enabled"`
+	Address         string         `yaml:"address"`
 	Port            string         `yaml:"port"`
 	MaxNotification int64          `yaml:"max_notification"`
 	WorkerNum       int64          `yaml:"worker_num"`
@@ -128,6 +129,7 @@ func BuildDefaultPushConf() ConfYaml {
 	var conf ConfYaml
 
 	// Core
+	conf.Core.Address = ""
 	conf.Core.Port = "8088"
 	conf.Core.Enabled = true
 	conf.Core.WorkerNum = int64(runtime.NumCPU())
