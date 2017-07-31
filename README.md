@@ -70,6 +70,7 @@ See the [YAML config example](config/config.yml):
 ```yaml
 core:
   enabled: true # enabale httpd server
+  address: "" # ip address to bind (default: any)
   port: "8088" # ignore this port number if auto_tls is enabled (listen 443).
   worker_num: 0 # default worker number is runtime.NumCPU()
   queue_num: 0 # default queue number is 8192
