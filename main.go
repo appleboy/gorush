@@ -38,6 +38,7 @@ var usageStr = `
 Usage: gorush [options]
 
 Server Options:
+    -A, --address <address>          Address to bind (default: any)
     -p, --port <port>                Use port for clients (default: 8088)
     -c, --config <file>              Configuration file path
     -m, --message <message>          Notification message
@@ -118,6 +119,8 @@ func main() {
 	flag.StringVar(&opts.Ios.Password, "password", "", "iOS certificate password for gorush")
 	flag.StringVar(&opts.Android.APIKey, "k", "", "Android api key configuration for gorush")
 	flag.StringVar(&opts.Android.APIKey, "apikey", "", "Android api key configuration for gorush")
+	flag.StringVar(&opts.Core.Address, "A", "", "address to bind")
+	flag.StringVar(&opts.Core.Address, "address", "", "address to bind")
 	flag.StringVar(&opts.Core.Port, "p", "", "port number for gorush")
 	flag.StringVar(&opts.Core.Port, "port", "", "port number for gorush")
 	flag.StringVar(&token, "t", "", "token string")
@@ -185,14 +188,16 @@ func main() {
 		gorush.PushConf.Stat.Redis.Addr = opts.Stat.Redis.Addr
 	}
 
-	// overwrite server port
+	// overwrite server port and address
 	if opts.Core.Port != "" {
 		gorush.PushConf.Core.Port = opts.Core.Port
+	}
+	if opts.Core.Address != "" {
+		gorush.PushConf.Core.Address = opts.Core.Address
 	}
 
 	if err = gorush.InitLog(); err != nil {
 		log.Println(err)
-
 		return
 	}
 

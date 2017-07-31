@@ -36,13 +36,13 @@ func RunHTTPServer() (err error) {
 		}
 
 		err = gracehttp.Serve(&http.Server{
-			Addr:      ":" + PushConf.Core.Port,
+			Addr:      PushConf.Core.Address + ":" + PushConf.Core.Port,
 			Handler:   routerEngine(),
 			TLSConfig: config,
 		})
 	} else {
 		err = gracehttp.Serve(&http.Server{
-			Addr:    ":" + PushConf.Core.Port,
+			Addr:    PushConf.Core.Address + ":" + PushConf.Core.Port,
 			Handler: routerEngine(),
 		})
 	}

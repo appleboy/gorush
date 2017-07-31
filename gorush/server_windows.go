@@ -17,9 +17,9 @@ func RunHTTPServer() (err error) {
 		s := autoTLSServer()
 		err = s.ListenAndServeTLS("", "")
 	} else if PushConf.Core.SSL && PushConf.Core.CertPath != "" && PushConf.Core.KeyPath != "" {
-		err = http.ListenAndServeTLS(":"+PushConf.Core.Port, PushConf.Core.CertPath, PushConf.Core.KeyPath, routerEngine())
+		err = http.ListenAndServeTLS(PushConf.Core.Address+":"+PushConf.Core.Port, PushConf.Core.CertPath, PushConf.Core.KeyPath, routerEngine())
 	} else {
-		err = http.ListenAndServe(":"+PushConf.Core.Port, routerEngine())
+		err = http.ListenAndServe(PushConf.Core.Address+":"+PushConf.Core.Port, routerEngine())
 	}
 
 	return
