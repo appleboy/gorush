@@ -5,7 +5,7 @@
 
 package gin
 
-// cleanPath is the URL version of path.Clean, it returns a canonical URL path
+// CleanPath is the URL version of path.Clean, it returns a canonical URL path
 // for p, eliminating . and .. elements.
 //
 // The following rules are applied iteratively until no further processing can

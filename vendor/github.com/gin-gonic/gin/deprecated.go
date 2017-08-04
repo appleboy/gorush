@@ -5,10 +5,14 @@
 package gin
 
 import (
-	"log"
-
 	"github.com/gin-gonic/gin/binding"
+	"log"
 )
+
+func (c *Context) GetCookie(name string) (string, error) {
+	log.Println("GetCookie() method is deprecated. Use Cookie() instead.")
+	return c.Cookie(name)
+}
 
 // BindWith binds the passed struct pointer using the specified binding engine.
 // See the binding package.

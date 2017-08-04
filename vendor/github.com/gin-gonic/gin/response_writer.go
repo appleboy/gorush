@@ -16,34 +16,36 @@ const (
 	defaultStatus = 200
 )
 
-type ResponseWriter interface {
-	http.ResponseWriter
-	http.Hijacker
-	http.Flusher
-	http.CloseNotifier
+type (
+	ResponseWriter interface {
+		http.ResponseWriter
+		http.Hijacker
+		http.Flusher
+		http.CloseNotifier
 
-	// Returns the HTTP response status code of the current request.
-	Status() int
+		// Returns the HTTP response status code of the current request.
+		Status() int
 
-	// Returns the number of bytes already written into the response http body.
-	// See Written()
-	Size() int
+		// Returns the number of bytes already written into the response http body.
+		// See Written()
+		Size() int
 
-	// Writes the string into the response body.
-	WriteString(string) (int, error)
+		// Writes the string into the response body.
+		WriteString(string) (int, error)
 
-	// Returns true if the response body was already written.
-	Written() bool
+		// Returns true if the response body was already written.
+		Written() bool
 
-	// Forces to write the http header (status code + headers).
-	WriteHeaderNow()
-}
+		// Forces to write the http header (status code + headers).
+		WriteHeaderNow()
+	}
 
-type responseWriter struct {
-	http.ResponseWriter
-	size   int
-	status int
-}
+	responseWriter struct {
+		http.ResponseWriter
+		size   int
+		status int
+	}
+)
 
 var _ ResponseWriter = &responseWriter{}
 
@@ -95,7 +97,7 @@ func (w *responseWriter) Written() bool {
 	return w.size != noWritten
 }
 
-// Hijack implements the http.Hijacker interface
+// Implements the http.Hijacker interface
 func (w *responseWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 	if w.size < 0 {
 		w.size = 0
@@ -103,12 +105,12 @@ func (w *responseWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 	return w.ResponseWriter.(http.Hijacker).Hijack()
 }
 
-// CloseNotify implements the http.CloseNotify interface
+// Implements the http.CloseNotify interface
 func (w *responseWriter) CloseNotify() <-chan bool {
 	return w.ResponseWriter.(http.CloseNotifier).CloseNotify()
 }
 
-// Flush implements the http.Flush interface
+// Implements the http.Flush interface
 func (w *responseWriter) Flush() {
 	w.ResponseWriter.(http.Flusher).Flush()
 }
