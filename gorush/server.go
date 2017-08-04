@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"golang.org/x/crypto/acme/autocert"
@@ -35,7 +36,7 @@ func pushHandler(c *gin.Context) {
 	var form RequestPush
 	var msg string
 
-	if err := c.BindJSON(&form); err != nil {
+	if err := c.ShouldBindWith(&form, binding.JSON); err != nil {
 		msg = "Missing notifications field."
 		LogAccess.Debug(msg)
 		abortWithError(c, http.StatusBadRequest, msg)
