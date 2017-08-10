@@ -14,16 +14,6 @@ import (
 	"github.com/appleboy/gorush/rpc"
 )
 
-func checkInput(token, message string) {
-	if len(token) == 0 {
-		gorush.LogError.Fatal("Missing token flag (-t)")
-	}
-
-	if len(message) == 0 {
-		gorush.LogError.Fatal("Missing message flag (-m)")
-	}
-}
-
 func main() {
 	opts := config.ConfYaml{}
 
