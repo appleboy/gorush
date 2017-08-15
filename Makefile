@@ -1,13 +1,14 @@
 DIST := dist
 EXECUTABLE := gorush
 
+$(GO) ?= go
 DEPLOY_ACCOUNT := appleboy
 DEPLOY_IMAGE := $(EXECUTABLE)
 GOFMT ?= gofmt "-s"
 
 TARGETS ?= linux darwin windows
 ARCHS ?= amd64 386
-PACKAGES ?= $(shell go list ./... | grep -v /vendor/)
+PACKAGES ?= $(shell $(GO) list ./... | grep -v /vendor/)
 GOFILES := $(shell find . -name "*.go" -type f -not -path "./vendor/*")
 SOURCES ?= $(shell find . -name "*.go" -type f)
 TAGS ?=
@@ -46,7 +47,6 @@ fmt:
 
 .PHONY: fmt-check
 fmt-check:
-	# get all go files and run go fmt on them
 	@diff=$$($(GOFMT) -d $(GOFILES)); \
 	if [ -n "$$diff" ]; then \
 		echo "Please run 'make fmt' and commit the result:"; \
@@ -55,63 +55,63 @@ fmt-check:
 	fi;
 
 vet:
-	go vet $(PACKAGES)
+	$(GO) vet $(PACKAGES)
 
 deps:
-	go get github.com/campoy/embedmd
+	$(GO) get github.com/campoy/embedmd
 
 embedmd:
 	embedmd -d *.md
 
 errcheck:
 	@hash errcheck > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		go get -u github.com/kisielk/errcheck; \
+		$(GO) get -u github.com/kisielk/errcheck; \
 	fi
 	errcheck $(PACKAGES)
 
 lint:
 	@hash golint > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		go get -u github.com/golang/lint/golint; \
+		$(GO) get -u github.com/golang/lint/golint; \
 	fi
 	for PKG in $(PACKAGES); do golint -set_exit_status $$PKG || exit 1; done;
 
 unconvert:
 	@hash unconvert > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		go get -u github.com/mdempsky/unconvert; \
+		$(GO) get -u github.com/mdempsky/unconvert; \
 	fi
 	for PKG in $(PACKAGES); do unconvert -v $$PKG || exit 1; done;
 
 .PHONY: install
 install: $(SOURCES)
-	go install -v -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)'
+	$(GO) install -v -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)'
 
 .PHONY: build
 build: $(EXECUTABLE)
 
 $(EXECUTABLE): $(SOURCES)
-	go build -v -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)' -o bin/$@
+	$(GO) build -v -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)' -o bin/$@
 
 .PHONY: misspell-check
 misspell-check:
 	@hash misspell > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		go get -u github.com/client9/misspell/cmd/misspell; \
+		$(GO) get -u github.com/client9/misspell/cmd/misspell; \
 	fi
 	misspell -error $(GOFILES)
 
 .PHONY: misspell
 misspell:
 	@hash misspell > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		go get -u github.com/client9/misspell/cmd/misspell; \
+		$(GO) get -u github.com/client9/misspell/cmd/misspell; \
 	fi
 	misspell -w $(GOFILES)
 
 test: fmt-check
-	for PKG in $(PACKAGES); do go test -v -cover -coverprofile $$GOPATH/src/$$PKG/coverage.txt $$PKG || exit 1; done;
+	for PKG in $(PACKAGES); do $(GO) test -v -cover -coverprofile $$GOPATH/src/$$PKG/coverage.txt $$PKG || exit 1; done;
 
 .PHONY: test-vendor
 test-vendor:
 	@hash govendor > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		go get -u github.com/kardianos/govendor; \
+		$(GO) get -u github.com/kardianos/govendor; \
 	fi
 	govendor list +unused | tee "$(TMPDIR)/wc-gitea-unused"
 	[ $$(cat "$(TMPDIR)/wc-gitea-unused" | wc -l) -eq 0 ] || echo "Warning: /!\\ Some vendor are not used /!\\"
@@ -122,25 +122,25 @@ test-vendor:
 	govendor status || exit 1
 
 redis_test: init
-	go test -v -cover ./storage/redis/...
+	$(GO) test -v -cover ./storage/redis/...
 
 boltdb_test: init
-	go test -v -cover ./storage/boltdb/...
+	$(GO) test -v -cover ./storage/boltdb/...
 
 memory_test: init
-	go test -v -cover ./storage/memory/...
+	$(GO) test -v -cover ./storage/memory/...
 
 buntdb_test: init
-	go test -v -cover ./storage/buntdb/...
+	$(GO) test -v -cover ./storage/buntdb/...
 
 leveldb_test: init
-	go test -v -cover ./storage/leveldb/...
+	$(GO) test -v -cover ./storage/leveldb/...
 
 config_test: init
-	go test -v -cover ./config/...
+	$(GO) test -v -cover ./config/...
 
 html:
-	go tool cover -html=.cover/coverage.txt
+	$(GO) tool cover -html=.cover/coverage.txt
 
 release: release-dirs release-build release-copy release-check
 
@@ -149,7 +149,7 @@ release-dirs:
 
 release-build:
 	@hash gox > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		go get -u github.com/mitchellh/gox; \
+		$(GO) get -u github.com/mitchellh/gox; \
 	fi
 	gox -os="$(TARGETS)" -arch="$(ARCHS)" -tags="$(TAGS)" -ldflags="$(EXTLDFLAGS)-s -w $(LDFLAGS)" -output="$(DIST)/binaries/$(EXECUTABLE)-$(VERSION)-{{.OS}}-{{.Arch}}"
 
@@ -160,7 +160,7 @@ release-check:
 	cd $(DIST)/release; $(foreach file,$(wildcard $(DIST)/release/$(EXECUTABLE)-*),sha256sum $(notdir $(file)) > $(notdir $(file)).sha256;)
 
 docker_build:
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -tags '$(TAGS)' -ldflags "$(EXTLDFLAGS)-s -w $(LDFLAGS)" -o bin/$(EXECUTABLE)
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GO) build -a -tags '$(TAGS)' -ldflags "$(EXTLDFLAGS)-s -w $(LDFLAGS)" -o bin/$(EXECUTABLE)
 
 docker_image:
 	docker build -t $(DEPLOY_ACCOUNT)/$(DEPLOY_IMAGE) -f Dockerfile .
@@ -176,7 +176,7 @@ endif
 	docker push $(DEPLOY_ACCOUNT)/$(EXECUTABLE):$(tag)
 
 clean:
-	go clean -x -i ./...
+	$(GO) clean -x -i ./...
 	find . -name coverage.txt -delete
 	find . -name *.tar.gz -delete
 	find . -name *.db -delete
