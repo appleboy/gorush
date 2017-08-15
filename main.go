@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"golang.org/x/sync/errgroup"
 	"log"
 	"os"
 	"path/filepath"
@@ -12,6 +11,8 @@ import (
 	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/gorush"
 	"github.com/appleboy/gorush/rpc"
+
+	"golang.org/x/sync/errgroup"
 )
 
 func checkInput(token, message string) {
