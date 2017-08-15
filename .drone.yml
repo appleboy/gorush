@@ -9,18 +9,39 @@ clone:
     tags: true
 
 pipeline:
-  build:
+  deps:
     image: appleboy/golang-testing
-    secrets: [ android_test_token, android_api_key ]
+    group: golang
     commands:
       - make deps
+      - make embedmd
+
+  lint:
+    image: appleboy/golang-testing
+    group: golang
+    commands:
       - make vet
       - make lint
-      - make build
-      - make embedmd
+
+  vendor:
+    image: appleboy/golang-testing
+    group: golang
+    commands:
       - make test-vendor
       - make misspell-check
       - make fmt-check
+
+  build:
+    image: appleboy/golang-testing
+    group: golang
+    commands:
+      - make build
+
+  coverage:
+    image: appleboy/golang-testing
+    group: golang
+    secrets: [ android_test_token, android_api_key ]
+    commands:
       - coverage all
 
   codecov:
