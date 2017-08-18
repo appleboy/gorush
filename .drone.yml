@@ -35,7 +35,7 @@ pipeline:
     image: appleboy/golang-testing
     group: golang
     commands:
-      - make build
+      - make docker_build
 
   coverage:
     image: appleboy/golang-testing
