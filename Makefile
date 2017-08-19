@@ -81,12 +81,15 @@ unconvert:
 	fi
 	for PKG in $(PACKAGES); do unconvert -v $$PKG || exit 1; done;
 
-.PHONY: install
+# Install from source.
 install: $(SOURCES)
 	$(GO) install -v -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)'
+	@echo "==> Installed gorush ${GOPATH}/bin/gorush"
+.PHONY: install
 
-.PHONY: build
+# build from source
 build: $(EXECUTABLE)
+.PHONY: build
 
 $(EXECUTABLE): $(SOURCES)
 	$(GO) build -v -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)' -o bin/$@
