@@ -191,6 +191,12 @@
 			"revisionTime": "2016-04-24T11:30:07Z"
 		},
 		{
+			"checksumSHA1": "eTeYxGuKi2PhdFmMC8lL4jDUgjI=",
+			"path": "github.com/pazams/envexpand",
+			"revision": "14502790946778747b5e5a6f13599146a9440e79",
+			"revisionTime": "2017-08-23T23:11:01Z"
+		},
+		{
 			"checksumSHA1": "LuFv4/jlrmFNnDb/5SCSEPAM9vU=",
 			"path": "github.com/pmezard/go-difflib/difflib",
 			"revision": "792786c7400a136282c1664665ae0a8db921c6c2",
