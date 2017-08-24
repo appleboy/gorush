@@ -67,11 +67,11 @@ func InitLog() error {
 	}
 
 	// set logger
-	if err := SetLogLevel(LogAccess, PushConf.Log.AccessLevel); err != nil {
+	if err = SetLogLevel(LogAccess, PushConf.Log.AccessLevel); err != nil {
 		return errors.New("Set access log level error: " + err.Error())
 	}
 
-	if err := SetLogLevel(LogError, PushConf.Log.ErrorLevel); err != nil {
+	if err = SetLogLevel(LogError, PushConf.Log.ErrorLevel); err != nil {
 		return errors.New("Set error log level error: " + err.Error())
 	}
 
@@ -206,7 +206,7 @@ func getLogPushEntry(status, token string, req PushNotification, errPush error) 
 		errMsg = errPush.Error()
 	}
 
-	if PushConf.Log.HideToken == true {
+	if PushConf.Log.HideToken {
 		token = hideToken(token, 10)
 	}
 

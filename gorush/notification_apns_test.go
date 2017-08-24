@@ -349,7 +349,8 @@ func TestDisabledIosNotifications(t *testing.T) {
 
 	PushConf.Ios.Enabled = false
 	PushConf.Ios.KeyPath = "../certificate/certificate-valid.pem"
-	InitAPNSClient()
+	err := InitAPNSClient()
+	assert.Nil(t, err)
 
 	PushConf.Android.Enabled = true
 	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
@@ -394,8 +395,8 @@ func TestAPNSClientDevHost(t *testing.T) {
 
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.KeyPath = "../certificate/certificate-valid.p12"
-	InitAPNSClient()
-
+	err := InitAPNSClient()
+	assert.Nil(t, err)
 	assert.Equal(t, apns2.HostDevelopment, ApnsClient.Host)
 }
 
@@ -405,8 +406,8 @@ func TestAPNSClientProdHost(t *testing.T) {
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.Production = true
 	PushConf.Ios.KeyPath = "../certificate/certificate-valid.pem"
-	InitAPNSClient()
-
+	err := InitAPNSClient()
+	assert.Nil(t, err)
 	assert.Equal(t, apns2.HostProduction, ApnsClient.Host)
 }
 
@@ -415,8 +416,10 @@ func TestPushToIOS(t *testing.T) {
 
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.KeyPath = "../certificate/certificate-valid.pem"
-	InitAPNSClient()
-	InitAppStatus()
+	err := InitAPNSClient()
+	assert.Nil(t, err)
+	err = InitAppStatus()
+	assert.Nil(t, err)
 
 	req := PushNotification{
 		Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
