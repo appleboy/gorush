@@ -2,6 +2,7 @@ package leveldb
 
 import (
 	"fmt"
+	"log"
 	"strconv"
 
 	"github.com/appleboy/gorush/config"
@@ -18,7 +19,12 @@ func setLevelDB(key string, count int64) {
 
 	_ = db.Put([]byte(key), []byte(value), nil)
 
-	defer db.Close()
+	defer func() {
+		err := db.Close()
+		if err != nil {
+			log.Println("LevelDB error:", err.Error())
+		}
+	}()
 }
 
 func getLevelDB(key string, count *int64) {
@@ -27,7 +33,12 @@ func getLevelDB(key string, count *int64) {
 	data, _ := db.Get([]byte(key), nil)
 	*count, _ = strconv.ParseInt(string(data), 10, 64)
 
-	defer db.Close()
+	defer func() {
+		err := db.Close()
+		if err != nil {
+			log.Println("LevelDB error:", err.Error())
+		}
+	}()
 }
 
 // New func implements the storage interface for gorush (https://github.com/appleboy/gorush)
