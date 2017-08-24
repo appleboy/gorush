@@ -1,6 +1,8 @@
 package boltdb
 
 import (
+	"log"
+
 	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/storage"
 
@@ -35,14 +37,32 @@ func (s *Storage) Reset() {
 
 func (s *Storage) setBoltDB(key string, count int64) {
 	db, _ := storm.Open(s.config.Stat.BoltDB.Path)
-	db.Set(s.config.Stat.BoltDB.Bucket, key, count)
-	defer db.Close()
+	err := db.Set(s.config.Stat.BoltDB.Bucket, key, count)
+	if err != nil {
+		log.Println("BoltDB set error:", err.Error())
+	}
+
+	defer func() {
+		err := db.Close()
+		if err != nil {
+			log.Println("BoltDB error:", err.Error())
+		}
+	}()
 }
 
 func (s *Storage) getBoltDB(key string, count *int64) {
 	db, _ := storm.Open(s.config.Stat.BoltDB.Path)
-	db.Get(s.config.Stat.BoltDB.Bucket, key, count)
-	defer db.Close()
+	err := db.Get(s.config.Stat.BoltDB.Bucket, key, count)
+	if err != nil {
+		log.Println("BoltDB get error:", err.Error())
+	}
+
+	defer func() {
+		err := db.Close()
+		if err != nil {
+			log.Println("BoltDB error:", err.Error())
+		}
+	}()
 }
 
 // AddTotalCount record push notification count.

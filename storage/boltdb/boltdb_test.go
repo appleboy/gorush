@@ -13,7 +13,8 @@ func TestBoltDBEngine(t *testing.T) {
 	config := c.BuildDefaultPushConf()
 
 	boltDB := New(config)
-	boltDB.Init()
+	err := boltDB.Init()
+	assert.Nil(t, err)
 	boltDB.Reset()
 
 	boltDB.AddTotalCount(10)

@@ -14,11 +14,13 @@ func TestLevelDBEngine(t *testing.T) {
 	config := c.BuildDefaultPushConf()
 
 	if _, err := os.Stat(config.Stat.LevelDB.Path); os.IsNotExist(err) {
-		os.RemoveAll(config.Stat.LevelDB.Path)
+		err = os.RemoveAll(config.Stat.LevelDB.Path)
+		assert.Nil(t, err)
 	}
 
 	levelDB := New(config)
-	levelDB.Init()
+	err := levelDB.Init()
+	assert.Nil(t, err)
 	levelDB.Reset()
 
 	levelDB.AddTotalCount(10)

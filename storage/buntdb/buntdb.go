@@ -2,6 +2,7 @@ package buntdb
 
 import (
 	"fmt"
+	"log"
 	"strconv"
 
 	"github.com/appleboy/gorush/config"
@@ -39,22 +40,44 @@ func (s *Storage) Reset() {
 func (s *Storage) setBuntDB(key string, count int64) {
 	db, _ := buntdb.Open(s.config.Stat.BuntDB.Path)
 
-	db.Update(func(tx *buntdb.Tx) error {
-		tx.Set(key, fmt.Sprintf("%d", count), nil)
+	err := db.Update(func(tx *buntdb.Tx) error {
+		if _, _, err := tx.Set(key, fmt.Sprintf("%d", count), nil); err != nil {
+			return err
+		}
 		return nil
 	})
-	defer db.Close()
+
+	if err != nil {
+		log.Println("BuntDB update error:", err.Error())
+	}
+
+	defer func() {
+		err := db.Close()
+		if err != nil {
+			log.Println("BuntDB error:", err.Error())
+		}
+	}()
 }
 
 func (s *Storage) getBuntDB(key string, count *int64) {
 	db, _ := buntdb.Open(s.config.Stat.BuntDB.Path)
 
-	db.View(func(tx *buntdb.Tx) error {
+	err := db.View(func(tx *buntdb.Tx) error {
 		val, _ := tx.Get(key)
 		*count, _ = strconv.ParseInt(val, 10, 64)
 		return nil
 	})
-	defer db.Close()
+
+	if err != nil {
+		log.Println("BuntDB get error:", err.Error())
+	}
+
+	defer func() {
+		err := db.Close()
+		if err != nil {
+			log.Println("BuntDB error:", err.Error())
+		}
+	}()
 }
 
 // AddTotalCount record push notification count.

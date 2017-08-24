@@ -24,7 +24,8 @@ func TestRedisEngine(t *testing.T) {
 	config.Stat.Redis.Addr = "redis:6379"
 
 	redis := New(config)
-	redis.Init()
+	err := redis.Init()
+	assert.Nil(t, err)
 	redis.Reset()
 
 	redis.AddTotalCount(10)
