@@ -215,7 +215,7 @@ Retry:
 		}
 	}
 
-	if isError == true && retryCount < maxRetry {
+	if isError && retryCount < maxRetry {
 		retryCount++
 
 		// resend fail token
