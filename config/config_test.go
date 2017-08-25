@@ -30,7 +30,10 @@ func TestWrongYAMLormat(t *testing.T) {
 	}
 
 	// clean up
-	defer os.Remove(filename)
+	defer func() {
+		err := os.Remove(filename)
+		assert.Nil(t, err)
+	}()
 
 	// parse JSON format error
 	_, err := LoadConfYaml(filename)

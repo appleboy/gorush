@@ -14,11 +14,13 @@ func TestBuntDBEngine(t *testing.T) {
 	config := c.BuildDefaultPushConf()
 
 	if _, err := os.Stat(config.Stat.BuntDB.Path); os.IsNotExist(err) {
-		os.RemoveAll(config.Stat.BuntDB.Path)
+		err := os.RemoveAll(config.Stat.BuntDB.Path)
+		assert.Nil(t, err)
 	}
 
 	buntDB := New(config)
-	buntDB.Init()
+	err := buntDB.Init()
+	assert.Nil(t, err)
 	buntDB.Reset()
 
 	buntDB.AddTotalCount(10)

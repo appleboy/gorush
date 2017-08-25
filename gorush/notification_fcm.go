@@ -141,7 +141,7 @@ Retry:
 		LogPush(SucceededPush, req.Tokens[k], req, nil)
 	}
 
-	if isError == true && retryCount < maxRetry {
+	if isError && retryCount < maxRetry {
 		retryCount++
 
 		// resend fail token
