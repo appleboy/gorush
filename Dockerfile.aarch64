@@ -1,0 +1,10 @@
+FROM centurylink/ca-certs
+ENV GODEBUG=netdns=go
+
+EXPOSE 8088
+
+ADD config/config.yml /
+ADD bin/gorush-arm64 /gorush
+
+ENTRYPOINT ["/gorush"]
+CMD ["-c", "config.yml"]
