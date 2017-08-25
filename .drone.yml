@@ -37,6 +37,18 @@ pipeline:
     commands:
       - make docker_build
 
+  arm64:
+    image: appleboy/golang-testing
+    group: golang
+    commands:
+      - make docker_build_arm64
+
+  arm:
+    image: appleboy/golang-testing
+    group: golang
+    commands:
+      - make docker_build_arm
+
   coverage:
     image: appleboy/golang-testing
     group: golang
@@ -65,9 +77,9 @@ pipeline:
       event: [ tag ]
       branch: [ refs/tags/* ]
 
-  publish_latest:
+  publish_linux_amd64:
     image: plugins/docker
-    pull: true
+    group: publish
     repo: ${DRONE_REPO}
     tags: [ 'latest' ]
     secrets: [ docker_username, docker_password ]
@@ -76,11 +88,61 @@ pipeline:
       branch: [ master ]
       local: false
 
-  publish_tag:
+  publish_linux_armhf:
     image: plugins/docker
-    pull: true
+    group: publish
+    repo: ${DRONE_REPO}
+    tags: [ 'linux-arm' ]
+    dockerfile: Dockerfile.armhf
+    secrets: [ docker_username, docker_password ]
+    when:
+      event: [ push ]
+      branch: [ master ]
+      local: false
+
+  publish_linux_aarch64:
+    image: plugins/docker
+    group: publish
+    repo: ${DRONE_REPO}
+    tags: [ 'linux-arm64' ]
+    dockerfile: Dockerfile.aarch64
+    secrets: [ docker_username, docker_password ]
+    when:
+      event: [ push ]
+      branch: [ master ]
+      local: false
+
+  publish_tag_linux_amd64:
+    image: plugins/docker
+    group: tag
     repo: ${DRONE_REPO}
     tags: [ '${DRONE_TAG}' ]
+    secrets: [ docker_username, docker_password ]
+    group: release
+    when:
+      event: [ tag ]
+      branch: [ refs/tags/* ]
+      local: false
+
+  publish_tag_linux_armhf:
+    image: plugins/docker
+    group: tag
+    repo: ${DRONE_REPO}
+    tags: [ '${DRONE_TAG}-linux-arm' ]
+    dockerfile: Dockerfile.armhf
+    secrets: [ docker_username, docker_password ]
+    group: release
+    when:
+      event: [ tag ]
+      branch: [ refs/tags/* ]
+      local: false
+
+  publish_tag_linux_aarch64:
+    image: plugins/docker
+    group: tag
+    repo: ${DRONE_REPO}
+    tags: [ '${DRONE_TAG}-linux-arm64' ]
+    dockerfile: Dockerfile.aarch64
     secrets: [ docker_username, docker_password ]
     group: release
     when:
