@@ -92,7 +92,7 @@ pipeline:
     image: plugins/docker
     group: publish
     repo: ${DRONE_REPO}
-    tags: [ "linux-arm" ]
+    tags: [ 'linux-arm' ]
     dockerfile: Dockerfile.armhf
     secrets: [ docker_username, docker_password ]
     when:
@@ -104,7 +104,7 @@ pipeline:
     image: plugins/docker
     group: publish
     repo: ${DRONE_REPO}
-    tags: [ "linux-arm64" ]
+    tags: [ 'linux-arm64' ]
     dockerfile: Dockerfile.aarch64
     secrets: [ docker_username, docker_password ]
     when:
@@ -128,7 +128,7 @@ pipeline:
     image: plugins/docker
     group: tag
     repo: ${DRONE_REPO}
-    tags: [ ${DRONE_TAG}-linux-arm ]
+    tags: [ '${DRONE_TAG}-linux-arm' ]
     dockerfile: Dockerfile.armhf
     secrets: [ docker_username, docker_password ]
     group: release
@@ -141,7 +141,7 @@ pipeline:
     image: plugins/docker
     group: tag
     repo: ${DRONE_REPO}
-    tags: [ ${DRONE_TAG}-linux-arm64 ]
+    tags: [ '${DRONE_TAG}-linux-arm64' ]
     dockerfile: Dockerfile.aarch64
     secrets: [ docker_username, docker_password ]
     group: release
