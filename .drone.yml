@@ -10,21 +10,21 @@ clone:
 
 pipeline:
   deps:
-    image: appleboy/golang-testing
+    image: appleboy/golang-testing:1.9
     group: golang
     commands:
       - make deps
       - make embedmd
 
   lint:
-    image: appleboy/golang-testing
+    image: appleboy/golang-testing:1.9
     group: golang
     commands:
       - make vet
       - make lint
 
   vendor:
-    image: appleboy/golang-testing
+    image: appleboy/golang-testing:1.9
     group: golang
     commands:
       - make test-vendor
@@ -32,25 +32,25 @@ pipeline:
       - make fmt-check
 
   build:
-    image: appleboy/golang-testing
+    image: appleboy/golang-testing:1.9
     group: golang
     commands:
       - make docker_build
 
   arm64:
-    image: appleboy/golang-testing
+    image: appleboy/golang-testing:1.9
     group: golang
     commands:
       - make docker_build_arm64
 
   arm:
-    image: appleboy/golang-testing
+    image: appleboy/golang-testing:1.9
     group: golang
     commands:
       - make docker_build_arm
 
   coverage:
-    image: appleboy/golang-testing
+    image: appleboy/golang-testing:1.9
     group: golang
     secrets: [ android_test_token, android_api_key ]
     commands:
@@ -66,7 +66,7 @@ pipeline:
       status: [ success ]
 
   release:
-    image: appleboy/golang-testing
+    image: appleboy/golang-testing:1.9
     pull: true
     environment:
       GOPATH: /srv/app
