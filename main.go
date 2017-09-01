@@ -9,7 +9,7 @@ import (
 	"strconv"
 
 	"github.com/appleboy/gorush/config"
-	"github.com/appleboy/gorush/gorush"
+	gorush "github.com/appleboy/gorush/gorush"
 	"github.com/appleboy/gorush/rpc"
 
 	"golang.org/x/sync/errgroup"

@@ -61,7 +61,7 @@ func pushHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": "ok",
-		"counts":  counts,
+		"couns":  counts,
 		"logs":    logs,
 	})
 }
