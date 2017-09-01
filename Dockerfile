@@ -1,22 +1,20 @@
-FROM alpine:3.6 as alpine
-RUN apk add -U --no-cache ca-certificates
-
-FROM scratch
-MAINTAINER Bo-Yi Wi <appleboy.tw@gmail.com>
-
+FROM centos:6
+RUN rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
+RUN yum -y install golang git
+ENV GOPATH=/usr/src/app/go
+ENV GOBIN=/usr/src/app/go/bin/
 ENV GODEBUG=netdns=go
 
-COPY --from=alpine /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-
-LABEL org.label-schema.version=latest
-LABEL org.label-schema.vcs-url="https://github.com/appleboy/gorush.git"
-LABEL org.label-schema.name="Gorush"
-LABEL org.label-schema.vendor="Bo-Yi Wu"
-LABEL org.label-schema.schema-version="1.0"
 
 ADD config/config.yml /
-ADD bin/gorush /
+
+COPY . /usr/src/app/go/gorush/
+WORKDIR /usr/src/app/go/gorush/
+RUN mkdir /usr/src/app/go/bin/
+
+RUN go get && make docker_build
 
 EXPOSE 8088
-ENTRYPOINT ["/gorush"]
-CMD ["-c", "config.yml"]
+RUN chmod +x start.sh
+
+CMD ["sh", "./start.sh"]
