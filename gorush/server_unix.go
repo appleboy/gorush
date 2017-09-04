@@ -1,4 +1,4 @@
-// +build darwin dragonfly freebsd linux nacl netbsd openbsd solaris
+// +build !windows
 
 package gorush
 
@@ -10,10 +10,16 @@ import (
 )
 
 // RunHTTPServer provide run http or https protocol.
-func RunHTTPServer() error {
-	var err error
+func RunHTTPServer() (err error) {
+	if !PushConf.Core.Enabled {
+		LogAccess.Debug("httpd server is disabled.")
+		return nil
+	}
 
-	if PushConf.Core.SSL && PushConf.Core.CertPath != "" && PushConf.Core.KeyPath != "" {
+	LogAccess.Debug("HTTPD server is running on " + PushConf.Core.Port + " port.")
+	if PushConf.Core.AutoTLS.Enabled {
+		err = gracehttp.Serve(autoTLSServer())
+	} else if PushConf.Core.SSL && PushConf.Core.CertPath != "" && PushConf.Core.KeyPath != "" {
 		config := &tls.Config{
 			MinVersion: tls.VersionTLS10,
 		}
@@ -30,16 +36,16 @@ func RunHTTPServer() error {
 		}
 
 		err = gracehttp.Serve(&http.Server{
-			Addr:      ":" + PushConf.Core.Port,
+			Addr:      PushConf.Core.Address + ":" + PushConf.Core.Port,
 			Handler:   routerEngine(),
 			TLSConfig: config,
 		})
 	} else {
 		err = gracehttp.Serve(&http.Server{
-			Addr:    ":" + PushConf.Core.Port,
+			Addr:    PushConf.Core.Address + ":" + PushConf.Core.Port,
 			Handler: routerEngine(),
 		})
 	}
 
-	return err
+	return
 }

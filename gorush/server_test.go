@@ -63,6 +63,17 @@ func TestRunTLSServer(t *testing.T) {
 	gofight.TestRequest(t, "https://localhost:8087/api/stat/go")
 }
 
+func TestRunAutoTLSServer(t *testing.T) {
+	initTest()
+	PushConf.Core.AutoTLS.Enabled = true
+	go func() {
+		assert.NoError(t, RunHTTPServer())
+	}()
+	// have to wait for the goroutine to start and run the server
+	// otherwise the main thread will complete
+	time.Sleep(5 * time.Millisecond)
+}
+
 func TestLoadTLSCertError(t *testing.T) {
 	initTest()
 
@@ -90,6 +101,7 @@ func TestRootHandler(t *testing.T) {
 
 			assert.Equal(t, "Welcome to notification server.", value)
 			assert.Equal(t, http.StatusOK, r.Code)
+			assert.Equal(t, "application/json; charset=utf-8", r.HeaderMap.Get("Content-Type"))
 		})
 }
 
@@ -149,6 +161,7 @@ func TestMissingNotificationsParameter(t *testing.T) {
 		Run(routerEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 
 			assert.Equal(t, http.StatusBadRequest, r.Code)
+			assert.Equal(t, "application/json; charset=utf-8", r.HeaderMap.Get("Content-Type"))
 		})
 }
 
@@ -243,4 +256,13 @@ func TestMetricsHandler(t *testing.T) {
 		Run(routerEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
+}
+
+func TestDisabledHTTPServer(t *testing.T) {
+	initTest()
+	PushConf.Core.Enabled = false
+	err := RunHTTPServer()
+	PushConf.Core.Enabled = true
+
+	assert.Nil(t, err)
 }

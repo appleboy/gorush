@@ -1,19 +1,20 @@
-.PHONY: all gorush test build fmt vet errcheck lint install update release-dirs release-build release-copy release-check release
-
 DIST := dist
 EXECUTABLE := gorush
 
-DEPLOY_ACCOUNT := jaraxasoftware
+GO ?= go
+DEPLOY_ACCOUNT := appleboy
 DEPLOY_IMAGE := $(EXECUTABLE)
-CONTAINER := js-gorush
-PORT := 8088
+GOFMT ?= gofmt "-s"
 
 TARGETS ?= linux darwin windows
 ARCHS ?= amd64 386
-PACKAGES ?= $(shell go list ./... | grep -v /vendor/)
+PACKAGES ?= $(shell $(GO) list ./... | grep -v /vendor/)
+GOFILES := $(shell find . -name "*.go" -type f -not -path "./vendor/*")
 SOURCES ?= $(shell find . -name "*.go" -type f)
 TAGS ?=
 LDFLAGS ?= -X 'main.Version=$(VERSION)'
+TMPDIR := $(shell mktemp -d 2>/dev/null || mktemp -d -t 'tempdir')
+NODE_PROTOC_PLUGIN := $(shell which grpc_tools_node_protoc_plugin)
 
 ifneq ($(shell uname), Darwin)
 	EXTLDFLAGS = -extldflags "-static" $(null)
@@ -27,6 +28,7 @@ else
 	VERSION ?= $(shell git describe --tags --always || git rev-parse --short HEAD)
 endif
 
+.PHONY: all
 all: build
 
 init:
@@ -41,66 +43,107 @@ endif
 	@echo "Already set ANDROID_API_KEY and ANDROID_TEST_TOKEN globale variable."
 
 fmt:
-	find . -name "*.go" -type f -not -path "./vendor/*" | xargs gofmt -s -w
+	$(GOFMT) -w $(GOFILES)
+
+.PHONY: fmt-check
+fmt-check:
+	@diff=$$($(GOFMT) -d $(GOFILES)); \
+	if [ -n "$$diff" ]; then \
+		echo "Please run 'make fmt' and commit the result:"; \
+		echo "$${diff}"; \
+		exit 1; \
+	fi;
 
 vet:
-	go vet $(PACKAGES)
+	$(GO) vet $(PACKAGES)
 
 deps:
-	go get github.com/campoy/embedmd
+	$(GO) get github.com/campoy/embedmd
 
 embedmd:
 	embedmd -d *.md
 
 errcheck:
 	@hash errcheck > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		go get -u github.com/kisielk/errcheck; \
+		$(GO) get -u github.com/kisielk/errcheck; \
 	fi
 	errcheck $(PACKAGES)
 
 lint:
 	@hash golint > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		go get -u github.com/golang/lint/golint; \
+		$(GO) get -u github.com/golang/lint/golint; \
 	fi
 	for PKG in $(PACKAGES); do golint -set_exit_status $$PKG || exit 1; done;
 
 unconvert:
 	@hash unconvert > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		go get -u github.com/mdempsky/unconvert; \
+		$(GO) get -u github.com/mdempsky/unconvert; \
 	fi
 	for PKG in $(PACKAGES); do unconvert -v $$PKG || exit 1; done;
 
+# Install from source.
 install: $(SOURCES)
-	go install -v -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)'
+	$(GO) install -v -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)'
+	@echo "==> Installed gorush ${GOPATH}/bin/gorush"
+.PHONY: install
 
+# build from source
 build: $(EXECUTABLE)
+.PHONY: build
 
 $(EXECUTABLE): $(SOURCES)
-	go build -v -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)' -o bin/$@
+	$(GO) build -v -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)' -o bin/$@
 
-test:
-	for PKG in $(PACKAGES); do go test -v -cover -coverprofile $$GOPATH/src/$$PKG/coverage.txt $$PKG || exit 1; done;
+.PHONY: misspell-check
+misspell-check:
+	@hash misspell > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
+		$(GO) get -u github.com/client9/misspell/cmd/misspell; \
+	fi
+	misspell -error $(GOFILES)
+
+.PHONY: misspell
+misspell:
+	@hash misspell > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
+		$(GO) get -u github.com/client9/misspell/cmd/misspell; \
+	fi
+	misspell -w $(GOFILES)
+
+test: fmt-check
+	for PKG in $(PACKAGES); do $(GO) test -v -cover -coverprofile $$GOPATH/src/$$PKG/coverage.txt $$PKG || exit 1; done;
+
+.PHONY: test-vendor
+test-vendor:
+	@hash govendor > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
+		$(GO) get -u github.com/kardianos/govendor; \
+	fi
+	govendor list +unused | tee "$(TMPDIR)/wc-gitea-unused"
+	[ $$(cat "$(TMPDIR)/wc-gitea-unused" | wc -l) -eq 0 ] || echo "Warning: /!\\ Some vendor are not used /!\\"
+
+	govendor list +outside | tee "$(TMPDIR)/wc-gitea-outside"
+	[ $$(cat "$(TMPDIR)/wc-gitea-outside" | wc -l) -eq 0 ] || exit 1
+
+	govendor status || exit 1
 
 redis_test: init
-	go test -v -cover ./storage/redis/...
+	$(GO) test -v -cover ./storage/redis/...
 
 boltdb_test: init
-	go test -v -cover ./storage/boltdb/...
+	$(GO) test -v -cover ./storage/boltdb/...
 
 memory_test: init
-	go test -v -cover ./storage/memory/...
+	$(GO) test -v -cover ./storage/memory/...
 
 buntdb_test: init
-	go test -v -cover ./storage/buntdb/...
+	$(GO) test -v -cover ./storage/buntdb/...
 
 leveldb_test: init
-	go test -v -cover ./storage/leveldb/...
+	$(GO) test -v -cover ./storage/leveldb/...
 
 config_test: init
-	go test -v -cover ./config/...
+	$(GO) test -v -cover ./config/...
 
 html:
-	go tool cover -html=.cover/coverage.txt
+	$(GO) tool cover -html=.cover/coverage.txt
 
 release: release-dirs release-build release-copy release-check
 
@@ -109,7 +152,7 @@ release-dirs:
 
 release-build:
 	@hash gox > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		go get -u github.com/mitchellh/gox; \
+		$(GO) get -u github.com/mitchellh/gox; \
 	fi
 	gox -os="$(TARGETS)" -arch="$(ARCHS)" -tags="$(TAGS)" -ldflags="$(EXTLDFLAGS)-s -w $(LDFLAGS)" -output="$(DIST)/binaries/$(EXECUTABLE)-$(VERSION)-{{.OS}}-{{.Arch}}"
 
@@ -120,12 +163,17 @@ release-check:
 	cd $(DIST)/release; $(foreach file,$(wildcard $(DIST)/release/$(EXECUTABLE)-*),sha256sum $(notdir $(file)) > $(notdir $(file)).sha256;)
 
 docker_build:
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -tags '$(TAGS)' -ldflags "$(EXTLDFLAGS)-s -w $(LDFLAGS)" -o bin/$(EXECUTABLE)
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GO) build -a -tags '$(TAGS)' -ldflags "$(EXTLDFLAGS)-s -w $(LDFLAGS)" -o bin/$(EXECUTABLE)
+
+docker_build_arm64:
+	CGO_ENABLED=0 GOOS=linux GOARCH=arm64 $(GO) build -a -tags '$(TAGS)' -ldflags "$(EXTLDFLAGS)-s -w $(LDFLAGS)" -o bin/$(EXECUTABLE)-arm64
+docker_build_arm:
+	CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=7 $(GO) build -a -tags '$(TAGS)' -ldflags "$(EXTLDFLAGS)-s -w $(LDFLAGS)" -o bin/$(EXECUTABLE)-arm
 
 docker_image:
 	docker build -t $(DEPLOY_ACCOUNT)/$(DEPLOY_IMAGE) -f Dockerfile .
 
-docker_release: docker_build docker_image
+docker_release: docker_image
 
 docker_deploy:
 ifeq ($(tag),)
@@ -135,63 +183,21 @@ endif
 	docker tag $(DEPLOY_ACCOUNT)/$(EXECUTABLE):latest $(DEPLOY_ACCOUNT)/$(EXECUTABLE):$(tag)
 	docker push $(DEPLOY_ACCOUNT)/$(EXECUTABLE):$(tag)
 
-docker_stop:
-	@if [ $(shell docker ps -a | grep -ci $(CONTAINER)) -eq 1 ]; then \
-		docker stop $(CONTAINER) > /dev/null 2>&1; \
-	fi
-
-docker_rm: docker_stop
-	@if [ $(shell docker ps -a | grep -ci $(CONTAINER)) -eq 1 ]; then \
-		docker rm $(CONTAINER) > /dev/null 2>&1; \
-	fi
-
-docker_rmi: docker_rm
-ifeq ($(tag),)
-	@if [ $(shell docker images | grep -ci $(DEPLOY_ACCOUNT)/$(EXECUTABLE)) -eq 1 ]; then \
-		docker rmi $(DEPLOY_ACCOUNT)/$(EXECUTABLE):latest > /dev/null 2>&1; \
-	fi;
-	@if [ $(shell docker images | grep -ci centurylink/ca-certs) -eq 1 ]; then \
-		docker rmi centurylink/ca-certs:latest > /dev/null 2>&1; \
-	fi
-else
-	@if [ $(shell docker images | grep -ci $(DEPLOY_ACCOUNT)/$(EXECUTABLE)) -eq 1 ]; then \
-		docker rmi $(DEPLOY_ACCOUNT)/$(EXECUTABLE):$(tag) > /dev/null 2>&1; \
-	fi;
-	@if [ $(shell docker images | grep -ci centurylink/ca-certs) -eq 1 ]; then \
-		docker rmi centurylink/ca-certs:latest > /dev/null 2>&1; \
-	fi
-endif
-
-docker_run: docker_rm
-	docker run -ti -d --name $(CONTAINER) --restart always \
-	-p ${PORT}:8088 \
-	-v ${CURDIR}/config:/config:ro \
-	$(DEPLOY_ACCOUNT)/$(EXECUTABLE):latest /gorush -c /config/config.yml
-
-docker_test:
-	curl \
-	-XGET \
-	-H "Accept: application/json" \
- 	"localhost:$(PORT)/api/stat/go" | python -mjson.tool
-
-docker_save:
-	docker save $(DEPLOY_ACCOUNT)/$(EXECUTABLE) | gzip > $(DEPLOY_ACCOUNT)_$(EXECUTABLE).tar.gz
-
-docker_load:
-	gunzip < $(DEPLOY_ACCOUNT)_$(EXECUTABLE).tar.gz | docker load
-
-coverage:
-	curl -s https://codecov.io/bash > .codecov && \
-	chmod +x .codecov && \
-	./.codecov -f .cover/coverage.txt
-
 clean:
-	go clean -x -i ./...
+	$(GO) clean -x -i ./...
 	find . -name coverage.txt -delete
 	find . -name *.tar.gz -delete
 	find . -name *.db -delete
 	-rm -rf bin/* \
 		.cover
+
+rpc/example/node/gorush_*_pb.js: rpc/proto/gorush.proto
+	protoc -I rpc/proto rpc/proto/gorush.proto --js_out=import_style=commonjs,binary:rpc/example/node/ --grpc_out=rpc/example/node/ --plugin=protoc-gen-grpc=$(NODE_PROTOC_PLUGIN)
+
+rpc/proto/gorush.pb.go: rpc/proto/gorush.proto
+	protoc -I rpc/proto rpc/proto/gorush.proto --go_out=plugins=grpc:rpc/proto
+
+generate_proto: rpc/proto/gorush.pb.go rpc/example/node/gorush_*_pb.js
 
 version:
 	@echo $(VERSION)

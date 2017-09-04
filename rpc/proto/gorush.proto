@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package proto;
+
+message NotificationRequest {
+  repeated string tokens = 1;
+  int32 platform = 2;
+  string message = 3;
+  string title = 4;
+  string topic = 5;
+  string key = 6;
+}
+
+message NotificationReply {
+  bool success = 1;
+  int32 counts = 2;
+}
+
+service Gorush {
+  rpc Send (NotificationRequest) returns (NotificationReply) {}
+}
+

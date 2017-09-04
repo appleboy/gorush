@@ -14,11 +14,13 @@ func TestLevelDBEngine(t *testing.T) {
 	config := c.BuildDefaultPushConf()
 
 	if _, err := os.Stat(config.Stat.LevelDB.Path); os.IsNotExist(err) {
-		os.RemoveAll(config.Stat.LevelDB.Path)
+		err = os.RemoveAll(config.Stat.LevelDB.Path)
+		assert.Nil(t, err)
 	}
 
 	levelDB := New(config)
-	levelDB.Init()
+	err := levelDB.Init()
+	assert.Nil(t, err)
 	levelDB.Reset()
 
 	levelDB.AddTotalCount(10)
@@ -43,6 +45,14 @@ func TestLevelDBEngine(t *testing.T) {
 	levelDB.AddAndroidError(50)
 	val = levelDB.GetAndroidError()
 	assert.Equal(t, int64(50), val)
+
+	levelDB.AddWebSuccess(60)
+	val = levelDB.GetWebSuccess()
+	assert.Equal(t, int64(60), val)
+
+	levelDB.AddWebError(70)
+	val = levelDB.GetWebError()
+	assert.Equal(t, int64(70), val)
 
 	levelDB.Reset()
 	val = levelDB.GetAndroidError()

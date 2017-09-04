@@ -30,7 +30,10 @@ func TestWrongYAMLormat(t *testing.T) {
 	}
 
 	// clean up
-	defer os.Remove(filename)
+	defer func() {
+		err := os.Remove(filename)
+		assert.Nil(t, err)
+	}()
 
 	// parse JSON format error
 	_, err := LoadConfYaml(filename)
@@ -55,10 +58,13 @@ func (suite *ConfigTestSuite) SetupTest() {
 
 func (suite *ConfigTestSuite) TestValidateConfDefault() {
 	// Core
+	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Core.Address)
 	assert.Equal(suite.T(), "8088", suite.ConfGorushDefault.Core.Port)
+	assert.Equal(suite.T(), true, suite.ConfGorushDefault.Core.Enabled)
 	assert.Equal(suite.T(), int64(runtime.NumCPU()), suite.ConfGorushDefault.Core.WorkerNum)
 	assert.Equal(suite.T(), int64(8192), suite.ConfGorushDefault.Core.QueueNum)
 	assert.Equal(suite.T(), "release", suite.ConfGorushDefault.Core.Mode)
+	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Core.Sync)
 	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Core.SSL)
 	assert.Equal(suite.T(), "cert.pem", suite.ConfGorushDefault.Core.CertPath)
 	assert.Equal(suite.T(), "key.pem", suite.ConfGorushDefault.Core.KeyPath)
@@ -68,6 +74,9 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Core.PID.Enabled)
 	assert.Equal(suite.T(), "gorush.pid", suite.ConfGorushDefault.Core.PID.Path)
 	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Core.PID.Override)
+	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Core.AutoTLS.Enabled)
+	assert.Equal(suite.T(), ".cache", suite.ConfGorushDefault.Core.AutoTLS.Folder)
+	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Core.AutoTLS.Host)
 
 	// Api
 	assert.Equal(suite.T(), "/api/push", suite.ConfGorushDefault.API.PushURI)
@@ -107,14 +116,20 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 
 	assert.Equal(suite.T(), "bunt.db", suite.ConfGorushDefault.Stat.BuntDB.Path)
 	assert.Equal(suite.T(), "level.db", suite.ConfGorushDefault.Stat.LevelDB.Path)
+
+	// gRPC
+	assert.Equal(suite.T(), false, suite.ConfGorushDefault.GRPC.Enabled)
+	assert.Equal(suite.T(), "50051", suite.ConfGorushDefault.GRPC.Port)
 }
 
 func (suite *ConfigTestSuite) TestValidateConf() {
 	// Core
 	assert.Equal(suite.T(), "8088", suite.ConfGorush.Core.Port)
+	assert.Equal(suite.T(), true, suite.ConfGorush.Core.Enabled)
 	assert.Equal(suite.T(), int64(runtime.NumCPU()), suite.ConfGorush.Core.WorkerNum)
 	assert.Equal(suite.T(), int64(8192), suite.ConfGorush.Core.QueueNum)
 	assert.Equal(suite.T(), "release", suite.ConfGorush.Core.Mode)
+	assert.Equal(suite.T(), false, suite.ConfGorush.Core.Sync)
 	assert.Equal(suite.T(), false, suite.ConfGorush.Core.SSL)
 	assert.Equal(suite.T(), "cert.pem", suite.ConfGorush.Core.CertPath)
 	assert.Equal(suite.T(), "key.pem", suite.ConfGorush.Core.KeyPath)
@@ -124,6 +139,9 @@ func (suite *ConfigTestSuite) TestValidateConf() {
 	assert.Equal(suite.T(), false, suite.ConfGorush.Core.PID.Enabled)
 	assert.Equal(suite.T(), "gorush.pid", suite.ConfGorush.Core.PID.Path)
 	assert.Equal(suite.T(), true, suite.ConfGorush.Core.PID.Override)
+	assert.Equal(suite.T(), false, suite.ConfGorush.Core.AutoTLS.Enabled)
+	assert.Equal(suite.T(), ".cache", suite.ConfGorush.Core.AutoTLS.Folder)
+	assert.Equal(suite.T(), "", suite.ConfGorush.Core.AutoTLS.Host)
 
 	// Api
 	assert.Equal(suite.T(), "/api/push", suite.ConfGorush.API.PushURI)
@@ -163,6 +181,10 @@ func (suite *ConfigTestSuite) TestValidateConf() {
 
 	assert.Equal(suite.T(), "bunt.db", suite.ConfGorush.Stat.BuntDB.Path)
 	assert.Equal(suite.T(), "level.db", suite.ConfGorush.Stat.LevelDB.Path)
+
+	// gRPC
+	assert.Equal(suite.T(), false, suite.ConfGorush.GRPC.Enabled)
+	assert.Equal(suite.T(), "50051", suite.ConfGorush.GRPC.Port)
 }
 
 func TestConfigTestSuite(t *testing.T) {

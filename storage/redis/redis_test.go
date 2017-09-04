@@ -9,7 +9,7 @@ import (
 
 func TestRedisServerError(t *testing.T) {
 	config := c.BuildDefaultPushConf()
-	config.Stat.Redis.Addr = "localhost:6370"
+	config.Stat.Redis.Addr = "redis:6370"
 
 	redis := New(config)
 	err := redis.Init()
@@ -21,10 +21,11 @@ func TestRedisEngine(t *testing.T) {
 	var val int64
 
 	config := c.BuildDefaultPushConf()
-	config.Stat.Redis.Addr = "localhost:6379"
+	config.Stat.Redis.Addr = "redis:6379"
 
 	redis := New(config)
-	redis.Init()
+	err := redis.Init()
+	assert.Nil(t, err)
 	redis.Reset()
 
 	redis.AddTotalCount(10)
@@ -49,6 +50,14 @@ func TestRedisEngine(t *testing.T) {
 	redis.AddAndroidError(50)
 	val = redis.GetAndroidError()
 	assert.Equal(t, int64(50), val)
+
+	redis.AddWebSuccess(60)
+	val = redis.GetWebSuccess()
+	assert.Equal(t, int64(60), val)
+
+	redis.AddWebError(70)
+	val = redis.GetWebError()
+	assert.Equal(t, int64(70), val)
 
 	// test reset db
 	redis.Reset()

@@ -2,21 +2,13 @@ package buntdb
 
 import (
 	"fmt"
+	"log"
 	"strconv"
 
 	"github.com/jaraxasoftware/gorush/config"
-	"github.com/tidwall/buntdb"
-)
+	"github.com/jaraxasoftware/gorush/storage"
 
-// Stat variable for redis
-const (
-	TotalCountKey     = "gorush-total-count"
-	IosSuccessKey     = "gorush-ios-success-count"
-	IosErrorKey       = "gorush-ios-error-count"
-	AndroidSuccessKey = "gorush-android-success-count"
-	AndroidErrorKey   = "gorush-android-error-count"
-	WebSuccessKey     = "gorush-web-success-count"
-	WebErrorKey       = "gorush-web-error-count"
+	"github.com/tidwall/buntdb"
 )
 
 // New func implements the storage interface for gorush (https://github.com/appleboy/gorush)
@@ -38,80 +30,104 @@ func (s *Storage) Init() error {
 
 // Reset Client storage.
 func (s *Storage) Reset() {
-	s.setBuntDB(TotalCountKey, 0)
-	s.setBuntDB(IosSuccessKey, 0)
-	s.setBuntDB(IosErrorKey, 0)
-	s.setBuntDB(AndroidSuccessKey, 0)
-	s.setBuntDB(AndroidErrorKey, 0)
+	s.setBuntDB(storage.TotalCountKey, 0)
+	s.setBuntDB(storage.IosSuccessKey, 0)
+	s.setBuntDB(storage.IosErrorKey, 0)
+	s.setBuntDB(storage.AndroidSuccessKey, 0)
+	s.setBuntDB(storage.AndroidErrorKey, 0)
+	s.setBuntDB(storage.WebSuccessKey, 0)
+	s.setBuntDB(storage.WebErrorKey, 0)
 }
 
 func (s *Storage) setBuntDB(key string, count int64) {
 	db, _ := buntdb.Open(s.config.Stat.BuntDB.Path)
 
-	db.Update(func(tx *buntdb.Tx) error {
-		tx.Set(key, fmt.Sprintf("%d", count), nil)
+	err := db.Update(func(tx *buntdb.Tx) error {
+		if _, _, err := tx.Set(key, fmt.Sprintf("%d", count), nil); err != nil {
+			return err
+		}
 		return nil
 	})
-	defer db.Close()
+
+	if err != nil {
+		log.Println("BuntDB update error:", err.Error())
+	}
+
+	defer func() {
+		err := db.Close()
+		if err != nil {
+			log.Println("BuntDB error:", err.Error())
+		}
+	}()
 }
 
 func (s *Storage) getBuntDB(key string, count *int64) {
 	db, _ := buntdb.Open(s.config.Stat.BuntDB.Path)
 
-	db.View(func(tx *buntdb.Tx) error {
+	err := db.View(func(tx *buntdb.Tx) error {
 		val, _ := tx.Get(key)
 		*count, _ = strconv.ParseInt(val, 10, 64)
 		return nil
 	})
-	defer db.Close()
+
+	if err != nil {
+		log.Println("BuntDB get error:", err.Error())
+	}
+
+	defer func() {
+		err := db.Close()
+		if err != nil {
+			log.Println("BuntDB error:", err.Error())
+		}
+	}()
 }
 
 // AddTotalCount record push notification count.
 func (s *Storage) AddTotalCount(count int64) {
 	total := s.GetTotalCount() + count
-	s.setBuntDB(TotalCountKey, total)
+	s.setBuntDB(storage.TotalCountKey, total)
 }
 
 // AddIosSuccess record counts of success iOS push notification.
 func (s *Storage) AddIosSuccess(count int64) {
 	total := s.GetIosSuccess() + count
-	s.setBuntDB(IosSuccessKey, total)
+	s.setBuntDB(storage.IosSuccessKey, total)
 }
 
 // AddIosError record counts of error iOS push notification.
 func (s *Storage) AddIosError(count int64) {
 	total := s.GetIosError() + count
-	s.setBuntDB(IosErrorKey, total)
+	s.setBuntDB(storage.IosErrorKey, total)
 }
 
 // AddAndroidSuccess record counts of success Android push notification.
 func (s *Storage) AddAndroidSuccess(count int64) {
 	total := s.GetAndroidSuccess() + count
-	s.setBuntDB(AndroidSuccessKey, total)
+	s.setBuntDB(storage.AndroidSuccessKey, total)
 }
 
 // AddAndroidError record counts of error Android push notification.
 func (s *Storage) AddAndroidError(count int64) {
 	total := s.GetAndroidError() + count
-	s.setBuntDB(AndroidErrorKey, total)
+	s.setBuntDB(storage.AndroidErrorKey, total)
 }
 
 // AddWebSuccess record counts of success Web push notification.
 func (s *Storage) AddWebSuccess(count int64) {
 	total := s.GetWebSuccess() + count
-	s.setBuntDB(WebSuccessKey, total)
+	s.setBuntDB(storage.WebSuccessKey, total)
 }
 
 // AddWebError record counts of error Web push notification.
 func (s *Storage) AddWebError(count int64) {
 	total := s.GetWebError() + count
-	s.setBuntDB(WebErrorKey, total)
+	s.setBuntDB(storage.WebErrorKey, total)
 }
 
 // GetTotalCount show counts of all notification.
 func (s *Storage) GetTotalCount() int64 {
 	var count int64
-	s.getBuntDB(TotalCountKey, &count)
+	s.getBuntDB(storage.TotalCountKey, &count)
 
 	return count
 }
@@ -119,7 +135,7 @@ func (s *Storage) GetTotalCount() int64 {
 // GetIosSuccess show success counts of iOS notification.
 func (s *Storage) GetIosSuccess() int64 {
 	var count int64
-	s.getBuntDB(IosSuccessKey, &count)
+	s.getBuntDB(storage.IosSuccessKey, &count)
 
 	return count
 }
@@ -127,7 +143,7 @@ func (s *Storage) GetIosSuccess() int64 {
 // GetIosError show error counts of iOS notification.
 func (s *Storage) GetIosError() int64 {
 	var count int64
-	s.getBuntDB(IosErrorKey, &count)
+	s.getBuntDB(storage.IosErrorKey, &count)
 
 	return count
 }
@@ -135,7 +151,7 @@ func (s *Storage) GetIosError() int64 {
 // GetAndroidSuccess show success counts of Android notification.
 func (s *Storage) GetAndroidSuccess() int64 {
 	var count int64
-	s.getBuntDB(AndroidSuccessKey, &count)
+	s.getBuntDB(storage.AndroidSuccessKey, &count)
 
 	return count
 }
@@ -143,7 +159,7 @@ func (s *Storage) GetAndroidSuccess() int64 {
 // GetAndroidError show error counts of Android notification.
 func (s *Storage) GetAndroidError() int64 {
 	var count int64
-	s.getBuntDB(AndroidErrorKey, &count)
+	s.getBuntDB(storage.AndroidErrorKey, &count)
 
 	return count
 }
@@ -151,7 +167,7 @@ func (s *Storage) GetAndroidError() int64 {
 // GetWebSuccess show success counts of Web notification.
 func (s *Storage) GetWebSuccess() int64 {
 	var count int64
-	s.getBuntDB(WebSuccessKey, &count)
+	s.getBuntDB(storage.WebSuccessKey, &count)
 
 	return count
 }
@@ -159,7 +175,7 @@ func (s *Storage) GetWebSuccess() int64 {
 // GetWebError show error counts of Web notification.
 func (s *Storage) GetWebError() int64 {
 	var count int64
-	s.getBuntDB(WebErrorKey, &count)
+	s.getBuntDB(storage.WebErrorKey, &count)
 
 	return count
 }

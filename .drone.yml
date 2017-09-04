@@ -1,81 +1,174 @@
 workspace:
-  path: /go/src/github.com/appleboy/gorush
+  base: /go/src
+  path: github.com/appleboy/gorush
 
-pipeline:
-  clone:
+clone:
+  git:
     image: plugins/git
+    depth: 50
     tags: true
 
-  build:
-    image: appleboy/golang-testing:${GO_VERSION}
-    environment:
-      - GOPATH=/go
+pipeline:
+  deps:
+    image: appleboy/golang-testing:1.9
+    group: golang
     commands:
       - make deps
+      - make embedmd
+
+  lint:
+    image: appleboy/golang-testing:1.9
+    group: golang
+    commands:
       - make vet
       - make lint
-      - make build
-      - make embedmd
-      - coverage all
-      # send coverage report
-      - make coverage
-      # build binary for docker image
+
+  vendor:
+    image: appleboy/golang-testing:1.9
+    group: golang
+    commands:
+      - make test-vendor
+      - make misspell-check
+      - make fmt-check
+
+  build:
+    image: appleboy/golang-testing:1.9
+    group: golang
+    commands:
       - make docker_build
 
+  arm64:
+    image: appleboy/golang-testing:1.9
+    group: golang
+    commands:
+      - make docker_build_arm64
+
+  arm:
+    image: appleboy/golang-testing:1.9
+    group: golang
+    commands:
+      - make docker_build_arm
+
+  coverage:
+    image: appleboy/golang-testing:1.9
+    group: golang
+    secrets: [ android_test_token, android_api_key ]
+    commands:
+      - coverage all
+
+  codecov:
+    image: robertstettner/drone-codecov
+    secrets: [ codecov_token ]
+    files:
+      - .cover/coverage.txt
+    when:
+      event: [ push, pull_request ]
+      status: [ success ]
+
   release:
-    image: appleboy/golang-testing:${GO_VERSION}
+    image: appleboy/golang-testing:1.9
     pull: true
     environment:
+      GOPATH: /srv/app
       TAGS: netgo
     commands:
       - make release
     when:
       event: [ tag ]
       branch: [ refs/tags/* ]
-      matrix:
-        GO_VERSION: 1.8.0
 
-  docker:
+  publish_linux_amd64:
     image: plugins/docker
-    repo: appleboy/gorush
-    tags: [ '${DRONE_TAG}' ]
-    when:
-      event: [ tag ]
-      branch: [ refs/tags/* ]
-
-  docker:
-    image: plugins/docker
-    repo: appleboy/gorush
+    group: publish
+    repo: ${DRONE_REPO}
     tags: [ 'latest' ]
+    secrets: [ docker_username, docker_password ]
     when:
       event: [ push ]
       branch: [ master ]
+      local: false
 
-  facebook:
-    image: appleboy/drone-facebook
-    pull: true
-    to: 1234973386524610
+  publish_linux_armhf:
+    image: plugins/docker
+    group: publish
+    repo: ${DRONE_REPO}
+    tags: [ 'linux-arm' ]
+    dockerfile: Dockerfile.armhf
+    secrets: [ docker_username, docker_password ]
     when:
-      status: [ success, failure ]
-      matrix:
-        GO_VERSION: 1.8.0
+      event: [ push ]
+      branch: [ master ]
+      local: false
 
-  github:
+  publish_linux_aarch64:
+    image: plugins/docker
+    group: publish
+    repo: ${DRONE_REPO}
+    tags: [ 'linux-arm64' ]
+    dockerfile: Dockerfile.aarch64
+    secrets: [ docker_username, docker_password ]
+    when:
+      event: [ push ]
+      branch: [ master ]
+      local: false
+
+  publish_tag_linux_amd64:
+    image: plugins/docker
+    group: tag
+    repo: ${DRONE_REPO}
+    tags: [ '${DRONE_TAG}' ]
+    secrets: [ docker_username, docker_password ]
+    group: release
+    when:
+      event: [ tag ]
+      branch: [ refs/tags/* ]
+      local: false
+
+  publish_tag_linux_armhf:
+    image: plugins/docker
+    group: tag
+    repo: ${DRONE_REPO}
+    tags: [ '${DRONE_TAG}-linux-arm' ]
+    dockerfile: Dockerfile.armhf
+    secrets: [ docker_username, docker_password ]
+    group: release
+    when:
+      event: [ tag ]
+      branch: [ refs/tags/* ]
+      local: false
+
+  publish_tag_linux_aarch64:
+    image: plugins/docker
+    group: tag
+    repo: ${DRONE_REPO}
+    tags: [ '${DRONE_TAG}-linux-arm64' ]
+    dockerfile: Dockerfile.aarch64
+    secrets: [ docker_username, docker_password ]
+    group: release
+    when:
+      event: [ tag ]
+      branch: [ refs/tags/* ]
+      local: false
+
+  release_tag:
     image: plugins/github-release
+    secrets: [ github_release_api_key ]
+    group: release
     files:
       - dist/release/*
     when:
       event: [ tag ]
       branch: [ refs/tags/* ]
-      matrix:
-        GO_VERSION: 1.8.0
+      local: false
+
+  facebook:
+    image: appleboy/drone-facebook
+    secrets: [ fb_page_token, fb_verify_token ]
+    pull: true
+    to: 1234973386524610
+    when:
+      status: [ changed, failure ]
 
 services:
   redis:
     image: redis:alpine
-
-matrix:
-  GO_VERSION:
-    - 1.8.0
-    - 1.7.5
-    - 1.6.4

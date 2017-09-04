@@ -2,21 +2,13 @@ package leveldb
 
 import (
 	"fmt"
+	"log"
 	"strconv"
 
 	"github.com/jaraxasoftware/gorush/config"
-	"github.com/syndtr/goleveldb/leveldb"
-)
+	"github.com/jaraxasoftware/gorush/storage"
 
-// Stat variable for redis
-const (
-	TotalCountKey     = "gorush-total-count"
-	IosSuccessKey     = "gorush-ios-success-count"
-	IosErrorKey       = "gorush-ios-error-count"
-	AndroidSuccessKey = "gorush-android-success-count"
-	AndroidErrorKey   = "gorush-android-error-count"
-	WebSuccessKey     = "gorush-web-success-count"
-	WebErrorKey       = "gorush-web-error-count"
+	"github.com/syndtr/goleveldb/leveldb"
 )
 
 var dbPath string
@@ -27,7 +19,12 @@ func setLevelDB(key string, count int64) {
 
 	_ = db.Put([]byte(key), []byte(value), nil)
 
-	defer db.Close()
+	defer func() {
+		err := db.Close()
+		if err != nil {
+			log.Println("LevelDB error:", err.Error())
+		}
+	}()
 }
 
 func getLevelDB(key string, count *int64) {
@@ -36,7 +33,12 @@ func getLevelDB(key string, count *int64) {
 	data, _ := db.Get([]byte(key), nil)
 	*count, _ = strconv.ParseInt(string(data), 10, 64)
 
-	defer db.Close()
+	defer func() {
+		err := db.Close()
+		if err != nil {
+			log.Println("LevelDB error:", err.Error())
+		}
+	}()
 }
 
 // New func implements the storage interface for gorush (https://github.com/appleboy/gorush)
@@ -59,61 +61,61 @@ func (s *Storage) Init() error {
 
 // Reset Client storage.
 func (s *Storage) Reset() {
-	setLevelDB(TotalCountKey, 0)
-	setLevelDB(IosSuccessKey, 0)
-	setLevelDB(IosErrorKey, 0)
-	setLevelDB(AndroidSuccessKey, 0)
-	setLevelDB(AndroidErrorKey, 0)
-	setLevelDB(WebSuccessKey, 0)
-	setLevelDB(WebErrorKey, 0)
+	setLevelDB(storage.TotalCountKey, 0)
+	setLevelDB(storage.IosSuccessKey, 0)
+	setLevelDB(storage.IosErrorKey, 0)
+	setLevelDB(storage.AndroidSuccessKey, 0)
+	setLevelDB(storage.AndroidErrorKey, 0)
+	setLevelDB(storage.WebSuccessKey, 0)
+	setLevelDB(storage.WebErrorKey, 0)
 }
 
 // AddTotalCount record push notification count.
 func (s *Storage) AddTotalCount(count int64) {
 	total := s.GetTotalCount() + count
-	setLevelDB(TotalCountKey, total)
+	setLevelDB(storage.TotalCountKey, total)
 }
 
 // AddIosSuccess record counts of success iOS push notification.
 func (s *Storage) AddIosSuccess(count int64) {
 	total := s.GetIosSuccess() + count
-	setLevelDB(IosSuccessKey, total)
+	setLevelDB(storage.IosSuccessKey, total)
 }
 
 // AddIosError record counts of error iOS push notification.
 func (s *Storage) AddIosError(count int64) {
 	total := s.GetIosError() + count
-	setLevelDB(IosErrorKey, total)
+	setLevelDB(storage.IosErrorKey, total)
 }
 
 // AddAndroidSuccess record counts of success Android push notification.
 func (s *Storage) AddAndroidSuccess(count int64) {
 	total := s.GetAndroidSuccess() + count
-	setLevelDB(AndroidSuccessKey, total)
+	setLevelDB(storage.AndroidSuccessKey, total)
 }
 
 // AddAndroidError record counts of error Android push notification.
 func (s *Storage) AddAndroidError(count int64) {
 	total := s.GetAndroidError() + count
-	setLevelDB(AndroidErrorKey, total)
+	setLevelDB(storage.AndroidErrorKey, total)
 }
 
 // AddWebSuccess record counts of success Web push notification.
 func (s *Storage) AddWebSuccess(count int64) {
 	total := s.GetWebSuccess() + count
-	setLevelDB(WebSuccessKey, total)
+	setLevelDB(storage.WebSuccessKey, total)
 }
 
 // AddWebError record counts of error Web push notification.
 func (s *Storage) AddWebError(count int64) {
 	total := s.GetWebError() + count
-	setLevelDB(WebErrorKey, total)
+	setLevelDB(storage.WebErrorKey, total)
 }
 
 // GetTotalCount show counts of all notification.
 func (s *Storage) GetTotalCount() int64 {
 	var count int64
-	getLevelDB(TotalCountKey, &count)
+	getLevelDB(storage.TotalCountKey, &count)
 
 	return count
 }
@@ -121,7 +123,7 @@ func (s *Storage) GetTotalCount() int64 {
 // GetIosSuccess show success counts of iOS notification.
 func (s *Storage) GetIosSuccess() int64 {
 	var count int64
-	getLevelDB(IosSuccessKey, &count)
+	getLevelDB(storage.IosSuccessKey, &count)
 
 	return count
 }
@@ -129,7 +131,7 @@ func (s *Storage) GetIosSuccess() int64 {
 // GetIosError show error counts of iOS notification.
 func (s *Storage) GetIosError() int64 {
 	var count int64
-	getLevelDB(IosErrorKey, &count)
+	getLevelDB(storage.IosErrorKey, &count)
 
 	return count
 }
@@ -137,7 +139,7 @@ func (s *Storage) GetIosError() int64 {
 // GetAndroidSuccess show success counts of Android notification.
 func (s *Storage) GetAndroidSuccess() int64 {
 	var count int64
-	getLevelDB(AndroidSuccessKey, &count)
+	getLevelDB(storage.AndroidSuccessKey, &count)
 
 	return count
 }
@@ -145,7 +147,7 @@ func (s *Storage) GetAndroidSuccess() int64 {
 // GetAndroidError show error counts of Android notification.
 func (s *Storage) GetAndroidError() int64 {
 	var count int64
-	getLevelDB(AndroidErrorKey, &count)
+	getLevelDB(storage.AndroidErrorKey, &count)
 
 	return count
 }
@@ -153,7 +155,7 @@ func (s *Storage) GetAndroidError() int64 {
 // GetWebSuccess show success counts of Web notification.
 func (s *Storage) GetWebSuccess() int64 {
 	var count int64
-	getLevelDB(WebSuccessKey, &count)
+	getLevelDB(storage.WebSuccessKey, &count)
 
 	return count
 }
@@ -161,7 +163,7 @@ func (s *Storage) GetWebSuccess() int64 {
 // GetWebError show error counts of Web notification.
 func (s *Storage) GetWebError() int64 {
 	var count int64
-	getLevelDB(WebErrorKey, &count)
+	getLevelDB(storage.WebErrorKey, &count)
 
 	return count
 }

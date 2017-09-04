@@ -1,19 +1,12 @@
 package boltdb
 
 import (
-	"github.com/jaraxasoftware/gorush/config"
-	"github.com/asdine/storm"
-)
+	"log"
 
-// Stat variable for redis
-const (
-	TotalCountKey     = "gorush-total-count"
-	IosSuccessKey     = "gorush-ios-success-count"
-	IosErrorKey       = "gorush-ios-error-count"
-	AndroidSuccessKey = "gorush-android-success-count"
-	AndroidErrorKey   = "gorush-android-error-count"
-	WebSuccessKey     = "gorush-web-success-count"
-	WebErrorKey       = "gorush-web-error-count"
+	"github.com/jaraxasoftware/gorush/config"
+	"github.com/jaraxasoftware/gorush/storage"
+
+	"github.com/asdine/storm"
 )
 
 // New func implements the storage interface for gorush (https://github.com/appleboy/gorush)
@@ -35,73 +28,91 @@ func (s *Storage) Init() error {
 
 // Reset Client storage.
 func (s *Storage) Reset() {
-	s.setBoltDB(TotalCountKey, 0)
-	s.setBoltDB(IosSuccessKey, 0)
-	s.setBoltDB(IosErrorKey, 0)
-	s.setBoltDB(AndroidSuccessKey, 0)
-	s.setBoltDB(AndroidErrorKey, 0)
-	s.setBoltDB(WebSuccessKey, 0)
-	s.setBoltDB(WebErrorKey, 0)
+	s.setBoltDB(storage.TotalCountKey, 0)
+	s.setBoltDB(storage.IosSuccessKey, 0)
+	s.setBoltDB(storage.IosErrorKey, 0)
+	s.setBoltDB(storage.AndroidSuccessKey, 0)
+	s.setBoltDB(storage.AndroidErrorKey, 0)
+	s.setBoltDB(storage.WebSuccessKey, 0)
+	s.setBoltDB(storage.WebErrorKey, 0)
 }
 
 func (s *Storage) setBoltDB(key string, count int64) {
 	db, _ := storm.Open(s.config.Stat.BoltDB.Path)
-	db.Set(s.config.Stat.BoltDB.Bucket, key, count)
-	defer db.Close()
+	err := db.Set(s.config.Stat.BoltDB.Bucket, key, count)
+	if err != nil {
+		log.Println("BoltDB set error:", err.Error())
+	}
+
+	defer func() {
+		err := db.Close()
+		if err != nil {
+			log.Println("BoltDB error:", err.Error())
+		}
+	}()
 }
 
 func (s *Storage) getBoltDB(key string, count *int64) {
 	db, _ := storm.Open(s.config.Stat.BoltDB.Path)
-	db.Get(s.config.Stat.BoltDB.Bucket, key, count)
-	defer db.Close()
+	err := db.Get(s.config.Stat.BoltDB.Bucket, key, count)
+	if err != nil {
+		log.Println("BoltDB get error:", err.Error())
+	}
+
+	defer func() {
+		err := db.Close()
+		if err != nil {
+			log.Println("BoltDB error:", err.Error())
+		}
+	}()
 }
 
 // AddTotalCount record push notification count.
 func (s *Storage) AddTotalCount(count int64) {
 	total := s.GetTotalCount() + count
-	s.setBoltDB(TotalCountKey, total)
+	s.setBoltDB(storage.TotalCountKey, total)
 }
 
 // AddIosSuccess record counts of success iOS push notification.
 func (s *Storage) AddIosSuccess(count int64) {
 	total := s.GetIosSuccess() + count
-	s.setBoltDB(IosSuccessKey, total)
+	s.setBoltDB(storage.IosSuccessKey, total)
 }
 
 // AddIosError record counts of error iOS push notification.
 func (s *Storage) AddIosError(count int64) {
 	total := s.GetIosError() + count
-	s.setBoltDB(IosErrorKey, total)
+	s.setBoltDB(storage.IosErrorKey, total)
 }
 
 // AddAndroidSuccess record counts of success Android push notification.
 func (s *Storage) AddAndroidSuccess(count int64) {
 	total := s.GetAndroidSuccess() + count
-	s.setBoltDB(AndroidSuccessKey, total)
+	s.setBoltDB(storage.AndroidSuccessKey, total)
 }
 
 // AddAndroidError record counts of error Android push notification.
 func (s *Storage) AddAndroidError(count int64) {
 	total := s.GetAndroidError() + count
-	s.setBoltDB(AndroidErrorKey, total)
+	s.setBoltDB(storage.AndroidErrorKey, total)
 }
 
-// AddWebSuccess record counts of success Android push notification.
+// AddWebSuccess record counts of success Web push notification.
 func (s *Storage) AddWebSuccess(count int64) {
 	total := s.GetWebSuccess() + count
-	s.setBoltDB(WebSuccessKey, total)
+	s.setBoltDB(storage.WebSuccessKey, total)
 }
 
-// AddWebError record counts of error Android push notification.
+// AddWebError record counts of error Web push notification.
 func (s *Storage) AddWebError(count int64) {
 	total := s.GetWebError() + count
-	s.setBoltDB(WebErrorKey, total)
+	s.setBoltDB(storage.WebErrorKey, total)
 }
 
 // GetTotalCount show counts of all notification.
 func (s *Storage) GetTotalCount() int64 {
 	var count int64
-	s.getBoltDB(TotalCountKey, &count)
+	s.getBoltDB(storage.TotalCountKey, &count)
 
 	return count
 }
@@ -109,7 +120,7 @@ func (s *Storage) GetTotalCount() int64 {
 // GetIosSuccess show success counts of iOS notification.
 func (s *Storage) GetIosSuccess() int64 {
 	var count int64
-	s.getBoltDB(IosSuccessKey, &count)
+	s.getBoltDB(storage.IosSuccessKey, &count)
 
 	return count
 }
@@ -117,7 +128,7 @@ func (s *Storage) GetIosSuccess() int64 {
 // GetIosError show error counts of iOS notification.
 func (s *Storage) GetIosError() int64 {
 	var count int64
-	s.getBoltDB(IosErrorKey, &count)
+	s.getBoltDB(storage.IosErrorKey, &count)
 
 	return count
 }
@@ -125,7 +136,7 @@ func (s *Storage) GetIosError() int64 {
 // GetAndroidSuccess show success counts of Android notification.
 func (s *Storage) GetAndroidSuccess() int64 {
 	var count int64
-	s.getBoltDB(AndroidSuccessKey, &count)
+	s.getBoltDB(storage.AndroidSuccessKey, &count)
 
 	return count
 }
@@ -133,7 +144,7 @@ func (s *Storage) GetAndroidSuccess() int64 {
 // GetAndroidError show error counts of Android notification.
 func (s *Storage) GetAndroidError() int64 {
 	var count int64
-	s.getBoltDB(AndroidErrorKey, &count)
+	s.getBoltDB(storage.AndroidErrorKey, &count)
 
 	return count
 }
@@ -141,7 +152,7 @@ func (s *Storage) GetAndroidError() int64 {
 // GetWebSuccess show success counts of Web notification.
 func (s *Storage) GetWebSuccess() int64 {
 	var count int64
-	s.getBoltDB(WebSuccessKey, &count)
+	s.getBoltDB(storage.WebSuccessKey, &count)
 
 	return count
 }
@@ -149,7 +160,7 @@ func (s *Storage) GetWebSuccess() int64 {
 // GetWebError show error counts of Web notification.
 func (s *Storage) GetWebError() int64 {
 	var count int64
-	s.getBoltDB(WebErrorKey, &count)
+	s.getBoltDB(storage.WebErrorKey, &count)
 
 	return count
 }

@@ -13,7 +13,8 @@ func TestBoltDBEngine(t *testing.T) {
 	config := c.BuildDefaultPushConf()
 
 	boltDB := New(config)
-	boltDB.Init()
+	err := boltDB.Init()
+	assert.Nil(t, err)
 	boltDB.Reset()
 
 	boltDB.AddTotalCount(10)
@@ -38,6 +39,14 @@ func TestBoltDBEngine(t *testing.T) {
 	boltDB.AddAndroidError(50)
 	val = boltDB.GetAndroidError()
 	assert.Equal(t, int64(50), val)
+
+	boltDB.AddWebSuccess(60)
+	val = boltDB.GetWebSuccess()
+	assert.Equal(t, int64(60), val)
+
+	boltDB.AddWebError(70)
+	val = boltDB.GetWebError()
+	assert.Equal(t, int64(70), val)
 
 	// test reset db
 	boltDB.Reset()

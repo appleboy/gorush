@@ -16,20 +16,32 @@ type ConfYaml struct {
 	Web     SectionWeb     `yaml:"web"`
 	Log     SectionLog     `yaml:"log"`
 	Stat    SectionStat    `yaml:"stat"`
+	GRPC    SectionGRPC    `yaml:"grpc"`
 }
 
 // SectionCore is sub section of config.
 type SectionCore struct {
-	Port            string     `yaml:"port"`
-	MaxNotification int64      `yaml:"max_notification"`
-	WorkerNum       int64      `yaml:"worker_num"`
-	QueueNum        int64      `yaml:"queue_num"`
-	Mode            string     `yaml:"mode"`
-	SSL             bool       `yaml:"ssl"`
-	CertPath        string     `yaml:"cert_path"`
-	KeyPath         string     `yaml:"key_path"`
-	HTTPProxy       string     `yaml:"http_proxy"`
-	PID             SectionPID `yaml:"pid"`
+	Enabled         bool           `yaml:"enabled"`
+	Address         string         `yaml:"address"`
+	Port            string         `yaml:"port"`
+	MaxNotification int64          `yaml:"max_notification"`
+	WorkerNum       int64          `yaml:"worker_num"`
+	QueueNum        int64          `yaml:"queue_num"`
+	Mode            string         `yaml:"mode"`
+	Sync            bool           `yaml:"sync"`
+	SSL             bool           `yaml:"ssl"`
+	CertPath        string         `yaml:"cert_path"`
+	KeyPath         string         `yaml:"key_path"`
+	HTTPProxy       string         `yaml:"http_proxy"`
+	PID             SectionPID     `yaml:"pid"`
+	AutoTLS         SectionAutoTLS `yaml:"auto_tls"`
+}
+
+// SectionAutoTLS support Let's Encrypt setting.
+type SectionAutoTLS struct {
+	Enabled bool   `yaml:"enabled"`
+	Folder  string `yaml:"folder"`
+	Host    string `yaml:"host"`
 }
 
 // SectionAPI is sub section of config.
@@ -120,15 +132,24 @@ type SectionPID struct {
 	Override bool   `yaml:"override"`
 }
 
+// SectionGRPC is sub section of config.
+type SectionGRPC struct {
+	Enabled bool   `yaml:"enabled"`
+	Port    string `yaml:"port"`
+}
+
 // BuildDefaultPushConf is default config setting.
 func BuildDefaultPushConf() ConfYaml {
 	var conf ConfYaml
 
 	// Core
+	conf.Core.Address = ""
 	conf.Core.Port = "8088"
+	conf.Core.Enabled = true
 	conf.Core.WorkerNum = int64(runtime.NumCPU())
 	conf.Core.QueueNum = int64(8192)
 	conf.Core.Mode = "release"
+	conf.Core.Sync = false
 	conf.Core.SSL = false
 	conf.Core.CertPath = "cert.pem"
 	conf.Core.KeyPath = "key.pem"
@@ -137,6 +158,9 @@ func BuildDefaultPushConf() ConfYaml {
 	conf.Core.PID.Enabled = false
 	conf.Core.PID.Path = "gorush.pid"
 	conf.Core.PID.Override = false
+	conf.Core.AutoTLS.Enabled = false
+	conf.Core.AutoTLS.Folder = ".cache"
+	conf.Core.AutoTLS.Host = ""
 
 	// Api
 	conf.API.PushURI = "/api/push"
@@ -173,17 +197,19 @@ func BuildDefaultPushConf() ConfYaml {
 	conf.Log.ErrorLevel = "error"
 	conf.Log.HideToken = true
 
+	// Stat Engine
 	conf.Stat.Engine = "memory"
 	conf.Stat.Redis.Addr = "localhost:6379"
 	conf.Stat.Redis.Password = ""
 	conf.Stat.Redis.DB = 0
-
 	conf.Stat.BoltDB.Path = "bolt.db"
 	conf.Stat.BoltDB.Bucket = "gorush"
-
 	conf.Stat.BuntDB.Path = "bunt.db"
 	conf.Stat.LevelDB.Path = "level.db"
 
+	// gRPC Server
+	conf.GRPC.Enabled = false
+	conf.GRPC.Port = "50051"
 	return conf
 }
 

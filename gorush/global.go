@@ -3,10 +3,13 @@ package gorush
 import (
 	"crypto/tls"
 
-	"github.com/Sirupsen/logrus"
 	"github.com/jaraxasoftware/gorush/config"
+	"github.com/jaraxasoftware/gorush/storage"
 	"github.com/jaraxasoftware/gorush/web"
+
+	"github.com/appleboy/go-fcm"
 	apns "github.com/sideshow/apns2"
+	"github.com/sirupsen/logrus"
 )
 
 var (
@@ -18,6 +21,8 @@ var (
 	CertificatePemIos tls.Certificate
 	// ApnsClient is apns client
 	ApnsClient *apns.Client
+	// FCMClient is apns client
+	FCMClient *fcm.Client
 	// VoipCertificatePemIos is ios certificate file
 	VoipCertificatePemIos tls.Certificate
 	// VoipApnsClient is apns client
@@ -29,5 +34,5 @@ var (
 	// LogError is log server error log
 	LogError *logrus.Logger
 	// StatStorage implements the storage interface
-	StatStorage Storage
+	StatStorage storage.Storage
 )
