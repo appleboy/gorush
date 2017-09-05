@@ -21,7 +21,6 @@ var (
 
 type Client struct {
 	HTTPClient    *http.Client
-	GcmApiKey     string
 }
 
 type Response struct {
@@ -52,16 +51,15 @@ var Browsers = [...]Browser{
 	Browser{"Firefox", *regexp.MustCompile("https://updates.push.services.mozilla.com/wpush"), *regexp.MustCompile("\\\"error\\\":\\s\\\"([^\"]*)\\\"")},
 }
 
-func NewClient(gcmApiKey string) *Client {
+func NewClient() *Client {
 	return &Client{
 		HTTPClient: &http.Client{
 			Timeout:   HTTPClientTimeout,
 		},
-		GcmApiKey: gcmApiKey,
 	}
 }
 
-func (c *Client) Push(n *Notification) (*Response, error) {
+func (c *Client) Push(n *Notification, apiKey string) (*Response, error) {
 	jsonBuffer, _ := json.Marshal(n.Payload)
 	var timeToLive uint
 	if n.TimeToLive != nil {
@@ -119,7 +117,7 @@ func (c *Client) Push(n *Notification) (*Response, error) {
 	// Create the ECE request.
 	r := ece.CreateRequest(*c.HTTPClient, n.Subscription.Endpoint, ciphertext, &ckh, &eh, int(timeToLive))
 	if strings.Contains(n.Subscription.Endpoint, "https://android.googleapis.com/gcm/send") {
-		r.Header.Add("Authorization", "key=" + c.GcmApiKey)
+		r.Header.Add("Authorization", "key=" + apiKey)
 	}
 	response, err := c.HTTPClient.Do(r)
 	if err != nil {

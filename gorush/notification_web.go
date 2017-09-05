@@ -11,7 +11,7 @@ import (
 func InitWebClient() error {
     if PushConf.Web.Enabled {
         //var err error
-        WebClient = web.NewClient(PushConf.Web.APIKey)
+        WebClient = web.NewClient()
     }
 
     return nil
@@ -53,6 +53,11 @@ func PushToWeb(req PushNotification) bool {
 		return false
 	}
 
+	var apiKey = PushConf.Web.APIKey
+	if req.APIKey != "" {
+		apiKey = req.APIKey
+	}
+
 Retry:
 	var isError = false
 
@@ -61,7 +66,7 @@ Retry:
 
 	for _, subscription := range req.Subscriptions {
 		notification := GetWebNotification(req, &subscription)
-		response, err := WebClient.Push(notification)
+		response, err := WebClient.Push(notification, apiKey)
 		if err != nil {
 			failureCount++
 			LogPush(FailedPush, subscription.Endpoint, req, err)
