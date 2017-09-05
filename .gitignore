@@ -29,7 +29,7 @@ bin/*
 .DS_Store
 gorush/log/*.log
 gorush.db
-vendor
+vendor/*/
 Dockerfile.tmp
 .cover
 *.db*
