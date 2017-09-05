@@ -14,4 +14,9 @@ LABEL org.label-schema.name="Gorush"
 LABEL org.label-schema.vendor="Bo-Yi Wu"
 LABEL org.label-schema.schema-version="1.0"
 
+ADD config/config.yml /
 ADD bin/gorush /
+
+EXPOSE 8088
+ENTRYPOINT ["/gorush"]
+CMD ["-c", "config.yml"]
