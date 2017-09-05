@@ -9,6 +9,7 @@ import (
 	"strings"
 	"strconv"
 	"errors"
+	"regexp"
 	"io/ioutil"
 	"github.com/martijnc/gowebpush/ece"
 	"github.com/martijnc/gowebpush/webpush"
@@ -38,6 +39,17 @@ type Notification struct {
 	Subscription  *Subscription                 `json:"subscription,omitempty"`
 	Payload       *map[string]interface{}       `json:"payload,omitempty"`
 	TimeToLive    *uint                         `json:"time_to_live,omitempty"`
+}
+
+type Browser struct {
+	Name      string
+	ReDetect  regexp.Regexp
+	ReError   regexp.Regexp
+}
+
+var Browsers = [...]Browser{
+	Browser{"Chrome", *regexp.MustCompile("https://android.googleapis.com/gcm/send/"), *regexp.MustCompile("<TITLE>(.*)</TITLE>")},
+	Browser{"Firefox", *regexp.MustCompile("https://updates.push.services.mozilla.com/wpush"), *regexp.MustCompile("\\\"error\\\":\\s\\\"([^\"]*)\\\"")},
 }
 
 func NewClient(gcmApiKey string) *Client {
