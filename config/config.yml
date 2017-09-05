@@ -31,8 +31,6 @@ api:
   config_uri: "/config"
   sys_stat_uri: "/sys/stats"
   metric_uri: "/metrics"
-  ping_uri: "/stats/ping"
-  test_uri: "/stats/test"
 
 android:
   enabled: true
