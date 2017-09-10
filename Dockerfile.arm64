@@ -1,12 +1,5 @@
-FROM alpine:3.6 as alpine
-RUN apk add -U --no-cache ca-certificates
-
-FROM scratch
+FROM plugins/base:multiarch
 MAINTAINER Bo-Yi Wi <appleboy.tw@gmail.com>
-
-ENV GODEBUG=netdns=go
-
-COPY --from=alpine /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
 LABEL org.label-schema.version=latest
 LABEL org.label-schema.vcs-url="https://github.com/appleboy/gorush.git"
