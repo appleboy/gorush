@@ -5,8 +5,8 @@ import (
 	"log"
 	"strconv"
 
-	"github.com/appleboy/gorush/config"
-	"github.com/appleboy/gorush/storage"
+	"github.com/axiomzen/gorush/config"
+	"github.com/axiomzen/gorush/storage"
 
 	"github.com/syndtr/goleveldb/leveldb"
 )
@@ -41,7 +41,7 @@ func getLevelDB(key string, count *int64) {
 	}()
 }
 
-// New func implements the storage interface for gorush (https://github.com/appleboy/gorush)
+// New func implements the storage interface for gorush (https://github.com/axiomzen/gorush)
 func New(config config.ConfYaml) *Storage {
 	return &Storage{
 		config: config,

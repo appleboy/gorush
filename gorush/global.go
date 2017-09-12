@@ -3,8 +3,8 @@ package gorush
 import (
 	"crypto/tls"
 
-	"github.com/appleboy/gorush/config"
-	"github.com/appleboy/gorush/storage"
+	"github.com/axiomzen/gorush/config"
+	"github.com/axiomzen/gorush/storage"
 
 	"github.com/appleboy/go-fcm"
 	apns "github.com/sideshow/apns2"

@@ -3,8 +3,8 @@ package rpc
 import (
 	"net"
 
-	"github.com/appleboy/gorush/gorush"
-	pb "github.com/appleboy/gorush/rpc/proto"
+	"github.com/axiomzen/gorush/gorush"
+	pb "github.com/axiomzen/gorush/rpc/proto"
 
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
