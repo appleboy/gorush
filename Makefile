@@ -5,6 +5,9 @@ GO ?= go
 DEPLOY_ACCOUNT := appleboy
 DEPLOY_IMAGE := $(EXECUTABLE)
 GOFMT ?= gofmt "-s"
+EXTERNAL_TOOLS=\
+	github.com/mitchellh/gox \
+	github.com/kardianos/govendor
 
 TARGETS ?= linux darwin windows
 ARCHS ?= amd64 386
@@ -41,6 +44,13 @@ ifeq ($(ANDROID_TEST_TOKEN),)
 	@exit 1
 endif
 	@echo "Already set ANDROID_API_KEY and ANDROID_TEST_TOKEN globale variable."
+
+# bootstrap the build by downloading additional tools
+bootstrap:
+	@for tool in  $(EXTERNAL_TOOLS) ; do \
+		echo "Installing/Updating $$tool" ; \
+		go get -u $$tool; \
+	done
 
 fmt:
 	$(GOFMT) -w $(GOFILES)
