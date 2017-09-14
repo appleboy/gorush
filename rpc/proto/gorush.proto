@@ -9,6 +9,7 @@ message NotificationRequest {
   string title = 4;
   string topic = 5;
   string key = 6;
+  int32 badge = 7;
 }
 
 message NotificationReply {
