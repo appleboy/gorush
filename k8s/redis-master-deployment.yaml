@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: redis-master
+  name: redis
 spec:
   replicas: 1
   template:

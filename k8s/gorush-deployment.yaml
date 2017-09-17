@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: frontend
+  name: gorush
 spec:
   replicas: 3
   template:
@@ -14,7 +14,7 @@ spec:
       - name: gorush
         image: appleboy/gorush
         command: ["/gorush"]
-        args: ["-c", "config.yml", "-e", "redis", "--redis-addr", "redis-master:6379"]
+        args: ["-c", "config.yml", "-e", "redis", "--redis-addr", "redis:6379"]
         env:
         - name: GET_HOSTS_FROM
           # value: dns
