@@ -1,0 +1,20 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: gorush
+  namespace: gorush
+  annotations:
+    # Kubernetes Ingress Controller for AWS ALB
+    # https://github.com/coreos/alb-ingress-controller
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/subnets: "subnet-3cd22c75,subnet-4aff342d"
+    alb.ingress.kubernetes.io/security-groups: sg-329c2b54
+spec:
+  rules:
+  - host: gorush.example.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: gorush
+          servicePort: 8088
