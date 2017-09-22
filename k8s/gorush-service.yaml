@@ -9,8 +9,8 @@ metadata:
 spec:
   # if your cluster supports it, uncomment the following to automatically create
   # an external load-balanced IP for the frontend service.
-  # type: LoadBalancer
-  type: NodePort
+  type: LoadBalancer
+  # type: NodePort
   ports:
   - port: 8088
   selector:

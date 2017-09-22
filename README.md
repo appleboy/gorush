@@ -766,7 +766,7 @@ $ kubectl create -f k8s/gorush-redis-deployment.yaml
 $ kubectl create -f k8s/gorush-redis-service.yaml
 ```
 
-Create gorush service:
+Create gorush service with ELB:
 
 ```sh
 $ kubectl create -f k8s/gorush-deployment.yaml
@@ -775,8 +775,19 @@ $ kubectl create -f k8s/gorush-service.yaml
 
 ### Ingress Controller for AWS ALB
 
+Update the following in `k8s/gorush-service.yaml`
+
+```diff
+-  type: LoadBalancer
+-  # type: NodePort
++  # type: LoadBalancer
++  type: NodePort
 ```
-$ kubectl create -f k8s/gorush-aws-ingress.yaml
+
+Then start the AWS ALB by the follwong command.
+
+```
+$ kubectl create -f k8s/gorush-aws-alb-ingress.yaml
 ```
 
 ### Clean up the gorush:
