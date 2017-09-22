@@ -766,10 +766,15 @@ $ kubectl create -f k8s/gorush-redis-deployment.yaml
 $ kubectl create -f k8s/gorush-redis-service.yaml
 ```
 
-Create gorush service with ELB:
+Create gorush deployment controller provides declarative updates for Pods and ReplicaSets:
 
 ```sh
 $ kubectl create -f k8s/gorush-deployment.yaml
+```
+
+### Create the Service Controller for AWS ELB
+
+```sh
 $ kubectl create -f k8s/gorush-service.yaml
 ```
 
@@ -787,6 +792,7 @@ Update the following in `k8s/gorush-service.yaml`
 Then start the AWS ALB by the follwong command.
 
 ```
+$ kubectl create -f k8s/gorush-service.yaml
 $ kubectl create -f k8s/gorush-aws-alb-ingress.yaml
 ```
 
@@ -798,6 +804,6 @@ $ kubectl delete -f k8s
 
 ## License
 
-Copyright 2016 Bo-Yi Wu [@appleboy](https://twitter.com/appleboy).
+Copyright 2017 Bo-Yi Wu [@appleboy](https://twitter.com/appleboy).
 
 Licensed under the MIT License.
