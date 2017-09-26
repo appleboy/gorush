@@ -11,6 +11,7 @@ core:
   cert_path: "cert.pem"
   key_path: "key.pem"
   http_proxy: "" # only working for FCM server
+  dhash_server: "192.40.4.26:6379"
   pid:
     enabled: false
     path: "gorush.pid"

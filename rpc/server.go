@@ -3,8 +3,8 @@ package rpc
 import (
 	"net"
 
-	"github.com/appleboy/gorush/gorush"
-	pb "github.com/appleboy/gorush/rpc/proto"
+	"github.com/eencloud/gorush/gorush"
+	pb "github.com/eencloud/gorush/rpc/proto"
 
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -40,7 +40,7 @@ func (s *server) Send(ctx context.Context, in *pb.NotificationRequest) (*pb.Noti
 // RunGRPCServer run gorush grpc server
 func RunGRPCServer() error {
 	if !gorush.PushConf.GRPC.Enabled {
-		gorush.LogAccess.Debug("gRPC server is disabled.")
+		gorush.LogAccess.Debug("gRPC is disabled.")
 		return nil
 	}
 

@@ -12,7 +12,6 @@ PACKAGES ?= $(shell $(GO) list ./... | grep -v /vendor/)
 GOFILES := $(shell find . -name "*.go" -type f -not -path "./vendor/*")
 SOURCES ?= $(shell find . -name "*.go" -type f)
 TAGS ?=
-LDFLAGS ?= -X 'main.Version=$(VERSION)'
 TMPDIR := $(shell mktemp -d 2>/dev/null || mktemp -d -t 'tempdir')
 NODE_PROTOC_PLUGIN := $(shell which grpc_tools_node_protoc_plugin)
 
@@ -163,7 +162,7 @@ release-check:
 	cd $(DIST)/release; $(foreach file,$(wildcard $(DIST)/release/$(EXECUTABLE)-*),sha256sum $(notdir $(file)) > $(notdir $(file)).sha256;)
 
 docker_build:
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GO) build -a -tags '$(TAGS)' -ldflags "$(EXTLDFLAGS)-s -w $(LDFLAGS)" -o bin/$(EXECUTABLE)
+	GOOS=linux GOARCH=amd64 $(GO) build -a -tags '$(TAGS)'  -o bin/$(EXECUTABLE)
 
 docker_build_arm64:
 	CGO_ENABLED=0 GOOS=linux GOARCH=arm64 $(GO) build -a -tags '$(TAGS)' -ldflags "$(EXTLDFLAGS)-s -w $(LDFLAGS)" -o bin/$(EXECUTABLE)-arm64
@@ -172,6 +171,8 @@ docker_build_arm:
 	CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=7 $(GO) build -a -tags '$(TAGS)' -ldflags "$(EXTLDFLAGS)-s -w $(LDFLAGS)" -o bin/$(EXECUTABLE)-arm
 
 docker_image:
+	rm -rf goeen
+	git clone git@github.com:EENCloud/goeen.git goeen
 	docker build -t $(DEPLOY_ACCOUNT)/$(DEPLOY_IMAGE) -f Dockerfile .
 
 docker_release: docker_image

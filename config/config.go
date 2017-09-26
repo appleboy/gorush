@@ -32,6 +32,7 @@ type SectionCore struct {
 	CertPath        string         `yaml:"cert_path"`
 	KeyPath         string         `yaml:"key_path"`
 	HTTPProxy       string         `yaml:"http_proxy"`
+	DhashServer	string	       `yaml:"dhash_server"`
 	PID             SectionPID     `yaml:"pid"`
 	AutoTLS         SectionAutoTLS `yaml:"auto_tls"`
 }
@@ -147,6 +148,7 @@ func BuildDefaultPushConf() ConfYaml {
 	conf.Core.AutoTLS.Enabled = false
 	conf.Core.AutoTLS.Folder = ".cache"
 	conf.Core.AutoTLS.Host = ""
+	conf.Core.DhashServer = ""
 
 	// Api
 	conf.API.PushURI = "/api/push"

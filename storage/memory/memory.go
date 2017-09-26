@@ -23,7 +23,7 @@ type IosStatus struct {
 	PushError   int64 `json:"push_error"`
 }
 
-// New func implements the storage interface for gorush (https://github.com/appleboy/gorush)
+// New func implements the storage interface for gorush (https://github.com/eencloud/gorush)
 func New() *Storage {
 	return &Storage{
 		stat: &statApp{},

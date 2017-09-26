@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	pb "github.com/appleboy/gorush/rpc/proto"
+	pb "github.com/eencloud/gorush/rpc/proto"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )

@@ -50,6 +50,7 @@ type RequestPush struct {
 type PushNotification struct {
 	// Common
 	Tokens           []string `json:"tokens" binding:"required"`
+	UserIds		 []string `json:"esns" binding:"required"`
 	Platform         int      `json:"platform" binding:"required"`
 	Message          string   `json:"message,omitempty"`
 	Title            string   `json:"title,omitempty"`

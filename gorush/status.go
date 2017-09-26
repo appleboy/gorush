@@ -4,11 +4,11 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/appleboy/gorush/storage/boltdb"
-	"github.com/appleboy/gorush/storage/buntdb"
-	"github.com/appleboy/gorush/storage/leveldb"
-	"github.com/appleboy/gorush/storage/memory"
-	"github.com/appleboy/gorush/storage/redis"
+	"github.com/eencloud/gorush/storage/boltdb"
+	"github.com/eencloud/gorush/storage/buntdb"
+	"github.com/eencloud/gorush/storage/leveldb"
+	"github.com/eencloud/gorush/storage/memory"
+	"github.com/eencloud/gorush/storage/redis"
 	"github.com/gin-gonic/gin"
 	"github.com/thoas/stats"
 )

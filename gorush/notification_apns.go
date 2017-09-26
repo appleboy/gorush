@@ -8,10 +8,76 @@ import (
 	apns "github.com/sideshow/apns2"
 	"github.com/sideshow/apns2/certificate"
 	"github.com/sideshow/apns2/payload"
+	"github.com/eencloud/goeen/dhash"
+	"log"
+	"fmt"
 )
+
+type Watch struct {
+	*dhash.WatchValue
+	values []string
+}
+
+func RemoveToken(token string, esn string) {
+
+	for i := 0; i<5; i++ { // Try up to 5 times
+		ret := NewWatch(esn)
+		if ret == nil {
+			LogError.Error("Could not get watch for %s", esn)
+		}
+
+		err := ret.Get()
+
+		if err == dhash.WatchEmpty {
+			LogError.Error("Attempted to remove token from null list");
+		} else if err != nil {
+			LogError.Error("Dhash Error: ", err.Error())
+			continue;
+		} else {
+			b := ret.values[:0]
+			for i, x := range ret.values {
+				if x == token {
+					ret.values = append(ret.values[:i], ret.values[i+1:]...)
+					break
+				}
+			}
+
+			ret.values = b;
+
+			saveErr := ret.Save()
+
+			if saveErr != nil { // data most likely changed, retry the process
+				LogError.Error("Save Error: ", saveErr.Error());
+				continue
+			} else {
+				log.Printf("Saved string array: %v", ret.values)
+				break;
+			}
+		}
+	}
+}
+
+func NewWatch(esn string) *Watch {
+	w := &Watch{ }
+	str := fmt.Sprintf("com.eencloud.push_tokens.%s.ios", esn)
+	dh, err := dhash.Resolve(str)
+	log.Printf("dhash key: %s", str)
+	if err != nil {
+		LogError.Error("Failed to resolve dhash token", err.Error());
+		return nil
+	}
+
+	w.WatchValue = dhash.NewWatchValue(dh, &w.values, str)
+	return w
+}
 
 // InitAPNSClient use for initialize APNs Client.
 func InitAPNSClient() error {
+	log.Printf("Initializing dhash service at %s", PushConf.Core.DhashServer)
+	dhash.Initialize(PushConf.Core.DhashServer)
+
+
+
 	if PushConf.Ios.Enabled {
 		var err error
 		ext := filepath.Ext(PushConf.Ios.KeyPath)
@@ -127,9 +193,7 @@ func GetIOSNotification(req PushNotification) *apns.Notification {
 		payload.Badge(*req.Badge)
 	}
 
-	if req.MutableContent {
-		payload.MutableContent()
-	}
+	payload.MutableContent()
 
 	if len(req.Sound) > 0 {
 		payload.Sound(req.Sound)
@@ -178,7 +242,9 @@ Retry:
 
 	notification := GetIOSNotification(req)
 
-	for _, token := range req.Tokens {
+	for i :=0; i < len(req.Tokens); i++ {
+		token := req.Tokens[i]
+		userId := req.UserIds[i]
 		notification.DeviceToken = token
 
 		// send ios notification
@@ -206,6 +272,15 @@ Retry:
 			StatStorage.AddIosError(1)
 			newTokens = append(newTokens, token)
 			isError = true
+
+			reasons := []string{apns.ReasonBadDeviceToken, apns.ReasonDeviceTokenNotForTopic, apns.ReasonUnregistered}
+
+			for _, a := range(reasons) {
+				if (a == res.Reason) {
+					go RemoveToken(token, userId)
+					break
+				}
+			}
 			continue
 		}
 

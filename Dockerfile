@@ -1,18 +1,22 @@
-FROM centos:6
-RUN rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
-RUN yum -y install golang git
-ENV GOPATH=/usr/src/app/go
-ENV GOBIN=/usr/src/app/go/bin/
-ENV GODEBUG=netdns=go
+FROM docker.int.eencloud.com/libeen:latest
+ENV PKG_CONFIG_PATH /opt/een/lib/pkgconfig
 
+ENV GOPATH /usr/src/app/go
+ENV LD_LIBRARY_PATH /opt/een/lib
 
-ADD config/config.yml /
+EXPOSE 8808
 
-COPY . /usr/src/app/go/gorush/
-WORKDIR /usr/src/app/go/gorush/
-RUN mkdir /usr/src/app/go/bin/
+RUN apk update && \
+    apk add go=1.8.3-r0 make git linux-headers musl-dev build-base gcc abuild binutils libc-dev
 
-RUN go get && make docker_build
+COPY ./ /usr/src/app/go/src/github.com/eencloud/gorush/
+WORKDIR /usr/src/app/go/src/github.com/eencloud/gorush/
+RUN mkdir /usr/src/app/go/src/github.com/eencloud/gorush/bin/
+RUN mv /usr/src/app/go/src/github.com/eencloud/gorush/goeen /usr/src/app/go/src/github.com/eencloud/
+
+RUN go get
+
+RUN make docker_build
 
 EXPOSE 8088
 RUN chmod +x start.sh
