@@ -268,6 +268,23 @@ func TestHeartbeatHandler(t *testing.T) {
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }
+
+func TestVersionHandler(t *testing.T) {
+	SetVersion("3.0.0")
+	initTest()
+
+	r := gofight.New()
+
+	r.GET("/version").
+		Run(routerEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+			assert.Equal(t, http.StatusOK, r.Code)
+			data := []byte(r.Body.String())
+
+			value, _ := jsonparser.GetString(data, "version")
+
+			assert.Equal(t, "3.0.0", value)
+		})
+}
 func TestDisabledHTTPServer(t *testing.T) {
 	initTest()
 	PushConf.Core.Enabled = false
