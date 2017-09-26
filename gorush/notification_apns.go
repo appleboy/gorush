@@ -11,34 +11,47 @@ import (
 )
 
 // InitAPNSClient use for initialize APNs Client.
-func InitAPNSClient() error {
-	if PushConf.Ios.Enabled {
-		var err error
-		ext := filepath.Ext(PushConf.Ios.KeyPath)
-
-		switch ext {
-		case ".p12":
-			CertificatePemIos, err = certificate.FromP12File(PushConf.Ios.KeyPath, PushConf.Ios.Password)
-		case ".pem":
-			CertificatePemIos, err = certificate.FromPemFile(PushConf.Ios.KeyPath, PushConf.Ios.Password)
-		default:
-			err = errors.New("wrong certificate key extension")
+func InitAPNSClient(key string) (*apns.Client, error) {
+	path, password := "", ""
+	if len(key) > 0 {
+		if _, ok := PushConf.Ios.KeyMap[key]; !ok {
+			LogError.Errorf("Key %s key_map not exist", key)
+			return nil, errors.New("APNS key_map not exists")
 		}
-
-		if err != nil {
-			LogError.Error("Cert Error:", err.Error())
-
-			return err
+		if _, ok := PushConf.Ios.KeyMap[key]; !ok {
+			LogError.Errorf("Key %s key_password not exist", key)
+			return nil, errors.New("APNS key_password not exists")
 		}
-
-		if PushConf.Ios.Production {
-			ApnsClient = apns.NewClient(CertificatePemIos).Production()
-		} else {
-			ApnsClient = apns.NewClient(CertificatePemIos).Development()
-		}
+	} else {
+		path = PushConf.Ios.KeyPath
+		password = PushConf.Ios.Password
+	}
+	if c, ok := ApnsClients[path]; ok {
+		return c, nil
+	}
+	var err error
+	ext := filepath.Ext(path)
+	switch ext {
+	case ".p12":
+		CertificatePemIos, err = certificate.FromP12File(path, password)
+	case ".pem":
+		CertificatePemIos, err = certificate.FromPemFile(path, password)
+	default:
+		err = errors.New("wrong certificate key extension")
 	}
 
-	return nil
+	if err != nil {
+		LogError.Error("Cert Error:", err.Error())
+		return nil, err
+	}
+
+	if PushConf.Ios.Production {
+		ApnsClients[path] = apns.NewClient(CertificatePemIos).Production()
+	} else {
+		ApnsClients[path] = apns.NewClient(CertificatePemIos).Development()
+	}
+
+	return ApnsClients[path], nil
 }
 
 func iosAlertDictionary(payload *payload.Payload, req PushNotification) *payload.Payload {
@@ -162,6 +175,8 @@ func PushToIOS(req PushNotification) bool {
 	}
 
 	var (
+		err        error
+		client     *apns.Client
 		retryCount = 0
 		maxRetry   = PushConf.Ios.MaxRetry
 	)
@@ -181,8 +196,19 @@ Retry:
 	for _, token := range req.Tokens {
 		notification.DeviceToken = token
 
+		if req.ApnsClient != "" {
+			client, err = InitAPNSClient(req.ApnsClient)
+		} else {
+			client, err = InitAPNSClient("")
+		}
+
+		if err != nil {
+			// APNS server error
+			LogError.Error("APNS server error: " + err.Error())
+			return false
+		}
 		// send ios notification
-		res, err := ApnsClient.Push(notification)
+		res, err := client.Push(notification)
 
 		if err != nil {
 			// apns server error

@@ -1,6 +1,7 @@
 package gorush
 
 import (
+	"fmt"
 	"sync"
 )
 
@@ -41,6 +42,11 @@ func queueNotification(req RequestPush) (int, []LogPushEntry) {
 			if !PushConf.Ios.Enabled {
 				continue
 			}
+			if len(notification.ApnsClient) > 0 {
+				if _, ok := PushConf.Ios.KeyMap[notification.ApnsClient]; !ok {
+					continue
+				}
+			}
 		case PlatFormAndroid:
 			if !PushConf.Android.Enabled {
 				continue
@@ -56,6 +62,7 @@ func queueNotification(req RequestPush) (int, []LogPushEntry) {
 			notification.log = &log
 			notification.AddWaitCount()
 		}
+		fmt.Println("-----")
 		QueueNotification <- notification
 		count += len(notification.Tokens)
 	}

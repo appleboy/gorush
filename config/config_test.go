@@ -162,6 +162,7 @@ func (suite *ConfigTestSuite) TestValidateConf() {
 	assert.Equal(suite.T(), "", suite.ConfGorush.Ios.Password)
 	assert.Equal(suite.T(), false, suite.ConfGorush.Ios.Production)
 	assert.Equal(suite.T(), 0, suite.ConfGorush.Ios.MaxRetry)
+	assert.Equal(suite.T(), "cert1.pem", suite.ConfGorush.Ios.KeyMap["cert1"])
 
 	// log
 	assert.Equal(suite.T(), "string", suite.ConfGorush.Log.Format)

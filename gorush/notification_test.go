@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/appleboy/gorush/config"
+	"github.com/sideshow/apns2"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -29,8 +30,6 @@ func TestSenMultipleNotifications(t *testing.T) {
 
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.KeyPath = "../certificate/certificate-valid.pem"
-	err := InitAPNSClient()
-	assert.Nil(t, err)
 
 	PushConf.Android.Enabled = true
 	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
@@ -64,8 +63,6 @@ func TestDisabledAndroidNotifications(t *testing.T) {
 
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.KeyPath = "../certificate/certificate-valid.pem"
-	err := InitAPNSClient()
-	assert.Nil(t, err)
 
 	PushConf.Android.Enabled = false
 	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
@@ -99,8 +96,7 @@ func TestSyncModeForNotifications(t *testing.T) {
 
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.KeyPath = "../certificate/certificate-valid.pem"
-	err := InitAPNSClient()
-	assert.Nil(t, err)
+	ApnsClients = make(map[string]*apns2.Client, len(PushConf.Ios.KeyMap))
 
 	PushConf.Android.Enabled = true
 	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
