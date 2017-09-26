@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"runtime"
 
+	"github.com/pazams/envexpand"
 	"gopkg.in/yaml.v2"
 )
 
@@ -197,12 +198,13 @@ func LoadConfYaml(confPath string) (ConfYaml, error) {
 	var config ConfYaml
 
 	configFile, err := ioutil.ReadFile(confPath)
+	configFileExpanded := envexpand.Expand(configFile)
 
 	if err != nil {
 		return config, err
 	}
 
-	err = yaml.Unmarshal(configFile, &config)
+	err = yaml.Unmarshal(configFileExpanded, &config)
 
 	if err != nil {
 		return config, err

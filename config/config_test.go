@@ -45,6 +45,7 @@ type ConfigTestSuite struct {
 	suite.Suite
 	ConfGorushDefault ConfYaml
 	ConfGorush        ConfYaml
+	ConfGorushEnv     ConfYaml
 }
 
 func (suite *ConfigTestSuite) SetupTest() {
@@ -53,6 +54,14 @@ func (suite *ConfigTestSuite) SetupTest() {
 	suite.ConfGorush, err = LoadConfYaml("config.yml")
 	if err != nil {
 		panic("failed to load config.yml")
+	}
+
+	os.Setenv("GORUSH_ENV_TEST_PORT", "9000")
+	defer os.Unsetenv("GORUSH_ENV_TEST_PORT")
+
+	suite.ConfGorushEnv, err = LoadConfYaml("config_env_test.yml")
+	if err != nil {
+		panic("failed to load config_env_test.yml")
 	}
 }
 
@@ -185,6 +194,14 @@ func (suite *ConfigTestSuite) TestValidateConf() {
 	// gRPC
 	assert.Equal(suite.T(), false, suite.ConfGorush.GRPC.Enabled)
 	assert.Equal(suite.T(), "50051", suite.ConfGorush.GRPC.Port)
+}
+
+func (suite *ConfigTestSuite) TestValidateConfEnvExpansion() {
+	assert.Equal(suite.T(), "9000", suite.ConfGorushEnv.Core.Port)
+}
+
+func (suite *ConfigTestSuite) TestValidateConfMissingEnvExpansion() {
+	assert.Equal(suite.T(), "${GORUSH_ENV_TEST_MISSING}", suite.ConfGorushEnv.Core.Mode)
 }
 
 func TestConfigTestSuite(t *testing.T) {
