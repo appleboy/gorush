@@ -7,12 +7,14 @@ metadata:
     app: gorush
     tier: frontend
 spec:
+  selector:
+    app: gorush
+    tier: frontend
   # if your cluster supports it, uncomment the following to automatically create
   # an external load-balanced IP for the frontend service.
   type: LoadBalancer
   # type: NodePort
   ports:
-  - port: 8088
-  selector:
-    app: gorush
-    tier: frontend
+  - protocol: TCP
+    port: 80
+    targetPort: 8088
