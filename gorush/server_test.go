@@ -258,6 +258,16 @@ func TestMetricsHandler(t *testing.T) {
 		})
 }
 
+func TestHeartbeatHandler(t *testing.T) {
+	initTest()
+
+	r := gofight.New()
+
+	r.GET("/healthz").
+		Run(routerEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+			assert.Equal(t, http.StatusOK, r.Code)
+		})
+}
 func TestDisabledHTTPServer(t *testing.T) {
 	initTest()
 	PushConf.Core.Enabled = false
