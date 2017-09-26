@@ -19,3 +19,9 @@ spec:
         args: ["-c", "config.yml", "-e", "redis", "--redis-addr", "redis:6379"]
         ports:
         - containerPort: 8088
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8088
+          initialDelaySeconds: 3
+          periodSeconds: 3
