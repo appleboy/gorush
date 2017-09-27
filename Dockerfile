@@ -1,4 +1,4 @@
-FROM docker.int.eencloud.com/goeen:latest
+FROM docker.int.eencloud.com/goeen:52
 
 WORKDIR /usr/src/go/src/github.com/eencloud/gorush/
 COPY . .
