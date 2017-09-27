@@ -438,7 +438,7 @@ func TestProvideApnsClient(t *testing.T) {
 	PushConf = config.BuildDefaultPushConf()
 
 	PushConf.Ios.Enabled = true
-	PushConf.Ios.KeyPath = "../certificate/certificate-valid.pem"
+	// PushConf.Ios.KeyPath = "../certificate/certificate-valid.pem"
 	ApnsClients = make(map[string]*apns2.Client, len(PushConf.Ios.KeyMap))
 	PushConf.Ios.KeyMap = map[string]string{"cert1": "../certificate/certificate-valid.pem"}
 	PushConf.Ios.KeyPass = map[string]string{"cert1": ""}
@@ -453,7 +453,7 @@ func TestProvideApnsClient(t *testing.T) {
 		ApnsClient: "cert1",
 	}
 
-	// send fail
+	// send success
 	isError := PushToIOS(req)
 	assert.True(t, isError)
 }

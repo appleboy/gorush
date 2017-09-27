@@ -22,10 +22,13 @@ func InitAPNSClient(key string) (*apns.Client, error) {
 			LogError.Errorf("Key %s key_password not exist", key)
 			return nil, errors.New("APNS key_password not exists")
 		}
+		path = PushConf.Ios.KeyMap[key]
+		password = PushConf.Ios.KeyMap[key]
 	} else {
 		path = PushConf.Ios.KeyPath
 		password = PushConf.Ios.Password
 	}
+
 	if c, ok := ApnsClients[path]; ok {
 		return c, nil
 	}
