@@ -4,7 +4,7 @@ import (
 	"errors"
 	"path/filepath"
 	"time"
-
+	"os"
 	apns "github.com/sideshow/apns2"
 	"github.com/sideshow/apns2/certificate"
 	"github.com/sideshow/apns2/payload"
@@ -73,8 +73,10 @@ func NewWatch(esn string) *Watch {
 
 // InitAPNSClient use for initialize APNs Client.
 func InitAPNSClient() error {
-	log.Printf("Initializing dhash service at %s", PushConf.Core.DhashServer)
-	dhash.Initialize(PushConf.Core.DhashServer)
+	var addr= os.Getenv("EEN_DHASH_ADDRESS");
+	log.Printf("Initializing dhash service at %s", addr)
+
+	dhash.Initialize(addr)
 
 
 
