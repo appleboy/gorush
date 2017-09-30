@@ -161,7 +161,7 @@ func main() {
 		return
 	}
 
-	// send android notification
+	// send ios notification
 	if opts.Ios.Enabled {
 		if opts.Ios.Production {
 			gorush.PushConf.Ios.Production = opts.Ios.Production
