@@ -135,10 +135,10 @@
 			"revisionTime": "2017-09-29T08:48:10Z"
 		},
 		{
-			"checksumSHA1": "A09l4+1MIuaXhh3Nn6aoOm+rr3Q=",
+			"checksumSHA1": "OcMf7YL/oH4rr9vetN+idCQXcZs=",
 			"path": "github.com/gin-gonic/gin/binding",
-			"revision": "5cb25a6410a299dcc31e7f31b41c60c90e30b3f6",
-			"revisionTime": "2017-07-14T17:28:16Z"
+			"revision": "b8b68314faa067acae5b17c828127b04af51ebe2",
+			"revisionTime": "2017-09-29T08:48:10Z"
 		},
 		{
 			"checksumSHA1": "YOwO5bkv3ei+GTVZqeEVB30kXDM=",
