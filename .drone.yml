@@ -67,9 +67,6 @@ pipeline:
   release:
     image: appleboy/golang-testing:1.9
     pull: true
-    environment:
-      GOPATH: /srv/app
-      TAGS: netgo
     commands:
       - make release
     when:
