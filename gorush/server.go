@@ -33,7 +33,7 @@ func rootHandler(c *gin.Context) {
 }
 
 func heartbeatHandler(c *gin.Context) {
-	c.AbortWithStatus(200)
+	c.AbortWithStatus(http.StatusOK)
 }
 
 func versionHandler(c *gin.Context) {
