@@ -131,13 +131,12 @@ pipeline:
       branch: [ refs/tags/* ]
       local: false
 
-  facebook:
-    image: appleboy/drone-facebook
-    secrets: [ fb_page_token, fb_verify_token ]
+  discord:
+    image: appleboy/drone-discord
     pull: true
-    to: 1234973386524610
+    secrets: [ discord_webhook_id, discord_webhook_token ]
     when:
-      status: [ changed, failure ]
+      status: [ success, failure ]
 
 services:
   redis:
