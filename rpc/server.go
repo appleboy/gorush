@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	port = ":50051"
+	port = ":9000"
 )
 
 // server is used to implement gorush grpc server.
