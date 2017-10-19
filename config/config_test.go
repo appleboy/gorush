@@ -119,7 +119,7 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 
 	// gRPC
 	assert.Equal(suite.T(), false, suite.ConfGorushDefault.GRPC.Enabled)
-	assert.Equal(suite.T(), "50051", suite.ConfGorushDefault.GRPC.Port)
+	assert.Equal(suite.T(), "9000", suite.ConfGorushDefault.GRPC.Port)
 }
 
 func (suite *ConfigTestSuite) TestValidateConf() {
@@ -184,7 +184,7 @@ func (suite *ConfigTestSuite) TestValidateConf() {
 
 	// gRPC
 	assert.Equal(suite.T(), false, suite.ConfGorush.GRPC.Enabled)
-	assert.Equal(suite.T(), "50051", suite.ConfGorush.GRPC.Port)
+	assert.Equal(suite.T(), "9000", suite.ConfGorush.GRPC.Port)
 }
 
 func TestConfigTestSuite(t *testing.T) {

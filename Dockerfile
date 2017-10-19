@@ -10,6 +10,6 @@ LABEL maintainer="Bo-Yi Wu <appleboy.tw@gmail.com>"
 ADD config/config.yml /
 ADD bin/gorush /
 
-EXPOSE 8088
+EXPOSE 8088 9000
 ENTRYPOINT ["/gorush"]
 CMD ["-c", "config.yml"]
