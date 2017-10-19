@@ -143,7 +143,7 @@ Memory average usage: **28Mb** (the total bytes of memory obtained from the OS.)
 
 ![memory usage](screenshot/memory.png)
 
-Test Command:
+Test Command (We use [bat](https://github.com/astaxie/bat) as default cli tool.):
 
 ```sh
 $ for i in {1..9999999}; do bat -b.N=1000 -b.C=100 POST localhost:8088/api/push notifications:=@notification.json; sleep 1;  done
