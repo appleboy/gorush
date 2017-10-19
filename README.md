@@ -160,7 +160,7 @@ The pre-compiled binaries can be downloaded from [release page](https://github.c
 With `Go` installed
 
 ```
-$ go get -u -v github.com/appleboy/gorush
+$ go get -u -v github.com/appleboy/gorush/cmd
 ```
 
 On linux
