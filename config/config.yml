@@ -22,7 +22,7 @@ core:
 
 grpc:
   enabled: false # enabale gRPC server
-  port: 50051
+  port: 9000
 
 api:
   push_uri: "/api/push"

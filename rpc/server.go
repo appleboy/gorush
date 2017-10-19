@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	port = ":50051"
+	port = ":9000"
 )
 
 // server is used to implement gorush grpc server.
@@ -46,7 +46,7 @@ func RunGRPCServer() error {
 
 	lis, err := net.Listen("tcp", ":"+gorush.PushConf.GRPC.Port)
 	if err != nil {
-		gorush.LogError.Error("failed to listen: %v", err)
+		gorush.LogError.Errorf("failed to listen: %v", err)
 		return err
 	}
 	s := grpc.NewServer()
@@ -55,7 +55,7 @@ func RunGRPCServer() error {
 	reflection.Register(s)
 	gorush.LogAccess.Debug("gRPC server is running on " + gorush.PushConf.GRPC.Port + " port.")
 	if err := s.Serve(lis); err != nil {
-		gorush.LogError.Error("failed to serve: %v", err)
+		gorush.LogError.Errorf("failed to serve: %v", err)
 		return err
 	}
 

@@ -188,7 +188,7 @@ func BuildDefaultPushConf() ConfYaml {
 
 	// gRPC Server
 	conf.GRPC.Enabled = false
-	conf.GRPC.Port = "50051"
+	conf.GRPC.Port = "9000"
 	return conf
 }
 
