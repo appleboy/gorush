@@ -15,8 +15,6 @@ spec:
       - image: appleboy/gorush
         name: gorush
         imagePullPolicy: Always
-        command: ["/gorush"]
-        args: ["-c", "config.yml", "-e", "redis", "--redis-addr", "redis:6379"]
         ports:
         - containerPort: 8088
         livenessProbe:
@@ -25,3 +23,14 @@ spec:
             port: 8088
           initialDelaySeconds: 3
           periodSeconds: 3
+        env:
+        - name: GORUSH_STAT_ENGINE
+          valueFrom:
+            configMapKeyRef:
+              name: gorush-config
+              key: stat.engine
+        - name: GORUSH_STAT_REDIS_ADDR
+          valueFrom:
+            configMapKeyRef:
+              name: gorush-config
+              key: stat.redis.host
