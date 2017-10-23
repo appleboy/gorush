@@ -8,7 +8,7 @@ import (
 )
 
 func TestRedisServerError(t *testing.T) {
-	config := c.BuildDefaultPushConf()
+	config, _ := c.LoadConf("")
 	config.Stat.Redis.Addr = "redis:6370"
 
 	redis := New(config)
@@ -20,7 +20,7 @@ func TestRedisServerError(t *testing.T) {
 func TestRedisEngine(t *testing.T) {
 	var val int64
 
-	config := c.BuildDefaultPushConf()
+	config, _ := c.LoadConf("")
 	config.Stat.Redis.Addr = "redis:6379"
 
 	redis := New(config)

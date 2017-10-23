@@ -11,7 +11,7 @@ import (
 func TestBuntDBEngine(t *testing.T) {
 	var val int64
 
-	config := c.BuildDefaultPushConf()
+	config, _ := c.LoadConf("")
 
 	if _, err := os.Stat(config.Stat.BuntDB.Path); os.IsNotExist(err) {
 		err := os.RemoveAll(config.Stat.BuntDB.Path)

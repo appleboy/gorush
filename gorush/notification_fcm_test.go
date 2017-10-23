@@ -11,7 +11,7 @@ import (
 )
 
 func init() {
-	PushConf = config.BuildDefaultPushConf()
+	PushConf, _ = config.LoadConf("")
 	if err := InitLog(); err != nil {
 		log.Fatal(err)
 	}
@@ -24,7 +24,7 @@ func init() {
 }
 
 func TestMissingAndroidAPIKey(t *testing.T) {
-	PushConf = config.BuildDefaultPushConf()
+	PushConf, _ = config.LoadConf("")
 
 	PushConf.Android.Enabled = true
 	PushConf.Android.APIKey = ""
@@ -43,7 +43,7 @@ func TestMissingKeyForInitFCMClient(t *testing.T) {
 }
 
 func TestPushToAndroidWrongToken(t *testing.T) {
-	PushConf = config.BuildDefaultPushConf()
+	PushConf, _ = config.LoadConf("")
 
 	PushConf.Android.Enabled = true
 	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
@@ -60,7 +60,7 @@ func TestPushToAndroidWrongToken(t *testing.T) {
 }
 
 func TestPushToAndroidRightTokenForJSONLog(t *testing.T) {
-	PushConf = config.BuildDefaultPushConf()
+	PushConf, _ = config.LoadConf("")
 
 	PushConf.Android.Enabled = true
 	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
@@ -80,7 +80,7 @@ func TestPushToAndroidRightTokenForJSONLog(t *testing.T) {
 }
 
 func TestPushToAndroidRightTokenForStringLog(t *testing.T) {
-	PushConf = config.BuildDefaultPushConf()
+	PushConf, _ = config.LoadConf("")
 
 	PushConf.Android.Enabled = true
 	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
@@ -98,7 +98,7 @@ func TestPushToAndroidRightTokenForStringLog(t *testing.T) {
 }
 
 func TestOverwriteAndroidAPIKey(t *testing.T) {
-	PushConf = config.BuildDefaultPushConf()
+	PushConf, _ = config.LoadConf("")
 
 	PushConf.Android.Enabled = true
 	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
@@ -177,7 +177,7 @@ func TestFCMMessage(t *testing.T) {
 }
 
 func TestCheckAndroidMessage(t *testing.T) {
-	PushConf = config.BuildDefaultPushConf()
+	PushConf, _ = config.LoadConf("")
 
 	PushConf.Android.Enabled = true
 	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
