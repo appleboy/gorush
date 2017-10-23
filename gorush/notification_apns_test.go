@@ -15,6 +15,7 @@ import (
 
 func TestDisabledAndroidIosConf(t *testing.T) {
 	PushConf, _ = config.LoadConf("")
+	PushConf.Android.Enabled = false
 
 	err := CheckPushConf()
 
