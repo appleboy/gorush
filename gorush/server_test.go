@@ -17,7 +17,7 @@ import (
 var goVersion = runtime.Version()
 
 func initTest() {
-	PushConf = config.BuildDefaultPushConf()
+	PushConf, _ = config.LoadConf("")
 	PushConf.Core.Mode = "test"
 }
 

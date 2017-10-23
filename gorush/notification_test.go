@@ -9,7 +9,7 @@ import (
 )
 
 func TestCorrectConf(t *testing.T) {
-	PushConf = config.BuildDefaultPushConf()
+	PushConf, _ = config.LoadConf("")
 
 	PushConf.Android.Enabled = true
 	PushConf.Android.APIKey = "xxxxx"
@@ -23,7 +23,7 @@ func TestCorrectConf(t *testing.T) {
 }
 
 func TestSenMultipleNotifications(t *testing.T) {
-	PushConf = config.BuildDefaultPushConf()
+	PushConf, _ = config.LoadConf("")
 
 	InitWorkers(int64(2), 2)
 
@@ -60,7 +60,7 @@ func TestSenMultipleNotifications(t *testing.T) {
 }
 
 func TestDisabledAndroidNotifications(t *testing.T) {
-	PushConf = config.BuildDefaultPushConf()
+	PushConf, _ = config.LoadConf("")
 
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.KeyPath = "../certificate/certificate-valid.pem"
@@ -95,7 +95,7 @@ func TestDisabledAndroidNotifications(t *testing.T) {
 }
 
 func TestSyncModeForNotifications(t *testing.T) {
-	PushConf = config.BuildDefaultPushConf()
+	PushConf, _ = config.LoadConf("")
 
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.KeyPath = "../certificate/certificate-valid.pem"

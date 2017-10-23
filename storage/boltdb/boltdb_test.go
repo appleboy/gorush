@@ -10,7 +10,7 @@ import (
 func TestBoltDBEngine(t *testing.T) {
 	var val int64
 
-	config := c.BuildDefaultPushConf()
+	config, _ := c.LoadConf("")
 
 	boltDB := New(config)
 	err := boltDB.Init()

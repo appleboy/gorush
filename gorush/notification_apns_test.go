@@ -14,7 +14,8 @@ import (
 )
 
 func TestDisabledAndroidIosConf(t *testing.T) {
-	PushConf = config.BuildDefaultPushConf()
+	PushConf, _ = config.LoadConf("")
+	PushConf.Android.Enabled = false
 
 	err := CheckPushConf()
 
@@ -23,7 +24,7 @@ func TestDisabledAndroidIosConf(t *testing.T) {
 }
 
 func TestMissingIOSCertificate(t *testing.T) {
-	PushConf = config.BuildDefaultPushConf()
+	PushConf, _ = config.LoadConf("")
 
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.KeyPath = ""
@@ -345,7 +346,7 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 }
 
 func TestDisabledIosNotifications(t *testing.T) {
-	PushConf = config.BuildDefaultPushConf()
+	PushConf, _ = config.LoadConf("")
 
 	PushConf.Ios.Enabled = false
 	PushConf.Ios.KeyPath = "../certificate/certificate-valid.pem"
@@ -380,7 +381,7 @@ func TestDisabledIosNotifications(t *testing.T) {
 }
 
 func TestWrongIosCertificateExt(t *testing.T) {
-	PushConf = config.BuildDefaultPushConf()
+	PushConf, _ = config.LoadConf("")
 
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.KeyPath = "test"
@@ -391,7 +392,7 @@ func TestWrongIosCertificateExt(t *testing.T) {
 }
 
 func TestAPNSClientDevHost(t *testing.T) {
-	PushConf = config.BuildDefaultPushConf()
+	PushConf, _ = config.LoadConf("")
 
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.KeyPath = "../certificate/certificate-valid.p12"
@@ -401,7 +402,7 @@ func TestAPNSClientDevHost(t *testing.T) {
 }
 
 func TestAPNSClientProdHost(t *testing.T) {
-	PushConf = config.BuildDefaultPushConf()
+	PushConf, _ = config.LoadConf("")
 
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.Production = true
@@ -412,7 +413,7 @@ func TestAPNSClientProdHost(t *testing.T) {
 }
 
 func TestPushToIOS(t *testing.T) {
-	PushConf = config.BuildDefaultPushConf()
+	PushConf, _ = config.LoadConf("")
 
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.KeyPath = "../certificate/certificate-valid.pem"
