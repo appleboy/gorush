@@ -255,6 +255,9 @@ $ gorush -ios -m="your message" -i="your certificate path" -t="device token" -pr
 Please make sure your [config.yml](config/config.yml) exist. Default port is `8088`.
 
 ```bash
+# for default config
+$ gorush
+# for custom config file
 $ gorush -c config.yml
 ```
 
@@ -753,10 +756,11 @@ $ http -v --verify=no --json GET http://your.docker.host/api/stat/go
 
 ### Quick Start
 
-Create name space `gorush`:
+Create name space as `gorush` and configuration map:
 
 ```sh
 $ kubectl create -f k8s/gorush-namespace.yaml
+$ kubectl create -f k8s/gorush-configmap.yaml
 ```
 
 Create redis service:
