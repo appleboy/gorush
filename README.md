@@ -64,7 +64,7 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 * Support install TLS certificates from [Let's Encrypt](https://letsencrypt.org/) automatically.
 * Support send notification through [RPC](https://en.wikipedia.org/wiki/Remote_procedure_call) protocol, we use [gRPC](https://grpc.io/) as default framework.
 
-See the [YAML config example](config/config.yml):
+See the default [YAML config example](config/config.yml):
 
 [embedmd]:# (config/config.yml yaml)
 ```yaml

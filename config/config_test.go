@@ -1,8 +1,6 @@
 package config
 
 import (
-	"io/ioutil"
-	"log"
 	"os"
 	"runtime"
 	"testing"
@@ -14,29 +12,7 @@ import (
 // Test file is missing
 func TestMissingFile(t *testing.T) {
 	filename := "test"
-	_, err := LoadConfYaml(filename)
-
-	assert.NotNil(t, err)
-}
-
-// Test wrong json format
-func TestWrongYAMLormat(t *testing.T) {
-	content := []byte(`Wrong format`)
-
-	filename := "tempfile"
-
-	if err := ioutil.WriteFile(filename, content, 0644); err != nil {
-		log.Fatalf("WriteFile %s: %v", filename, err)
-	}
-
-	// clean up
-	defer func() {
-		err := os.Remove(filename)
-		assert.Nil(t, err)
-	}()
-
-	// parse JSON format error
-	_, err := LoadConfYaml(filename)
+	_, err := LoadConf(filename)
 
 	assert.NotNil(t, err)
 }
@@ -48,11 +24,14 @@ type ConfigTestSuite struct {
 }
 
 func (suite *ConfigTestSuite) SetupTest() {
-	suite.ConfGorushDefault = BuildDefaultPushConf()
 	var err error
-	suite.ConfGorush, err = LoadConfYaml("config.yml")
+	suite.ConfGorushDefault, err = LoadConf("")
 	if err != nil {
-		panic("failed to load config.yml")
+		panic("failed to load default config.yml")
+	}
+	suite.ConfGorush, err = LoadConf("config.yml")
+	if err != nil {
+		panic("failed to load config.yml from file")
 	}
 }
 
@@ -73,7 +52,7 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 	// Pid
 	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Core.PID.Enabled)
 	assert.Equal(suite.T(), "gorush.pid", suite.ConfGorushDefault.Core.PID.Path)
-	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Core.PID.Override)
+	assert.Equal(suite.T(), true, suite.ConfGorushDefault.Core.PID.Override)
 	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Core.AutoTLS.Enabled)
 	assert.Equal(suite.T(), ".cache", suite.ConfGorushDefault.Core.AutoTLS.Folder)
 	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Core.AutoTLS.Host)
@@ -87,8 +66,8 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 	assert.Equal(suite.T(), "/metrics", suite.ConfGorushDefault.API.MetricURI)
 
 	// Android
-	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Android.Enabled)
-	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Android.APIKey)
+	assert.Equal(suite.T(), true, suite.ConfGorushDefault.Android.Enabled)
+	assert.Equal(suite.T(), "YOUR_API_KEY", suite.ConfGorushDefault.Android.APIKey)
 	assert.Equal(suite.T(), 0, suite.ConfGorushDefault.Android.MaxRetry)
 
 	// iOS
@@ -189,4 +168,17 @@ func (suite *ConfigTestSuite) TestValidateConf() {
 
 func TestConfigTestSuite(t *testing.T) {
 	suite.Run(t, new(ConfigTestSuite))
+}
+
+func TestLoadConfigFromEnv(t *testing.T) {
+	os.Setenv("GORUSH_CORE_PORT", "9001")
+	os.Setenv("GORUSH_GRPC_ENABLED", "true")
+	os.Setenv("GORUSH_CORE_MAX_NOTIFICATION", "200")
+	ConfGorush, err := LoadConf("config.yml")
+	if err != nil {
+		panic("failed to load config.yml from file")
+	}
+	assert.Equal(t, "9001", ConfGorush.Core.Port)
+	assert.Equal(t, int64(200), ConfGorush.Core.MaxNotification)
+	assert.True(t, ConfGorush.GRPC.Enabled)
 }

@@ -62,10 +62,6 @@ func main() {
 
 	gorush.SetVersion(Version)
 
-	if len(os.Args) < 2 {
-		usage()
-	}
-
 	// Show version and exit
 	if showVersion {
 		gorush.PrintGoRushVersion()
@@ -75,17 +71,11 @@ func main() {
 	var err error
 
 	// set default parameters.
-	gorush.PushConf = config.BuildDefaultPushConf()
+	gorush.PushConf, err = config.LoadConf(configFile)
+	if err != nil {
+		log.Printf("Load yaml config file error: '%v'", err)
 
-	// load user define config.
-	if configFile != "" {
-		gorush.PushConf, err = config.LoadConfYaml(configFile)
-
-		if err != nil {
-			log.Printf("Load yaml config file error: '%v'", err)
-
-			return
-		}
+		return
 	}
 
 	if opts.Ios.KeyPath != "" {
@@ -117,7 +107,7 @@ func main() {
 	}
 
 	if err = gorush.InitLog(); err != nil {
-		log.Println(err)
+		log.Fatalf("Can't load log module, error: %v", err)
 		return
 	}
 
@@ -126,13 +116,13 @@ func main() {
 		err = gorush.SetProxy(proxy)
 
 		if err != nil {
-			gorush.LogError.Fatal("Set Proxy error: ", err)
+			gorush.LogError.Fatalf("Set Proxy error: %v", err)
 		}
 	} else if gorush.PushConf.Core.HTTPProxy != "" {
 		err = gorush.SetProxy(gorush.PushConf.Core.HTTPProxy)
 
 		if err != nil {
-			gorush.LogError.Fatal("Set Proxy error: ", err)
+			gorush.LogError.Fatalf("Set Proxy error: %v", err)
 		}
 	}
 
