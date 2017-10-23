@@ -225,7 +225,7 @@ func LoadConf(confPath string) (ConfYaml, error) {
 		if err := viper.ReadInConfig(); err == nil {
 			fmt.Println("Using config file:", viper.ConfigFileUsed())
 		} else {
-			// load defualt config
+			// load default config
 			viper.ReadConfig(bytes.NewBuffer(defaultConf))
 		}
 	}
