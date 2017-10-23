@@ -7,9 +7,7 @@ LABEL org.label-schema.vendor="Bo-Yi Wu"
 LABEL org.label-schema.schema-version="1.0"
 LABEL maintainer="Bo-Yi Wu <appleboy.tw@gmail.com>"
 
-ADD config/config.yml /
 ADD bin/gorush /
 
 EXPOSE 8088 9000
 ENTRYPOINT ["/gorush"]
-CMD ["-c", "config.yml"]
