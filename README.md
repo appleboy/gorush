@@ -194,23 +194,26 @@ $ wget https://github.com/appleboy/gorush/releases/download/v1.9.0/gorush-v1.9.0
 Usage: gorush [options]
 
 Server Options:
+    -A, --address <address>          Address to bind (default: any)
     -p, --port <port>                Use port for clients (default: 8088)
-    -c, --config <file>              Configuration file
+    -c, --config <file>              Configuration file path
     -m, --message <message>          Notification message
     -t, --token <token>              Notification token
+    -e, --engine <engine>            Storage engine (memory, redis ...)
     --title <title>                  Notification title
-    --proxy <proxy>                  Proxy URL (only for FCM)
+    --proxy <proxy>                  Proxy URL (only for GCM)
     --pid <pid path>                 Process identifier path
+    --redis-addr <redis addr>        Redis addr (default: localhost:6379)
 iOS Options:
     -i, --key <file>                 certificate key file path
     -P, --password <password>        certificate key password
-    --topic <topic>                  iOS topic
     --ios                            enabled iOS (default: false)
     --production                     iOS production mode (default: false)
 Android Options:
     -k, --apikey <api_key>           Android API Key
     --android                        enabled android (default: false)
 Common Options:
+    --topic <topic>                  iOS or Android topic message
     -h, --help                       Show this message
     -v, --version                    Show version
 ```
@@ -220,13 +223,22 @@ Common Options:
 Send single notification with the following command.
 
 ```bash
-$ gorush -android -m="your message" -k="API Key" -t="Device token"
+$ gorush -android -m "your message" -k "API Key" -t "Device token"
+```
+
+Send messages to topics.
+
+```bash
+$  gorush --android --topic "/topics/foo-bar" \
+  -m "This is a Firebase Cloud Messaging Topic Message" \
+  -k your_api_key
 ```
 
 * `-m`: Notification message.
 * `-k`: [Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging) api key
 * `-t`: Device token.
 * `--title`: Notification title.
+* `--topic`: Send messages to topics. note: don't add device token.
 * `--proxy`: Set http proxy url. (only working for FCM)
 
 ### Send iOS notification
@@ -234,7 +246,8 @@ $ gorush -android -m="your message" -k="API Key" -t="Device token"
 Send single notification with the following command.
 
 ```bash
-$ gorush -ios -m="your message" -i="your certificate path" -t="device token" -topic="apns topic"
+$ gorush -ios -m "your message" -i "your certificate path" \
+  -t "device token" --topic "apns topic"
 ```
 
 * `-m`: Notification message.
@@ -247,7 +260,9 @@ $ gorush -ios -m="your message" -i="your certificate path" -t="device token" -to
 The default endpoint is APNs development. Please add `-production` flag for APNs production push endpoint.
 
 ```bash
-$ gorush -ios -m="your message" -i="your certificate path" -t="device token" -production
+$ gorush -ios -m "your message" -i "your certificate path" \
+  -t "device token" \
+  -production
 ```
 
 ## Run gorush web server
@@ -438,6 +453,7 @@ Request body must has a notifications array. The following is a parameter table 
 | sound                   | string       | sound type                                                                                        | -        |                                                               |
 | data                    | string array | extensible partition                                                                              | -        |                                                               |
 | retry                   | int          | retry send notification if fail response from server. Value must be small than `max_retry` field. | -        |                                                               |
+| topic                   | string       | send messages to topics                                                                           |          |                                                               |
 | api_key                 | string       | Android api key                                                                                   | -        | only Android                                                  |
 | to                      | string       | The value must be a registration token, notification key, or topic.                               | -        | only Android                                                  |
 | collapse_key            | string       | a key for collapsing notifications                                                                | -        | only Android                                                  |
@@ -448,12 +464,10 @@ Request body must has a notifications array. The following is a parameter table 
 | notification            | string array | payload of a FCM message                                                                          | -        | only Android. See the [detail](#android-notification-payload) |
 | expiration              | int          | expiration for notification                                                                       | -        | only iOS                                                      |
 | apns_id                 | string       | A canonical UUID that identifies the notification                                                 | -        | only iOS                                                      |
-| topic                   | string       | topic of the remote notification                                                                  | -        | only iOS                                                      |
 | badge                   | int          | badge count                                                                                       | -        | only iOS                                                      |
 | category                | string       | the UIMutableUserNotificationCategory object                                                      | -        | only iOS                                                      |
 | alert                   | string array | payload of a iOS message                                                                          | -        | only iOS. See the [detail](#ios-alert-payload)                |
-| mutable_content       | bool         | enable Notification Service app extension.                                                            | -        | only iOS(10.0+).
-
+| mutable_content         | bool         | enable Notification Service app extension.                                                        | -        | only iOS(10.0+).                                              |
 ### iOS alert payload
 
 | name           | type             | description                                                                                      | required | note |
@@ -491,6 +505,7 @@ See more detail about [Firebase Cloud Messaging HTTP Protocol reference](https:/
 Send normal notification.
 
 ```json
+{
   "notifications": [
     {
       "tokens": ["token_a", "token_b"],
@@ -498,11 +513,13 @@ Send normal notification.
       "message": "Hello World iOS!"
     }
   ]
+}
 ```
 
 The following payload asks the system to display an alert with a Close button and a single action button.The title and body keys provide the contents of the alert. The “PLAY” string is used to retrieve a localized string from the appropriate Localizable.strings file of the app. The resulting string is used by the alert as the title of an action button. This payload also asks the system to badge the app’s icon with the number 5.
 
 ```json
+{
   "notifications": [
     {
       "tokens": ["token_a", "token_b"],
@@ -515,11 +532,13 @@ The following payload asks the system to display an alert with a Close button an
       }
     }
   ]
+}
 ```
 
 The following payload specifies that the device should display an alert message, plays a sound, and badges the app’s icon.
 
 ```json
+{
   "notifications": [
     {
       "tokens": ["token_a", "token_b"],
@@ -529,11 +548,13 @@ The following payload specifies that the device should display an alert message,
       "sound": "bingbong.aiff"
     }
   ]
+}
 ```
 
 Add other fields which user defined via `data` field.
 
 ```json
+{
   "notifications": [
     {
       "tokens": ["token_a", "token_b"],
@@ -545,6 +566,7 @@ Add other fields which user defined via `data` field.
       }
     }
   ]
+}
 ```
 
 ### Android Example
@@ -552,6 +574,7 @@ Add other fields which user defined via `data` field.
 Send normal notification.
 
 ```json
+{
   "notifications": [
     {
       "tokens": ["token_a", "token_b"],
@@ -560,11 +583,13 @@ Send normal notification.
       "title": "You got message"
     }
   ]
+}
 ```
 
 Add `notification` payload.
 
 ```json
+{
   "notifications": [
     {
       "tokens": ["token_a", "token_b"],
@@ -577,11 +602,13 @@ Add `notification` payload.
       }
     }
   ]
+}
 ```
 
 Add other fields which user defined via `data` field.
 
 ```json
+{
   "notifications": [
     {
       "tokens": ["token_a", "token_b"],
@@ -595,6 +622,21 @@ Add other fields which user defined via `data` field.
       }
     }
   ]
+}
+```
+
+Send messages to topics
+
+```json
+{
+  "notifications": [
+    {
+      "to": "/topics/foo-bar",
+      "platform": 2,
+      "message": "This is a Firebase Cloud Messaging Topic Message"
+    }
+  ]
+}
 ```
 
 ### Response body
