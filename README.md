@@ -229,7 +229,7 @@ $ gorush -android -m "your message" -k "API Key" -t "Device token"
 Send messages to topics.
 
 ```bash
-$  gorush --android --topic "/topics/foo-bar" \
+$ gorush --android --topic "/topics/foo-bar" \
   -m "This is a Firebase Cloud Messaging Topic Message" \
   -k your_api_key
 ```
