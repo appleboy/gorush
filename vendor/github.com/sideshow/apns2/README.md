@@ -1,5 +1,7 @@
 # APNS/2
 
+NOTE: This is an experimental branch for the purpose of testing the new token based authentication
+
 APNS/2 is a go package designed for simple, flexible and fast Apple Push Notifications on iOS, OSX and Safari using the new HTTP/2 Push provider API.
 
 [![Build Status](https://travis-ci.org/sideshow/apns2.svg?branch=master)](https://travis-ci.org/sideshow/apns2)  [![Coverage Status](https://coveralls.io/repos/sideshow/apns2/badge.svg?branch=master&service=github)](https://coveralls.io/github/sideshow/apns2?branch=master)  [![GoDoc](https://godoc.org/github.com/sideshow/apns2?status.svg)](https://godoc.org/github.com/sideshow/apns2)
@@ -7,27 +9,27 @@ APNS/2 is a go package designed for simple, flexible and fast Apple Push Notific
 ## Features
 
 - Uses new Apple APNs HTTP/2 connection
+- Fast - See [notes on speed](https://github.com/sideshow/apns2/wiki/APNS-HTTP-2-Push-Speed)
 - Works with go 1.6 and later
+- Supports new Apple Token Based Authentication (JWT)
 - Supports new iOS 10 features such as Collapse IDs, Subtitles and Mutable Notifications
 - Supports persistent connections to APNs
 - Supports VoIP/PushKit notifications (iOS 8 and later)
-- Fast, modular & easy to use
+- Modular & easy to use
 - Tested and working in APNs production environment
 
 ## Install
 
 - Make sure you have [Go](https://golang.org/doc/install) installed and have set your [GOPATH](https://golang.org/doc/code.html#GOPATH).
-- Download and install the dependencies:
-
-```sh
-go get -u golang.org/x/net/http2
-go get -u golang.org/x/crypto/pkcs12
-```
-
 - Install apns2:
 
 ```sh
 go get -u github.com/sideshow/apns2
+```
+
+If you are running the test suite you will also need to install testify:
+```sh
+go get -u github.com/stretchr/testify
 ```
 
 ## Example
@@ -65,6 +67,34 @@ func main() {
   fmt.Printf("%v %v %v\n", res.StatusCode, res.ApnsID, res.Reason)
 }
 ```
+
+## JWT Token Example
+
+Instead of using a `.p12` or `.pem` certificate as above, you can optionally use
+APNs JWT _Provider Authentication Tokens_. First you will need a signing key (`.p8` file), Key ID and Team ID [from Apple](http://help.apple.com/xcode/mac/current/#/dev54d690a66). Once you have these details, you can create a new client:
+
+```go
+authKey, err := token.AuthKeyFromFile("../AuthKey_XXX.p8")
+if err != nil {
+  log.Fatal("token error:", err)
+}
+
+token := &token.Token{
+  AuthKey: authKey,
+  // KeyID from developer account (Certificates, Identifiers & Profiles -> Keys)
+  KeyID:   "ABC123DEFG",
+  // TeamID from developer account (View Account -> Membership)
+  TeamID:  "DEF123GHIJ",
+}
+...
+
+client := apns2.NewTokenClient(token)
+res, err := client.Push(notification)
+```
+
+- You can use one APNs signing key to authenticate tokens for multiple apps.
+- A signing key works for both the development and production environments.
+- A signing key doesn’t expire but can be revoked.
 
 ## Notification
 
@@ -137,6 +167,16 @@ ctx, cancel = context.WithTimeout(context.Background(), 10 * time.Second)
 res, err := client.PushWithContext(ctx, notification)
 defer cancel()
 ```
+
+## Speed & Performance
+
+Also see the wiki page on [APNS HTTP 2 Push Speed](https://github.com/sideshow/apns2/wiki/APNS-HTTP-2-Push-Speed).
+
+For best performance, you should hold on to an `apns2.Client` instance and not re-create it every push. The underlying TLS connection itself can take a few seconds to connect and negotiate, so if you are setting up an `apns2.Client` and tearing it down every push, then this will greatly affect performance. (Apple suggest keeping the connection open all the time).
+
+You should also limit the amount of `apns2.Client` instances. The underlying transport has a http connection pool itself, so a single client instance will be enough for most users (One instance can potentially do 4,000+ pushes per second). If you need more than this then one instance per CPU core is a good starting point.
+
+Speed is greatly affected by the location of your server and the quality of your network connection. If you're just testing locally, behind a proxy or if your server is outside USA then you're not going to get great performance. With a good server located in AWS, you should be able to get [decent throughput](https://github.com/sideshow/apns2/wiki/APNS-HTTP-2-Push-Speed).
 
 ## Command line tool
 

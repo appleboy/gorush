@@ -69,6 +69,12 @@
 			"revisionTime": "2016-10-29T20:57:26Z"
 		},
 		{
+			"checksumSHA1": "+TKtBzv23ywvmmqRiGEjUba4YmI=",
+			"path": "github.com/dgrijalva/jwt-go",
+			"revision": "dbeaa9332f19a944acb5736b4456cfcc02140e29",
+			"revisionTime": "2017-10-19T21:57:19Z"
+		},
+		{
 			"checksumSHA1": "rRYbBQkVsd/+EIryahsywNi34Lo=",
 			"path": "github.com/emirpasic/gods/containers",
 			"revision": "fc3e4a43ff31b0accc20d750d64ea4b45ee61a5e",
@@ -327,12 +333,12 @@
 			"revisionTime": "2017-02-16T22:32:56Z"
 		},
 		{
-			"checksumSHA1": "iICAK15yh57U3UpWEOTdAQcvT5o=",
+			"checksumSHA1": "guPIkygGyVn+VPS1hh63f+4IJYg=",
 			"path": "github.com/sideshow/apns2",
-			"revision": "6ffbf017e660feff7df81e68de6482e263fae288",
-			"revisionTime": "2017-04-24T10:10:45Z",
-			"version": "v0.9",
-			"versionExact": "v0.9"
+			"revision": "a3ce9c6f95f63dab4ead29da86534dd7af95271a",
+			"revisionTime": "2017-09-26T09:37:56Z",
+			"version": "v0.13",
+			"versionExact": "v0.13"
 		},
 		{
 			"checksumSHA1": "c3x81Xq+gIn5JBgs1eCTVeRwDDo=",
@@ -345,6 +351,14 @@
 			"path": "github.com/sideshow/apns2/payload",
 			"revision": "c23f4b07d9e47aa490ff76001001decc688243f8",
 			"revisionTime": "2017-01-05T14:10:18Z"
+		},
+		{
+			"checksumSHA1": "nkQ/1JoIY4jh8XlI8LClfFVux9U=",
+			"path": "github.com/sideshow/apns2/token",
+			"revision": "a3ce9c6f95f63dab4ead29da86534dd7af95271a",
+			"revisionTime": "2017-09-26T09:37:56Z",
+			"version": "v0.13",
+			"versionExact": "v0.13"
 		},
 		{
 			"checksumSHA1": "/YsxkUA+LSSCvK4zVU7Oa3s0470=",
