@@ -130,10 +130,19 @@ func main() {
 	if opts.Android.Enabled {
 		gorush.PushConf.Android.Enabled = opts.Android.Enabled
 		req := gorush.PushNotification{
-			Tokens:   []string{token},
 			Platform: gorush.PlatFormAndroid,
 			Message:  message,
 			Title:    title,
+		}
+
+		// send message to single device
+		if token != "" {
+			req.Tokens = []string{token}
+		}
+
+		// send topic message
+		if topic != "" {
+			req.To = topic
 		}
 
 		err := gorush.CheckMessage(req)
@@ -159,12 +168,17 @@ func main() {
 
 		gorush.PushConf.Ios.Enabled = opts.Ios.Enabled
 		req := gorush.PushNotification{
-			Tokens:   []string{token},
 			Platform: gorush.PlatFormIos,
 			Message:  message,
 			Title:    title,
 		}
 
+		// send message to single device
+		if token != "" {
+			req.Tokens = []string{token}
+		}
+
+		// send topic message
 		if topic != "" {
 			req.Topic = topic
 		}
@@ -259,13 +273,13 @@ Server Options:
 iOS Options:
     -i, --key <file>                 certificate key file path
     -P, --password <password>        certificate key password
-    --topic <topic>                  iOS topic
     --ios                            enabled iOS (default: false)
     --production                     iOS production mode (default: false)
 Android Options:
     -k, --apikey <api_key>           Android API Key
     --android                        enabled android (default: false)
 Common Options:
+    --topic <topic>                  iOS or Android topic message
     -h, --help                       Show this message
     -v, --version                    Show version
 `

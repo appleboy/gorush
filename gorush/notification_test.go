@@ -132,6 +132,48 @@ func TestSyncModeForNotifications(t *testing.T) {
 	assert.Equal(t, 2, len(logs))
 }
 
+func TestSyncModeForTopicNotification(t *testing.T) {
+	PushConf, _ = config.LoadConf("")
+
+	PushConf.Android.Enabled = true
+	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+	PushConf.Log.HideToken = false
+
+	// enable sync mode
+	PushConf.Core.Sync = true
+
+	req := RequestPush{
+		Notifications: []PushNotification{
+			// android
+			{
+				// error:InvalidParameters
+				// Check that the provided parameters have the right name and type.
+				To:       "/topics/foo-bar@@@##",
+				Platform: PlatFormAndroid,
+				Message:  "This is a Firebase Cloud Messaging Topic Message!",
+			},
+			// android
+			{
+				// success
+				To:       "/topics/foo-bar",
+				Platform: PlatFormAndroid,
+				Message:  "This is a Firebase Cloud Messaging Topic Message!",
+			},
+			// android
+			{
+				// success
+				Condition: "'dogs' in topics || 'cats' in topics",
+				Platform:  PlatFormAndroid,
+				Message:   "This is a Firebase Cloud Messaging Topic Message!",
+			},
+		},
+	}
+
+	count, logs := queueNotification(req)
+	assert.Equal(t, 2, count)
+	assert.Equal(t, 1, len(logs))
+}
+
 func TestSetProxyURL(t *testing.T) {
 
 	err := SetProxy("87.236.233.92:8080")

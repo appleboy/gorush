@@ -58,6 +58,10 @@ func queueNotification(req RequestPush) (int, []LogPushEntry) {
 		}
 		QueueNotification <- notification
 		count += len(notification.Tokens)
+		// Count topic message
+		if notification.To != "" {
+			count++
+		}
 	}
 
 	if PushConf.Core.Sync {

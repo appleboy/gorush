@@ -46,6 +46,9 @@ var (
 	// ErrTopicsMessageRateExceeded occurs when client sent to many requests to
 	// the topics.
 	ErrTopicsMessageRateExceeded = errors.New("topics message rate exceeded")
+
+	// ErrInvalidParameters occurs when provided parameters have the right name and type
+	ErrInvalidParameters = errors.New("check that the provided parameters have the right name and type")
 )
 
 var (
@@ -62,6 +65,7 @@ var (
 		"InternalServerError":       ErrInternalServerError,
 		"DeviceMessageRateExceeded": ErrDeviceMessageRateExceeded,
 		"TopicsMessageRateExceeded": ErrTopicsMessageRateExceeded,
+		"InvalidParameters":         ErrInvalidParameters,
 	}
 )
 
@@ -105,6 +109,47 @@ type Response struct {
 	Failure      int      `json:"failure"`
 	CanonicalIDs int      `json:"canonical_ids"`
 	Results      []Result `json:"results"`
+
+	// Device Group HTTP Response
+	FailedRegistrationIDs []string `json:"failed_registration_ids"`
+
+	// Topic HTTP response
+	MessageID int64 `json:"message_id"`
+	Error     error `json:"error"`
+}
+
+// UnmarshalJSON implements json.Unmarshaler interface.
+func (r *Response) UnmarshalJSON(data []byte) error {
+	var response struct {
+		MulticastID  int64    `json:"multicast_id"`
+		Success      int      `json:"success"`
+		Failure      int      `json:"failure"`
+		CanonicalIDs int      `json:"canonical_ids"`
+		Results      []Result `json:"results"`
+
+		// Device Group HTTP Response
+		FailedRegistrationIDs []string `json:"failed_registration_ids"`
+
+		// Topic HTTP response
+		MessageID int64  `json:"message_id"`
+		Error     string `json:"error"`
+	}
+
+	if err := json.Unmarshal(data, &response); err != nil {
+		return err
+	}
+
+	r.MulticastID = response.MulticastID
+	r.Success = response.Success
+	r.Failure = response.Failure
+	r.CanonicalIDs = response.CanonicalIDs
+	r.Results = response.Results
+	r.Success = response.Success
+	r.FailedRegistrationIDs = response.FailedRegistrationIDs
+	r.MessageID = response.MessageID
+	r.Error = errMap[response.Error]
+
+	return nil
 }
 
 // Result represents the status of a processed message.
