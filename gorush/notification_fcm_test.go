@@ -140,6 +140,26 @@ func TestFCMMessage(t *testing.T) {
 	err = CheckMessage(req)
 	assert.Error(t, err)
 
+	// ignore check token length if send topic message
+	req = PushNotification{
+		Message:  "Test",
+		Platform: PlatFormAndroid,
+		To:       "/topics/foo-bar",
+	}
+
+	err = CheckMessage(req)
+	assert.NoError(t, err)
+
+	// "condition": "'dogs' in topics || 'cats' in topics",
+	req = PushNotification{
+		Message:   "Test",
+		Platform:  PlatFormAndroid,
+		Condition: "'dogs' in topics || 'cats' in topics",
+	}
+
+	err = CheckMessage(req)
+	assert.NoError(t, err)
+
 	// the message may specify at most 1000 registration IDs
 	req = PushNotification{
 		Message:  "Test",

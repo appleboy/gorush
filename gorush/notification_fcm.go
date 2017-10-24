@@ -33,6 +33,7 @@ func InitFCMClient(key string) (*fcm.Client, error) {
 func GetAndroidNotification(req PushNotification) *fcm.Message {
 	notification := &fcm.Message{
 		To:                    req.To,
+		Condition:             req.Condition,
 		CollapseKey:           req.CollapseKey,
 		ContentAvailable:      req.ContentAvailable,
 		DelayWhileIdle:        req.DelayWhileIdle,
@@ -122,11 +123,15 @@ Retry:
 		return false
 	}
 
-	LogAccess.Debug(fmt.Sprintf("Android Success count: %d, Failure count: %d", res.Success, res.Failure))
+	if !req.IsTopic() {
+		LogAccess.Debug(fmt.Sprintf("Android Success count: %d, Failure count: %d", res.Success, res.Failure))
+	}
+
 	StatStorage.AddAndroidSuccess(int64(res.Success))
 	StatStorage.AddAndroidError(int64(res.Failure))
 
 	var newTokens []string
+	// result from Send messages to specific devices
 	for k, result := range res.Results {
 		if result.Error != nil {
 			isError = true
@@ -139,6 +144,28 @@ Retry:
 		}
 
 		LogPush(SucceededPush, req.Tokens[k], req, nil)
+	}
+
+	// result from Send messages to topics
+	if req.IsTopic() {
+		to := ""
+		if req.To != "" {
+			to = req.To
+		} else {
+			to = req.Condition
+		}
+		LogAccess.Debug("Send Topic Message: ", to)
+		// Success
+		if res.MessageID != 0 {
+			LogPush(SucceededPush, to, req, nil)
+		} else {
+			isError = true
+			// failure
+			LogPush(FailedPush, to, req, res.Error)
+			if PushConf.Core.Sync {
+				req.AddLog(getLogPushEntry(FailedPush, to, req, res.Error))
+			}
+		}
 	}
 
 	if isError && retryCount < maxRetry {

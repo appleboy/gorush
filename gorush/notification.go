@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
 	"sync"
 
 	"github.com/appleboy/go-fcm"
@@ -69,6 +70,7 @@ type PushNotification struct {
 	TimeToLive            *uint            `json:"time_to_live,omitempty"`
 	RestrictedPackageName string           `json:"restricted_package_name,omitempty"`
 	DryRun                bool             `json:"dry_run,omitempty"`
+	Condition             string           `json:"condition,omitempty"`
 	Notification          fcm.Notification `json:"notification,omitempty"`
 
 	// iOS
@@ -103,11 +105,19 @@ func (p *PushNotification) AddLog(log LogPushEntry) {
 	}
 }
 
+// IsTopic check if message format is topic for FCM
+// ref: https://firebase.google.com/docs/cloud-messaging/send-message#topic-http-post-request
+func (p *PushNotification) IsTopic() bool {
+	return (p.Platform == PlatFormAndroid && p.To != "" && strings.HasPrefix(p.To, "/topics/")) ||
+		p.Condition != ""
+}
+
 // CheckMessage for check request message
 func CheckMessage(req PushNotification) error {
 	var msg string
 
-	if len(req.Tokens) == 0 {
+	// ignore send topic mesaage from FCM
+	if !req.IsTopic() && len(req.Tokens) == 0 {
 		msg = "the message must specify at least one registration ID"
 		LogAccess.Debug(msg)
 		return errors.New(msg)
