@@ -11,10 +11,6 @@
 			"versionExact": "0.1.0"
 		},
 		{
-			"path": "github.com/appleboy/go-fcm#0.1.0",
-			"revision": ""
-		},
-		{
 			"checksumSHA1": "Ab7MUtqX0iq2PUzzBxWpgzPSydw=",
 			"path": "github.com/asdine/storm",
 			"revision": "de95a2ead13a0ec4cff5e37d21decd48b54a078f",
