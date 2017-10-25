@@ -456,3 +456,35 @@ func TestPushToIOS(t *testing.T) {
 	isError := PushToIOS(req)
 	assert.True(t, isError)
 }
+
+func TestApnsHostFromRequest(t *testing.T) {
+	PushConf, _ = config.LoadConf("")
+
+	PushConf.Ios.Enabled = true
+	PushConf.Ios.KeyPath = "../certificate/certificate-valid.pem"
+	err := InitAPNSClient()
+	assert.Nil(t, err)
+	err = InitAppStatus()
+	assert.Nil(t, err)
+
+	req := PushNotification{
+		Production: true,
+	}
+	client := getApnsClient(req)
+	assert.Equal(t, apns2.HostProduction, client.Host)
+
+	req = PushNotification{
+		Development: true,
+	}
+	client = getApnsClient(req)
+	assert.Equal(t, apns2.HostDevelopment, client.Host)
+
+	req = PushNotification{}
+	PushConf.Ios.Production = true
+	client = getApnsClient(req)
+	assert.Equal(t, apns2.HostProduction, client.Host)
+
+	PushConf.Ios.Production = false
+	client = getApnsClient(req)
+	assert.Equal(t, apns2.HostDevelopment, client.Host)
+}

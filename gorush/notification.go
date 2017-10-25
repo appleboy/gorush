@@ -82,6 +82,8 @@ type PushNotification struct {
 	URLArgs        []string `json:"url-args,omitempty"`
 	Alert          Alert    `json:"alert,omitempty"`
 	MutableContent bool     `json:"mutable-content,omitempty"`
+	Production     bool     `json:"production,omitempty"`
+	Development    bool     `json:"development,omitempty"`
 }
 
 // WaitDone decrements the WaitGroup counter.
