@@ -43,6 +43,14 @@ ios:
   password: "" # certificate password, default as empty string.
   production: false
   max_retry: 0 # resend fail notification, default value zero is disabled
+  key_map:
+    cert1: "cert1.pem"
+    cert2: "cert2.pem"
+    cert3: "cert3.pem"
+  key_password:
+    cert1: ""
+    cert2: ""
+    cert3: ""
 
 log:
   format: "string" # string or json

@@ -28,4 +28,6 @@ var (
 	LogError *logrus.Logger
 	// StatStorage implements the storage interface
 	StatStorage storage.Storage
+	// Extend
+	ApnsClients = make(map[string]*apns.Client, len(PushConf.Ios.KeyMap))
 )

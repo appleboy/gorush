@@ -350,7 +350,7 @@ func TestDisabledIosNotifications(t *testing.T) {
 
 	PushConf.Ios.Enabled = false
 	PushConf.Ios.KeyPath = "../certificate/certificate-valid.pem"
-	err := InitAPNSClient()
+	_, err := InitAPNSClient("")
 	assert.Nil(t, err)
 
 	PushConf.Android.Enabled = true
@@ -385,7 +385,7 @@ func TestWrongIosCertificateExt(t *testing.T) {
 
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.KeyPath = "test"
-	err := InitAPNSClient()
+	_, err := InitAPNSClient("")
 
 	assert.Error(t, err)
 	assert.Equal(t, "wrong certificate key extension", err.Error())
@@ -396,9 +396,10 @@ func TestAPNSClientDevHost(t *testing.T) {
 
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.KeyPath = "../certificate/certificate-valid.p12"
-	err := InitAPNSClient()
+	ApnsClients = make(map[string]*apns2.Client, len(PushConf.Ios.KeyMap))
+	client, err := InitAPNSClient("")
 	assert.Nil(t, err)
-	assert.Equal(t, apns2.HostDevelopment, ApnsClient.Host)
+	assert.Equal(t, apns2.HostDevelopment, client.Host)
 }
 
 func TestAPNSClientProdHost(t *testing.T) {
@@ -407,9 +408,10 @@ func TestAPNSClientProdHost(t *testing.T) {
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.Production = true
 	PushConf.Ios.KeyPath = "../certificate/certificate-valid.pem"
-	err := InitAPNSClient()
+	ApnsClients = make(map[string]*apns2.Client, len(PushConf.Ios.KeyMap))
+	client, err := InitAPNSClient("")
 	assert.Nil(t, err)
-	assert.Equal(t, apns2.HostProduction, ApnsClient.Host)
+	assert.Equal(t, apns2.HostProduction, client.Host)
 }
 
 func TestPushToIOS(t *testing.T) {
@@ -417,7 +419,7 @@ func TestPushToIOS(t *testing.T) {
 
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.KeyPath = "../certificate/certificate-valid.pem"
-	err := InitAPNSClient()
+	_, err := InitAPNSClient("")
 	assert.Nil(t, err)
 	err = InitAppStatus()
 	assert.Nil(t, err)
@@ -431,4 +433,49 @@ func TestPushToIOS(t *testing.T) {
 	// send fail
 	isError := PushToIOS(req)
 	assert.True(t, isError)
+}
+
+func TestProvideApnsClient(t *testing.T) {
+	PushConf = config.BuildDefaultPushConf()
+
+	PushConf.Ios.Enabled = true
+	// PushConf.Ios.KeyPath = "../certificate/certificate-valid.pem"
+	ApnsClients = make(map[string]*apns2.Client, len(PushConf.Ios.KeyMap))
+	PushConf.Ios.KeyMap = map[string]string{"cert1": "../certificate/certificate-valid.pem"}
+	PushConf.Ios.KeyPass = map[string]string{"cert1": ""}
+
+	err := InitAppStatus()
+	assert.Nil(t, err)
+
+	req := PushNotification{
+		Tokens:     []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
+		Platform:   1,
+		Message:    "Welcome",
+		ApnsClient: "cert1",
+	}
+
+	// send success
+	isError := PushToIOS(req)
+	assert.True(t, isError)
+}
+
+func TestProvideWrongApnsClient(t *testing.T) {
+	PushConf = config.BuildDefaultPushConf()
+
+	PushConf.Ios.Enabled = true
+	PushConf.Ios.KeyPath = "../certificate/certificate-valid.pem"
+	ApnsClients = make(map[string]*apns2.Client, len(PushConf.Ios.KeyMap))
+	err := InitAppStatus()
+	assert.Nil(t, err)
+
+	req := PushNotification{
+		Tokens:     []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
+		Platform:   1,
+		Message:    "Welcome",
+		ApnsClient: "cert_not_exist",
+	}
+
+	// send fail
+	isError := PushToIOS(req)
+	assert.False(t, isError)
 }

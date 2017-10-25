@@ -193,7 +193,7 @@ func main() {
 			return
 		}
 
-		if err := gorush.InitAPNSClient(); err != nil {
+		if _, err := gorush.InitAPNSClient(""); err != nil {
 			return
 		}
 		gorush.PushToIOS(req)
@@ -224,7 +224,8 @@ func main() {
 	var g errgroup.Group
 
 	g.Go(func() error {
-		return gorush.InitAPNSClient()
+		_, err := gorush.InitAPNSClient("")
+		return err
 	})
 
 	g.Go(func() error {
