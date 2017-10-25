@@ -42,7 +42,9 @@ func GetAndroidNotification(req PushNotification) *fcm.Message {
 		DryRun:                req.DryRun,
 	}
 
-	notification.RegistrationIDs = req.Tokens
+	if len(req.Tokens) > 0 {
+		notification.RegistrationIDs = req.Tokens
+	}
 
 	if len(req.Priority) > 0 && req.Priority == "high" {
 		notification.Priority = "high"
@@ -133,17 +135,24 @@ Retry:
 	var newTokens []string
 	// result from Send messages to specific devices
 	for k, result := range res.Results {
+		to := ""
+		if k < len(req.Tokens) {
+			to = req.Tokens[k]
+		} else {
+			to = req.To
+		}
+
 		if result.Error != nil {
 			isError = true
-			newTokens = append(newTokens, req.Tokens[k])
-			LogPush(FailedPush, req.Tokens[k], req, result.Error)
+			newTokens = append(newTokens, to)
+			LogPush(FailedPush, to, req, result.Error)
 			if PushConf.Core.Sync {
-				req.AddLog(getLogPushEntry(FailedPush, req.Tokens[k], req, result.Error))
+				req.AddLog(getLogPushEntry(FailedPush, to, req, result.Error))
 			}
 			continue
 		}
 
-		LogPush(SucceededPush, req.Tokens[k], req, nil)
+		LogPush(SucceededPush, to, req, nil)
 	}
 
 	// result from Send messages to topics
@@ -165,6 +174,19 @@ Retry:
 			if PushConf.Core.Sync {
 				req.AddLog(getLogPushEntry(FailedPush, to, req, res.Error))
 			}
+		}
+	}
+
+	// Device Group HTTP Response
+	if len(res.FailedRegistrationIDs) > 0 {
+		isError = true
+		for _, id := range res.FailedRegistrationIDs {
+			newTokens = append(newTokens, id)
+		}
+
+		LogPush(FailedPush, notification.To, req, errors.New("device group: partial success or all fails"))
+		if PushConf.Core.Sync {
+			req.AddLog(getLogPushEntry(FailedPush, notification.To, req, errors.New("device group: partial success or all fails")))
 		}
 	}
 

@@ -117,7 +117,7 @@ func CheckMessage(req PushNotification) error {
 	var msg string
 
 	// ignore send topic mesaage from FCM
-	if !req.IsTopic() && len(req.Tokens) == 0 {
+	if !req.IsTopic() && len(req.Tokens) == 0 && len(req.To) == 0 {
 		msg = "the message must specify at least one registration ID"
 		LogAccess.Debug(msg)
 		return errors.New(msg)
