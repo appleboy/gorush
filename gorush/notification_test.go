@@ -174,6 +174,32 @@ func TestSyncModeForTopicNotification(t *testing.T) {
 	assert.Equal(t, 1, len(logs))
 }
 
+func TestSyncModeForDeviceGroupNotification(t *testing.T) {
+	PushConf, _ = config.LoadConf("")
+
+	PushConf.Android.Enabled = true
+	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+	PushConf.Log.HideToken = false
+
+	// enable sync mode
+	PushConf.Core.Sync = true
+
+	req := RequestPush{
+		Notifications: []PushNotification{
+			// android
+			{
+				To:       "aUniqueKey",
+				Platform: PlatFormAndroid,
+				Message:  "This is a Firebase Cloud Messaging Device Group Message!",
+			},
+		},
+	}
+
+	count, logs := queueNotification(req)
+	assert.Equal(t, 1, count)
+	assert.Equal(t, 1, len(logs))
+}
+
 func TestSetProxyURL(t *testing.T) {
 
 	err := SetProxy("87.236.233.92:8080")

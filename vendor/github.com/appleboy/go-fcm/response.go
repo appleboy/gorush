@@ -49,6 +49,9 @@ var (
 
 	// ErrInvalidParameters occurs when provided parameters have the right name and type
 	ErrInvalidParameters = errors.New("check that the provided parameters have the right name and type")
+
+	// ErrUnknown for unknown error type
+	ErrUnknown = errors.New("unknown error type")
 )
 
 var (
@@ -147,7 +150,11 @@ func (r *Response) UnmarshalJSON(data []byte) error {
 	r.Success = response.Success
 	r.FailedRegistrationIDs = response.FailedRegistrationIDs
 	r.MessageID = response.MessageID
-	r.Error = errMap[response.Error]
+	if val, ok := errMap[response.Error]; ok {
+		r.Error = val
+	} else {
+		r.Error = ErrUnknown
+	}
 
 	return nil
 }
@@ -173,7 +180,11 @@ func (r *Result) UnmarshalJSON(data []byte) error {
 
 	r.MessageID = result.MessageID
 	r.RegistrationID = result.RegistrationID
-	r.Error = errMap[result.Error]
+	if val, ok := errMap[result.Error]; ok {
+		r.Error = val
+	} else {
+		r.Error = ErrUnknown
+	}
 
 	return nil
 }
