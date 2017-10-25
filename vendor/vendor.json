@@ -3,12 +3,12 @@
 	"ignore": "test",
 	"package": [
 		{
-			"checksumSHA1": "o+gUA4I84/sZiAfa8jwqH/wk61g=",
+			"checksumSHA1": "1Jql7x7zDOmbDxGr4gsa8rFEC5g=",
 			"path": "github.com/appleboy/go-fcm",
-			"revision": "10f0f43eb26cfe481258ba2c50a428cdd36a7f5d",
-			"revisionTime": "2017-10-25T02:11:16Z",
-			"version": "0.1.0",
-			"versionExact": "0.1.0"
+			"revision": "3bc382cee4180b7e4753761fda69a003de97b0e9",
+			"revisionTime": "2017-10-25T02:33:50Z",
+			"version": "0.1.1",
+			"versionExact": "0.1.1"
 		},
 		{
 			"checksumSHA1": "Ab7MUtqX0iq2PUzzBxWpgzPSydw=",

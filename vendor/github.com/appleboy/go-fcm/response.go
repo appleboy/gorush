@@ -150,10 +150,12 @@ func (r *Response) UnmarshalJSON(data []byte) error {
 	r.Success = response.Success
 	r.FailedRegistrationIDs = response.FailedRegistrationIDs
 	r.MessageID = response.MessageID
-	if val, ok := errMap[response.Error]; ok {
-		r.Error = val
-	} else {
-		r.Error = ErrUnknown
+	if response.Error != "" {
+		if val, ok := errMap[response.Error]; ok {
+			r.Error = val
+		} else {
+			r.Error = ErrUnknown
+		}
 	}
 
 	return nil
@@ -180,10 +182,12 @@ func (r *Result) UnmarshalJSON(data []byte) error {
 
 	r.MessageID = result.MessageID
 	r.RegistrationID = result.RegistrationID
-	if val, ok := errMap[result.Error]; ok {
-		r.Error = val
-	} else {
-		r.Error = ErrUnknown
+	if result.Error != "" {
+		if val, ok := errMap[result.Error]; ok {
+			r.Error = val
+		} else {
+			r.Error = ErrUnknown
+		}
 	}
 
 	return nil
