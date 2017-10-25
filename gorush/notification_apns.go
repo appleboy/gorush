@@ -176,6 +176,21 @@ func GetIOSNotification(req PushNotification) *apns2.Notification {
 	return notification
 }
 
+func getApnsClient(req PushNotification) (client *apns2.Client) {
+	if req.Production {
+		client = ApnsClient.Production()
+	} else if req.Development {
+		client = ApnsClient.Development()
+	} else {
+		if PushConf.Ios.Production {
+			client = ApnsClient.Production()
+		} else {
+			client = ApnsClient.Development()
+		}
+	}
+	return
+}
+
 // PushToIOS provide send notification to APNs server.
 func PushToIOS(req PushNotification) bool {
 	LogAccess.Debug("Start push notification for iOS")
@@ -199,12 +214,13 @@ Retry:
 	)
 
 	notification := GetIOSNotification(req)
+	client := getApnsClient(req)
 
 	for _, token := range req.Tokens {
 		notification.DeviceToken = token
 
 		// send ios notification
-		res, err := ApnsClient.Push(notification)
+		res, err := client.Push(notification)
 
 		if err != nil {
 			// apns server error
