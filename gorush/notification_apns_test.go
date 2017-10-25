@@ -412,6 +412,30 @@ func TestAPNSClientProdHost(t *testing.T) {
 	assert.Equal(t, apns2.HostProduction, ApnsClient.Host)
 }
 
+func TestAPNSClientInvaildToken(t *testing.T) {
+	PushConf, _ = config.LoadConf("")
+
+	PushConf.Ios.Enabled = true
+	PushConf.Ios.KeyPath = "../certificate/authkey-invalid.p8"
+	err := InitAPNSClient()
+	assert.Error(t, err)
+}
+
+func TestAPNSClientVaildToken(t *testing.T) {
+	PushConf, _ = config.LoadConf("")
+
+	PushConf.Ios.Enabled = true
+	PushConf.Ios.KeyPath = "../certificate/authkey-valid.p8"
+	err := InitAPNSClient()
+	assert.NoError(t, err)
+	assert.Equal(t, apns2.HostDevelopment, ApnsClient.Host)
+
+	PushConf.Ios.Production = true
+	err = InitAPNSClient()
+	assert.NoError(t, err)
+	assert.Equal(t, apns2.HostProduction, ApnsClient.Host)
+}
+
 func TestPushToIOS(t *testing.T) {
 	PushConf, _ = config.LoadConf("")
 

@@ -76,6 +76,8 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Ios.Password)
 	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Ios.Production)
 	assert.Equal(suite.T(), 0, suite.ConfGorushDefault.Ios.MaxRetry)
+	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Ios.KeyID)
+	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Ios.TeamID)
 
 	// log
 	assert.Equal(suite.T(), "string", suite.ConfGorushDefault.Log.Format)
@@ -141,6 +143,8 @@ func (suite *ConfigTestSuite) TestValidateConf() {
 	assert.Equal(suite.T(), "", suite.ConfGorush.Ios.Password)
 	assert.Equal(suite.T(), false, suite.ConfGorush.Ios.Production)
 	assert.Equal(suite.T(), 0, suite.ConfGorush.Ios.MaxRetry)
+	assert.Equal(suite.T(), "", suite.ConfGorush.Ios.KeyID)
+	assert.Equal(suite.T(), "", suite.ConfGorush.Ios.TeamID)
 
 	// log
 	assert.Equal(suite.T(), "string", suite.ConfGorush.Log.Format)
@@ -174,6 +178,8 @@ func TestLoadConfigFromEnv(t *testing.T) {
 	os.Setenv("GORUSH_CORE_PORT", "9001")
 	os.Setenv("GORUSH_GRPC_ENABLED", "true")
 	os.Setenv("GORUSH_CORE_MAX_NOTIFICATION", "200")
+	os.Setenv("GORUSH_IOS_KEY_ID", "ABC123DEFG")
+	os.Setenv("GORUSH_IOS_TEAM_ID", "DEF123GHIJ")
 	ConfGorush, err := LoadConf("config.yml")
 	if err != nil {
 		panic("failed to load config.yml from file")
@@ -181,4 +187,6 @@ func TestLoadConfigFromEnv(t *testing.T) {
 	assert.Equal(t, "9001", ConfGorush.Core.Port)
 	assert.Equal(t, int64(200), ConfGorush.Core.MaxNotification)
 	assert.True(t, ConfGorush.GRPC.Enabled)
+	assert.Equal(t, "ABC123DEFG", ConfGorush.Ios.KeyID)
+	assert.Equal(t, "DEF123GHIJ", ConfGorush.Ios.TeamID)
 }

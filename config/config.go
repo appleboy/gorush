@@ -56,6 +56,8 @@ ios:
   password: "" # certificate password, default as empty string.
   production: false
   max_retry: 0 # resend fail notification, default value zero is disabled
+  key_id: "" # KeyID from developer account (Certificates, Identifiers & Profiles -> Keys)
+  team_id: "" # TeamID from developer account (View Account -> Membership)
 
 log:
   format: "string" # string or json
@@ -140,6 +142,8 @@ type SectionIos struct {
 	Password   string `yaml:"password"`
 	Production bool   `yaml:"production"`
 	MaxRetry   int    `yaml:"max_retry"`
+	KeyID      string `yaml:"key_id"`
+	TeamID     string `yaml:"team_id"`
 }
 
 // SectionLog is sub section of config.
@@ -269,6 +273,8 @@ func LoadConf(confPath string) (ConfYaml, error) {
 	conf.Ios.Password = viper.GetString("ios.password")
 	conf.Ios.Production = viper.GetBool("ios.production")
 	conf.Ios.MaxRetry = viper.GetInt("ios.max_retry")
+	conf.Ios.KeyID = viper.GetString("ios.key_id")
+	conf.Ios.TeamID = viper.GetString("ios.team_id")
 
 	// log
 	conf.Log.Format = viper.GetString("log.format")

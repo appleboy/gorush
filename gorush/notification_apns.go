@@ -1,26 +1,33 @@
 package gorush
 
 import (
+	"crypto/ecdsa"
+	"crypto/tls"
 	"errors"
 	"path/filepath"
 	"time"
 
-	apns "github.com/sideshow/apns2"
+	"github.com/sideshow/apns2"
 	"github.com/sideshow/apns2/certificate"
 	"github.com/sideshow/apns2/payload"
+	"github.com/sideshow/apns2/token"
 )
 
 // InitAPNSClient use for initialize APNs Client.
 func InitAPNSClient() error {
 	if PushConf.Ios.Enabled {
 		var err error
+		var authKey *ecdsa.PrivateKey
+		var certificateKey tls.Certificate
 		ext := filepath.Ext(PushConf.Ios.KeyPath)
 
 		switch ext {
 		case ".p12":
-			CertificatePemIos, err = certificate.FromP12File(PushConf.Ios.KeyPath, PushConf.Ios.Password)
+			certificateKey, err = certificate.FromP12File(PushConf.Ios.KeyPath, PushConf.Ios.Password)
 		case ".pem":
-			CertificatePemIos, err = certificate.FromPemFile(PushConf.Ios.KeyPath, PushConf.Ios.Password)
+			certificateKey, err = certificate.FromPemFile(PushConf.Ios.KeyPath, PushConf.Ios.Password)
+		case ".p8":
+			authKey, err = token.AuthKeyFromFile(PushConf.Ios.KeyPath)
 		default:
 			err = errors.New("wrong certificate key extension")
 		}
@@ -31,10 +38,25 @@ func InitAPNSClient() error {
 			return err
 		}
 
-		if PushConf.Ios.Production {
-			ApnsClient = apns.NewClient(CertificatePemIos).Production()
+		if ext == ".p8" && PushConf.Ios.KeyID != "" && PushConf.Ios.TeamID != "" {
+			token := &token.Token{
+				AuthKey: authKey,
+				// KeyID from developer account (Certificates, Identifiers & Profiles -> Keys)
+				KeyID: PushConf.Ios.KeyID,
+				// TeamID from developer account (View Account -> Membership)
+				TeamID: PushConf.Ios.TeamID,
+			}
+			if PushConf.Ios.Production {
+				ApnsClient = apns2.NewTokenClient(token).Production()
+			} else {
+				ApnsClient = apns2.NewTokenClient(token).Development()
+			}
 		} else {
-			ApnsClient = apns.NewClient(CertificatePemIos).Development()
+			if PushConf.Ios.Production {
+				ApnsClient = apns2.NewClient(certificateKey).Production()
+			} else {
+				ApnsClient = apns2.NewClient(certificateKey).Development()
+			}
 		}
 	}
 
@@ -101,8 +123,8 @@ func iosAlertDictionary(payload *payload.Payload, req PushNotification) *payload
 // GetIOSNotification use for define iOS notification.
 // The iOS Notification Payload
 // ref: https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/PayloadKeyReference.html#//apple_ref/doc/uid/TP40008194-CH17-SW1
-func GetIOSNotification(req PushNotification) *apns.Notification {
-	notification := &apns.Notification{
+func GetIOSNotification(req PushNotification) *apns2.Notification {
+	notification := &apns2.Notification{
 		ApnsID: req.ApnsID,
 		Topic:  req.Topic,
 	}
@@ -112,7 +134,7 @@ func GetIOSNotification(req PushNotification) *apns.Notification {
 	}
 
 	if len(req.Priority) > 0 && req.Priority == "normal" {
-		notification.Priority = apns.PriorityLow
+		notification.Priority = apns2.PriorityLow
 	}
 
 	payload := payload.NewPayload()
