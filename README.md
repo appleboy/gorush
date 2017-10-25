@@ -113,6 +113,8 @@ ios:
   password: "" # certificate password, default as empty string.
   production: false
   max_retry: 0 # resend fail notification, default value zero is disabled
+  key_id: "" # KeyID from developer account (Certificates, Identifiers & Profiles -> Keys)
+  team_id: "" # TeamID from developer account (View Account -> Membership)
 
 log:
   format: "string" # string or json
