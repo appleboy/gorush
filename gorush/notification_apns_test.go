@@ -418,7 +418,7 @@ func TestAPNSClientInvaildToken(t *testing.T) {
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.KeyPath = "../certificate/authkey-invalid.p8"
 	err := InitAPNSClient()
-	assert.NoError(t, err)
+	assert.Error(t, err)
 }
 
 func TestAPNSClientVaildToken(t *testing.T) {
