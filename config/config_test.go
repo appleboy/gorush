@@ -64,6 +64,7 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 	assert.Equal(suite.T(), "/api/config", suite.ConfGorushDefault.API.ConfigURI)
 	assert.Equal(suite.T(), "/sys/stats", suite.ConfGorushDefault.API.SysStatURI)
 	assert.Equal(suite.T(), "/metrics", suite.ConfGorushDefault.API.MetricURI)
+	assert.Equal(suite.T(), "/healthz", suite.ConfGorushDefault.API.HealthURI)
 
 	// Android
 	assert.Equal(suite.T(), true, suite.ConfGorushDefault.Android.Enabled)
@@ -131,6 +132,7 @@ func (suite *ConfigTestSuite) TestValidateConf() {
 	assert.Equal(suite.T(), "/api/config", suite.ConfGorush.API.ConfigURI)
 	assert.Equal(suite.T(), "/sys/stats", suite.ConfGorush.API.SysStatURI)
 	assert.Equal(suite.T(), "/metrics", suite.ConfGorush.API.MetricURI)
+	assert.Equal(suite.T(), "/healthz", suite.ConfGorush.API.HealthURI)
 
 	// Android
 	assert.Equal(suite.T(), true, suite.ConfGorush.Android.Enabled)
@@ -180,6 +182,7 @@ func TestLoadConfigFromEnv(t *testing.T) {
 	os.Setenv("GORUSH_CORE_MAX_NOTIFICATION", "200")
 	os.Setenv("GORUSH_IOS_KEY_ID", "ABC123DEFG")
 	os.Setenv("GORUSH_IOS_TEAM_ID", "DEF123GHIJ")
+	os.Setenv("GORUSH_API_HEALTH_URI", "/healthz")
 	ConfGorush, err := LoadConf("config.yml")
 	if err != nil {
 		panic("failed to load config.yml from file")
@@ -189,4 +192,5 @@ func TestLoadConfigFromEnv(t *testing.T) {
 	assert.True(t, ConfGorush.GRPC.Enabled)
 	assert.Equal(t, "ABC123DEFG", ConfGorush.Ios.KeyID)
 	assert.Equal(t, "DEF123GHIJ", ConfGorush.Ios.TeamID)
+	assert.Equal(t, "/healthz", ConfGorush.API.HealthURI)
 }
