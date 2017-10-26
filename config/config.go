@@ -44,6 +44,7 @@ api:
   config_uri: "/api/config"
   sys_stat_uri: "/sys/stats"
   metric_uri: "/metrics"
+  health_uri: "/healthz"
 
 android:
   enabled: true
@@ -126,6 +127,7 @@ type SectionAPI struct {
 	ConfigURI  string `yaml:"config_uri"`
 	SysStatURI string `yaml:"sys_stat_uri"`
 	MetricURI  string `yaml:"metric_uri"`
+	HealthURI  string `yaml:"health_uri"`
 }
 
 // SectionAndroid is sub section of config.
@@ -261,6 +263,7 @@ func LoadConf(confPath string) (ConfYaml, error) {
 	conf.API.ConfigURI = viper.GetString("api.config_uri")
 	conf.API.SysStatURI = viper.GetString("api.sys_stat_uri")
 	conf.API.MetricURI = viper.GetString("api.metric_uri")
+	conf.API.HealthURI = viper.GetString("api.health_uri")
 
 	// Android
 	conf.Android.Enabled = viper.GetBool("android.enabled")
