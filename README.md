@@ -101,6 +101,7 @@ api:
   config_uri: "/api/config"
   sys_stat_uri: "/sys/stats"
   metric_uri: "/metrics"
+  health_uri: "/healthz"
 
 android:
   enabled: true
