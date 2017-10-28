@@ -108,13 +108,37 @@ pipeline:
       branch: [ master ]
       local: false
 
-  publish_tag_linux_amd64:
+  publish_linux_amd64:
     image: plugins/docker
     group: tag
     repo: ${DRONE_REPO}
     tags: [ '${DRONE_TAG}' ]
     secrets: [ docker_username, docker_password ]
     group: release
+    when:
+      event: [ tag ]
+      ref: [ refs/tags/* ]
+      local: false
+
+  publish_linux_arm:
+    image: plugins/docker
+    group: tag
+    repo: ${DRONE_REPO}
+    tags: [ linux-arm, 'linux-arm-${DRONE_TAG}' ]
+    dockerfile: Dockerfile.arm
+    secrets: [ docker_username, docker_password ]
+    when:
+      event: [ tag ]
+      ref: [ refs/tags/* ]
+      local: false
+
+  publish_linux_arm64:
+    image: plugins/docker
+    group: tag
+    repo: ${DRONE_REPO}
+    tags: [ linux-arm64, 'linux-arm64-${DRONE_TAG}' ]
+    dockerfile: Dockerfile.arm64
+    secrets: [ docker_username, docker_password ]
     when:
       event: [ tag ]
       ref: [ refs/tags/* ]
