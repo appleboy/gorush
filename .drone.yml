@@ -71,7 +71,7 @@ pipeline:
       - make release
     when:
       event: [ tag ]
-      branch: [ refs/tags/* ]
+      ref: [ refs/tags/* ]
 
   publish_linux_amd64:
     image: plugins/docker
@@ -117,7 +117,7 @@ pipeline:
     group: release
     when:
       event: [ tag ]
-      branch: [ refs/tags/* ]
+      ref: [ refs/tags/* ]
       local: false
 
   release_tag:
@@ -128,7 +128,7 @@ pipeline:
       - dist/release/*
     when:
       event: [ tag ]
-      branch: [ refs/tags/* ]
+      ref: [ refs/tags/* ]
       local: false
 
   discord:
