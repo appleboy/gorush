@@ -730,7 +730,13 @@ See the following error format.
 
 ## Run gRPC service
 
-Gorush support [gRPC](https://grpc.io/) service. You can enable the gRPC in `config.yml`, default as disabled. The following example code for Golang to send single notification.
+Gorush support [gRPC](https://grpc.io/) service. You can enable the gRPC in `config.yml`, default as disabled. Enable the gRPC server:
+
+```sh
+$ GORUSH_GRPC_ENABLED=true GORUSH_GRPC_PORT=3000 gorush
+```
+
+The following example code to send single notification in Go.
 
 [embedmd]:# (rpc/example/go/client.go go)
 ```go
