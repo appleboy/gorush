@@ -572,6 +572,28 @@ Add other fields which user defined via `data` field.
 }
 ```
 
+Support send notification from different environment. See the detail of [issue](https://github.com/appleboy/gorush/issues/246).
+
+```diff
+{
+  "notifications": [
+    {
+      "tokens": ["token_a", "token_b"],
+      "platform": 1,
++     "production": true,
+      "message": "Hello World iOS Production!"
+    },
+    {
+      "tokens": ["token_a", "token_b"],
+      "platform": 1,
++     "development": true,
+      "message": "Hello World iOS Sandbox!"
+    },
+    .....
+  ]
+}
+```
+
 ### Android Example
 
 Send normal notification.
