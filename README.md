@@ -878,6 +878,9 @@ $ kubectl create -f k8s/gorush-aws-alb-ingress.yaml
 ```sh
 $ kubectl delete -f k8s
 ```
+## Stargazers over time
+
+[![Stargazers over time](https://starcharts.herokuapp.com/appleboy/gorush.svg)](https://starcharts.herokuapp.com/appleboy/gorush)
 
 ## License
 
