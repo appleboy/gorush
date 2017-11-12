@@ -58,6 +58,4 @@ func (c *healthClient) Check(ctx context.Context) (bool, error) {
 		}
 		<-time.After(backoff)
 	}
-
-	return true, nil
 }
