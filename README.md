@@ -738,7 +738,7 @@ $ GORUSH_GRPC_ENABLED=true GORUSH_GRPC_PORT=3000 gorush
 
 The following example code to send single notification in Go.
 
-[embedmd]:# (rpc/example/go/client.go go)
+[embedmd]:# (rpc/example/go/send/main.go go)
 ```go
 package main
 
