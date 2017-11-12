@@ -738,14 +738,15 @@ $ GORUSH_GRPC_ENABLED=true GORUSH_GRPC_PORT=3000 gorush
 
 The following example code to send single notification in Go.
 
-[embedmd]:# (rpc/example/go/client.go go)
+[embedmd]:# (rpc/example/go/send/main.go go)
 ```go
 package main
 
 import (
 	"log"
 
-	pb "github.com/appleboy/gorush/rpc/proto"
+	"github.com/appleboy/gorush/rpc/proto"
+
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )
@@ -761,9 +762,9 @@ func main() {
 		log.Fatalf("did not connect: %v", err)
 	}
 	defer conn.Close()
-	c := pb.NewGorushClient(conn)
+	c := proto.NewGorushClient(conn)
 
-	r, err := c.Send(context.Background(), &pb.NotificationRequest{
+	r, err := c.Send(context.Background(), &proto.NotificationRequest{
 		Platform: 2,
 		Tokens:   []string{"1234567890"},
 		Message:  "test message",
