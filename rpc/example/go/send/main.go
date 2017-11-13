@@ -1,11 +1,11 @@
 package main
 
 import (
+	"context"
 	"log"
 
 	"github.com/appleboy/gorush/rpc/proto"
 
-	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )
 
