@@ -14,10 +14,6 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-const (
-	port = ":9000"
-)
-
 // Server is used to implement gorush grpc server.
 type Server struct {
 	mu sync.Mutex
