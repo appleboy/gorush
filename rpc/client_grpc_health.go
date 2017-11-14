@@ -2,7 +2,6 @@ package rpc
 
 import (
 	"context"
-	"time"
 
 	"github.com/appleboy/gorush/rpc/proto"
 
@@ -12,8 +11,6 @@ import (
 
 // generate protobuffs
 //   protoc --go_out=plugins=grpc,import_path=proto:. *.proto
-
-var backoff = time.Second
 
 type healthClient struct {
 	client proto.HealthClient
@@ -37,25 +34,24 @@ func (c *healthClient) Check(ctx context.Context) (bool, error) {
 	var err error
 	req := new(proto.HealthCheckRequest)
 
-	for {
-		res, err = c.client.Check(ctx, req)
-		if err == nil {
-			if res.GetStatus() == proto.HealthCheckResponse_SERVING {
-				return true, nil
-			}
-			return false, nil
+	res, err = c.client.Check(ctx, req)
+	if err == nil {
+		if res.GetStatus() == proto.HealthCheckResponse_SERVING {
+			return true, nil
 		}
-		switch grpc.Code(err) {
-		case
-			codes.Aborted,
-			codes.DataLoss,
-			codes.DeadlineExceeded,
-			codes.Internal,
-			codes.Unavailable:
-			// non-fatal errors
-		default:
-			return false, err
-		}
-		<-time.After(backoff)
+		return false, nil
 	}
+	switch grpc.Code(err) {
+	case
+		codes.Aborted,
+		codes.DataLoss,
+		codes.DeadlineExceeded,
+		codes.Internal,
+		codes.Unavailable:
+		// non-fatal errors
+	default:
+		return false, err
+	}
+
+	return false, err
 }
