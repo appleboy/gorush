@@ -76,6 +76,7 @@ type PushNotification struct {
 	// iOS
 	Expiration     int64    `json:"expiration,omitempty"`
 	ApnsID         string   `json:"apns_id,omitempty"`
+	CollapseID     string   `json:"collapse_id,omitempty"`
 	Topic          string   `json:"topic,omitempty"`
 	Badge          *int     `json:"badge,omitempty"`
 	Category       string   `json:"category,omitempty"`
