@@ -125,8 +125,9 @@ func iosAlertDictionary(payload *payload.Payload, req PushNotification) *payload
 // ref: https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/PayloadKeyReference.html#//apple_ref/doc/uid/TP40008194-CH17-SW1
 func GetIOSNotification(req PushNotification) *apns2.Notification {
 	notification := &apns2.Notification{
-		ApnsID: req.ApnsID,
-		Topic:  req.Topic,
+		ApnsID:     req.ApnsID,
+		Topic:      req.Topic,
+		CollapseID: req.CollapseID,
 	}
 
 	if req.Expiration > 0 {

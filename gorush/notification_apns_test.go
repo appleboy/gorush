@@ -180,6 +180,7 @@ func TestCheckSilentNotification(t *testing.T) {
 	req := PushNotification{
 		ApnsID:           test,
 		Topic:            test,
+		CollapseID:       test,
 		Priority:         "normal",
 		ContentAvailable: true,
 	}
@@ -194,6 +195,9 @@ func TestCheckSilentNotification(t *testing.T) {
 		panic(err)
 	}
 
+	assert.Equal(t, test, notification.CollapseID)
+	assert.Equal(t, test, notification.ApnsID)
+	assert.Equal(t, test, notification.Topic)
 	assert.Nil(t, dat["aps"].(map[string]interface{})["alert"])
 	assert.Nil(t, dat["aps"].(map[string]interface{})["sound"])
 	assert.Nil(t, dat["aps"].(map[string]interface{})["badge"])
