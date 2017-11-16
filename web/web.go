@@ -48,7 +48,7 @@ type Browser struct {
 
 var Browsers = [...]Browser{
 	Browser{"Chrome", *regexp.MustCompile("https://android.googleapis.com/gcm/send/"), *regexp.MustCompile("<TITLE>(.*)</TITLE>")},
-	Browser{"Firefox", *regexp.MustCompile("https://updates.push.services.mozilla.com/wpush"), *regexp.MustCompile("\\\"error\\\":\\s\\\"([^\"]*)\\\"")},
+	Browser{"Firefox", *regexp.MustCompile("https://updates.push.services.mozilla.com/wpush"), *regexp.MustCompile("\\\"errno\\\":\\s(\\d+)")},
 }
 
 func NewClient() *Client {

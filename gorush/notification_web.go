@@ -83,7 +83,7 @@ Retry:
 				}
 				if found {
 					match := browser.ReError.FindStringSubmatch(errorText)
-					if match != nil && len(match) > 1 {
+					if match != nil && len(match) > 1 && match[1] != "" {
 						errorText = match[1]
 					}
 				}
