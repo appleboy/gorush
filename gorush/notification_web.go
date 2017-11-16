@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"errors"
 
-	"github.com/jaraxasoftware/gorush/web"
+	"github.com/appleboy/gorush/web"
 )
 
 // InitWebClient use for initialize APNs Client.

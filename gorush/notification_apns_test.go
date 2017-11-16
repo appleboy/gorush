@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/jaraxasoftware/gorush/config"
+	"github.com/appleboy/gorush/config"
 	"github.com/buger/jsonparser"
 	"github.com/sideshow/apns2"
 	"github.com/stretchr/testify/assert"

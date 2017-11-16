@@ -3,7 +3,7 @@ package boltdb
 import (
 	"testing"
 
-	c "github.com/jaraxasoftware/gorush/config"
+	c "github.com/appleboy/gorush/config"
 	"github.com/stretchr/testify/assert"
 )
 

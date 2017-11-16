@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/appleboy/go-fcm"
-	"github.com/jaraxasoftware/gorush/config"
+	"github.com/appleboy/gorush/config"
 	"github.com/stretchr/testify/assert"
 )
 

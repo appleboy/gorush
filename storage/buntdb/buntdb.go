@@ -5,8 +5,8 @@ import (
 	"log"
 	"strconv"
 
-	"github.com/jaraxasoftware/gorush/config"
-	"github.com/jaraxasoftware/gorush/storage"
+	"github.com/appleboy/gorush/config"
+	"github.com/appleboy/gorush/storage"
 
 	"github.com/tidwall/buntdb"
 )
