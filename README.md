@@ -2,8 +2,6 @@
 
 A push notification micro server using [Gin](https://github.com/gin-gonic/gin) framework written in Go (Golang).
 
-Forked from [gorush](https://github.com/appleboy/gorush)
-
 [![GoDoc](https://godoc.org/github.com/appleboy/gorush?status.svg)](https://godoc.org/github.com/appleboy/gorush)
 [![Build Status](http://drone.wu-boy.com/api/badges/appleboy/gorush/status.svg)](http://drone.wu-boy.com/appleboy/gorush)
 [![codecov](https://codecov.io/gh/appleboy/gorush/branch/master/graph/badge.svg)](https://codecov.io/gh/appleboy/gorush)
@@ -122,13 +120,13 @@ ios:
   voip_password: ""
   voip_production: false
   max_retry: 0 # resend fail notification, default value zero is disabled
+  key_id: "" # KeyID from developer account (Certificates, Identifiers & Profiles -> Keys)
+  team_id: "" # TeamID from developer account (View Account -> Membership)
 
 web:
   enabled: false
   apikey: "YOUR_GCM_API_KEY"
   max_retry: 0 # resend fail notification, default value zero is disabled
-  key_id: "" # KeyID from developer account (Certificates, Identifiers & Profiles -> Keys)
-  team_id: "" # TeamID from developer account (View Account -> Membership)
 
 log:
   format: "string" # string or json
@@ -751,7 +749,7 @@ Error response message table:
 | 400         | Notifications field is empty.              |
 | 400         | Number of notifications(50) over limit(10) |
 
-Success response on async request:
+Success response:
 
 ```json
 {
@@ -760,16 +758,6 @@ Success response on async request:
   "success": "ok"
 }
 ```
-
-Success response on sync request:
-
-```json
-{
-  "apnsFailedResults": {},
-  "gcmFailedResults": {},
-  "success": "ok",
-  "webFailedResults": {}
-}
 
 If you need error logs from sending fail notifications, please set `sync` as `true` on yaml config.
 
