@@ -36,7 +36,7 @@ func TestSetLogOut(t *testing.T) {
 }
 
 func TestInitDefaultLog(t *testing.T) {
-	PushConf = config.BuildDefaultPushConf()
+	PushConf, _ = config.LoadConf("")
 
 	// no errors on default config
 	assert.Nil(t, InitLog())
@@ -47,7 +47,7 @@ func TestInitDefaultLog(t *testing.T) {
 }
 
 func TestAccessLevel(t *testing.T) {
-	PushConf = config.BuildDefaultPushConf()
+	PushConf, _ = config.LoadConf("")
 
 	PushConf.Log.AccessLevel = "invalid"
 
@@ -55,7 +55,7 @@ func TestAccessLevel(t *testing.T) {
 }
 
 func TestErrorLevel(t *testing.T) {
-	PushConf = config.BuildDefaultPushConf()
+	PushConf, _ = config.LoadConf("")
 
 	PushConf.Log.ErrorLevel = "invalid"
 
@@ -63,7 +63,7 @@ func TestErrorLevel(t *testing.T) {
 }
 
 func TestAccessLogPath(t *testing.T) {
-	PushConf = config.BuildDefaultPushConf()
+	PushConf, _ = config.LoadConf("")
 
 	PushConf.Log.AccessLog = "logs/access.log"
 
@@ -71,7 +71,7 @@ func TestAccessLogPath(t *testing.T) {
 }
 
 func TestErrorLogPath(t *testing.T) {
-	PushConf = config.BuildDefaultPushConf()
+	PushConf, _ = config.LoadConf("")
 
 	PushConf.Log.ErrorLog = "logs/error.log"
 

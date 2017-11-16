@@ -33,6 +33,7 @@ func InitFCMClient(key string) (*fcm.Client, error) {
 func GetAndroidNotification(req PushNotification) *fcm.Message {
 	notification := &fcm.Message{
 		To:                    req.To,
+		Condition:             req.Condition,
 		CollapseKey:           req.CollapseKey,
 		ContentAvailable:      req.ContentAvailable,
 		DelayWhileIdle:        req.DelayWhileIdle,
@@ -41,7 +42,9 @@ func GetAndroidNotification(req PushNotification) *fcm.Message {
 		DryRun:                req.DryRun,
 	}
 
-	notification.RegistrationIDs = req.Tokens
+	if len(req.Tokens) > 0 {
+		notification.RegistrationIDs = req.Tokens
+	}
 
 	if len(req.Priority) > 0 && req.Priority == "high" {
 		notification.Priority = "high"
@@ -123,23 +126,69 @@ Retry:
 		return false
 	}
 
-	LogAccess.Debug(fmt.Sprintf("Android Success count: %d, Failure count: %d", res.Success, res.Failure))
+	if !req.IsTopic() {
+		LogAccess.Debug(fmt.Sprintf("Android Success count: %d, Failure count: %d", res.Success, res.Failure))
+	}
+
 	StatStorage.AddAndroidSuccess(int64(res.Success))
 	StatStorage.AddAndroidError(int64(res.Failure))
 
 	var newTokens []string
+	// result from Send messages to specific devices
 	for k, result := range res.Results {
+		to := ""
+		if k < len(req.Tokens) {
+			to = req.Tokens[k]
+		} else {
+			to = req.To
+		}
+
 		if result.Error != nil {
 			isError = true
-			newTokens = append(newTokens, req.Tokens[k])
-			LogPush(FailedPush, req.Tokens[k], req, result.Error)
+			newTokens = append(newTokens, to)
+			LogPush(FailedPush, to, req, result.Error)
 			if doSync {
-				req.AddLog(getLogPushEntry(FailedPush, req.Tokens[k], req, result.Error))
+				req.AddLog(getLogPushEntry(FailedPush, to, req, result.Error))
 			}
 			continue
 		}
 
-		LogPush(SucceededPush, req.Tokens[k], req, nil)
+		LogPush(SucceededPush, to, req, nil)
+	}
+
+	// result from Send messages to topics
+	if req.IsTopic() {
+		to := ""
+		if req.To != "" {
+			to = req.To
+		} else {
+			to = req.Condition
+		}
+		LogAccess.Debug("Send Topic Message: ", to)
+		// Success
+		if res.MessageID != 0 {
+			LogPush(SucceededPush, to, req, nil)
+		} else {
+			isError = true
+			// failure
+			LogPush(FailedPush, to, req, res.Error)
+			if doSync {
+				req.AddLog(getLogPushEntry(FailedPush, to, req, res.Error))
+			}
+		}
+	}
+
+	// Device Group HTTP Response
+	if len(res.FailedRegistrationIDs) > 0 {
+		isError = true
+		for _, id := range res.FailedRegistrationIDs {
+			newTokens = append(newTokens, id)
+		}
+
+		LogPush(FailedPush, notification.To, req, errors.New("device group: partial success or all fails"))
+		if doSync {
+			req.AddLog(getLogPushEntry(FailedPush, notification.To, req, errors.New("device group: partial success or all fails")))
+		}
 	}
 
 	if isError && retryCount < maxRetry {

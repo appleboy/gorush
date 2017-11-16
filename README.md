@@ -68,7 +68,7 @@ Forked from [gorush](https://github.com/appleboy/gorush)
 * Support install TLS certificates from [Let's Encrypt](https://letsencrypt.org/) automatically.
 * Support send notification through [RPC](https://en.wikipedia.org/wiki/Remote_procedure_call) protocol, we use [gRPC](https://grpc.io/) as default framework.
 
-See the [YAML config example](config/config.yml):
+See the default [YAML config example](config/config.yml):
 
 [embedmd]:# (config/config.yml yaml)
 ```yaml
@@ -96,7 +96,7 @@ core:
 
 grpc:
   enabled: false # enabale gRPC server
-  port: 50051
+  port: 9000
 
 api:
   push_uri: "/api/push"
@@ -105,6 +105,7 @@ api:
   config_uri: "/api/config"
   sys_stat_uri: "/sys/stats"
   metric_uri: "/metrics"
+  health_uri: "/healthz"
 
 android:
   enabled: true
@@ -126,6 +127,8 @@ web:
   enabled: false
   apikey: "YOUR_GCM_API_KEY"
   max_retry: 0 # resend fail notification, default value zero is disabled
+  key_id: "" # KeyID from developer account (Certificates, Identifiers & Profiles -> Keys)
+  team_id: "" # TeamID from developer account (View Account -> Membership)
 
 log:
   format: "string" # string or json
@@ -156,7 +159,7 @@ Memory average usage: **28Mb** (the total bytes of memory obtained from the OS.)
 
 ![memory usage](screenshot/memory.png)
 
-Test Command:
+Test Command (We use [bat](https://github.com/astaxie/bat) as default cli tool.):
 
 ```sh
 $ for i in {1..9999999}; do bat -b.N=1000 -b.C=100 POST localhost:8088/api/push notifications:=@notification.json; sleep 1;  done
@@ -179,19 +182,19 @@ $ go get -u -v github.com/appleboy/gorush
 On linux
 
 ```sh
-$ wget https://github.com/appleboy/gorush/releases/download/v1.9.0/gorush-v1.9.0-linux-amd64 -O gorush
+$ wget https://github.com/appleboy/gorush/releases/download/1.10.0/gorush-1.10.0-linux-amd64 -O gorush
 ```
 
 On OS X
 
 ```sh
-$ wget https://github.com/appleboy/gorush/releases/download/v1.9.0/gorush-v1.9.0-darwin-amd64 -O gorush
+$ wget https://github.com/appleboy/gorush/releases/download/1.10.0/gorush-1.10.0-darwin-amd64 -O gorush
 ```
 
 On Windows
 
 ```sh
-$ wget https://github.com/appleboy/gorush/releases/download/v1.9.0/gorush-v1.9.0-windows-amd64.exe -O gorush.exe
+$ wget https://github.com/appleboy/gorush/releases/download/1.10.0/gorush-1.10.0-windows-amd64.exe -O gorush.exe
 ```
 
 ### Command Usage
@@ -207,23 +210,26 @@ $ wget https://github.com/appleboy/gorush/releases/download/v1.9.0/gorush-v1.9.0
 Usage: gorush [options]
 
 Server Options:
+    -A, --address <address>          Address to bind (default: any)
     -p, --port <port>                Use port for clients (default: 8088)
-    -c, --config <file>              Configuration file
+    -c, --config <file>              Configuration file path
     -m, --message <message>          Notification message
     -t, --token <token>              Notification token
+    -e, --engine <engine>            Storage engine (memory, redis ...)
     --title <title>                  Notification title
-    --proxy <proxy>                  Proxy URL (only for FCM)
+    --proxy <proxy>                  Proxy URL (only for GCM)
     --pid <pid path>                 Process identifier path
+    --redis-addr <redis addr>        Redis addr (default: localhost:6379)
 iOS Options:
     -i, --key <file>                 certificate key file path
     -P, --password <password>        certificate key password
-    --topic <topic>                  iOS topic
     --ios                            enabled iOS (default: false)
     --production                     iOS production mode (default: false)
 Android Options:
     -k, --apikey <api_key>           Android API Key
     --android                        enabled android (default: false)
 Common Options:
+    --topic <topic>                  iOS or Android topic message
     -h, --help                       Show this message
     -v, --version                    Show version
 ```
@@ -233,13 +239,22 @@ Common Options:
 Send single notification with the following command.
 
 ```bash
-$ gorush -android -m="your message" -k="API Key" -t="Device token"
+$ gorush -android -m "your message" -k "API Key" -t "Device token"
+```
+
+Send messages to topics.
+
+```bash
+$ gorush --android --topic "/topics/foo-bar" \
+  -m "This is a Firebase Cloud Messaging Topic Message" \
+  -k your_api_key
 ```
 
 * `-m`: Notification message.
 * `-k`: [Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging) api key
 * `-t`: Device token.
 * `--title`: Notification title.
+* `--topic`: Send messages to topics. note: don't add device token.
 * `--proxy`: Set http proxy url. (only working for FCM)
 
 ### Send iOS notification
@@ -247,7 +262,8 @@ $ gorush -android -m="your message" -k="API Key" -t="Device token"
 Send single notification with the following command.
 
 ```bash
-$ gorush -ios -m="your message" -i="your certificate path" -t="device token" -topic="apns topic"
+$ gorush -ios -m "your message" -i "your certificate path" \
+  -t "device token" --topic "apns topic"
 ```
 
 * `-m`: Notification message.
@@ -260,7 +276,9 @@ $ gorush -ios -m="your message" -i="your certificate path" -t="device token" -to
 The default endpoint is APNs development. Please add `-production` flag for APNs production push endpoint.
 
 ```bash
-$ gorush -ios -m="your message" -i="your certificate path" -t="device token" -production
+$ gorush -ios -m "your message" -i "your certificate path" \
+  -t "device token" \
+  -production
 ```
 
 ## Run gorush web server
@@ -268,6 +286,9 @@ $ gorush -ios -m="your message" -i="your certificate path" -t="device token" -pr
 Please make sure your [config.yml](config/config.yml) exist. Default port is `8088`.
 
 ```bash
+# for default config
+$ gorush
+# for custom config file
 $ gorush -c config.yml
 ```
 
@@ -458,6 +479,7 @@ Request body must has a notifications array. The following is a parameter table 
 | sound                   | string       | sound type                                                                                        | -        |                                                               |
 | data                    | string array | extensible partition                                                                              | -        | payload for Web is taken from this field                      |
 | retry                   | int          | retry send notification if fail response from server. Value must be small than `max_retry` field. | -        |                                                               |
+| topic                   | string       | send messages to topics                                                                           |          |                                                               |
 | api_key                 | string       | Android api key                                                                                   | -        | only Android                                                  |
 | to                      | string       | The value must be a registration token, notification key, or topic.                               | -        | only Android                                                  |
 | collapse_key            | string       | a key for collapsing notifications                                                                | -        | only Android                                                  |
@@ -468,7 +490,6 @@ Request body must has a notifications array. The following is a parameter table 
 | notification            | string array | payload of a FCM message                                                                          | -        | only Android. See the [detail](#android-notification-payload) |
 | expiration              | int          | expiration for notification                                                                       | -        | only iOS                                                      |
 | apns_id                 | string       | A canonical UUID that identifies the notification                                                 | -        | only iOS                                                      |
-| topic                   | string       | topic of the remote notification                                                                  | -        | only iOS                                                      |
 | badge                   | int          | badge count                                                                                       | -        | only iOS                                                      |
 | category                | string       | the UIMutableUserNotificationCategory object                                                      | -        | only iOS                                                      |
 | alert                   | string array | payload of a iOS message                                                                          | -        | only iOS. See the [detail](#ios-alert-payload)                |
@@ -522,6 +543,7 @@ See more detail about [PushSubscription interface](https://w3c.github.io/push-ap
 Send normal notification.
 
 ```json
+{
   "notifications": [
     {
       "tokens": ["token_a", "token_b"],
@@ -529,11 +551,13 @@ Send normal notification.
       "message": "Hello World iOS!"
     }
   ]
+}
 ```
 
 The following payload asks the system to display an alert with a Close button and a single action button.The title and body keys provide the contents of the alert. The “PLAY” string is used to retrieve a localized string from the appropriate Localizable.strings file of the app. The resulting string is used by the alert as the title of an action button. This payload also asks the system to badge the app’s icon with the number 5.
 
 ```json
+{
   "notifications": [
     {
       "tokens": ["token_a", "token_b"],
@@ -546,11 +570,13 @@ The following payload asks the system to display an alert with a Close button an
       }
     }
   ]
+}
 ```
 
 The following payload specifies that the device should display an alert message, plays a sound, and badges the app’s icon.
 
 ```json
+{
   "notifications": [
     {
       "tokens": ["token_a", "token_b"],
@@ -560,11 +586,13 @@ The following payload specifies that the device should display an alert message,
       "sound": "bingbong.aiff"
     }
   ]
+}
 ```
 
 Add other fields which user defined via `data` field.
 
 ```json
+{
   "notifications": [
     {
       "tokens": ["token_a", "token_b"],
@@ -576,6 +604,29 @@ Add other fields which user defined via `data` field.
       }
     }
   ]
+}
+```
+
+Support send notification from different environment. See the detail of [issue](https://github.com/appleboy/gorush/issues/246).
+
+```diff
+{
+  "notifications": [
+    {
+      "tokens": ["token_a", "token_b"],
+      "platform": 1,
++     "production": true,
+      "message": "Hello World iOS Production!"
+    },
+    {
+      "tokens": ["token_a", "token_b"],
+      "platform": 1,
++     "development": true,
+      "message": "Hello World iOS Sandbox!"
+    },
+    .....
+  ]
+}
 ```
 
 Send VoIP push.
@@ -600,6 +651,7 @@ Send VoIP push.
 Send normal notification.
 
 ```json
+{
   "notifications": [
     {
       "tokens": ["token_a", "token_b"],
@@ -608,11 +660,13 @@ Send normal notification.
       "title": "You got message"
     }
   ]
+}
 ```
 
 Add `notification` payload.
 
 ```json
+{
   "notifications": [
     {
       "tokens": ["token_a", "token_b"],
@@ -625,11 +679,13 @@ Add `notification` payload.
       }
     }
   ]
+}
 ```
 
 Add other fields which user defined via `data` field.
 
 ```json
+{
   "notifications": [
     {
       "tokens": ["token_a", "token_b"],
@@ -643,6 +699,21 @@ Add other fields which user defined via `data` field.
       }
     }
   ]
+}
+```
+
+Send messages to topics
+
+```json
+{
+  "notifications": [
+    {
+      "to": "/topics/foo-bar",
+      "platform": 2,
+      "message": "This is a Firebase Cloud Messaging Topic Message"
+    }
+  ]
+}
 ```
 
 ### Web Example
@@ -780,22 +851,29 @@ Response with some fails for each platform on sync request:
 
 ## Run gRPC service
 
-Gorush support [gRPC](https://grpc.io/) service. You can enable the gRPC in `config.yml`, default as disabled. The following example code for Golang to send single notification.
+Gorush support [gRPC](https://grpc.io/) service. You can enable the gRPC in `config.yml`, default as disabled. Enable the gRPC server:
 
-[embedmd]:# (rpc/example/go/client.go go)
+```sh
+$ GORUSH_GRPC_ENABLED=true GORUSH_GRPC_PORT=3000 gorush
+```
+
+The following example code to send single notification in Go.
+
+[embedmd]:# (rpc/example/go/send/main.go go)
 ```go
 package main
 
 import (
+	"context"
 	"log"
 
-	pb "github.com/appleboy/gorush/rpc/proto"
-	"golang.org/x/net/context"
+	"github.com/appleboy/gorush/rpc/proto"
+
 	"google.golang.org/grpc"
 )
 
 const (
-	address = "localhost:50051"
+	address = "localhost:9000"
 )
 
 func main() {
@@ -805,9 +883,9 @@ func main() {
 		log.Fatalf("did not connect: %v", err)
 	}
 	defer conn.Close()
-	c := pb.NewGorushClient(conn)
+	c := proto.NewGorushClient(conn)
 
-	r, err := c.Send(context.Background(), &pb.NotificationRequest{
+	r, err := c.Send(context.Background(), &proto.NotificationRequest{
 		Platform: 2,
 		Tokens:   []string{"1234567890"},
 		Message:  "test message",
@@ -830,7 +908,7 @@ var services = require('./gorush_grpc_pb');
 var grpc = require('grpc');
 
 function main() {
-  var client = new services.GorushClient('localhost:50051',
+  var client = new services.GorushClient('localhost:9000',
     grpc.credentials.createInsecure());
   var request = new messages.NotificationRequest();
   request.setPlatform(2);
@@ -843,6 +921,47 @@ function main() {
 }
 
 main();
+```
+
+GRPC Health Checking example: See [document](https://github.com/grpc/grpc/blob/master/doc/health-checking.md).
+
+[embedmd]:# (rpc/example/go/send/main.go go)
+```go
+package main
+
+import (
+	"context"
+	"log"
+
+	"github.com/appleboy/gorush/rpc/proto"
+
+	"google.golang.org/grpc"
+)
+
+const (
+	address = "localhost:9000"
+)
+
+func main() {
+	// Set up a connection to the server.
+	conn, err := grpc.Dial(address, grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+	defer conn.Close()
+	c := proto.NewGorushClient(conn)
+
+	r, err := c.Send(context.Background(), &proto.NotificationRequest{
+		Platform: 2,
+		Tokens:   []string{"1234567890"},
+		Message:  "test message",
+	})
+	if err != nil {
+		log.Fatalf("could not greet: %v", err)
+	}
+	log.Printf("Success: %t\n", r.Success)
+	log.Printf("Count: %d\n", r.Counts)
+}
 ```
 
 ## Run gorush in Docker
@@ -871,40 +990,50 @@ $ http -v --verify=no --json GET http://your.docker.host/api/stat/go
 
 ## Run gorush in Kubernetes
 
-Please make sure you are install [Minikube](https://kubernetes.io/docs/tutorials/stateless-application/hello-minikube/) first.
-
-### Create a Minikube cluster
-
-```sh
-$ minikube start --vm-driver=xhyve
-```
-
 ### Quick Start
 
-Start the gorush with one command:
+Create name space as `gorush` and configuration map:
 
 ```sh
-$ kubectl create -f k8s
-deployment "frontend" created
-service "frontend" created
-deployment "redis-master" created
-service "redis-master" created
+$ kubectl create -f k8s/gorush-namespace.yaml
+$ kubectl create -f k8s/gorush-configmap.yaml
 ```
 
-Then, list all your Services:
+Create redis service:
 
 ```sh
-$ kubectl get services
-NAME           CLUSTER-IP   EXTERNAL-IP   PORT(S)          AGE
-frontend       10.0.0.156   <pending>     8088:32517/TCP   30s
-kubernetes     10.0.0.1     <none>        443/TCP          14d
-redis-master   10.0.0.67    <none>        6379/TCP         30s
+$ kubectl create -f k8s/gorush-redis-deployment.yaml
+$ kubectl create -f k8s/gorush-redis-service.yaml
 ```
 
-### view the gorush home page
+Create gorush deployment controller provides declarative updates for Pods and ReplicaSets:
 
 ```sh
-$ minikube service frontend
+$ kubectl create -f k8s/gorush-deployment.yaml
+```
+
+### Create the Service Controller for AWS ELB
+
+```sh
+$ kubectl create -f k8s/gorush-service.yaml
+```
+
+### Ingress Controller for AWS ALB
+
+Update the following in `k8s/gorush-service.yaml`
+
+```diff
+-  type: LoadBalancer
+-  # type: NodePort
++  # type: LoadBalancer
++  type: NodePort
+```
+
+Then start the AWS ALB by the follwong command.
+
+```
+$ kubectl create -f k8s/gorush-service.yaml
+$ kubectl create -f k8s/gorush-aws-alb-ingress.yaml
 ```
 
 ### Clean up the gorush:
@@ -912,9 +1041,12 @@ $ minikube service frontend
 ```sh
 $ kubectl delete -f k8s
 ```
+## Stargazers over time
+
+[![Stargazers over time](https://starcharts.herokuapp.com/appleboy/gorush.svg)](https://starcharts.herokuapp.com/appleboy/gorush)
 
 ## License
 
-Copyright 2016 Bo-Yi Wu [@appleboy](https://twitter.com/appleboy).
+Copyright 2017 Bo-Yi Wu [@appleboy](https://twitter.com/appleboy).
 
 Licensed under the MIT License.

@@ -10,21 +10,21 @@ clone:
 
 pipeline:
   deps:
-    image: appleboy/golang-testing:1.9
+    image: appleboy/golang-testing:1.9.2
     group: golang
     commands:
       - make deps
       - make embedmd
 
   lint:
-    image: appleboy/golang-testing:1.9
+    image: appleboy/golang-testing:1.9.2
     group: golang
     commands:
       - make vet
       - make lint
 
   vendor:
-    image: appleboy/golang-testing:1.9
+    image: appleboy/golang-testing:1.9.2
     group: golang
     commands:
       - make test-vendor
@@ -32,25 +32,25 @@ pipeline:
       - make fmt-check
 
   build_linux_amd64:
-    image: appleboy/golang-testing:1.9
+    image: appleboy/golang-testing:1.9.2
     group: golang
     commands:
       - make docker_build
 
   build_linux_arm64:
-    image: appleboy/golang-testing:1.9
+    image: appleboy/golang-testing:1.9.2
     group: golang
     commands:
       - make docker_build_arm64
 
   build_linux_arm:
-    image: appleboy/golang-testing:1.9
+    image: appleboy/golang-testing:1.9.2
     group: golang
     commands:
       - make docker_build_arm
 
   coverage:
-    image: appleboy/golang-testing:1.9
+    image: appleboy/golang-testing:1.9.2
     group: golang
     secrets: [ android_test_token, android_api_key ]
     commands:
@@ -65,16 +65,13 @@ pipeline:
       event: [ push, pull_request ]
 
   release:
-    image: appleboy/golang-testing:1.9
+    image: appleboy/golang-testing:1.9.2
     pull: true
-    environment:
-      GOPATH: /srv/app
-      TAGS: netgo
     commands:
       - make release
     when:
       event: [ tag ]
-      branch: [ refs/tags/* ]
+      ref: [ refs/tags/* ]
 
   publish_linux_amd64:
     image: plugins/docker
@@ -111,7 +108,7 @@ pipeline:
       branch: [ master ]
       local: false
 
-  publish_tag_linux_amd64:
+  publish_linux_amd64:
     image: plugins/docker
     group: tag
     repo: ${DRONE_REPO}
@@ -120,7 +117,31 @@ pipeline:
     group: release
     when:
       event: [ tag ]
-      branch: [ refs/tags/* ]
+      ref: [ refs/tags/* ]
+      local: false
+
+  publish_linux_arm:
+    image: plugins/docker
+    group: tag
+    repo: ${DRONE_REPO}
+    tags: [ linux-arm, 'linux-arm-${DRONE_TAG}' ]
+    dockerfile: Dockerfile.arm
+    secrets: [ docker_username, docker_password ]
+    when:
+      event: [ tag ]
+      ref: [ refs/tags/* ]
+      local: false
+
+  publish_linux_arm64:
+    image: plugins/docker
+    group: tag
+    repo: ${DRONE_REPO}
+    tags: [ linux-arm64, 'linux-arm64-${DRONE_TAG}' ]
+    dockerfile: Dockerfile.arm64
+    secrets: [ docker_username, docker_password ]
+    when:
+      event: [ tag ]
+      ref: [ refs/tags/* ]
       local: false
 
   release_tag:
@@ -131,16 +152,15 @@ pipeline:
       - dist/release/*
     when:
       event: [ tag ]
-      branch: [ refs/tags/* ]
+      ref: [ refs/tags/* ]
       local: false
 
-  facebook:
-    image: appleboy/drone-facebook
-    secrets: [ fb_page_token, fb_verify_token ]
+  discord:
+    image: appleboy/drone-discord
     pull: true
-    to: 1234973386524610
+    secrets: [ discord_webhook_id, discord_webhook_token ]
     when:
-      status: [ changed, failure ]
+      status: [ success, failure ]
 
 services:
   redis:

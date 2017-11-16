@@ -25,7 +25,7 @@ _testmain.go
 
 gin-bin
 key.pem
-bin/*
+bin
 .DS_Store
 gorush/log/*.log
 gorush.db

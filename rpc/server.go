@@ -2,24 +2,52 @@ package rpc
 
 import (
 	"net"
+	"sync"
 
 	"github.com/jaraxasoftware/gorush/gorush"
-	pb "github.com/jaraxasoftware/gorush/rpc/proto"
+	"github.com/jaraxasoftware/gorush/rpc/proto"
 
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/reflection"
+	"google.golang.org/grpc/status"
 )
 
-const (
-	port = ":50051"
-)
+// Server is used to implement gorush grpc server.
+type Server struct {
+	mu sync.Mutex
+	// statusMap stores the serving status of the services this Server monitors.
+	statusMap map[string]proto.HealthCheckResponse_ServingStatus
+}
 
-// server is used to implement gorush grpc server.
-type server struct{}
+// NewServer returns a new Server.
+func NewServer() *Server {
+	return &Server{
+		statusMap: make(map[string]proto.HealthCheckResponse_ServingStatus),
+	}
+}
+
+// Check implements `service Health`.
+func (s *Server) Check(ctx context.Context, in *proto.HealthCheckRequest) (*proto.HealthCheckResponse, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if in.Service == "" {
+		// check the server overall health status.
+		return &proto.HealthCheckResponse{
+			Status: proto.HealthCheckResponse_SERVING,
+		}, nil
+	}
+	if status, ok := s.statusMap[in.Service]; ok {
+		return &proto.HealthCheckResponse{
+			Status: status,
+		}, nil
+	}
+	return nil, status.Error(codes.NotFound, "unknown service")
+}
 
 // Send implements helloworld.GreeterServer
-func (s *server) Send(ctx context.Context, in *pb.NotificationRequest) (*pb.NotificationReply, error) {
+func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*proto.NotificationReply, error) {
 	notification := gorush.PushNotification{
 		Platform: int(in.Platform),
 		Tokens:   in.Tokens,
@@ -31,7 +59,7 @@ func (s *server) Send(ctx context.Context, in *pb.NotificationRequest) (*pb.Noti
 
 	go gorush.SendNotification(notification)
 
-	return &pb.NotificationReply{
+	return &proto.NotificationReply{
 		Success: false,
 		Counts:  int32(len(notification.Tokens)),
 	}, nil
@@ -46,16 +74,18 @@ func RunGRPCServer() error {
 
 	lis, err := net.Listen("tcp", ":"+gorush.PushConf.GRPC.Port)
 	if err != nil {
-		gorush.LogError.Error("failed to listen: %v", err)
+		gorush.LogError.Errorf("failed to listen: %v", err)
 		return err
 	}
 	s := grpc.NewServer()
-	pb.RegisterGorushServer(s, &server{})
+	srv := NewServer()
+	proto.RegisterGorushServer(s, srv)
+	proto.RegisterHealthServer(s, srv)
 	// Register reflection service on gRPC server.
 	reflection.Register(s)
 	gorush.LogAccess.Debug("gRPC server is running on " + gorush.PushConf.GRPC.Port + " port.")
 	if err := s.Serve(lis); err != nil {
-		gorush.LogError.Error("failed to serve: %v", err)
+		gorush.LogError.Errorf("failed to serve: %v", err)
 		return err
 	}
 

@@ -14,7 +14,8 @@ import (
 )
 
 func TestDisabledAndroidIosConf(t *testing.T) {
-	PushConf = config.BuildDefaultPushConf()
+	PushConf, _ = config.LoadConf("")
+	PushConf.Android.Enabled = false
 
 	err := CheckPushConf()
 
@@ -23,7 +24,7 @@ func TestDisabledAndroidIosConf(t *testing.T) {
 }
 
 func TestMissingIOSCertificate(t *testing.T) {
-	PushConf = config.BuildDefaultPushConf()
+	PushConf, _ = config.LoadConf("")
 
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.KeyPath = ""
@@ -179,6 +180,7 @@ func TestCheckSilentNotification(t *testing.T) {
 	req := PushNotification{
 		ApnsID:           test,
 		Topic:            test,
+		CollapseID:       test,
 		Priority:         "normal",
 		ContentAvailable: true,
 	}
@@ -193,6 +195,9 @@ func TestCheckSilentNotification(t *testing.T) {
 		panic(err)
 	}
 
+	assert.Equal(t, test, notification.CollapseID)
+	assert.Equal(t, test, notification.ApnsID)
+	assert.Equal(t, test, notification.Topic)
 	assert.Nil(t, dat["aps"].(map[string]interface{})["alert"])
 	assert.Nil(t, dat["aps"].(map[string]interface{})["sound"])
 	assert.Nil(t, dat["aps"].(map[string]interface{})["badge"])
@@ -345,7 +350,7 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 }
 
 func TestDisabledIosNotifications(t *testing.T) {
-	PushConf = config.BuildDefaultPushConf()
+	PushConf, _ = config.LoadConf("")
 
 	PushConf.Ios.Enabled = false
 	PushConf.Ios.KeyPath = "../certificate/certificate-valid.pem"
@@ -380,7 +385,7 @@ func TestDisabledIosNotifications(t *testing.T) {
 }
 
 func TestWrongIosCertificateExt(t *testing.T) {
-	PushConf = config.BuildDefaultPushConf()
+	PushConf, _ = config.LoadConf("")
 
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.KeyPath = "test"
@@ -391,7 +396,7 @@ func TestWrongIosCertificateExt(t *testing.T) {
 }
 
 func TestAPNSClientDevHost(t *testing.T) {
-	PushConf = config.BuildDefaultPushConf()
+	PushConf, _ = config.LoadConf("")
 
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.KeyPath = "../certificate/certificate-valid.p12"
@@ -401,7 +406,7 @@ func TestAPNSClientDevHost(t *testing.T) {
 }
 
 func TestAPNSClientProdHost(t *testing.T) {
-	PushConf = config.BuildDefaultPushConf()
+	PushConf, _ = config.LoadConf("")
 
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.Production = true
@@ -411,8 +416,32 @@ func TestAPNSClientProdHost(t *testing.T) {
 	assert.Equal(t, apns2.HostProduction, ApnsClient.Host)
 }
 
+func TestAPNSClientInvaildToken(t *testing.T) {
+	PushConf, _ = config.LoadConf("")
+
+	PushConf.Ios.Enabled = true
+	PushConf.Ios.KeyPath = "../certificate/authkey-invalid.p8"
+	err := InitAPNSClient()
+	assert.Error(t, err)
+}
+
+func TestAPNSClientVaildToken(t *testing.T) {
+	PushConf, _ = config.LoadConf("")
+
+	PushConf.Ios.Enabled = true
+	PushConf.Ios.KeyPath = "../certificate/authkey-valid.p8"
+	err := InitAPNSClient()
+	assert.NoError(t, err)
+	assert.Equal(t, apns2.HostDevelopment, ApnsClient.Host)
+
+	PushConf.Ios.Production = true
+	err = InitAPNSClient()
+	assert.NoError(t, err)
+	assert.Equal(t, apns2.HostProduction, ApnsClient.Host)
+}
+
 func TestPushToIOS(t *testing.T) {
-	PushConf = config.BuildDefaultPushConf()
+	PushConf, _ = config.LoadConf("")
 
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.KeyPath = "../certificate/certificate-valid.pem"
@@ -430,4 +459,36 @@ func TestPushToIOS(t *testing.T) {
 	// send fail
 	isError := PushToIOS(req)
 	assert.True(t, isError)
+}
+
+func TestApnsHostFromRequest(t *testing.T) {
+	PushConf, _ = config.LoadConf("")
+
+	PushConf.Ios.Enabled = true
+	PushConf.Ios.KeyPath = "../certificate/certificate-valid.pem"
+	err := InitAPNSClient()
+	assert.Nil(t, err)
+	err = InitAppStatus()
+	assert.Nil(t, err)
+
+	req := PushNotification{
+		Production: true,
+	}
+	client := getApnsClient(req)
+	assert.Equal(t, apns2.HostProduction, client.Host)
+
+	req = PushNotification{
+		Development: true,
+	}
+	client = getApnsClient(req)
+	assert.Equal(t, apns2.HostDevelopment, client.Host)
+
+	req = PushNotification{}
+	PushConf.Ios.Production = true
+	client = getApnsClient(req)
+	assert.Equal(t, apns2.HostProduction, client.Host)
+
+	PushConf.Ios.Production = false
+	client = getApnsClient(req)
+	assert.Equal(t, apns2.HostDevelopment, client.Host)
 }

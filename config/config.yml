@@ -22,7 +22,7 @@ core:
 
 grpc:
   enabled: false # enabale gRPC server
-  port: 50051
+  port: 9000
 
 api:
   push_uri: "/api/push"
@@ -31,6 +31,7 @@ api:
   config_uri: "/api/config"
   sys_stat_uri: "/sys/stats"
   metric_uri: "/metrics"
+  health_uri: "/healthz"
 
 android:
   enabled: true
@@ -47,6 +48,8 @@ ios:
   voip_password: ""
   voip_production: false
   max_retry: 0 # resend fail notification, default value zero is disabled
+  key_id: "" # KeyID from developer account (Certificates, Identifiers & Profiles -> Keys)
+  team_id: "" # TeamID from developer account (View Account -> Membership)
 
 web:
   enabled: false

@@ -278,7 +278,7 @@ func LogPush(status, token string, req PushNotification, errPush error) {
 // LogMiddleware provide gin router handler.
 func LogMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		LogRequest(c.Request.URL.Path, c.Request.Method, c.ClientIP(), c.ContentType(), c.Request.Header.Get("User-Agent"))
+		LogRequest(c.Request.URL.Path, c.Request.Method, c.ClientIP(), c.ContentType(), c.GetHeader("User-Agent"))
 		c.Next()
 	}
 }

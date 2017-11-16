@@ -62,10 +62,6 @@ func main() {
 
 	gorush.SetVersion(Version)
 
-	if len(os.Args) < 2 {
-		usage()
-	}
-
 	// Show version and exit
 	if showVersion {
 		gorush.PrintGoRushVersion()
@@ -75,17 +71,11 @@ func main() {
 	var err error
 
 	// set default parameters.
-	gorush.PushConf = config.BuildDefaultPushConf()
+	gorush.PushConf, err = config.LoadConf(configFile)
+	if err != nil {
+		log.Printf("Load yaml config file error: '%v'", err)
 
-	// load user define config.
-	if configFile != "" {
-		gorush.PushConf, err = config.LoadConfYaml(configFile)
-
-		if err != nil {
-			log.Printf("Load yaml config file error: '%v'", err)
-
-			return
-		}
+		return
 	}
 
 	if opts.Ios.KeyPath != "" {
@@ -117,7 +107,7 @@ func main() {
 	}
 
 	if err = gorush.InitLog(); err != nil {
-		log.Println(err)
+		log.Fatalf("Can't load log module, error: %v", err)
 		return
 	}
 
@@ -126,13 +116,13 @@ func main() {
 		err = gorush.SetProxy(proxy)
 
 		if err != nil {
-			gorush.LogError.Fatal("Set Proxy error: ", err)
+			gorush.LogError.Fatalf("Set Proxy error: %v", err)
 		}
 	} else if gorush.PushConf.Core.HTTPProxy != "" {
 		err = gorush.SetProxy(gorush.PushConf.Core.HTTPProxy)
 
 		if err != nil {
-			gorush.LogError.Fatal("Set Proxy error: ", err)
+			gorush.LogError.Fatalf("Set Proxy error: %v", err)
 		}
 	}
 
@@ -144,6 +134,16 @@ func main() {
 			Platform: gorush.PlatformAndroid,
 			Message:  message,
 			Title:    title,
+		}
+
+		// send message to single device
+		if token != "" {
+			req.Tokens = []string{token}
+		}
+
+		// send topic message
+		if topic != "" {
+			req.To = topic
 		}
 
 		err := gorush.CheckMessage(req)
@@ -161,7 +161,7 @@ func main() {
 		return
 	}
 
-	// send android notification
+	// send ios notification
 	if opts.Ios.Enabled {
 		if opts.Ios.Production {
 			gorush.PushConf.Ios.Production = opts.Ios.Production
@@ -175,6 +175,12 @@ func main() {
 			Title:    title,
 		}
 
+		// send message to single device
+		if token != "" {
+			req.Tokens = []string{token}
+		}
+
+		// send topic message
 		if topic != "" {
 			req.Topic = topic
 		}
@@ -273,13 +279,13 @@ Server Options:
 iOS Options:
     -i, --key <file>                 certificate key file path
     -P, --password <password>        certificate key password
-    --topic <topic>                  iOS topic
     --ios                            enabled iOS (default: false)
     --production                     iOS production mode (default: false)
 Android Options:
     -k, --apikey <api_key>           Android API Key
     --android                        enabled android (default: false)
 Common Options:
+    --topic <topic>                  iOS or Android topic message
     -h, --help                       Show this message
     -v, --version                    Show version
 `

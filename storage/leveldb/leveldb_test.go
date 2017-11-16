@@ -11,7 +11,7 @@ import (
 func TestLevelDBEngine(t *testing.T) {
 	var val int64
 
-	config := c.BuildDefaultPushConf()
+	config, _ := c.LoadConf("")
 
 	if _, err := os.Stat(config.Stat.LevelDB.Path); os.IsNotExist(err) {
 		err = os.RemoveAll(config.Stat.LevelDB.Path)

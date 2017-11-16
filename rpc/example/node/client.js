@@ -4,7 +4,7 @@ var services = require('./gorush_grpc_pb');
 var grpc = require('grpc');
 
 function main() {
-  var client = new services.GorushClient('localhost:50051',
+  var client = new services.GorushClient('localhost:9000',
     grpc.credentials.createInsecure());
   var request = new messages.NotificationRequest();
   request.setPlatform(2);

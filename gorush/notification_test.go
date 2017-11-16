@@ -9,7 +9,7 @@ import (
 )
 
 func TestCorrectConf(t *testing.T) {
-	PushConf = config.BuildDefaultPushConf()
+	PushConf, _ = config.LoadConf("")
 
 	PushConf.Android.Enabled = true
 	PushConf.Android.APIKey = "xxxxx"
@@ -23,7 +23,7 @@ func TestCorrectConf(t *testing.T) {
 }
 
 func TestSenMultipleNotifications(t *testing.T) {
-	PushConf = config.BuildDefaultPushConf()
+	PushConf, _ = config.LoadConf("")
 
 	InitWorkers(int64(2), 2)
 
@@ -60,7 +60,7 @@ func TestSenMultipleNotifications(t *testing.T) {
 }
 
 func TestDisabledAndroidNotifications(t *testing.T) {
-	PushConf = config.BuildDefaultPushConf()
+	PushConf, _ = config.LoadConf("")
 
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.KeyPath = "../certificate/certificate-valid.pem"
@@ -95,7 +95,7 @@ func TestDisabledAndroidNotifications(t *testing.T) {
 }
 
 func TestSyncModeForNotifications(t *testing.T) {
-	PushConf = config.BuildDefaultPushConf()
+	PushConf, _ = config.LoadConf("")
 
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.KeyPath = "../certificate/certificate-valid.pem"
@@ -130,6 +130,74 @@ func TestSyncModeForNotifications(t *testing.T) {
 	count, logs := queueNotification(req)
 	assert.Equal(t, 3, count)
 	assert.Equal(t, 2, len(logs))
+}
+
+func TestSyncModeForTopicNotification(t *testing.T) {
+	PushConf, _ = config.LoadConf("")
+
+	PushConf.Android.Enabled = true
+	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+	PushConf.Log.HideToken = false
+
+	// enable sync mode
+	PushConf.Core.Sync = true
+
+	req := RequestPush{
+		Notifications: []PushNotification{
+			// android
+			{
+				// error:InvalidParameters
+				// Check that the provided parameters have the right name and type.
+				To:       "/topics/foo-bar@@@##",
+				Platform: PlatFormAndroid,
+				Message:  "This is a Firebase Cloud Messaging Topic Message!",
+			},
+			// android
+			{
+				// success
+				To:       "/topics/foo-bar",
+				Platform: PlatFormAndroid,
+				Message:  "This is a Firebase Cloud Messaging Topic Message!",
+			},
+			// android
+			{
+				// success
+				Condition: "'dogs' in topics || 'cats' in topics",
+				Platform:  PlatFormAndroid,
+				Message:   "This is a Firebase Cloud Messaging Topic Message!",
+			},
+		},
+	}
+
+	count, logs := queueNotification(req)
+	assert.Equal(t, 2, count)
+	assert.Equal(t, 1, len(logs))
+}
+
+func TestSyncModeForDeviceGroupNotification(t *testing.T) {
+	PushConf, _ = config.LoadConf("")
+
+	PushConf.Android.Enabled = true
+	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+	PushConf.Log.HideToken = false
+
+	// enable sync mode
+	PushConf.Core.Sync = true
+
+	req := RequestPush{
+		Notifications: []PushNotification{
+			// android
+			{
+				To:       "aUniqueKey",
+				Platform: PlatFormAndroid,
+				Message:  "This is a Firebase Cloud Messaging Device Group Message!",
+			},
+		},
+	}
+
+	count, logs := queueNotification(req)
+	assert.Equal(t, 1, count)
+	assert.Equal(t, 1, len(logs))
 }
 
 func TestSetProxyURL(t *testing.T) {
