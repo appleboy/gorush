@@ -79,7 +79,8 @@ func GetAndroidNotification(req PushNotification) *fcm.Message {
 // PushToAndroid provide send notification to Android server.
 func PushToAndroid(req PushNotification) bool {
 	LogAccess.Debug("Start push notification for Android")
-	if PushConf.Core.Sync {
+	var doSync = req.sync
+	if doSync {
 		defer req.WaitDone()
 	}
 
@@ -146,7 +147,7 @@ Retry:
 			isError = true
 			newTokens = append(newTokens, to)
 			LogPush(FailedPush, to, req, result.Error)
-			if PushConf.Core.Sync {
+			if doSync {
 				req.AddLog(getLogPushEntry(FailedPush, to, req, result.Error))
 			}
 			continue
@@ -171,7 +172,7 @@ Retry:
 			isError = true
 			// failure
 			LogPush(FailedPush, to, req, res.Error)
-			if PushConf.Core.Sync {
+			if doSync {
 				req.AddLog(getLogPushEntry(FailedPush, to, req, res.Error))
 			}
 		}
@@ -185,7 +186,7 @@ Retry:
 		}
 
 		LogPush(FailedPush, notification.To, req, errors.New("device group: partial success or all fails"))
-		if PushConf.Core.Sync {
+		if doSync {
 			req.AddLog(getLogPushEntry(FailedPush, notification.To, req, errors.New("device group: partial success or all fails")))
 		}
 	}

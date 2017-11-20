@@ -47,6 +47,11 @@ ios:
   key_id: "" # KeyID from developer account (Certificates, Identifiers & Profiles -> Keys)
   team_id: "" # TeamID from developer account (View Account -> Membership)
 
+web:
+  enabled: false
+  apikey: "YOUR_GCM_API_KEY"
+  max_retry: 0 # resend fail notification, default value zero is disabled
+
 log:
   format: "string" # string or json
   access_log: "stdout" # stdout: output to console, or define log path like "log/access_log"

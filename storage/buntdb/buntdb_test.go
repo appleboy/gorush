@@ -46,6 +46,14 @@ func TestBuntDBEngine(t *testing.T) {
 	val = buntDB.GetAndroidError()
 	assert.Equal(t, int64(50), val)
 
+	buntDB.AddWebSuccess(60)
+	val = buntDB.GetWebSuccess()
+	assert.Equal(t, int64(60), val)
+
+	buntDB.AddWebError(70)
+	val = buntDB.GetWebError()
+	assert.Equal(t, int64(70), val)
+
 	buntDB.Reset()
 	val = buntDB.GetAndroidError()
 	assert.Equal(t, int64(0), val)

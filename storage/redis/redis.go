@@ -57,6 +57,8 @@ func (s *Storage) Reset() {
 	redisClient.Set(storage.IosErrorKey, strconv.Itoa(0), 0)
 	redisClient.Set(storage.AndroidSuccessKey, strconv.Itoa(0), 0)
 	redisClient.Set(storage.AndroidErrorKey, strconv.Itoa(0), 0)
+	redisClient.Set(storage.WebSuccessKey, strconv.Itoa(0), 0)
+	redisClient.Set(storage.WebErrorKey, strconv.Itoa(0), 0)
 }
 
 // AddTotalCount record push notification count.
@@ -87,6 +89,18 @@ func (s *Storage) AddAndroidSuccess(count int64) {
 func (s *Storage) AddAndroidError(count int64) {
 	total := s.GetAndroidError() + count
 	redisClient.Set(storage.AndroidErrorKey, strconv.Itoa(int(total)), 0)
+}
+
+// AddWebSuccess record counts of success Web push notification.
+func (s *Storage) AddWebSuccess(count int64) {
+	total := s.GetWebSuccess() + count
+	redisClient.Set(storage.WebSuccessKey, strconv.Itoa(int(total)), 0)
+}
+
+// AddWebError record counts of error Web push notification.
+func (s *Storage) AddWebError(count int64) {
+	total := s.GetWebError() + count
+	redisClient.Set(storage.WebErrorKey, strconv.Itoa(int(total)), 0)
 }
 
 // GetTotalCount show counts of all notification.
@@ -125,6 +139,22 @@ func (s *Storage) GetAndroidSuccess() int64 {
 func (s *Storage) GetAndroidError() int64 {
 	var count int64
 	getInt64(storage.AndroidErrorKey, &count)
+
+	return count
+}
+
+// GetWebSuccess show success counts of Web notification.
+func (s *Storage) GetWebSuccess() int64 {
+	var count int64
+	getInt64(storage.WebSuccessKey, &count)
+
+	return count
+}
+
+// GetWebError show error counts of Web notification.
+func (s *Storage) GetWebError() int64 {
+	var count int64
+	getInt64(storage.WebErrorKey, &count)
 
 	return count
 }

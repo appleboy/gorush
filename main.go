@@ -130,7 +130,7 @@ func main() {
 	if opts.Android.Enabled {
 		gorush.PushConf.Android.Enabled = opts.Android.Enabled
 		req := gorush.PushNotification{
-			Platform: gorush.PlatFormAndroid,
+			Platform: gorush.PlatformAndroid,
 			Message:  message,
 			Title:    title,
 		}
@@ -168,7 +168,7 @@ func main() {
 
 		gorush.PushConf.Ios.Enabled = opts.Ios.Enabled
 		req := gorush.PushNotification{
-			Platform: gorush.PlatFormIos,
+			Platform: gorush.PlatformIos,
 			Message:  message,
 			Title:    title,
 		}
@@ -225,6 +225,10 @@ func main() {
 
 	g.Go(func() error {
 		return gorush.InitAPNSClient()
+	})
+
+	g.Go(func() error {
+		return gorush.InitWebClient()
 	})
 
 	g.Go(func() error {

@@ -60,6 +60,11 @@ ios:
   key_id: "" # KeyID from developer account (Certificates, Identifiers & Profiles -> Keys)
   team_id: "" # TeamID from developer account (View Account -> Membership)
 
+web:
+  enabled: false
+  apikey: "YOUR_API_KEY"
+  max_retry: 0 # resend fail notification, default value zero is disabled
+
 log:
   format: "string" # string or json
   access_log: "stdout" # stdout: output to console, or define log path like "log/access_log"
@@ -89,6 +94,7 @@ type ConfYaml struct {
 	API     SectionAPI     `yaml:"api"`
 	Android SectionAndroid `yaml:"android"`
 	Ios     SectionIos     `yaml:"ios"`
+	Web     SectionWeb     `yaml:"web"`
 	Log     SectionLog     `yaml:"log"`
 	Stat    SectionStat    `yaml:"stat"`
 	GRPC    SectionGRPC    `yaml:"grpc"`
@@ -146,6 +152,13 @@ type SectionIos struct {
 	MaxRetry   int    `yaml:"max_retry"`
 	KeyID      string `yaml:"key_id"`
 	TeamID     string `yaml:"team_id"`
+}
+
+// SectionWeb is sub section of config.
+type SectionWeb struct {
+	Enabled        bool   `yaml:"enabled"`
+	APIKey         string `yaml:"apikey"`
+	MaxRetry       int    `yaml:"max_retry"`
 }
 
 // SectionLog is sub section of config.
@@ -278,6 +291,11 @@ func LoadConf(confPath string) (ConfYaml, error) {
 	conf.Ios.MaxRetry = viper.GetInt("ios.max_retry")
 	conf.Ios.KeyID = viper.GetString("ios.key_id")
 	conf.Ios.TeamID = viper.GetString("ios.team_id")
+
+	// Web
+	conf.Web.Enabled = viper.GetBool("web.enabled")
+	conf.Web.APIKey = viper.GetString("web.apikey")
+	conf.Web.MaxRetry = viper.GetInt("web.max_retry")
 
 	// log
 	conf.Log.Format = viper.GetString("log.format")

@@ -37,6 +37,14 @@ func TestMemoryEngine(t *testing.T) {
 	val = memory.GetAndroidError()
 	assert.Equal(t, int64(5), val)
 
+	memory.AddWebSuccess(6)
+	val = memory.GetWebSuccess()
+	assert.Equal(t, int64(6), val)
+
+	memory.AddWebError(7)
+	val = memory.GetWebError()
+	assert.Equal(t, int64(7), val)
+
 	// test reset db
 	memory.Reset()
 	val = memory.GetTotalCount()

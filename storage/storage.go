@@ -15,6 +15,12 @@ const (
 
 	// AndroidErrorKey is key name for android error count of storage
 	AndroidErrorKey = "gorush-android-error-count"
+	
+	// WebSuccessKey is key name for web success count of storage
+	WebSuccessKey = "gorush-web-success-count"
+	
+	// WebErrorKey is key name for web error count of storage
+	WebErrorKey = "gorush-web-error-count" 	
 )
 
 // Storage interface
@@ -26,9 +32,13 @@ type Storage interface {
 	AddIosError(int64)
 	AddAndroidSuccess(int64)
 	AddAndroidError(int64)
+	AddWebSuccess(int64)
+	AddWebError(int64)
 	GetTotalCount() int64
 	GetIosSuccess() int64
 	GetIosError() int64
 	GetAndroidSuccess() int64
 	GetAndroidError() int64
+	GetWebSuccess() int64
+	GetWebError() int64
 }

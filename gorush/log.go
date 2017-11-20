@@ -157,23 +157,27 @@ func LogRequest(uri string, method string, ip string, contentType string, agent 
 	LogAccess.Info(output)
 }
 
-func colorForPlatForm(platform int) string {
+func colorForPlatform(platform int) string {
 	switch platform {
-	case PlatFormIos:
+	case PlatformIos:
 		return blue
-	case PlatFormAndroid:
+	case PlatformAndroid:
 		return yellow
+	case PlatformWeb:
+		return cyan
 	default:
 		return reset
 	}
 }
 
-func typeForPlatForm(platform int) string {
+func typeForPlatform(platform int) string {
 	switch platform {
-	case PlatFormIos:
+	case PlatformIos:
 		return "ios"
-	case PlatFormAndroid:
+	case PlatformAndroid:
 		return "android"
+	case PlatformWeb:
+		return "web"
 	default:
 		return ""
 	}
@@ -200,7 +204,7 @@ func hideToken(token string, markLen int) string {
 func getLogPushEntry(status, token string, req PushNotification, errPush error) LogPushEntry {
 	var errMsg string
 
-	plat := typeForPlatForm(req.Platform)
+	plat := typeForPlatform(req.Platform)
 
 	if errPush != nil {
 		errMsg = errPush.Error()
@@ -224,7 +228,7 @@ func LogPush(status, token string, req PushNotification, errPush error) {
 	var platColor, resetColor, output string
 
 	if isTerm {
-		platColor = colorForPlatForm(req.Platform)
+		platColor = colorForPlatform(req.Platform)
 		resetColor = reset
 	}
 
