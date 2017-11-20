@@ -72,23 +72,27 @@ Retry:
 			LogPush(FailedPush, subscription.Endpoint, req, err)
 			fmt.Println(err)
 			if doSync {
-				var errorText = response.Body
-				var browser web.Browser
-				var found = false
-				for _, current := range web.Browsers {
-					if current.ReDetect.FindString(subscription.Endpoint) != "" {
-						browser = current
-						found = true
+				if response == nil {
+					req.AddLog(getLogPushEntry(FailedPush, subscription.Endpoint, req, err))
+				} else {
+					var errorText = response.Body
+					var browser web.Browser
+					var found = false
+					for _, current := range web.Browsers {
+						if current.ReDetect.FindString(subscription.Endpoint) != "" {
+							browser = current
+							found = true
+						}
 					}
-				}
-				if found {
-					match := browser.ReError.FindStringSubmatch(errorText)
-					if match != nil && len(match) > 1 && match[1] != "" {
-						errorText = match[1]
+					if found {
+						match := browser.ReError.FindStringSubmatch(errorText)
+						if match != nil && len(match) > 1 && match[1] != "" {
+							errorText = match[1]
+						}
 					}
+					var errorObj = errors.New(errorText)
+					req.AddLog(getLogPushEntry(FailedPush, subscription.Endpoint, req, errorObj))
 				}
-				var errorObj = errors.New(errorText)
-				req.AddLog(getLogPushEntry(FailedPush, subscription.Endpoint, req, errorObj))
 			} 
 		} else {
 			successCount++
