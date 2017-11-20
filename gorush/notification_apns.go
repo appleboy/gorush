@@ -195,7 +195,8 @@ func getApnsClient(req PushNotification) (client *apns2.Client) {
 // PushToIOS provide send notification to APNs server.
 func PushToIOS(req PushNotification) bool {
 	LogAccess.Debug("Start push notification for iOS")
-	if PushConf.Core.Sync {
+	var doSync = req.sync
+	if doSync {
 		defer req.WaitDone()
 	}
 
@@ -226,7 +227,7 @@ Retry:
 		if err != nil {
 			// apns server error
 			LogPush(FailedPush, token, req, err)
-			if PushConf.Core.Sync {
+			if doSync {
 				req.AddLog(getLogPushEntry(FailedPush, token, req, err))
 			}
 			StatStorage.AddIosError(1)
@@ -239,7 +240,7 @@ Retry:
 			// error message:
 			// ref: https://github.com/sideshow/apns2/blob/master/response.go#L14-L65
 			LogPush(FailedPush, token, req, errors.New(res.Reason))
-			if PushConf.Core.Sync {
+			if doSync {
 				req.AddLog(getLogPushEntry(FailedPush, token, req, errors.New(res.Reason)))
 			}
 			StatStorage.AddIosError(1)

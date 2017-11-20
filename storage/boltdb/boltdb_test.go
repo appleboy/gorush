@@ -40,6 +40,14 @@ func TestBoltDBEngine(t *testing.T) {
 	val = boltDB.GetAndroidError()
 	assert.Equal(t, int64(50), val)
 
+	boltDB.AddWebSuccess(60)
+	val = boltDB.GetWebSuccess()
+	assert.Equal(t, int64(60), val)
+
+	boltDB.AddWebError(70)
+	val = boltDB.GetWebError()
+	assert.Equal(t, int64(70), val)
+
 	// test reset db
 	boltDB.Reset()
 	val = boltDB.GetAndroidError()

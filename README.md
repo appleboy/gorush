@@ -42,11 +42,13 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 
 * [APNS](https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/APNSOverview.html)
 * [FCM](https://firebase.google.com/)
+* [Push API](https://w3c.github.io/push-api/)
 
 ## Features
 
 * Support [Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging) using [go-fcm](https://github.com/appleboy/go-fcm) library for Android.
 * Support [HTTP/2](https://http2.github.io/) Apple Push Notification Service using [apns2](https://github.com/sideshow/apns2) library.
+* Support [Push API](https://w3c.github.io/push-api/) using [gowebpush](https://github.com/martijnc/gowebpush) package
 * Support [YAML](https://github.com/go-yaml/yaml) configuration.
 * Support command line to send single Android or iOS notification.
 * Support Web API to send push notification.
@@ -113,9 +115,18 @@ ios:
   key_path: "key.pem"
   password: "" # certificate password, default as empty string.
   production: false
+  voip_enabled: false
+  voip_key_path: "voipkey.pem"
+  voip_password: ""
+  voip_production: false
   max_retry: 0 # resend fail notification, default value zero is disabled
   key_id: "" # KeyID from developer account (Certificates, Identifiers & Profiles -> Keys)
   team_id: "" # TeamID from developer account (View Account -> Membership)
+
+web:
+  enabled: false
+  apikey: "YOUR_GCM_API_KEY"
+  max_retry: 0 # resend fail notification, default value zero is disabled
 
 log:
   format: "string" # string or json
@@ -443,18 +454,28 @@ See more example about [iOS](#ios-example) or [Android](#android-example).
 
 ### Request body
 
+Request body is a JSON containing the following fields.
+
+| name          | type         | description                                                     | required | note                                                                              |
+|---------------|--------------|-----------------------------------------------------------------|----------|-----------------------------------------------------------------------------------|
+| notifications | object array | Notifications that are being sent                               | o        |                                                                                   |
+| sync          | bool         | Wait for push services responses before replying to the request | -        | Error messages are only returned when this is true. Default value is config based |
+
+The following is a parameter table for each notification in the notifications array.
+
 Request body must has a notifications array. The following is a parameter table for each notification.
 
 | name                    | type         | description                                                                                       | required | note                                                          |
 |-------------------------|--------------|---------------------------------------------------------------------------------------------------|----------|---------------------------------------------------------------|
 | tokens                  | string array | device tokens                                                                                     | o        |                                                               |
-| platform                | int          | platform(iOS,Android)                                                                             | o        | 1=iOS, 2=Android                                              |
+| subscriptions           | object array | Web Push subscription objects                                                                     | o        | Required if platform is 3                                     |
+| platform                | int          | platform(iOS,Android,Web)                                                                         | o        | 1=iOS, 2=Android, 3=Web                                       |
 | message                 | string       | message for notification                                                                          | -        |                                                               |
 | title                   | string       | notification title                                                                                | -        |                                                               |
 | priority                | string       | Sets the priority of the message.                                                                 | -        | `normal` or `high`                                            |
 | content_available       | bool         | data messages wake the app by default.                                                            | -        |                                                               |
 | sound                   | string       | sound type                                                                                        | -        |                                                               |
-| data                    | string array | extensible partition                                                                              | -        |                                                               |
+| data                    | string array | extensible partition                                                                              | -        | payload for Web is taken from this field                      |
 | retry                   | int          | retry send notification if fail response from server. Value must be small than `max_retry` field. | -        |                                                               |
 | topic                   | string       | send messages to topics                                                                           |          |                                                               |
 | api_key                 | string       | Android api key                                                                                   | -        | only Android                                                  |
@@ -471,6 +492,8 @@ Request body must has a notifications array. The following is a parameter table 
 | category                | string       | the UIMutableUserNotificationCategory object                                                      | -        | only iOS                                                      |
 | alert                   | string array | payload of a iOS message                                                                          | -        | only iOS. See the [detail](#ios-alert-payload)                |
 | mutable_content         | bool         | enable Notification Service app extension.                                                        | -        | only iOS(10.0+).                                              |
+| voip                    | bool         | send VoIP push instead of normal push.                                                            | -        | only iOS.                                                     |
+
 ### iOS alert payload
 
 | name           | type             | description                                                                                      | required | note |
@@ -502,6 +525,16 @@ See more detail about [APNs Remote Notification Payload](https://developer.apple
 | title_loc_args | string | Indicates the string value to replace format specifiers in title string for localization.                 | -        |      |
 
 See more detail about [Firebase Cloud Messaging HTTP Protocol reference](https://firebase.google.com/docs/cloud-messaging/http-server-ref#send-downstream).
+
+### Web Push subscription
+
+| name      | type   | description                                                                | required | note |
+|-----------|--------|----------------------------------------------------------------------------|----------|------|
+| endpoint  | string | Endpoint URL from PushSubscription browser object.                         | o        |      |
+| key       | string | P-256 ECDH Diffie-Hellman public key from PushSubscription browser object. | o        |      |
+| auth      | string | Authentication secret from PushSubscription browser object.                | o        |      |
+
+See more detail about [PushSubscription interface](https://w3c.github.io/push-api/#pushsubscription-interface)
 
 ### iOS Example
 
@@ -594,6 +627,23 @@ Support send notification from different environment. See the detail of [issue](
 }
 ```
 
+Send VoIP push.
+
+```json
+  "notifications": [
+    {
+      "tokens": ["token_a", "token_b"],
+      "platform": 1,
+      "message": "Hello VoIP iOS!",
+      "voip": true,
+      "data": {
+        "key1": "Incoming call",
+        "key2": "Peter"
+      }
+    }
+  ]
+```
+
 ### Android Example
 
 Send normal notification.
@@ -664,6 +714,31 @@ Send messages to topics
 }
 ```
 
+### Web Example
+
+Send normal notification.
+
+```json
+  "notifications": [
+    {
+      "subscriptions": [{
+        "endpoint": "endpoint_a",
+        "key": "key_a",
+        "auth": "auth_a"
+      },{
+        "endpoint": "endpoint_b",
+        "key": "key_b",
+        "auth": "auth_b"
+      }],
+      "platform": 3,
+      "data": {
+        "message": "Hello World Web!",
+        "title": "You got message"
+      }
+    }
+  ]
+```
+
 ### Response body
 
 Error response message table:
@@ -727,6 +802,40 @@ See the following error format.
   "success": "ok"
 }
 ```
+
+Response with some fails for each platform on sync request:
+
+```json
+{
+  "apnsFailedResults": {
+    "apns_token_a": {
+      "StatusCode": 400,
+      "Reason": "BadDeviceToken",
+      "ApnsID": "apns_id_a",
+      "Timestamp": "0001-01-01T00:00:00Z"
+    }
+  },
+  "gcmFailedResults": {
+    "gcm_token_a": "InvalidRegistration"
+  },
+  "success": "ok",
+  "webFailedResults": {
+    "chrome_endpoint_a": {
+      "StatusCode": 400,
+      "Body": "<HTML>\n<HEAD>\n<TITLE>UnauthorizedRegistration</TITLE>\n</HEAD>\n<BODY BGCOLOR=\"#FFFFFF\" TEXT=\"#000000\">\n<H1>UnauthorizedRegistration</H1>\n<H2>Error 400</H2>\n</BODY>\n</HTML>\n"
+    },
+    "firefox_endpoint_a": {
+      "StatusCode": 410,
+      "Body": "{\"code\": 410, \"errno\": 106, \"error\": \"\", \"more_info\": \"http://autopush.readthedocs.io/en/latest/http.html#error-codes\", \"message\": \"Request did not validate No such subscription\"}"
+    },
+    "firefox_endpoint_b": {
+      "StatusCode": 404,
+      "Body": "{\"code\": 404, \"errno\": 102, \"error\": \"Not Found\", \"more_info\": \"http://autopush.readthedocs.io/en/latest/http.html#error-codes\", \"message\": \"Request did not validate invalid token\"}"
+    }
+  }
+}
+```
+
 
 ## Run gRPC service
 

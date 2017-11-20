@@ -16,10 +16,12 @@ func InitWorkers(workerNum int64, queueNum int64) {
 // SendNotification is send message to iOS or Android
 func SendNotification(msg PushNotification) {
 	switch msg.Platform {
-	case PlatFormIos:
+	case PlatformIos:
 		PushToIOS(msg)
-	case PlatFormAndroid:
+	case PlatformAndroid:
 		PushToAndroid(msg)
+	case PlatformWeb:
+		PushToWeb(msg)
 	}
 }
 
@@ -33,38 +35,55 @@ func startWorker() {
 // queueNotification add notification to queue list.
 func queueNotification(req RequestPush) (int, []LogPushEntry) {
 	var count int
+	var doSync = PushConf.Core.Sync
+	if (req.Sync != nil) {
+		doSync = *req.Sync
+	}
 	wg := sync.WaitGroup{}
 	newNotification := []PushNotification{}
 	for _, notification := range req.Notifications {
 		switch notification.Platform {
-		case PlatFormIos:
-			if !PushConf.Ios.Enabled {
+		case PlatformIos:
+			if !PushConf.Ios.Enabled && !notification.Voip {
 				continue
 			}
-		case PlatFormAndroid:
+			if !PushConf.Ios.VoipEnabled && notification.Voip {
+				continue
+			}
+		case PlatformAndroid:
 			if !PushConf.Android.Enabled {
 				continue
 			}
+		case PlatformWeb:
+			if !PushConf.Web.Enabled {
+				continue
+			}
 		}
+		notification.sync = doSync
 		newNotification = append(newNotification, notification)
 	}
 
 	log := make([]LogPushEntry, 0, count)
 	for _, notification := range newNotification {
-		if PushConf.Core.Sync {
+		if doSync {
 			notification.wg = &wg
 			notification.log = &log
 			notification.AddWaitCount()
 		}
 		QueueNotification <- notification
-		count += len(notification.Tokens)
+		switch notification.Platform {
+		case PlatformWeb:
+			count += len(notification.Subscriptions)
+		default:
+			count += len(notification.Tokens)
+		}
 		// Count topic message
 		if notification.To != "" {
 			count++
 		}
 	}
 
-	if PushConf.Core.Sync {
+	if doSync {
 		wg.Wait()
 	}
 

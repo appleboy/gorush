@@ -11,9 +11,6 @@ import (
 	"github.com/appleboy/go-fcm"
 )
 
-// D provide string array
-type D map[string]interface{}
-
 const (
 	// ApnsPriorityLow will tell APNs to send the push message at a time that takes
 	// into account power considerations for the device. Notifications with this
@@ -45,22 +42,30 @@ type Alert struct {
 // RequestPush support multiple notification request.
 type RequestPush struct {
 	Notifications []PushNotification `json:"notifications" binding:"required"`
+	Sync          *bool              `json:"sync,omitempty"`
+}
+
+type Subscription struct {
+	Endpoint  string    `json:"endpoint" binding:"required"`
+	Key       string    `json:"key" binding:"required"`
+	Auth      string    `json:"auth" binding:"required"`
 }
 
 // PushNotification is single notification request
 type PushNotification struct {
 	// Common
-	Tokens           []string `json:"tokens" binding:"required"`
-	Platform         int      `json:"platform" binding:"required"`
-	Message          string   `json:"message,omitempty"`
-	Title            string   `json:"title,omitempty"`
-	Priority         string   `json:"priority,omitempty"`
-	ContentAvailable bool     `json:"content_available,omitempty"`
-	Sound            string   `json:"sound,omitempty"`
-	Data             D        `json:"data,omitempty"`
-	Retry            int      `json:"retry,omitempty"`
+	Tokens           []string               `json:"tokens" binding:"required"`
+	Platform         int                    `json:"platform" binding:"required"`
+	Message          string                 `json:"message,omitempty"`
+	Title            string                 `json:"title,omitempty"`
+	Priority         string                 `json:"priority,omitempty"`
+	ContentAvailable bool                   `json:"content_available,omitempty"`
+	Sound            string                 `json:"sound,omitempty"`
+	Data             map[string]interface{} `json:"data,omitempty"`
+	Retry            int                    `json:"retry,omitempty"`
 	wg               *sync.WaitGroup
 	log              *[]LogPushEntry
+	sync             bool
 
 	// Android
 	APIKey                string           `json:"api_key,omitempty"`
@@ -85,6 +90,10 @@ type PushNotification struct {
 	MutableContent bool     `json:"mutable-content,omitempty"`
 	Production     bool     `json:"production,omitempty"`
 	Development    bool     `json:"development,omitempty"`
+	Voip           bool     `json:"voip,omitempty"`
+
+	// Web
+	Subscriptions  []Subscription `json:"subscriptions,omitempty"`
 }
 
 // WaitDone decrements the WaitGroup counter.
@@ -111,7 +120,7 @@ func (p *PushNotification) AddLog(log LogPushEntry) {
 // IsTopic check if message format is topic for FCM
 // ref: https://firebase.google.com/docs/cloud-messaging/send-message#topic-http-post-request
 func (p *PushNotification) IsTopic() bool {
-	return (p.Platform == PlatFormAndroid && p.To != "" && strings.HasPrefix(p.To, "/topics/")) ||
+	return (p.Platform == PlatformAndroid && p.To != "" && strings.HasPrefix(p.To, "/topics/")) ||
 		p.Condition != ""
 }
 
@@ -119,31 +128,39 @@ func (p *PushNotification) IsTopic() bool {
 func CheckMessage(req PushNotification) error {
 	var msg string
 
-	// ignore send topic mesaage from FCM
-	if !req.IsTopic() && len(req.Tokens) == 0 && len(req.To) == 0 {
-		msg = "the message must specify at least one registration ID"
-		LogAccess.Debug(msg)
-		return errors.New(msg)
-	}
+    if req.Platform == PlatformIos || req.Platform == PlatformAndroid {
+		// ignore send topic mesaage from FCM
+		if !req.IsTopic() && len(req.Tokens) == 0 && len(req.To) == 0 {
+			msg = "the message must specify at least one registration ID"
+			LogAccess.Debug(msg)
+			return errors.New(msg)
+		}
 
-	if len(req.Tokens) == PlatFormIos && len(req.Tokens[0]) == 0 {
-		msg = "the token must not be empty"
-		LogAccess.Debug(msg)
-		return errors.New(msg)
-	}
+		if req.Platform == PlatformIos && len(req.Tokens[0]) == 0 {
+			msg = "the token must not be empty"
+			LogAccess.Debug(msg)
+			return errors.New(msg)
+		}
 
-	if req.Platform == PlatFormAndroid && len(req.Tokens) > 1000 {
-		msg = "the message may specify at most 1000 registration IDs"
-		LogAccess.Debug(msg)
-		return errors.New(msg)
-	}
+		if req.Platform == PlatformAndroid && len(req.Tokens) > 1000 {
+			msg = "the message may specify at most 1000 registration IDs"
+			LogAccess.Debug(msg)
+			return errors.New(msg)
+		}
 
-	// ref: https://firebase.google.com/docs/cloud-messaging/http-server-ref
-	if req.Platform == PlatFormAndroid && req.TimeToLive != nil && (*req.TimeToLive < uint(0) || uint(2419200) < *req.TimeToLive) {
-		msg = "the message's TimeToLive field must be an integer " +
-			"between 0 and 2419200 (4 weeks)"
-		LogAccess.Debug(msg)
-		return errors.New(msg)
+		// ref: https://firebase.google.com/docs/cloud-messaging/http-server-ref
+		if req.Platform == PlatformAndroid && req.TimeToLive != nil && (*req.TimeToLive < uint(0) || uint(2419200) < *req.TimeToLive) {
+			msg = "the message's TimeToLive field must be an integer " +
+				"between 0 and 2419200 (4 weeks)"
+			LogAccess.Debug(msg)
+			return errors.New(msg)
+		}
+	} else if req.Platform == PlatformWeb {
+		if len(req.Subscriptions) == 0 {
+			msg = "the message must specify at least one subscription"
+			LogAccess.Debug(msg)
+			return errors.New(msg)
+		}
 	}
 
 	return nil
@@ -166,8 +183,8 @@ func SetProxy(proxy string) error {
 
 // CheckPushConf provide check your yml config.
 func CheckPushConf() error {
-	if !PushConf.Ios.Enabled && !PushConf.Android.Enabled {
-		return errors.New("Please enable iOS or Android config in yml config")
+	if !PushConf.Ios.VoipEnabled && !PushConf.Ios.Enabled && !PushConf.Android.Enabled && !PushConf.Web.Enabled {
+		return errors.New("Please enable iOS, VoIP iOS, Android or Web config in yml config")
 	}
 
 	if PushConf.Ios.Enabled {
@@ -181,9 +198,21 @@ func CheckPushConf() error {
 		}
 	}
 
+	if PushConf.Ios.VoipEnabled {
+		if PushConf.Ios.VoipKeyPath == "" {
+			return errors.New("Missing VoIP iOS certificate path")
+		}
+	}
+
 	if PushConf.Android.Enabled {
 		if PushConf.Android.APIKey == "" {
 			return errors.New("Missing Android API Key")
+		}
+	}
+
+	if PushConf.Web.Enabled {
+		if PushConf.Web.APIKey == "" {
+			return errors.New("Missing GCM API Key for Chrome")
 		}
 	}
 

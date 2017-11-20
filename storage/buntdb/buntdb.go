@@ -35,6 +35,8 @@ func (s *Storage) Reset() {
 	s.setBuntDB(storage.IosErrorKey, 0)
 	s.setBuntDB(storage.AndroidSuccessKey, 0)
 	s.setBuntDB(storage.AndroidErrorKey, 0)
+	s.setBuntDB(storage.WebSuccessKey, 0)
+	s.setBuntDB(storage.WebErrorKey, 0)
 }
 
 func (s *Storage) setBuntDB(key string, count int64) {
@@ -110,6 +112,18 @@ func (s *Storage) AddAndroidError(count int64) {
 	s.setBuntDB(storage.AndroidErrorKey, total)
 }
 
+// AddWebSuccess record counts of success Web push notification.
+func (s *Storage) AddWebSuccess(count int64) {
+	total := s.GetWebSuccess() + count
+	s.setBuntDB(storage.WebSuccessKey, total)
+}
+
+// AddWebError record counts of error Web push notification.
+func (s *Storage) AddWebError(count int64) {
+	total := s.GetWebError() + count
+	s.setBuntDB(storage.WebErrorKey, total)
+}
+
 // GetTotalCount show counts of all notification.
 func (s *Storage) GetTotalCount() int64 {
 	var count int64
@@ -146,6 +160,22 @@ func (s *Storage) GetAndroidSuccess() int64 {
 func (s *Storage) GetAndroidError() int64 {
 	var count int64
 	s.getBuntDB(storage.AndroidErrorKey, &count)
+
+	return count
+}
+
+// GetWebSuccess show success counts of Web notification.
+func (s *Storage) GetWebSuccess() int64 {
+	var count int64
+	s.getBuntDB(storage.WebSuccessKey, &count)
+
+	return count
+}
+
+// GetWebError show error counts of Web notification.
+func (s *Storage) GetWebError() int64 {
+	var count int64
+	s.getBuntDB(storage.WebErrorKey, &count)
 
 	return count
 }
