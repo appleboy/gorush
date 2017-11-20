@@ -29,8 +29,6 @@ bin
 .DS_Store
 gorush/log/*.log
 gorush.db
-vendor/*/
-Dockerfile.tmp
 .cover
 *.db*
 coverage.txt
