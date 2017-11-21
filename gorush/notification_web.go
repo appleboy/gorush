@@ -19,7 +19,7 @@ func InitWebClient() error {
 
 func getWebNotification(req PushNotification, subscription *Subscription) *web.Notification {
 	notification := &web.Notification{
-		Payload: *map[string]interface{}(&req.Data(,
+		Payload: (*map[string]interface{})(&req.Data),
 		Subscription: &web.Subscription{
 			Endpoint: subscription.Endpoint,
 			Key:      subscription.Key,
