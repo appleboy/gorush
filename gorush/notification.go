@@ -131,7 +131,13 @@ func (p *PushNotification) IsTopic() bool {
 func CheckMessage(req PushNotification) error {
 	var msg string
 
-	if req.Platform == PlatformIos || req.Platform == PlatformAndroid {
+	if req.Platform == PlatformWeb {
+		if len(req.Subscriptions) == 0 {
+			msg = "the message must specify at least one subscription"
+			LogAccess.Debug(msg)
+			return errors.New(msg)
+		}
+	} else {
 		// ignore send topic mesaage from FCM
 		if !req.IsTopic() && len(req.Tokens) == 0 && len(req.To) == 0 {
 			msg = "the message must specify at least one registration ID"
@@ -155,12 +161,6 @@ func CheckMessage(req PushNotification) error {
 		if req.Platform == PlatformAndroid && req.TimeToLive != nil && (*req.TimeToLive < uint(0) || uint(2419200) < *req.TimeToLive) {
 			msg = "the message's TimeToLive field must be an integer " +
 				"between 0 and 2419200 (4 weeks)"
-			LogAccess.Debug(msg)
-			return errors.New(msg)
-		}
-	} else if req.Platform == PlatformWeb {
-		if len(req.Subscriptions) == 0 {
-			msg = "the message must specify at least one subscription"
 			LogAccess.Debug(msg)
 			return errors.New(msg)
 		}

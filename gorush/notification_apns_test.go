@@ -20,7 +20,7 @@ func TestDisabledAndroidIosConf(t *testing.T) {
 	err := CheckPushConf()
 
 	assert.Error(t, err)
-	assert.Equal(t, "Please enable iOS or Android config in yml config", err.Error())
+	assert.Equal(t, "Please enable iOS, Android or Web config in yml config", err.Error())
 }
 
 func TestMissingIOSCertificate(t *testing.T) {
