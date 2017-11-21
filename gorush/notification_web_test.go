@@ -41,7 +41,7 @@ func TestPushToWebWrongSubscription(t *testing.T) {
 	PushConf.Web.APIKey = os.Getenv("ANDROID_API_KEY")
 
 	req := PushNotification{
-		Subscriptions: [...]Subscription{{"aaaaaa", "bbbbb", "ccccc"}},
+		Subscriptions: [1]Subscription{{"aaaaaa", "bbbbbb", "cccccc"}},
 		Platform:      PlatformWeb,
 		Message:       "Welcome",
 	}
