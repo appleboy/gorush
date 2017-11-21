@@ -37,6 +37,11 @@ func TestSenMultipleNotifications(t *testing.T) {
 
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
+	PushConf.Web.Enabled = true
+	PushConf.Web.APIKey = os.Getenv("ANDROID_API_KEY")
+	err2 := InitWebClient()
+	assert.Nil(t, err2)
+
 	req := RequestPush{
 		Notifications: []PushNotification{
 			//ios
@@ -51,11 +56,17 @@ func TestSenMultipleNotifications(t *testing.T) {
 				Platform: PlatformAndroid,
 				Message:  "Welcome",
 			},
+			// web
+			{
+				Subscriptions: []Subscription{{"https://updates.push.services.mozilla.com/wpush/v1/gAAAAABZdwpXbtIhiT_gXZZ_lUrs0AqbMROAwW8-LpTVx_LNYTU-xrcvIoZ7LXNNeTSSO525EYuKCeGueKtSqi626yCOAaFWYAzRu9hOIwvVmJFfN3BIlMjR9PJU28s7JsNVKywp4_wb", "BIqGnYTkDOAyPNTInUdE7AeYnA2LrHNu6jKpfYwcfl3Z8EVyRtftqpHgJTku3YjQBGwqJyzxsYwc9tHNB5jUks8", "j7NMANtEQ5zoFUGtiCdqRQ"}},
+				Platform:      PlatformWeb,
+				Message:       "Welcome",
+			},
 		},
 	}
 
 	count, logs := queueNotification(req)
-	assert.Equal(t, 3, count)
+	assert.Equal(t, 4, count)
 	assert.Equal(t, 0, len(logs))
 }
 
@@ -110,6 +121,11 @@ func TestSyncModeForNotifications(t *testing.T) {
 
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
+	PushConf.Web.Enabled = true
+	PushConf.Web.APIKey = os.Getenv("ANDROID_API_KEY")
+	err2 := InitWebClient()
+	assert.Nil(t, err2)
+
 	req := RequestPush{
 		Notifications: []PushNotification{
 			//ios
@@ -124,11 +140,17 @@ func TestSyncModeForNotifications(t *testing.T) {
 				Platform: PlatformAndroid,
 				Message:  "Welcome",
 			},
+			// web
+			{
+				Subscriptions: []Subscription{{"https://updates.push.services.mozilla.com/wpush/v1/gAAAAABZdwpXbtIhiT_gXZZ_lUrs0AqbMROAwW8-LpTVx_LNYTU-xrcvIoZ7LXNNeTSSO525EYuKCeGueKtSqi626yCOAaFWYAzRu9hOIwvVmJFfN3BIlMjR9PJU28s7JsNVKywp4_wb", "BIqGnYTkDOAyPNTInUdE7AeYnA2LrHNu6jKpfYwcfl3Z8EVyRtftqpHgJTku3YjQBGwqJyzxsYwc9tHNB5jUks8", "j7NMANtEQ5zoFUGtiCdqRQ"}},
+				Platform:      PlatformWeb,
+				Message:       "Welcome",
+			},
 		},
 	}
 
 	count, logs := queueNotification(req)
-	assert.Equal(t, 3, count)
+	assert.Equal(t, 4, count)
 	assert.Equal(t, 2, len(logs))
 }
 
