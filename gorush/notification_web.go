@@ -68,6 +68,7 @@ Retry:
 		notification := getWebNotification(req, &subscription)
 		response, err := WebClient.Push(notification, apiKey)
 		if err != nil {
+			isError = true
 			failureCount++
 			LogPush(FailedPush, subscription.Endpoint, req, err)
 			fmt.Println(err)
@@ -95,6 +96,7 @@ Retry:
 				}
 			}
 		} else {
+			isError = false
 			successCount++
 			LogPush(SucceededPush, subscription.Endpoint, req, nil)
 		}
