@@ -45,7 +45,8 @@ type RequestPush struct {
 	Sync          *bool              `json:"sync,omitempty"`
 }
 
-type subscription struct {
+// Subscription is the Webpush subscription object.
+type Subscription struct {
 	Endpoint  string    `json:"endpoint" binding:"required"`
 	Key       string    `json:"key" binding:"required"`
 	Auth      string    `json:"auth" binding:"required"`
@@ -92,7 +93,7 @@ type PushNotification struct {
 	Development    bool     `json:"development,omitempty"`
 
 	// Web
-	Subscriptions  []subscription `json:"subscriptions,omitempty"`
+	Subscriptions  []Subscription `json:"subscriptions,omitempty"`
 }
 
 // WaitDone decrements the WaitGroup counter.
