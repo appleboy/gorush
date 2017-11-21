@@ -50,7 +50,7 @@ func TestPushToAndroidWrongToken(t *testing.T) {
 
 	req := PushNotification{
 		Tokens:   []string{"aaaaaa", "bbbbb"},
-		Platform: PlatFormAndroid,
+		Platform: PlatformAndroid,
 		Message:  "Welcome",
 	}
 
@@ -71,7 +71,7 @@ func TestPushToAndroidRightTokenForJSONLog(t *testing.T) {
 
 	req := PushNotification{
 		Tokens:   []string{androidToken},
-		Platform: PlatFormAndroid,
+		Platform: PlatformAndroid,
 		Message:  "Welcome",
 	}
 
@@ -89,7 +89,7 @@ func TestPushToAndroidRightTokenForStringLog(t *testing.T) {
 
 	req := PushNotification{
 		Tokens:   []string{androidToken},
-		Platform: PlatFormAndroid,
+		Platform: PlatformAndroid,
 		Message:  "Welcome",
 	}
 
@@ -107,7 +107,7 @@ func TestOverwriteAndroidAPIKey(t *testing.T) {
 
 	req := PushNotification{
 		Tokens:   []string{androidToken, "bbbbb"},
-		Platform: PlatFormAndroid,
+		Platform: PlatformAndroid,
 		Message:  "Welcome",
 		// overwrite android api key
 		APIKey: "1234",
@@ -143,7 +143,7 @@ func TestFCMMessage(t *testing.T) {
 	// ignore check token length if send topic message
 	req = PushNotification{
 		Message:  "Test",
-		Platform: PlatFormAndroid,
+		Platform: PlatformAndroid,
 		To:       "/topics/foo-bar",
 	}
 
@@ -153,7 +153,7 @@ func TestFCMMessage(t *testing.T) {
 	// "condition": "'dogs' in topics || 'cats' in topics",
 	req = PushNotification{
 		Message:   "Test",
-		Platform:  PlatFormAndroid,
+		Platform:  PlatformAndroid,
 		Condition: "'dogs' in topics || 'cats' in topics",
 	}
 
@@ -163,7 +163,7 @@ func TestFCMMessage(t *testing.T) {
 	// the message may specify at most 1000 registration IDs
 	req = PushNotification{
 		Message:  "Test",
-		Platform: PlatFormAndroid,
+		Platform: PlatformAndroid,
 		Tokens:   make([]string, 1001),
 	}
 
@@ -175,7 +175,7 @@ func TestFCMMessage(t *testing.T) {
 	timeToLive := uint(2419201)
 	req = PushNotification{
 		Message:    "Test",
-		Platform:   PlatFormAndroid,
+		Platform:   PlatformAndroid,
 		Tokens:     []string{"XXXXXXXXX"},
 		TimeToLive: &timeToLive,
 	}
@@ -187,7 +187,7 @@ func TestFCMMessage(t *testing.T) {
 	timeToLive = uint(86400)
 	req = PushNotification{
 		Message:    "Test",
-		Platform:   PlatFormAndroid,
+		Platform:   PlatformAndroid,
 		Tokens:     []string{"XXXXXXXXX"},
 		TimeToLive: &timeToLive,
 	}
@@ -205,7 +205,7 @@ func TestCheckAndroidMessage(t *testing.T) {
 	timeToLive := uint(2419201)
 	req := PushNotification{
 		Tokens:     []string{"aaaaaa", "bbbbb"},
-		Platform:   PlatFormAndroid,
+		Platform:   PlatformAndroid,
 		Message:    "Welcome",
 		TimeToLive: &timeToLive,
 	}
