@@ -11,6 +11,9 @@ import (
 	"github.com/appleboy/go-fcm"
 )
 
+// D provide string array
+type D map[string]interface{}
+
 const (
 	// ApnsPriorityLow will tell APNs to send the push message at a time that takes
 	// into account power considerations for the device. Notifications with this
@@ -55,15 +58,15 @@ type Subscription struct {
 // PushNotification is single notification request
 type PushNotification struct {
 	// Common
-	Tokens           []string               `json:"tokens" binding:"required"`
-	Platform         int                    `json:"platform" binding:"required"`
-	Message          string                 `json:"message,omitempty"`
-	Title            string                 `json:"title,omitempty"`
-	Priority         string                 `json:"priority,omitempty"`
-	ContentAvailable bool                   `json:"content_available,omitempty"`
-	Sound            string                 `json:"sound,omitempty"`
-	Data             map[string]interface{} `json:"data,omitempty"`
-	Retry            int                    `json:"retry,omitempty"`
+	Tokens           []string `json:"tokens" binding:"required"`
+	Platform         int      `json:"platform" binding:"required"`
+	Message          string   `json:"message,omitempty"`
+	Title            string   `json:"title,omitempty"`
+	Priority         string   `json:"priority,omitempty"`
+	ContentAvailable bool     `json:"content_available,omitempty"`
+	Sound            string   `json:"sound,omitempty"`
+	Data             D        `json:"data,omitempty"`
+	Retry            int      `json:"retry,omitempty"`
 	wg               *sync.WaitGroup
 	log              *[]LogPushEntry
 	sync             bool
