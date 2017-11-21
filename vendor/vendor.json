@@ -275,6 +275,18 @@
 			"revisionTime": "2017-09-02T06:01:07Z"
 		},
 		{
+			"checksumSHA1": "bwAq1m82ANVEJ0QuvSukyI69Be0=",
+			"path": "github.com/martijnc/gowebpush/ece",
+			"revision": "5f56102ce189e13fd0aceb29ea7de7a2fa8df86e",
+			"revisionTime": "2017-07-23T20:10:53Z"
+		},
+		{
+			"checksumSHA1": "EMjgKfzE2Evjy/s0+wa/wqZ+Rt8=",
+			"path": "github.com/martijnc/gowebpush/webpush",
+			"revision": "5f56102ce189e13fd0aceb29ea7de7a2fa8df86e",
+			"revisionTime": "2017-07-23T20:10:53Z"
+		},
+		{
 			"checksumSHA1": "Jyv1TH1YHrCVewmVE8FgSh1+92s=",
 			"path": "github.com/mattn/go-isatty",
 			"revision": "dda3de49cbfcec471bd7a70e6cc01fcc3ff90109",
@@ -571,6 +583,12 @@
 			"path": "golang.org/x/crypto/acme/autocert",
 			"revision": "c78caca803c95773f48a844d3dcab04b9bc4d6dd",
 			"revisionTime": "2017-04-04T15:27:40Z"
+		},
+		{
+			"checksumSHA1": "4D8hxMIaSDEW5pCQk22Xj4DcDh4=",
+			"path": "golang.org/x/crypto/hkdf",
+			"revision": "9f005a07e0d31d45e6656d241bb5c0f2efd4bc94",
+			"revisionTime": "2017-09-21T17:41:56Z"
 		},
 		{
 			"checksumSHA1": "KeaQhXgb4KlZWJM7aIgcJwCKNOg=",

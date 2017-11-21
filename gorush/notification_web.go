@@ -17,7 +17,7 @@ func InitWebClient() error {
     return nil
 }
 
-func GetWebNotification(req PushNotification, subscription *Subscription) *web.Notification {
+func getWebNotification(req PushNotification, subscription *Subscription) *web.Notification {
 	notification := &web.Notification{
 		Payload: &req.Data,
 		Subscription: &web.Subscription{
@@ -65,7 +65,7 @@ Retry:
 	failureCount := 0
 
 	for _, subscription := range req.Subscriptions {
-		notification := GetWebNotification(req, &subscription)
+		notification := getWebNotification(req, &subscription)
 		response, err := WebClient.Push(notification, apiKey)
 		if err != nil {
 			failureCount++
