@@ -1,29 +1,29 @@
 package gorush
 
 import (
-	"fmt"
 	"errors"
+	"fmt"
 
 	"github.com/appleboy/gorush/web"
 )
 
 // InitWebClient use for initialize APNs Client.
 func InitWebClient() error {
-    if PushConf.Web.Enabled {
-        //var err error
-        WebClient = web.NewClient()
-    }
+	if PushConf.Web.Enabled {
+		//var err error
+		WebClient = web.NewClient()
+	}
 
-    return nil
+	return nil
 }
 
 func getWebNotification(req PushNotification, subscription *Subscription) *web.Notification {
 	notification := &web.Notification{
 		Payload: &req.Data,
 		Subscription: &web.Subscription{
-			Endpoint: subscription.Endpoint, 
-			Key: subscription.Key, 
-			Auth: subscription.Auth,
+			Endpoint: subscription.Endpoint,
+			Key:      subscription.Key,
+			Auth:     subscription.Auth,
 		},
 		TimeToLive: req.TimeToLive,
 	}
@@ -93,7 +93,7 @@ Retry:
 					var errorObj = errors.New(errorText)
 					req.AddLog(getLogPushEntry(FailedPush, subscription.Endpoint, req, errorObj))
 				}
-			} 
+			}
 		} else {
 			successCount++
 			LogPush(SucceededPush, subscription.Endpoint, req, nil)
@@ -110,5 +110,5 @@ Retry:
 		goto Retry
 	}
 
-	return isError  	
+	return isError
 }

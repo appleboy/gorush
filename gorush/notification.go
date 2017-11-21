@@ -47,9 +47,9 @@ type RequestPush struct {
 
 // Subscription is the Webpush subscription object.
 type Subscription struct {
-	Endpoint  string    `json:"endpoint" binding:"required"`
-	Key       string    `json:"key" binding:"required"`
-	Auth      string    `json:"auth" binding:"required"`
+	Endpoint string `json:"endpoint" binding:"required"`
+	Key      string `json:"key" binding:"required"`
+	Auth     string `json:"auth" binding:"required"`
 }
 
 // PushNotification is single notification request
@@ -93,7 +93,7 @@ type PushNotification struct {
 	Development    bool     `json:"development,omitempty"`
 
 	// Web
-	Subscriptions  []Subscription `json:"subscriptions,omitempty"`
+	Subscriptions []Subscription `json:"subscriptions,omitempty"`
 }
 
 // WaitDone decrements the WaitGroup counter.
@@ -128,7 +128,7 @@ func (p *PushNotification) IsTopic() bool {
 func CheckMessage(req PushNotification) error {
 	var msg string
 
-    if req.Platform == PlatformIos || req.Platform == PlatformAndroid {
+	if req.Platform == PlatformIos || req.Platform == PlatformAndroid {
 		// ignore send topic mesaage from FCM
 		if !req.IsTopic() && len(req.Tokens) == 0 && len(req.To) == 0 {
 			msg = "the message must specify at least one registration ID"

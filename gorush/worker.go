@@ -36,7 +36,7 @@ func startWorker() {
 func queueNotification(req RequestPush) (int, []LogPushEntry) {
 	var count int
 	var doSync = PushConf.Core.Sync
-	if (req.Sync != nil) {
+	if req.Sync != nil {
 		doSync = *req.Sync
 	}
 	wg := sync.WaitGroup{}

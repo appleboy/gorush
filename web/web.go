@@ -1,18 +1,18 @@
 package web
 
 import (
-	"net/http"
-	"time"
-	"fmt"
-	"encoding/json"
 	"encoding/base64"
-	"strings"
-	"strconv"
+	"encoding/json"
 	"errors"
-	"regexp"
-	"io/ioutil"
+	"fmt"
 	"github.com/martijnc/gowebpush/ece"
 	"github.com/martijnc/gowebpush/webpush"
+	"io/ioutil"
+	"net/http"
+	"regexp"
+	"strconv"
+	"strings"
+	"time"
 )
 
 var (
@@ -21,47 +21,47 @@ var (
 
 // Client type
 type Client struct {
-	HTTPClient    *http.Client
+	HTTPClient *http.Client
 }
 
 // Response type
 type Response struct {
-	StatusCode   int
-	Body         string
+	StatusCode int
+	Body       string
 }
 
 // Subscription type
 type Subscription struct {
-	Endpoint  string       `json:"endpoint,omitempty"`
-	Key       string       `json:"key,omitempty"`
-	Auth      string       `json:"auth,omitempty"`
+	Endpoint string `json:"endpoint,omitempty"`
+	Key      string `json:"key,omitempty"`
+	Auth     string `json:"auth,omitempty"`
 }
 
 // Notification type
 type Notification struct {
-	Subscription  *Subscription                 `json:"subscription,omitempty"`
-	Payload       *map[string]interface{}       `json:"payload,omitempty"`
-	TimeToLive    *uint                         `json:"time_to_live,omitempty"`
+	Subscription *Subscription           `json:"subscription,omitempty"`
+	Payload      *map[string]interface{} `json:"payload,omitempty"`
+	TimeToLive   *uint                   `json:"time_to_live,omitempty"`
 }
 
 // Browser type
 type Browser struct {
-	Name      string
-	ReDetect  regexp.Regexp
-	ReError   regexp.Regexp
+	Name     string
+	ReDetect regexp.Regexp
+	ReError  regexp.Regexp
 }
 
 // Browsers available
 var Browsers = [...]Browser{
-	Browser{"Chrome", *regexp.MustCompile("https://android.googleapis.com/gcm/send/"), *regexp.MustCompile("<TITLE>(.*)</TITLE>")},
-	Browser{"Firefox", *regexp.MustCompile("https://updates.push.services.mozilla.com/wpush"), *regexp.MustCompile("\\\"errno\\\":\\s(\\d+)")},
+	{"Chrome", *regexp.MustCompile("https://android.googleapis.com/gcm/send/"), *regexp.MustCompile("<TITLE>(.*)</TITLE>")},
+	{"Firefox", *regexp.MustCompile("https://updates.push.services.mozilla.com/wpush"), *regexp.MustCompile("\\\"errno\\\":\\s(\\d+)")},
 }
 
 // NewClient returns a new web.Client
 func NewClient() *Client {
 	return &Client{
 		HTTPClient: &http.Client{
-			Timeout:   httpClientTimeout,
+			Timeout: httpClientTimeout,
 		},
 	}
 }
@@ -73,7 +73,7 @@ func (c *Client) Push(n *Notification, apiKey string) (*Response, error) {
 	if n.TimeToLive != nil {
 		timeToLive = *n.TimeToLive
 	} else {
-		timeToLive = 2419200 
+		timeToLive = 2419200
 	}
 
 	var authKey, p256dhKey []byte
@@ -125,7 +125,7 @@ func (c *Client) Push(n *Notification, apiKey string) (*Response, error) {
 	// Create the ECE request.
 	r := ece.CreateRequest(*c.HTTPClient, n.Subscription.Endpoint, ciphertext, &ckh, &eh, int(timeToLive))
 	if strings.Contains(n.Subscription.Endpoint, "https://android.googleapis.com/gcm/send") {
-		r.Header.Add("Authorization", "key=" + apiKey)
+		r.Header.Add("Authorization", "key="+apiKey)
 	}
 	response, err := c.HTTPClient.Do(r)
 	if err != nil {

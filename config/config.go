@@ -156,9 +156,9 @@ type SectionIos struct {
 
 // SectionWeb is sub section of config.
 type SectionWeb struct {
-	Enabled        bool   `yaml:"enabled"`
-	APIKey         string `yaml:"apikey"`
-	MaxRetry       int    `yaml:"max_retry"`
+	Enabled  bool   `yaml:"enabled"`
+	APIKey   string `yaml:"apikey"`
+	MaxRetry int    `yaml:"max_retry"`
 }
 
 // SectionLog is sub section of config.
