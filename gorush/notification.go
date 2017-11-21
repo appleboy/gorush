@@ -145,7 +145,7 @@ func CheckMessage(req PushNotification) error {
 			return errors.New(msg)
 		}
 
-		if req.Platform == PlatformIos && len(req.Tokens[0]) == 0 {
+		if (req.Platform == PlatformAndroid || req.Platform == PlatformIos) && len(req.Tokens[0]) == 0 {
 			msg = "the token must not be empty"
 			LogAccess.Debug(msg)
 			return errors.New(msg)
