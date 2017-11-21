@@ -45,7 +45,7 @@ type RequestPush struct {
 	Sync          *bool              `json:"sync,omitempty"`
 }
 
-type Subscription struct {
+type subscription struct {
 	Endpoint  string    `json:"endpoint" binding:"required"`
 	Key       string    `json:"key" binding:"required"`
 	Auth      string    `json:"auth" binding:"required"`
@@ -92,7 +92,7 @@ type PushNotification struct {
 	Development    bool     `json:"development,omitempty"`
 
 	// Web
-	Subscriptions  []Subscription `json:"subscriptions,omitempty"`
+	Subscriptions  []subscription `json:"subscriptions,omitempty"`
 }
 
 // WaitDone decrements the WaitGroup counter.

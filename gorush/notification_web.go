@@ -17,7 +17,7 @@ func InitWebClient() error {
     return nil
 }
 
-func getWebNotification(req PushNotification, subscription *Subscription) *web.Notification {
+func getWebNotification(req PushNotification, subscription *subscription) *web.Notification {
 	notification := &web.Notification{
 		Payload: &req.Data,
 		Subscription: &web.Subscription{
