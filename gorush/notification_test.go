@@ -142,16 +142,32 @@ func TestSyncModeForNotifications(t *testing.T) {
 			},
 			// web
 			{
-				Subscriptions: []Subscription{{"https://updates.push.services.mozilla.com/wpush/v1/gAAAAABZdwpXbtIhiT_gXZZ_lUrs0AqbMROAwW8-LpTVx_LNYTU-xrcvIoZ7LXNNeTSSO525EYuKCeGueKtSqi626yCOAaFWYAzRu9hOIwvVmJFfN3BIlMjR9PJU28s7JsNVKywp4_wb", "BIqGnYTkDOAyPNTInUdE7AeYnA2LrHNu6jKpfYwcfl3Z8EVyRtftqpHgJTku3YjQBGwqJyzxsYwc9tHNB5jUks8", "j7NMANtEQ5zoFUGtiCdqRQ"}},
-				Platform:      PlatformWeb,
-				Message:       "Welcome",
+				Subscriptions: []Subscription{
+					{
+						"https://updates.push.services.mozilla.com/wpush/v1/gAAAAABZdwpXbtIhiT_gXZZ_lUrs0AqbMROAwW8-LpTVx_LNYTU-xrcvIoZ7LXNNeTSSO525EYuKCeGueKtSqi626yCOAaFWYAzRu9hOIwvVmJFfN3BIlMjR9PJU28s7JsNVKywp4_wb",
+						"BIqGnYTkDOAyPNTInUdE7AeYnA2LrHNu6jKpfYwcfl3Z8EVyRtftqpHgJTku3YjQBGwqJyzxsYwc9tHNB5jUks8",
+						"j7NMANtEQ5zoFUGtiCdqRQ",
+					},
+					{
+						"https://updates.push.services.mozilla.com/wpush/v1/g",
+						"BIqGnYTkDOAyPNTInUdE7AeYnA2LrHNu6jKpfYwcfl3Z8EVyRtftqpHgJTku3YjQBGwqJyzxsYwc9tHNB5jUks8",
+						"j7NMANtEQ5zoFUGtiCdqRQ",
+					},
+					{
+						"aaaaa",
+						"bbbbb",
+						"ccccc",
+					},
+				},
+				Platform: PlatformWeb,
+				Message:  "Welcome",
 			},
 		},
 	}
 
 	count, logs := queueNotification(req)
-	assert.Equal(t, 4, count)
-	assert.Equal(t, 2, len(logs))
+	assert.Equal(t, 6, count)
+	assert.Equal(t, 4, len(logs))
 }
 
 func TestSyncModeForTopicNotification(t *testing.T) {
