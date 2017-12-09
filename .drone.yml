@@ -71,77 +71,42 @@ pipeline:
       - make release
     when:
       event: [ tag ]
-      ref: [ refs/tags/* ]
 
   publish_linux_amd64:
     image: plugins/docker
-    group: publish
-    repo: ${DRONE_REPO}
-    tags: [ 'latest' ]
-    secrets: [ docker_username, docker_password ]
-    when:
-      event: [ push ]
-      branch: [ master ]
-      local: false
-
-  publish_linux_arm:
-    image: plugins/docker
-    group: publish
-    repo: ${DRONE_REPO}
-    tags: [ linux-arm ]
-    dockerfile: Dockerfile.arm
-    secrets: [ docker_username, docker_password ]
-    when:
-      event: [ push ]
-      branch: [ master ]
-      local: false
-
-  publish_linux_arm64:
-    image: plugins/docker
-    group: publish
-    repo: ${DRONE_REPO}
-    tags: [ linux-arm64 ]
-    dockerfile: Dockerfile.arm64
-    secrets: [ docker_username, docker_password ]
-    when:
-      event: [ push ]
-      branch: [ master ]
-      local: false
-
-  publish_linux_amd64:
-    image: plugins/docker
-    group: tag
-    repo: ${DRONE_REPO}
-    tags: [ '${DRONE_TAG}' ]
-    secrets: [ docker_username, docker_password ]
     group: release
+    pull: true
+    secrets: [ docker_username, docker_password ]
+    default_tags: true
+    repo: ${DRONE_REPO}
     when:
-      event: [ tag ]
-      ref: [ refs/tags/* ]
+      event: [ push, tag ]
       local: false
 
   publish_linux_arm:
     image: plugins/docker
-    group: tag
-    repo: ${DRONE_REPO}
-    tags: [ linux-arm, 'linux-arm-${DRONE_TAG}' ]
+    group: release
+    pull: true
     dockerfile: Dockerfile.arm
     secrets: [ docker_username, docker_password ]
+    default_tags: true
+    default_suffix: arm
+    repo: ${DRONE_REPO}
     when:
-      event: [ tag ]
-      ref: [ refs/tags/* ]
+      event: [ push, tag ]
       local: false
 
   publish_linux_arm64:
     image: plugins/docker
-    group: tag
-    repo: ${DRONE_REPO}
-    tags: [ linux-arm64, 'linux-arm64-${DRONE_TAG}' ]
+    group: release
+    pull: true
     dockerfile: Dockerfile.arm64
     secrets: [ docker_username, docker_password ]
+    default_tags: true
+    default_suffix: arm64
+    repo: ${DRONE_REPO}
     when:
-      event: [ tag ]
-      ref: [ refs/tags/* ]
+      event: [ push, tag ]
       local: false
 
   release_tag:
@@ -152,7 +117,6 @@ pipeline:
       - dist/release/*
     when:
       event: [ tag ]
-      ref: [ refs/tags/* ]
       local: false
 
   discord:
