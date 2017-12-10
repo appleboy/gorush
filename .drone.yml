@@ -96,6 +96,19 @@ pipeline:
       event: [ push, tag ]
       local: false
 
+  publish_linux_i386:
+    image: plugins/docker
+    group: release
+    pull: true
+    dockerfile: Dockerfile.i386
+    secrets: [ docker_username, docker_password ]
+    default_tags: true
+    default_suffix: i386
+    repo: ${DRONE_REPO}
+    when:
+      event: [ push, tag ]
+      local: false
+
   publish_linux_arm:
     image: plugins/docker
     group: release
