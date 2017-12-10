@@ -34,3 +34,4 @@ gorush.db
 coverage.txt
 dist
 custom
+release

@@ -102,7 +102,7 @@ build: $(EXECUTABLE)
 .PHONY: build
 
 $(EXECUTABLE): $(SOURCES)
-	$(GO) build -v -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)' -o bin/$@
+	$(GO) build -v -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)' -o release/$@
 
 .PHONY: misspell-check
 misspell-check:
