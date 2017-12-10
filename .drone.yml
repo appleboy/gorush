@@ -32,22 +32,32 @@ pipeline:
       - make fmt-check
 
   build_linux_amd64:
-    image: appleboy/golang-testing:1.9.2
+    image: appleboy/golang-testing
+    pull: true
     group: golang
     commands:
-      - make docker_build
+      - make build_linux_amd64
+
+  build_linux_i386:
+    image: appleboy/golang-testing
+    pull: true
+    group: golang
+    commands:
+      - make build_linux_i386
 
   build_linux_arm64:
-    image: appleboy/golang-testing:1.9.2
+    image: appleboy/golang-testing
+    pull: true
     group: golang
     commands:
-      - make docker_build_arm64
+      - make build_linux_arm64
 
   build_linux_arm:
-    image: appleboy/golang-testing:1.9.2
+    image: appleboy/golang-testing
+    pull: true
     group: golang
     commands:
-      - make docker_build_arm
+      - make build_linux_arm
 
   coverage:
     image: appleboy/golang-testing:1.9.2
