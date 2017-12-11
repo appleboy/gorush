@@ -98,8 +98,8 @@ install: $(SOURCES)
 .PHONY: install
 
 # build from source
-build: $(EXECUTABLE)
 .PHONY: build
+build: $(EXECUTABLE)
 
 $(EXECUTABLE): $(SOURCES)
 	$(GO) build -v -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)' -o release/$@
@@ -202,7 +202,7 @@ clean:
 	find . -name coverage.txt -delete
 	find . -name *.tar.gz -delete
 	find . -name *.db -delete
-	-rm -rf bin dist .cover
+	-rm -rf release dist .cover
 
 rpc/example/node/gorush_*_pb.js: rpc/proto/gorush.proto
 	protoc -I rpc/proto rpc/proto/gorush.proto --js_out=import_style=commonjs,binary:rpc/example/node/ --grpc_out=rpc/example/node/ --plugin=protoc-gen-grpc=$(NODE_PROTOC_PLUGIN)
