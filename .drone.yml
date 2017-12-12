@@ -39,21 +39,21 @@ pipeline:
       - make build_linux_amd64
 
   build_linux_i386:
-    image: appleboy/golang-testing
+    image: appleboy/golang-testing:1.9.2
     pull: true
     group: golang
     commands:
       - make build_linux_i386
 
   build_linux_arm64:
-    image: appleboy/golang-testing
+    image: appleboy/golang-testing:1.9.2
     pull: true
     group: golang
     commands:
       - make build_linux_arm64
 
   build_linux_arm:
-    image: appleboy/golang-testing
+    image: appleboy/golang-testing:1.9.2
     pull: true
     group: golang
     commands:
