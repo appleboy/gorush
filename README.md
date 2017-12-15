@@ -692,7 +692,7 @@ core:
   worker_num: 0 # default worker number is runtime.NumCPU()
   queue_num: 0 # default queue number is 8192
   max_notification: 100
-- sync: false 
+- sync: false
 + sync: true
 ```
 
@@ -777,7 +777,7 @@ func main() {
 }
 ```
 
-See the Node.js example and see more detail frome [README](rpc/example/node/README.md): 
+See the Node.js example and see more detail frome [README](rpc/example/node/README.md):
 
 [embedmd]:# (rpc/example/node/client.js js)
 ```js
@@ -867,15 +867,61 @@ $ http -v --verify=no --json GET http://your.docker.host/api/stat/go
 
 ![statue screenshot](screenshot/status.png)
 
+## Run gorush using docker-compose
+
+To run gorush using docker-compose.yml file simply run:
+
+```bash
+$ docker-compose up
+```
+
+ENV variables are base64 encoded for your convenience to for deployment and testing locally.
+
+Note: In the `docker-compose.yml` file the entire config.yml file is base64 encoded and that file will be the one to run in your docker-compose instances. See deploy.sh for more details of how the ENV's unwraps itself.
+
+### Quick Start in Docker Compose
+
+Seting your `IOS__KEY_FILE`.
+
+Get your `apns-dev-cert.p12` file from developers.apple.com > certificates > APNs certificates. Download it, then double click it and open up your keychain > find your certificate and export is as a .p12 file. Note you can use this on your mac, however in dockerized linux env's you must convert this to a pem file using:
+
+```
+openssl pkcs12 -in apns-dev-cert.p12 -out apns-dev-cert.pem -nodes -clcerts
+```
+
+Take that `apns-dev-cert.pem` file and set that in the `IOS__KEY_FILE` ENV in the docker-compose.yml file.
+
+Now run `docker-compose up` and check if your config's got set properly.
+
+```bash
+http <docker-endpoint>:8088/api/config
+```
+
+You should see your ios.key_path: ios_key.pem
+
+Now you can try sending an iOS push notifications
+
+```
+echo '{"notifications": [{"tokens": ["<device-token>"], "platform": 1, "message": "Foo Bar!"} ] }' | http POST <docker-endpoint>:8088/api/push
+```
+
+Now from here this makes it significantly easier to deploy to kubernetes in a secure way.
+
+### Deploying this Docker-compose setting to Kubernetes
+
+Update your secret files the same way you're setting it up in `docker-compose.yml` but in `k8s/gorush-secret.yml`. Uncomment or add ENV's that you need but you'll need to also update deploy.sh to make sure those files get generated and used.
+
 ## Run gorush in Kubernetes
 
 ### Quick Start
 
-Create name space as `gorush` and configuration map:
+Create namespace as `gorush` and then your configuration map and your secrets:
 
 ```sh
 $ kubectl create -f k8s/gorush-namespace.yaml
 $ kubectl create -f k8s/gorush-configmap.yaml
+$ kubectl create -f k8s/gorush-secret.yml
+
 ```
 
 Create redis service:
