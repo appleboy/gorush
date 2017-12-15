@@ -34,3 +34,27 @@ spec:
             configMapKeyRef:
               name: gorush-config
               key: stat.redis.host
+        - name: CORE__CERT_PATHFILE
+          valueFrom:
+            secretKeyRef:
+              name: gorush-secret
+              key: CORE__CERT_PATHFILE
+              optional: true
+        - name: CORE__KEY_PATHFILE
+          valueFrom:
+            secretKeyRef:
+              name: gorush-secret
+              key: CORE__KEY_PATHFILE
+              optional: true
+        - name: IOS__KEY_FILE
+          valueFrom:
+            secretKeyRef:
+              name: gorush-secret
+              key: IOS__KEY_FILE
+              optional: true
+        - name: CONFIG_YML
+          valueFrom:
+            secretKeyRef:
+              name: gorush-secret
+              key: CONFIG_YML
+              optional: true
