@@ -1,12 +1,17 @@
 version: "3"
 
+
+# TODO
+# Download and add gorush for your machine at https://github.com/appleboy/gorush/releases
+#
+# Download the binary to release/linux/amd64/gorush or equivalent
+
+
 services:
   gorush:
     build:
       context: .
       dockerfile: ./Dockerfile.alpine
-    volumes:
-      - ./deploy.sh:/deploy.sh
     ports:
       - "8088:8088"
     links:
