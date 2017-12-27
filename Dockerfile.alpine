@@ -1,4 +1,4 @@
-FROM alpine:3.6
+FROM alpine:3.7
 
 LABEL org.label-schema.version=latest
 LABEL org.label-schema.vcs-url="https://github.com/appleboy/gorush.git"
@@ -7,7 +7,7 @@ LABEL org.label-schema.vendor="Bo-Yi Wu"
 LABEL org.label-schema.schema-version="1.0"
 LABEL maintainer="Bo-Yi Wu <appleboy.tw@gmail.com>"
 
-RUN apk add -U --no-cache ca-certificates && \
+RUN apk add --no-cache ca-certificates && \
   rm -rf /var/cache/apk/*
 
 ADD release/linux/amd64/gorush /bin/
