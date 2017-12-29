@@ -2,6 +2,7 @@
 
 A push notification micro server using [Gin](https://github.com/gin-gonic/gin) framework written in Go (Golang).
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/bd60b9f8e23b4b769c663e32e114ffb6)](https://www.codacy.com/app/appleboy/gorush?utm_source=github.com&utm_medium=referral&utm_content=appleboy/gorush&utm_campaign=badger)
 [![GoDoc](https://godoc.org/github.com/appleboy/gorush?status.svg)](https://godoc.org/github.com/appleboy/gorush)
 [![Build Status](http://drone.wu-boy.com/api/badges/appleboy/gorush/status.svg)](http://drone.wu-boy.com/appleboy/gorush)
 [![codecov](https://codecov.io/gh/appleboy/gorush/branch/master/graph/badge.svg)](https://codecov.io/gh/appleboy/gorush)
