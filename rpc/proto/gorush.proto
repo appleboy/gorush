@@ -9,6 +9,14 @@ message NotificationRequest {
   string title = 4;
   string topic = 5;
   string key = 6;
+  int32 badge = 7;
+  string category = 8;
+  message Alert {
+    string title = 1;
+    string body = 2;
+    string subtitle = 3;
+  }
+  Alert alert = 9;
 }
 
 message NotificationReply {

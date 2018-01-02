@@ -769,6 +769,13 @@ func main() {
 		Platform: 2,
 		Tokens:   []string{"1234567890"},
 		Message:  "test message",
+		Badge:    1,
+		Category: "test",
+		Alert: &proto.NotificationRequest_Alert{
+			Title:    "Test Title",
+			Body:     "Test Alert Body",
+			Subtitle: "Test Alert Sub Title",
+		},
 	})
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
@@ -835,6 +842,13 @@ func main() {
 		Platform: 2,
 		Tokens:   []string{"1234567890"},
 		Message:  "test message",
+		Badge:    1,
+		Category: "test",
+		Alert: &proto.NotificationRequest_Alert{
+			Title:    "Test Title",
+			Body:     "Test Alert Body",
+			Subtitle: "Test Alert Sub Title",
+		},
 	})
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
