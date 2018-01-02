@@ -205,6 +205,9 @@ clean:
 	-rm -rf release dist .cover
 
 rpc/example/node/gorush_*_pb.js: rpc/proto/gorush.proto
+	@hash grpc_tools_node_protoc_plugin > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
+		npm install -g grpc-tools; \
+	fi
 	protoc -I rpc/proto rpc/proto/gorush.proto --js_out=import_style=commonjs,binary:rpc/example/node/ --grpc_out=rpc/example/node/ --plugin=protoc-gen-grpc=$(NODE_PROTOC_PLUGIN)
 
 rpc/proto/gorush.pb.go: rpc/proto/gorush.proto
