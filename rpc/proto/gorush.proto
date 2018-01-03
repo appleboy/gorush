@@ -2,6 +2,12 @@ syntax = "proto3";
 
 package proto;
 
+message Alert {
+  string title = 1;
+  string body = 2;
+  string subtitle = 3;
+}
+
 message NotificationRequest {
   repeated string tokens = 1;
   int32 platform = 2;
@@ -11,11 +17,6 @@ message NotificationRequest {
   string key = 6;
   int32 badge = 7;
   string category = 8;
-  message Alert {
-    string title = 1;
-    string body = 2;
-    string subtitle = 3;
-  }
   Alert alert = 9;
 }
 

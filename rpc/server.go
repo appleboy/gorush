@@ -57,12 +57,18 @@ func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*prot
 		Topic:    in.Topic,
 		APIKey:   in.Key,
 		Category: in.Category,
-		Badge:    &badge,
-		Alert: gorush.Alert{
+	}
+
+	if badge > 0 {
+		notification.Badge = &badge
+	}
+
+	if in.Alert != nil {
+		notification.Alert = gorush.Alert{
 			Title:    in.Alert.Title,
 			Body:     in.Alert.Body,
 			Subtitle: in.Alert.Subtitle,
-		},
+		}
 	}
 
 	go gorush.SendNotification(notification)
