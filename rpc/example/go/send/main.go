@@ -28,7 +28,7 @@ func main() {
 		Message:  "test message",
 		Badge:    1,
 		Category: "test",
-		Alert: &proto.NotificationRequest_Alert{
+		Alert: &proto.Alert{
 			Title:    "Test Title",
 			Body:     "Test Alert Body",
 			Subtitle: "Test Alert Sub Title",
