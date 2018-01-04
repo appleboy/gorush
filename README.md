@@ -771,6 +771,7 @@ func main() {
 		Message:  "test message",
 		Badge:    1,
 		Category: "test",
+		Sound:    "test",
 		Alert: &proto.Alert{
 			Title:    "Test Title",
 			Body:     "Test Alert Body",
@@ -805,6 +806,7 @@ function main() {
   request.setTitle("hello2");
   request.setBadge(2);
   request.setCategory("mycategory");
+  request.setSound("sound")
   alert.setTitle("title");
   request.setAlert(alert);
   client.send(request, function (err, response) {
@@ -854,6 +856,7 @@ func main() {
 		Message:  "test message",
 		Badge:    1,
 		Category: "test",
+		Sound:    "test",
 		Alert: &proto.Alert{
 			Title:    "Test Title",
 			Body:     "Test Alert Body",

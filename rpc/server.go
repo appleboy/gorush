@@ -57,6 +57,7 @@ func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*prot
 		Topic:    in.Topic,
 		APIKey:   in.Key,
 		Category: in.Category,
+		Sound:    in.Sound,
 	}
 
 	if badge > 0 {

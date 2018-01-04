@@ -18,6 +18,7 @@ message NotificationRequest {
   int32 badge = 7;
   string category = 8;
   Alert alert = 9;
+  string sound = 10;
 }
 
 message NotificationReply {
