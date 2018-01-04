@@ -5,9 +5,6 @@ GO ?= go
 DEPLOY_ACCOUNT := appleboy
 DEPLOY_IMAGE := $(EXECUTABLE)
 GOFMT ?= gofmt "-s"
-EXTERNAL_TOOLS=\
-	github.com/mitchellh/gox \
-	github.com/kardianos/govendor
 
 TARGETS ?= linux darwin windows
 ARCHS ?= amd64 386
@@ -18,6 +15,9 @@ TAGS ?=
 LDFLAGS ?= -X 'main.Version=$(VERSION)'
 TMPDIR := $(shell mktemp -d 2>/dev/null || mktemp -d -t 'tempdir')
 NODE_PROTOC_PLUGIN := $(shell which grpc_tools_node_protoc_plugin)
+GOVENDOR := $(GOPATH)/bin/govendor
+GOX := $(GOPATH)/bin/gox
+MISSPELL := $(GOPATH)/bin/misspell
 
 ifneq ($(shell uname), Darwin)
 	EXTLDFLAGS = -extldflags "-static" $(null)
@@ -45,12 +45,14 @@ ifeq ($(ANDROID_TEST_TOKEN),)
 endif
 	@echo "Already set ANDROID_API_KEY and ANDROID_TEST_TOKEN globale variable."
 
-# bootstrap the build by downloading additional tools
-bootstrap:
-	@for tool in  $(EXTERNAL_TOOLS) ; do \
-		echo "Installing/Updating $$tool" ; \
-		go get -u $$tool; \
-	done
+$(GOVENDOR):
+	$(GO) get -u github.com/kardianos/govendor
+
+$(GOX):
+	$(GO) get -u github.com/mitchellh/gox
+
+$(MISSPELL):
+	$(GO) get -u github.com/client9/misspell/cmd/misspell
 
 fmt:
 	$(GOFMT) -w $(GOFILES)
@@ -91,13 +93,11 @@ unconvert:
 	fi
 	for PKG in $(PACKAGES); do unconvert -v $$PKG || exit 1; done;
 
-# Install from source.
+.PHONY: install
 install: $(SOURCES)
 	$(GO) install -v -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)'
 	@echo "==> Installed gorush ${GOPATH}/bin/gorush"
-.PHONY: install
 
-# build from source
 .PHONY: build
 build: $(EXECUTABLE)
 
@@ -105,34 +105,25 @@ $(EXECUTABLE): $(SOURCES)
 	$(GO) build -v -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)' -o release/$@
 
 .PHONY: misspell-check
-misspell-check:
-	@hash misspell > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		$(GO) get -u github.com/client9/misspell/cmd/misspell; \
-	fi
-	misspell -error $(GOFILES)
+misspell-check: $(MISSPELL)
+	$(MISSPELL) -error $(GOFILES)
 
 .PHONY: misspell
-misspell:
-	@hash misspell > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		$(GO) get -u github.com/client9/misspell/cmd/misspell; \
-	fi
-	misspell -w $(GOFILES)
+misspell: $(MISSPELL)
+	$(MISSPELL) -w $(GOFILES)
 
 test: fmt-check
 	for PKG in $(PACKAGES); do $(GO) test -v -cover -coverprofile $$GOPATH/src/$$PKG/coverage.txt $$PKG || exit 1; done;
 
 .PHONY: test-vendor
-test-vendor:
-	@hash govendor > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		$(GO) get -u github.com/kardianos/govendor; \
-	fi
-	govendor list +unused | tee "$(TMPDIR)/wc-gitea-unused"
+test-vendor: $(GOVENDOR)
+	$(GOVENDOR) list +unused | tee "$(TMPDIR)/wc-gitea-unused"
 	[ $$(cat "$(TMPDIR)/wc-gitea-unused" | wc -l) -eq 0 ] || echo "Warning: /!\\ Some vendor are not used /!\\"
 
-	govendor list +outside | tee "$(TMPDIR)/wc-gitea-outside"
+	$(GOVENDOR) list +outside | tee "$(TMPDIR)/wc-gitea-outside"
 	[ $$(cat "$(TMPDIR)/wc-gitea-outside" | wc -l) -eq 0 ] || exit 1
 
-	govendor status || exit 1
+	$(GOVENDOR) status || exit 1
 
 redis_test: init
 	$(GO) test -v -cover ./storage/redis/...
@@ -160,11 +151,8 @@ release: release-dirs release-build release-copy release-check
 release-dirs:
 	mkdir -p $(DIST)/binaries $(DIST)/release
 
-release-build:
-	@hash gox > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		$(GO) get -u github.com/mitchellh/gox; \
-	fi
-	gox -os="$(TARGETS)" -arch="$(ARCHS)" -tags="$(TAGS)" -ldflags="$(EXTLDFLAGS)-s -w $(LDFLAGS)" -output="$(DIST)/binaries/$(EXECUTABLE)-$(VERSION)-{{.OS}}-{{.Arch}}"
+release-build: $(GOX)
+	$(GOX) -os="$(TARGETS)" -arch="$(ARCHS)" -tags="$(TAGS)" -ldflags="$(EXTLDFLAGS)-s -w $(LDFLAGS)" -output="$(DIST)/binaries/$(EXECUTABLE)-$(VERSION)-{{.OS}}-{{.Arch}}"
 
 release-copy:
 	$(foreach file,$(wildcard $(DIST)/binaries/$(EXECUTABLE)-*),cp $(file) $(DIST)/release/$(notdir $(file));)
