@@ -270,7 +270,8 @@ proto.proto.NotificationRequest.toObject = function(includeInstance, msg) {
     key: jspb.Message.getFieldWithDefault(msg, 6, ""),
     badge: jspb.Message.getFieldWithDefault(msg, 7, 0),
     category: jspb.Message.getFieldWithDefault(msg, 8, ""),
-    alert: (f = msg.getAlert()) && proto.proto.Alert.toObject(includeInstance, f)
+    alert: (f = msg.getAlert()) && proto.proto.Alert.toObject(includeInstance, f),
+    sound: jspb.Message.getFieldWithDefault(msg, 10, "")
   };
 
   if (includeInstance) {
@@ -343,6 +344,10 @@ proto.proto.NotificationRequest.deserializeBinaryFromReader = function(msg, read
       var value = new proto.proto.Alert;
       reader.readMessage(value,proto.proto.Alert.deserializeBinaryFromReader);
       msg.setAlert(value);
+      break;
+    case 10:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setSound(value);
       break;
     default:
       reader.skipField();
@@ -434,6 +439,13 @@ proto.proto.NotificationRequest.serializeBinaryToWriter = function(message, writ
       9,
       f,
       proto.proto.Alert.serializeBinaryToWriter
+    );
+  }
+  f = message.getSound();
+  if (f.length > 0) {
+    writer.writeString(
+      10,
+      f
     );
   }
 };
@@ -602,6 +614,21 @@ proto.proto.NotificationRequest.prototype.clearAlert = function() {
  */
 proto.proto.NotificationRequest.prototype.hasAlert = function() {
   return jspb.Message.getField(this, 9) != null;
+};
+
+
+/**
+ * optional string sound = 10;
+ * @return {string}
+ */
+proto.proto.NotificationRequest.prototype.getSound = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 10, ""));
+};
+
+
+/** @param {string} value */
+proto.proto.NotificationRequest.prototype.setSound = function(value) {
+  jspb.Message.setField(this, 10, value);
 };
 
 
