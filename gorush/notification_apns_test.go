@@ -115,6 +115,7 @@ func TestSendZeroValueForBadgeKey(t *testing.T) {
 		Sound:            test,
 		ContentAvailable: true,
 		MutableContent:   true,
+		ThreadID:         test,
 	}
 
 	notification := GetIOSNotification(req)
@@ -130,6 +131,7 @@ func TestSendZeroValueForBadgeKey(t *testing.T) {
 	alert, _ := jsonparser.GetString(data, "aps", "alert")
 	badge, _ := jsonparser.GetInt(data, "aps", "badge")
 	sound, _ := jsonparser.GetString(data, "aps", "sound")
+	threadID, _ := jsonparser.GetString(data, "aps", "thread-id")
 	contentAvailable, _ := jsonparser.GetInt(data, "aps", "content-available")
 	mutableContent, _ := jsonparser.GetInt(data, "aps", "mutable-content")
 
@@ -143,6 +145,7 @@ func TestSendZeroValueForBadgeKey(t *testing.T) {
 	assert.Equal(t, message, alert)
 	assert.Equal(t, 0, int(badge))
 	assert.Equal(t, test, sound)
+	assert.Equal(t, test, threadID)
 	assert.Equal(t, 1, int(contentAvailable))
 	assert.Equal(t, 1, int(mutableContent))
 
