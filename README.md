@@ -776,6 +776,8 @@ func main() {
 			Title:    "Test Title",
 			Body:     "Test Alert Body",
 			Subtitle: "Test Alert Sub Title",
+			LocKey:   "Test loc key",
+			LocArgs:  []string{"test", "test"},
 		},
 	})
 	if err != nil {
@@ -861,6 +863,8 @@ func main() {
 			Title:    "Test Title",
 			Body:     "Test Alert Body",
 			Subtitle: "Test Alert Sub Title",
+			LocKey:   "Test loc key",
+			LocArgs:  []string{"test", "test"},
 		},
 	})
 	if err != nil {

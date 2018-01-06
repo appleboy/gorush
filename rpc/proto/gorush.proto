@@ -6,6 +6,13 @@ message Alert {
   string title = 1;
   string body = 2;
   string subtitle = 3;
+  string action = 4;
+  string actionLocKey = 5;
+  string launchImage = 6;
+  string locKey = 7;
+  string titleLocKey = 8;
+  repeated string locArgs = 9;
+  repeated string titleLocArgs = 10;
 }
 
 message NotificationRequest {

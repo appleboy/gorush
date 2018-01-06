@@ -27,12 +27,19 @@ goog.exportSymbol('proto.proto.NotificationRequest', null, global);
  * @constructor
  */
 proto.proto.Alert = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.proto.Alert.repeatedFields_, null);
 };
 goog.inherits(proto.proto.Alert, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   proto.proto.Alert.displayName = 'proto.proto.Alert';
 }
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.proto.Alert.repeatedFields_ = [9,10];
+
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -63,7 +70,14 @@ proto.proto.Alert.toObject = function(includeInstance, msg) {
   var f, obj = {
     title: jspb.Message.getFieldWithDefault(msg, 1, ""),
     body: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    subtitle: jspb.Message.getFieldWithDefault(msg, 3, "")
+    subtitle: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    action: jspb.Message.getFieldWithDefault(msg, 4, ""),
+    actionlockey: jspb.Message.getFieldWithDefault(msg, 5, ""),
+    launchimage: jspb.Message.getFieldWithDefault(msg, 6, ""),
+    lockey: jspb.Message.getFieldWithDefault(msg, 7, ""),
+    titlelockey: jspb.Message.getFieldWithDefault(msg, 8, ""),
+    locargsList: jspb.Message.getField(msg, 9),
+    titlelocargsList: jspb.Message.getField(msg, 10)
   };
 
   if (includeInstance) {
@@ -111,6 +125,34 @@ proto.proto.Alert.deserializeBinaryFromReader = function(msg, reader) {
     case 3:
       var value = /** @type {string} */ (reader.readString());
       msg.setSubtitle(value);
+      break;
+    case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setAction(value);
+      break;
+    case 5:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setActionlockey(value);
+      break;
+    case 6:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setLaunchimage(value);
+      break;
+    case 7:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setLockey(value);
+      break;
+    case 8:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setTitlelockey(value);
+      break;
+    case 9:
+      var value = /** @type {string} */ (reader.readString());
+      msg.addLocargs(value);
+      break;
+    case 10:
+      var value = /** @type {string} */ (reader.readString());
+      msg.addTitlelocargs(value);
       break;
     default:
       reader.skipField();
@@ -161,6 +203,55 @@ proto.proto.Alert.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getAction();
+  if (f.length > 0) {
+    writer.writeString(
+      4,
+      f
+    );
+  }
+  f = message.getActionlockey();
+  if (f.length > 0) {
+    writer.writeString(
+      5,
+      f
+    );
+  }
+  f = message.getLaunchimage();
+  if (f.length > 0) {
+    writer.writeString(
+      6,
+      f
+    );
+  }
+  f = message.getLockey();
+  if (f.length > 0) {
+    writer.writeString(
+      7,
+      f
+    );
+  }
+  f = message.getTitlelockey();
+  if (f.length > 0) {
+    writer.writeString(
+      8,
+      f
+    );
+  }
+  f = message.getLocargsList();
+  if (f.length > 0) {
+    writer.writeRepeatedString(
+      9,
+      f
+    );
+  }
+  f = message.getTitlelocargsList();
+  if (f.length > 0) {
+    writer.writeRepeatedString(
+      10,
+      f
+    );
+  }
 };
 
 
@@ -206,6 +297,143 @@ proto.proto.Alert.prototype.getSubtitle = function() {
 /** @param {string} value */
 proto.proto.Alert.prototype.setSubtitle = function(value) {
   jspb.Message.setField(this, 3, value);
+};
+
+
+/**
+ * optional string action = 4;
+ * @return {string}
+ */
+proto.proto.Alert.prototype.getAction = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/** @param {string} value */
+proto.proto.Alert.prototype.setAction = function(value) {
+  jspb.Message.setField(this, 4, value);
+};
+
+
+/**
+ * optional string actionLocKey = 5;
+ * @return {string}
+ */
+proto.proto.Alert.prototype.getActionlockey = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+};
+
+
+/** @param {string} value */
+proto.proto.Alert.prototype.setActionlockey = function(value) {
+  jspb.Message.setField(this, 5, value);
+};
+
+
+/**
+ * optional string launchImage = 6;
+ * @return {string}
+ */
+proto.proto.Alert.prototype.getLaunchimage = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+};
+
+
+/** @param {string} value */
+proto.proto.Alert.prototype.setLaunchimage = function(value) {
+  jspb.Message.setField(this, 6, value);
+};
+
+
+/**
+ * optional string locKey = 7;
+ * @return {string}
+ */
+proto.proto.Alert.prototype.getLockey = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
+};
+
+
+/** @param {string} value */
+proto.proto.Alert.prototype.setLockey = function(value) {
+  jspb.Message.setField(this, 7, value);
+};
+
+
+/**
+ * optional string titleLocKey = 8;
+ * @return {string}
+ */
+proto.proto.Alert.prototype.getTitlelockey = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 8, ""));
+};
+
+
+/** @param {string} value */
+proto.proto.Alert.prototype.setTitlelockey = function(value) {
+  jspb.Message.setField(this, 8, value);
+};
+
+
+/**
+ * repeated string locArgs = 9;
+ * If you change this array by adding, removing or replacing elements, or if you
+ * replace the array itself, then you must call the setter to update it.
+ * @return {!Array.<string>}
+ */
+proto.proto.Alert.prototype.getLocargsList = function() {
+  return /** @type {!Array.<string>} */ (jspb.Message.getField(this, 9));
+};
+
+
+/** @param {!Array.<string>} value */
+proto.proto.Alert.prototype.setLocargsList = function(value) {
+  jspb.Message.setField(this, 9, value || []);
+};
+
+
+/**
+ * @param {!string} value
+ * @param {number=} opt_index
+ */
+proto.proto.Alert.prototype.addLocargs = function(value, opt_index) {
+  jspb.Message.addToRepeatedField(this, 9, value, opt_index);
+};
+
+
+proto.proto.Alert.prototype.clearLocargsList = function() {
+  this.setLocargsList([]);
+};
+
+
+/**
+ * repeated string titleLocArgs = 10;
+ * If you change this array by adding, removing or replacing elements, or if you
+ * replace the array itself, then you must call the setter to update it.
+ * @return {!Array.<string>}
+ */
+proto.proto.Alert.prototype.getTitlelocargsList = function() {
+  return /** @type {!Array.<string>} */ (jspb.Message.getField(this, 10));
+};
+
+
+/** @param {!Array.<string>} value */
+proto.proto.Alert.prototype.setTitlelocargsList = function(value) {
+  jspb.Message.setField(this, 10, value || []);
+};
+
+
+/**
+ * @param {!string} value
+ * @param {number=} opt_index
+ */
+proto.proto.Alert.prototype.addTitlelocargs = function(value, opt_index) {
+  jspb.Message.addToRepeatedField(this, 10, value, opt_index);
+};
+
+
+proto.proto.Alert.prototype.clearTitlelocargsList = function() {
+  this.setTitlelocargsList([]);
 };
 
 
