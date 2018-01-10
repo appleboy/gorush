@@ -939,6 +939,11 @@ Now you can try sending an iOS push notifications
 echo '{"notifications": [{"tokens": ["<device-token>"], "platform": 1, "message": "Foo Bar!"} ] }' | http POST <docker-endpoint>:8088/api/push
 ```
 
+### Building in Alpine
+Note: check Dockerfile.alpine to see where the gorush binaries are referenced from.
+You may need to  `wget https://github.com/appleboy/gorush/releases/download/1.10.0/gorush-1.10.0-linux-amd64` into`./release/linux/amd64/gorush` and set `chmod +x gorush` to build correctly.
+
+
 Now from here this makes it significantly easier to deploy to kubernetes in a secure way.
 
 ### Deploying this Docker-compose setting to Kubernetes

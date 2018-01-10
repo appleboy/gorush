@@ -1,4 +1,4 @@
-#! bin/bash
+#! bin/sh
 
 # the file for config.core.cert_path
 if [ ! -z "$CORE__CERT_PATHFILE" ]; then echo $CORE__CERT_PATHFILE | base64 -d > cert.pem; fi
