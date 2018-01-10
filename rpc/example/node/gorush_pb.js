@@ -499,7 +499,9 @@ proto.proto.NotificationRequest.toObject = function(includeInstance, msg) {
     badge: jspb.Message.getFieldWithDefault(msg, 7, 0),
     category: jspb.Message.getFieldWithDefault(msg, 8, ""),
     alert: (f = msg.getAlert()) && proto.proto.Alert.toObject(includeInstance, f),
-    sound: jspb.Message.getFieldWithDefault(msg, 10, "")
+    sound: jspb.Message.getFieldWithDefault(msg, 10, ""),
+    contentavailable: jspb.Message.getFieldWithDefault(msg, 11, false),
+    threadid: jspb.Message.getFieldWithDefault(msg, 12, "")
   };
 
   if (includeInstance) {
@@ -576,6 +578,14 @@ proto.proto.NotificationRequest.deserializeBinaryFromReader = function(msg, read
     case 10:
       var value = /** @type {string} */ (reader.readString());
       msg.setSound(value);
+      break;
+    case 11:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setContentavailable(value);
+      break;
+    case 12:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setThreadid(value);
       break;
     default:
       reader.skipField();
@@ -673,6 +683,20 @@ proto.proto.NotificationRequest.serializeBinaryToWriter = function(message, writ
   if (f.length > 0) {
     writer.writeString(
       10,
+      f
+    );
+  }
+  f = message.getContentavailable();
+  if (f) {
+    writer.writeBool(
+      11,
+      f
+    );
+  }
+  f = message.getThreadid();
+  if (f.length > 0) {
+    writer.writeString(
+      12,
       f
     );
   }
@@ -857,6 +881,38 @@ proto.proto.NotificationRequest.prototype.getSound = function() {
 /** @param {string} value */
 proto.proto.NotificationRequest.prototype.setSound = function(value) {
   jspb.Message.setField(this, 10, value);
+};
+
+
+/**
+ * optional bool contentAvailable = 11;
+ * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
+ * You should avoid comparisons like {@code val === true/false} in those cases.
+ * @return {boolean}
+ */
+proto.proto.NotificationRequest.prototype.getContentavailable = function() {
+  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 11, false));
+};
+
+
+/** @param {boolean} value */
+proto.proto.NotificationRequest.prototype.setContentavailable = function(value) {
+  jspb.Message.setField(this, 11, value);
+};
+
+
+/**
+ * optional string threadID = 12;
+ * @return {string}
+ */
+proto.proto.NotificationRequest.prototype.getThreadid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 12, ""));
+};
+
+
+/** @param {string} value */
+proto.proto.NotificationRequest.prototype.setThreadid = function(value) {
+  jspb.Message.setField(this, 12, value);
 };
 
 

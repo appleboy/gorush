@@ -50,14 +50,16 @@ func (s *Server) Check(ctx context.Context, in *proto.HealthCheckRequest) (*prot
 func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*proto.NotificationReply, error) {
 	var badge = int(in.Badge)
 	notification := gorush.PushNotification{
-		Platform: int(in.Platform),
-		Tokens:   in.Tokens,
-		Message:  in.Message,
-		Title:    in.Title,
-		Topic:    in.Topic,
-		APIKey:   in.Key,
-		Category: in.Category,
-		Sound:    in.Sound,
+		Platform:         int(in.Platform),
+		Tokens:           in.Tokens,
+		Message:          in.Message,
+		Title:            in.Title,
+		Topic:            in.Topic,
+		APIKey:           in.Key,
+		Category:         in.Category,
+		Sound:            in.Sound,
+		ContentAvailable: in.ContentAvailable,
+		ThreadID:         in.ThreadID,
 	}
 
 	if badge > 0 {

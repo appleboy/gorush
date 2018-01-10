@@ -26,6 +26,8 @@ message NotificationRequest {
   string category = 8;
   Alert alert = 9;
   string sound = 10;
+  bool contentAvailable = 11;
+  string threadID = 12;
 }
 
 message NotificationReply {
