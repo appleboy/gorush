@@ -950,6 +950,12 @@ Now from here this makes it significantly easier to deploy to kubernetes in a se
 
 Update your secret files the same way you're setting it up in `docker-compose.yml` but in `k8s/gorush-secret.yml`. Uncomment or add ENV's that you need but you'll need to also update deploy.sh to make sure those files get generated and used.
 
+NOTE: Make sure you double base64 encode your secrets! Otherwise you'll get an error:
+
+```
+base64: truncated base64 input
+```
+
 ## Run gorush in Kubernetes
 
 ### Quick Start
