@@ -811,6 +811,8 @@ function main() {
   request.setSound("sound")
   alert.setTitle("title");
   request.setAlert(alert);
+  request.setThreadid("threadID");
+  request.setContentavailable(false);
   client.send(request, function (err, response) {
     if(err) {
       console.log(err);
