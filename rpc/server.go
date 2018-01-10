@@ -48,13 +48,37 @@ func (s *Server) Check(ctx context.Context, in *proto.HealthCheckRequest) (*prot
 
 // Send implements helloworld.GreeterServer
 func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*proto.NotificationReply, error) {
+	var badge = int(in.Badge)
 	notification := gorush.PushNotification{
-		Platform: int(in.Platform),
-		Tokens:   in.Tokens,
-		Message:  in.Message,
-		Title:    in.Title,
-		Topic:    in.Topic,
-		APIKey:   in.Key,
+		Platform:         int(in.Platform),
+		Tokens:           in.Tokens,
+		Message:          in.Message,
+		Title:            in.Title,
+		Topic:            in.Topic,
+		APIKey:           in.Key,
+		Category:         in.Category,
+		Sound:            in.Sound,
+		ContentAvailable: in.ContentAvailable,
+		ThreadID:         in.ThreadID,
+	}
+
+	if badge > 0 {
+		notification.Badge = &badge
+	}
+
+	if in.Alert != nil {
+		notification.Alert = gorush.Alert{
+			Title:        in.Alert.Title,
+			Body:         in.Alert.Body,
+			Subtitle:     in.Alert.Subtitle,
+			Action:       in.Alert.Action,
+			ActionLocKey: in.Alert.Action,
+			LaunchImage:  in.Alert.LaunchImage,
+			LocArgs:      in.Alert.LocArgs,
+			LocKey:       in.Alert.LocKey,
+			TitleLocArgs: in.Alert.TitleLocArgs,
+			TitleLocKey:  in.Alert.TitleLocKey,
+		}
 	}
 
 	go gorush.SendNotification(notification)

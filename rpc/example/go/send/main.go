@@ -26,6 +26,16 @@ func main() {
 		Platform: 2,
 		Tokens:   []string{"1234567890"},
 		Message:  "test message",
+		Badge:    1,
+		Category: "test",
+		Sound:    "test",
+		Alert: &proto.Alert{
+			Title:    "Test Title",
+			Body:     "Test Alert Body",
+			Subtitle: "Test Alert Sub Title",
+			LocKey:   "Test loc key",
+			LocArgs:  []string{"test", "test"},
+		},
 	})
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)

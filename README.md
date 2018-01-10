@@ -7,6 +7,7 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 [![codecov](https://codecov.io/gh/appleboy/gorush/branch/master/graph/badge.svg)](https://codecov.io/gh/appleboy/gorush)
 [![Go Report Card](https://goreportcard.com/badge/github.com/appleboy/gorush)](https://goreportcard.com/report/github.com/appleboy/gorush)
 [![codebeat badge](https://codebeat.co/badges/0a4eff2d-c9ac-46ed-8fd7-b59942983390)](https://codebeat.co/projects/github-com-appleboy-gorush)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/c82e0ed283474c5686d705ce64d004f7)](https://www.codacy.com/app/appleboy/gorush?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=appleboy/gorush&amp;utm_campaign=Badge_Grade)
 [![Docker Pulls](https://img.shields.io/docker/pulls/appleboy/gorush.svg)](https://hub.docker.com/r/appleboy/gorush/)
 [![](https://images.microbadger.com/badges/image/appleboy/gorush.svg)](https://microbadger.com/images/appleboy/gorush "Get your own image badge on microbadger.com")
 [![Release](https://github-release-version.herokuapp.com/github/appleboy/gorush/release.svg?style=flat)](https://github.com/appleboy/gorush/releases/latest)
@@ -56,7 +57,7 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 * Support `/api/stat/app` show notification success and failure counts.
 * Support `/api/config` show your [YAML](https://en.wikipedia.org/wiki/YAML) config.
 * Support store app stat to memory, [Redis](http://redis.io/), [BoltDB](https://github.com/boltdb/bolt), [BuntDB](https://github.com/tidwall/buntdb) or [LevelDB](https://github.com/syndtr/goleveldb).
-* Support `p12` or `pem` formtat of iOS certificate file.
+* Support `p8`, `p12` or `pem` format of iOS certificate file.
 * Support `/sys/stats` show response time, status code count, etc.
 * Support for HTTP proxy to Google server (FCM).
 * Support retry send notification if server response is fail.
@@ -768,6 +769,16 @@ func main() {
 		Platform: 2,
 		Tokens:   []string{"1234567890"},
 		Message:  "test message",
+		Badge:    1,
+		Category: "test",
+		Sound:    "test",
+		Alert: &proto.Alert{
+			Title:    "Test Title",
+			Body:     "Test Alert Body",
+			Subtitle: "Test Alert Sub Title",
+			LocKey:   "Test loc key",
+			LocArgs:  []string{"test", "test"},
+		},
 	})
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
@@ -790,12 +801,25 @@ function main() {
   var client = new services.GorushClient('localhost:9000',
     grpc.credentials.createInsecure());
   var request = new messages.NotificationRequest();
+  var alert = new messages.Alert();
   request.setPlatform(2);
   request.setTokensList(["1234567890"]);
   request.setMessage("Hello!!");
+  request.setTitle("hello2");
+  request.setBadge(2);
+  request.setCategory("mycategory");
+  request.setSound("sound")
+  alert.setTitle("title");
+  request.setAlert(alert);
+  request.setThreadid("threadID");
+  request.setContentavailable(false);
   client.send(request, function (err, response) {
-    console.log('Success:', response.getSuccess());
-    console.log('Counts:', response.getCounts());
+    if(err) {
+      console.log(err);
+    } else {
+      console.log("Success:", response.getSuccess());
+      console.log("Counts:", response.getCounts());
+    }
   });
 }
 
@@ -834,6 +858,16 @@ func main() {
 		Platform: 2,
 		Tokens:   []string{"1234567890"},
 		Message:  "test message",
+		Badge:    1,
+		Category: "test",
+		Sound:    "test",
+		Alert: &proto.Alert{
+			Title:    "Test Title",
+			Body:     "Test Alert Body",
+			Subtitle: "Test Alert Sub Title",
+			LocKey:   "Test loc key",
+			LocArgs:  []string{"test", "test"},
+		},
 	})
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
@@ -972,6 +1006,6 @@ $ kubectl delete -f k8s
 
 ## License
 
-Copyright 2017 Bo-Yi Wu [@appleboy](https://twitter.com/appleboy).
+Copyright 2018 Bo-Yi Wu [@appleboy](https://twitter.com/appleboy).
 
 Licensed under the MIT License.
