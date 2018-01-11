@@ -141,7 +141,7 @@ func (suite *ConfigTestSuite) TestValidateConf() {
 
 	// iOS
 	assert.Equal(suite.T(), false, suite.ConfGorush.Ios.Enabled)
-	assert.Equal(suite.T(), "key.pem", suite.ConfGorush.Ios.KeyPath)
+	assert.Equal(suite.T(), "ios_key.pem", suite.ConfGorush.Ios.KeyPath)
 	assert.Equal(suite.T(), "", suite.ConfGorush.Ios.Password)
 	assert.Equal(suite.T(), false, suite.ConfGorush.Ios.Production)
 	assert.Equal(suite.T(), 0, suite.ConfGorush.Ios.MaxRetry)

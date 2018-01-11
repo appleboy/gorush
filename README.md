@@ -111,7 +111,7 @@ android:
 
 ios:
   enabled: false
-  key_path: "key.pem"
+  key_path: "ios_key.pem"
   password: "" # certificate password, default as empty string.
   production: false
   max_retry: 0 # resend fail notification, default value zero is disabled
