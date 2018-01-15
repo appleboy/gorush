@@ -128,17 +128,19 @@ Retry:
 
 	var newTokens []string
 	for k, result := range res.Results {
+
+		userId := req.UserIds[k]
 		if result.Error != nil {
 			isError = true
 			newTokens = append(newTokens, req.Tokens[k])
-			LogPush(FailedPush, req.Tokens[k], req, result.Error)
+			LogPush(FailedPush, req.Tokens[k], userId, req, result.Error)
 			if PushConf.Core.Sync {
-				req.AddLog(getLogPushEntry(FailedPush, req.Tokens[k], req, result.Error))
+				req.AddLog(getLogPushEntry(FailedPush, req.Tokens[k], userId, req, result.Error))
 			}
 			continue
 		}
 
-		LogPush(SucceededPush, req.Tokens[k], req, nil)
+		LogPush(SucceededPush, req.Tokens[k], userId, req, nil)
 	}
 
 	if isError && retryCount < maxRetry {

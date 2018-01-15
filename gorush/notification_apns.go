@@ -254,9 +254,9 @@ Retry:
 
 		if err != nil {
 			// apns server error
-			LogPush(FailedPush, token, req, err)
+			LogPush(FailedPush, token, userId, req, err)
 			if PushConf.Core.Sync {
-				req.AddLog(getLogPushEntry(FailedPush, token, req, err))
+				req.AddLog(getLogPushEntry(FailedPush, token, userId, req, err))
 			}
 			StatStorage.AddIosError(1)
 			newTokens = append(newTokens, token)
@@ -267,9 +267,9 @@ Retry:
 		if res.StatusCode != 200 {
 			// error message:
 			// ref: https://github.com/sideshow/apns2/blob/master/response.go#L14-L65
-			LogPush(FailedPush, token, req, errors.New(res.Reason))
+			LogPush(FailedPush, token, userId, req, errors.New(res.Reason))
 			if PushConf.Core.Sync {
-				req.AddLog(getLogPushEntry(FailedPush, token, req, errors.New(res.Reason)))
+				req.AddLog(getLogPushEntry(FailedPush, token, userId, req, errors.New(res.Reason)))
 			}
 			StatStorage.AddIosError(1)
 			newTokens = append(newTokens, token)
@@ -287,7 +287,7 @@ Retry:
 		}
 
 		if res.Sent() {
-			LogPush(SucceededPush, token, req, nil)
+			LogPush(SucceededPush, token, userId, req, nil)
 			StatStorage.AddIosSuccess(1)
 		}
 	}
