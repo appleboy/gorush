@@ -38,6 +38,7 @@ type LogPushEntry struct {
 	Platform string `json:"platform"`
 	Token    string `json:"token"`
 	Message  string `json:"message"`
+	UserId   string `json:"userid"`
 	Error    string `json:"error"`
 }
 
@@ -197,7 +198,7 @@ func hideToken(token string, markLen int) string {
 	return result
 }
 
-func getLogPushEntry(status, token string, req PushNotification, errPush error) LogPushEntry {
+func getLogPushEntry(status, token string, userid string, req PushNotification, errPush error) LogPushEntry {
 	var errMsg string
 
 	plat := typeForPlatForm(req.Platform)
@@ -216,11 +217,12 @@ func getLogPushEntry(status, token string, req PushNotification, errPush error) 
 		Token:    token,
 		Message:  req.Message,
 		Error:    errMsg,
+		UserId:   userid,
 	}
 }
 
 // LogPush record user push request and server response.
-func LogPush(status, token string, req PushNotification, errPush error) {
+func LogPush(status, token string, userId string, req PushNotification, errPush error) {
 	var platColor, resetColor, output string
 
 	if isTerm {
@@ -228,7 +230,7 @@ func LogPush(status, token string, req PushNotification, errPush error) {
 		resetColor = reset
 	}
 
-	log := getLogPushEntry(status, token, req, errPush)
+	log := getLogPushEntry(status, token, userId, req, errPush)
 
 	if PushConf.Log.Format == "json" {
 		logJSON, _ := json.Marshal(log)
@@ -242,10 +244,11 @@ func LogPush(status, token string, req PushNotification, errPush error) {
 				typeColor = green
 			}
 
-			output = fmt.Sprintf("|%s %s %s| %s%s%s [%s] %s",
+			output = fmt.Sprintf("|%s %s %s| %s%s%s [%s] (%s) %s",
 				typeColor, log.Type, resetColor,
 				platColor, log.Platform, resetColor,
 				log.Token,
+				userId,
 				log.Message,
 			)
 		case FailedPush:
@@ -253,10 +256,11 @@ func LogPush(status, token string, req PushNotification, errPush error) {
 				typeColor = red
 			}
 
-			output = fmt.Sprintf("|%s %s %s| %s%s%s [%s] | %s | Error Message: %s",
+			output = fmt.Sprintf("|%s %s %s| %s%s%s [%s] | %s (%s) | Error Message: %s",
 				typeColor, log.Type, resetColor,
 				platColor, log.Platform, resetColor,
 				log.Token,
+				userId,
 				log.Message,
 				log.Error,
 			)
