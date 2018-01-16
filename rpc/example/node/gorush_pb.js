@@ -501,7 +501,8 @@ proto.proto.NotificationRequest.toObject = function(includeInstance, msg) {
     alert: (f = msg.getAlert()) && proto.proto.Alert.toObject(includeInstance, f),
     sound: jspb.Message.getFieldWithDefault(msg, 10, ""),
     contentavailable: jspb.Message.getFieldWithDefault(msg, 11, false),
-    threadid: jspb.Message.getFieldWithDefault(msg, 12, "")
+    threadid: jspb.Message.getFieldWithDefault(msg, 12, ""),
+    mutablecontent: jspb.Message.getFieldWithDefault(msg, 13, false)
   };
 
   if (includeInstance) {
@@ -586,6 +587,10 @@ proto.proto.NotificationRequest.deserializeBinaryFromReader = function(msg, read
     case 12:
       var value = /** @type {string} */ (reader.readString());
       msg.setThreadid(value);
+      break;
+    case 13:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setMutablecontent(value);
       break;
     default:
       reader.skipField();
@@ -697,6 +702,13 @@ proto.proto.NotificationRequest.serializeBinaryToWriter = function(message, writ
   if (f.length > 0) {
     writer.writeString(
       12,
+      f
+    );
+  }
+  f = message.getMutablecontent();
+  if (f) {
+    writer.writeBool(
+      13,
       f
     );
   }
@@ -913,6 +925,23 @@ proto.proto.NotificationRequest.prototype.getThreadid = function() {
 /** @param {string} value */
 proto.proto.NotificationRequest.prototype.setThreadid = function(value) {
   jspb.Message.setField(this, 12, value);
+};
+
+
+/**
+ * optional bool mutableContent = 13;
+ * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
+ * You should avoid comparisons like {@code val === true/false} in those cases.
+ * @return {boolean}
+ */
+proto.proto.NotificationRequest.prototype.getMutablecontent = function() {
+  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 13, false));
+};
+
+
+/** @param {boolean} value */
+proto.proto.NotificationRequest.prototype.setMutablecontent = function(value) {
+  jspb.Message.setField(this, 13, value);
 };
 
 
