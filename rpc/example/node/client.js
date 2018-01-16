@@ -19,6 +19,7 @@ function main() {
   request.setAlert(alert);
   request.setThreadid("threadID");
   request.setContentavailable(false);
+  request.setMutablecontent(false);
   client.send(request, function (err, response) {
     if(err) {
       console.log(err);
