@@ -37,6 +37,7 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 - [Run gRPC service](#run-grpc-service)
 - [Run gorush in Docker](#run-gorush-in-docker)
 - [Run gorush in Kubernetes](#run-gorush-in-kubernetes)
+- [Run gorush in AWS Lambda](#run-gorush-in-aws-lambda)
 - [License](#license)
 
 ## Support Platform
@@ -955,6 +956,40 @@ $ kubectl create -f k8s/gorush-aws-alb-ingress.yaml
 ```sh
 $ kubectl delete -f k8s
 ```
+
+## Run gorush in AWS Lambda
+
+AWS excited to [announce Go as a supported language for AWS Lambda](https://aws.amazon.com/blogs/compute/announcing-go-support-for-aws-lambda/). You’re going to create an application that uses an [API Gateway](https://aws.amazon.com/apigateway) event source to create a simple Hello World RESTful API.
+
+### Build gorush binary
+
+Download source code first.
+
+```sh
+$ git clone https://github.com/appleboy/gorush.git
+$ cd gorush && make build_linux_lambda
+```
+
+you can see the binary file in `release/linux/lambda/` folder
+
+### Deploy gorush application
+
+we need to build a binary that will run on Linux, and ZIP it up into a deployment package.
+
+```sh
+$ zip deployment.zip release/linux/lambda/gorush
+```
+
+Upload the `deployment.zip` via web UI or you can try the [drone-lambda](https://github.com/appleboy/drone-lambda) as the following command. it will zip your binary file and upload to AWS Lambda automatically.
+
+```sh
+$ AWS_ACCESS_KEY_ID=YOUR_AWS_ACCESS_KEY_ID \
+  AWS_SECRET_ACCESS_KEY=YOUR_AWS_SECRET_ACCESS_KEY \
+  drone-lambda --region ap-southeast-1 \
+  --function-name gorush \
+  --source release/linux/lambda/gorush
+```
+
 ## Stargazers over time
 
 [![Stargazers over time](https://starcharts.herokuapp.com/appleboy/gorush.svg)](https://starcharts.herokuapp.com/appleboy/gorush)
