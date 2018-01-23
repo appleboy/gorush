@@ -3,6 +3,12 @@
 	"ignore": "test",
 	"package": [
 		{
+			"checksumSHA1": "DBuGaMCW5qcB56KbHNMdfpF797Y=",
+			"path": "github.com/apex/gateway",
+			"revision": "e9c6ccec8851cbed57b52e96858f3dc0572921dc",
+			"revisionTime": "2018-01-21T23:10:47Z"
+		},
+		{
 			"checksumSHA1": "1Jql7x7zDOmbDxGr4gsa8rFEC5g=",
 			"path": "github.com/appleboy/go-fcm",
 			"revision": "3bc382cee4180b7e4753761fda69a003de97b0e9",
@@ -45,6 +51,30 @@
 			"path": "github.com/asdine/storm/q",
 			"revision": "de95a2ead13a0ec4cff5e37d21decd48b54a078f",
 			"revisionTime": "2017-01-29T11:39:06Z"
+		},
+		{
+			"checksumSHA1": "PJFBQGoSr7QkbNtr3XqFdkXuHTs=",
+			"path": "github.com/aws/aws-lambda-go/events",
+			"revision": "6736675908bded5127345825f653c88937222091",
+			"revisionTime": "2018-01-21T10:36:08Z"
+		},
+		{
+			"checksumSHA1": "otXwJhbwKYBj3v0viFbP9Mogqnw=",
+			"path": "github.com/aws/aws-lambda-go/lambda",
+			"revision": "6736675908bded5127345825f653c88937222091",
+			"revisionTime": "2018-01-21T10:36:08Z"
+		},
+		{
+			"checksumSHA1": "FEIW+8VDruQZu0Cv9j7r+Km8r8o=",
+			"path": "github.com/aws/aws-lambda-go/lambda/messages",
+			"revision": "6736675908bded5127345825f653c88937222091",
+			"revisionTime": "2018-01-21T10:36:08Z"
+		},
+		{
+			"checksumSHA1": "+3R+gHl3aC1ZBNfg0dEVBv1roaQ=",
+			"path": "github.com/aws/aws-lambda-go/lambdacontext",
+			"revision": "6736675908bded5127345825f653c88937222091",
+			"revisionTime": "2018-01-21T10:36:08Z"
 		},
 		{
 			"checksumSHA1": "spyv5/YFBjYyZLZa1U2LBfDR8PM=",
@@ -297,6 +327,12 @@
 			"path": "github.com/pelletier/go-toml",
 			"revision": "8c31c2ec65b208cc2ad1608bf25a3ff91adf1944",
 			"revisionTime": "2017-10-22T02:23:38Z"
+		},
+		{
+			"checksumSHA1": "xCv4GBFyw07vZkVtKF/XrUnkHRk=",
+			"path": "github.com/pkg/errors",
+			"revision": "e881fd58d78e04cf6d0de1217f8707c8cc2249bc",
+			"revisionTime": "2017-12-16T07:03:16Z"
 		},
 		{
 			"checksumSHA1": "LuFv4/jlrmFNnDb/5SCSEPAM9vU=",
