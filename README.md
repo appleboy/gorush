@@ -959,6 +959,8 @@ $ kubectl delete -f k8s
 
 ## Run gorush in AWS Lambda
 
+<img src="screenshot/lambda.png" />
+
 AWS excited to [announce Go as a supported language for AWS Lambda](https://aws.amazon.com/blogs/compute/announcing-go-support-for-aws-lambda/). You’re going to create an application that uses an [API Gateway](https://aws.amazon.com/apigateway) event source to create a simple Hello World RESTful API.
 
 ### Build gorush binary
