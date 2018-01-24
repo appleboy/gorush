@@ -65,6 +65,7 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 * Support expose [prometheus](https://prometheus.io/) metrics.
 * Support install TLS certificates from [Let's Encrypt](https://letsencrypt.org/) automatically.
 * Support send notification through [RPC](https://en.wikipedia.org/wiki/Remote_procedure_call) protocol, we use [gRPC](https://grpc.io/) as default framework.
+* Support running in Docker, [Kubernetes](https://kubernetes.io/) or [AWS Lambda](https://aws.amazon.com/lambda) ([Native Support in Golang](https://aws.amazon.com/blogs/compute/announcing-go-support-for-aws-lambda/))
 
 See the default [YAML config example](config/config.yml):
 
