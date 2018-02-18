@@ -172,13 +172,15 @@ func CheckPushConf() error {
 	}
 
 	if PushConf.Ios.Enabled {
-		if PushConf.Ios.KeyPath == "" {
-			return errors.New("Missing iOS certificate path")
+		if PushConf.Ios.KeyPath == "" && PushConf.Ios.KeyBase64 == "" {
+			return errors.New("Missing iOS certificate key")
 		}
 
 		// check certificate file exist
-		if _, err := os.Stat(PushConf.Ios.KeyPath); os.IsNotExist(err) {
-			return errors.New("certificate file does not exist")
+		if PushConf.Ios.KeyPath != "" {
+			if _, err := os.Stat(PushConf.Ios.KeyPath); os.IsNotExist(err) {
+				return errors.New("certificate file does not exist")
+			}
 		}
 	}
 

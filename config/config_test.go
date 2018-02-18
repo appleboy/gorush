@@ -47,6 +47,8 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Core.SSL)
 	assert.Equal(suite.T(), "cert.pem", suite.ConfGorushDefault.Core.CertPath)
 	assert.Equal(suite.T(), "key.pem", suite.ConfGorushDefault.Core.KeyPath)
+	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Core.KeyBase64)
+	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Core.CertBase64)
 	assert.Equal(suite.T(), int64(100), suite.ConfGorushDefault.Core.MaxNotification)
 	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Core.HTTPProxy)
 	// Pid
@@ -74,6 +76,8 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 	// iOS
 	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Ios.Enabled)
 	assert.Equal(suite.T(), "key.pem", suite.ConfGorushDefault.Ios.KeyPath)
+	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Ios.KeyBase64)
+	assert.Equal(suite.T(), "pem", suite.ConfGorushDefault.Ios.KeyType)
 	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Ios.Password)
 	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Ios.Production)
 	assert.Equal(suite.T(), 0, suite.ConfGorushDefault.Ios.MaxRetry)
@@ -115,6 +119,8 @@ func (suite *ConfigTestSuite) TestValidateConf() {
 	assert.Equal(suite.T(), false, suite.ConfGorush.Core.SSL)
 	assert.Equal(suite.T(), "cert.pem", suite.ConfGorush.Core.CertPath)
 	assert.Equal(suite.T(), "key.pem", suite.ConfGorush.Core.KeyPath)
+	assert.Equal(suite.T(), "", suite.ConfGorush.Core.CertBase64)
+	assert.Equal(suite.T(), "", suite.ConfGorush.Core.KeyBase64)
 	assert.Equal(suite.T(), int64(100), suite.ConfGorush.Core.MaxNotification)
 	assert.Equal(suite.T(), "", suite.ConfGorush.Core.HTTPProxy)
 	// Pid
@@ -142,6 +148,8 @@ func (suite *ConfigTestSuite) TestValidateConf() {
 	// iOS
 	assert.Equal(suite.T(), false, suite.ConfGorush.Ios.Enabled)
 	assert.Equal(suite.T(), "key.pem", suite.ConfGorush.Ios.KeyPath)
+	assert.Equal(suite.T(), "", suite.ConfGorush.Ios.KeyBase64)
+	assert.Equal(suite.T(), "pem", suite.ConfGorush.Ios.KeyType)
 	assert.Equal(suite.T(), "", suite.ConfGorush.Ios.Password)
 	assert.Equal(suite.T(), false, suite.ConfGorush.Ios.Production)
 	assert.Equal(suite.T(), 0, suite.ConfGorush.Ios.MaxRetry)

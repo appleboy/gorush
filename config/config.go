@@ -23,6 +23,8 @@ core:
   ssl: false
   cert_path: "cert.pem"
   key_path: "key.pem"
+  cert_base64: ""
+  key_base64: ""
   http_proxy: "" # only working for FCM server
   pid:
     enabled: false
@@ -54,6 +56,8 @@ android:
 ios:
   enabled: false
   key_path: "key.pem"
+  key_base64: "" # load iOS key from base64 input
+  key_type: "pem" # could be pem, p12 or p8 type
   password: "" # certificate password, default as empty string.
   production: false
   max_retry: 0 # resend fail notification, default value zero is disabled
@@ -107,6 +111,8 @@ type SectionCore struct {
 	SSL             bool           `yaml:"ssl"`
 	CertPath        string         `yaml:"cert_path"`
 	KeyPath         string         `yaml:"key_path"`
+	CertBase64      string         `yaml:"cert_base64"`
+	KeyBase64       string         `yaml:"key_base64"`
 	HTTPProxy       string         `yaml:"http_proxy"`
 	PID             SectionPID     `yaml:"pid"`
 	AutoTLS         SectionAutoTLS `yaml:"auto_tls"`
@@ -141,6 +147,8 @@ type SectionAndroid struct {
 type SectionIos struct {
 	Enabled    bool   `yaml:"enabled"`
 	KeyPath    string `yaml:"key_path"`
+	KeyBase64  string `yaml:"key_base64"`
+	KeyType    string `yaml:"key_type"`
 	Password   string `yaml:"password"`
 	Production bool   `yaml:"production"`
 	MaxRetry   int    `yaml:"max_retry"`
@@ -247,6 +255,8 @@ func LoadConf(confPath string) (ConfYaml, error) {
 	conf.Core.SSL = viper.GetBool("core.ssl")
 	conf.Core.CertPath = viper.GetString("core.cert_path")
 	conf.Core.KeyPath = viper.GetString("core.key_path")
+	conf.Core.CertBase64 = viper.GetString("core.cert_base64")
+	conf.Core.KeyBase64 = viper.GetString("core.key_base64")
 	conf.Core.MaxNotification = int64(viper.GetInt("core.max_notification"))
 	conf.Core.HTTPProxy = viper.GetString("core.http_proxy")
 	conf.Core.PID.Enabled = viper.GetBool("core.pid.enabled")
@@ -273,6 +283,8 @@ func LoadConf(confPath string) (ConfYaml, error) {
 	// iOS
 	conf.Ios.Enabled = viper.GetBool("ios.enabled")
 	conf.Ios.KeyPath = viper.GetString("ios.key_path")
+	conf.Ios.KeyBase64 = viper.GetString("ios.key_base64")
+	conf.Ios.KeyType = viper.GetString("ios.key_type")
 	conf.Ios.Password = viper.GetString("ios.password")
 	conf.Ios.Production = viper.GetBool("ios.production")
 	conf.Ios.MaxRetry = viper.GetInt("ios.max_retry")
