@@ -73,7 +73,7 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 
 	// iOS
 	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Ios.Enabled)
-	assert.Equal(suite.T(), "key.pem", suite.ConfGorushDefault.Ios.KeyPath)
+	assert.Equal(suite.T(), "ios_key.pem", suite.ConfGorushDefault.Ios.KeyPath)
 	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Ios.Password)
 	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Ios.Production)
 	assert.Equal(suite.T(), 0, suite.ConfGorushDefault.Ios.MaxRetry)
@@ -141,7 +141,7 @@ func (suite *ConfigTestSuite) TestValidateConf() {
 
 	// iOS
 	assert.Equal(suite.T(), false, suite.ConfGorush.Ios.Enabled)
-	assert.Equal(suite.T(), "key.pem", suite.ConfGorush.Ios.KeyPath)
+	assert.Equal(suite.T(), "ios_key.pem", suite.ConfGorush.Ios.KeyPath)
 	assert.Equal(suite.T(), "", suite.ConfGorush.Ios.Password)
 	assert.Equal(suite.T(), false, suite.ConfGorush.Ios.Production)
 	assert.Equal(suite.T(), 0, suite.ConfGorush.Ios.MaxRetry)

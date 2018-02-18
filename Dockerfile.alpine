@@ -11,6 +11,8 @@ RUN apk add --no-cache ca-certificates && \
   rm -rf /var/cache/apk/*
 
 ADD release/linux/amd64/gorush /bin/
+ADD deploy.sh /
 
 EXPOSE 8088 9000
-ENTRYPOINT ["/bin/gorush"]
+# ENTRYPOINT ["/bin/gorush", "-c", "config.yml"]
+ENTRYPOINT ["/deploy.sh"]
