@@ -404,6 +404,14 @@ func TestWrongIosCertificateExt(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Equal(t, "wrong certificate key extension", err.Error())
+
+	PushConf.Ios.KeyPath = ""
+	PushConf.Ios.KeyBase64 = "abcd"
+	PushConf.Ios.KeyType = "abcd"
+	err = InitAPNSClient()
+
+	assert.Error(t, err)
+	assert.Equal(t, "wrong certificate key type", err.Error())
 }
 
 func TestAPNSClientDevHost(t *testing.T) {
