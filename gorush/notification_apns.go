@@ -3,6 +3,7 @@ package gorush
 import (
 	"crypto/ecdsa"
 	"crypto/tls"
+	"encoding/base64"
 	"errors"
 	"path/filepath"
 	"time"
@@ -19,23 +20,51 @@ func InitAPNSClient() error {
 		var err error
 		var authKey *ecdsa.PrivateKey
 		var certificateKey tls.Certificate
-		ext := filepath.Ext(PushConf.Ios.KeyPath)
+		var ext string
 
-		switch ext {
-		case ".p12":
-			certificateKey, err = certificate.FromP12File(PushConf.Ios.KeyPath, PushConf.Ios.Password)
-		case ".pem":
-			certificateKey, err = certificate.FromPemFile(PushConf.Ios.KeyPath, PushConf.Ios.Password)
-		case ".p8":
-			authKey, err = token.AuthKeyFromFile(PushConf.Ios.KeyPath)
-		default:
-			err = errors.New("wrong certificate key extension")
-		}
+		if PushConf.Ios.KeyPath != "" {
+			ext = filepath.Ext(PushConf.Ios.KeyPath)
 
-		if err != nil {
-			LogError.Error("Cert Error:", err.Error())
+			switch ext {
+			case ".p12":
+				certificateKey, err = certificate.FromP12File(PushConf.Ios.KeyPath, PushConf.Ios.Password)
+			case ".pem":
+				certificateKey, err = certificate.FromPemFile(PushConf.Ios.KeyPath, PushConf.Ios.Password)
+			case ".p8":
+				authKey, err = token.AuthKeyFromFile(PushConf.Ios.KeyPath)
+			default:
+				err = errors.New("wrong certificate key extension")
+			}
 
-			return err
+			if err != nil {
+				LogError.Error("Cert Error:", err.Error())
+
+				return err
+			}
+		} else if PushConf.Ios.KeyBase64 != "" {
+			ext = "." + PushConf.Ios.KeyType
+			key, err := base64.StdEncoding.DecodeString(PushConf.Ios.KeyBase64)
+			if err != nil {
+				LogError.Error("base64 decode error:", err.Error())
+
+				return err
+			}
+			switch ext {
+			case ".p12":
+				certificateKey, err = certificate.FromP12Bytes(key, PushConf.Ios.Password)
+			case ".pem":
+				certificateKey, err = certificate.FromPemBytes(key, PushConf.Ios.Password)
+			case ".p8":
+				authKey, err = token.AuthKeyFromBytes(key)
+			default:
+				err = errors.New("wrong certificate key type")
+			}
+
+			if err != nil {
+				LogError.Error("Cert Error:", err.Error())
+
+				return err
+			}
 		}
 
 		if ext == ".p8" && PushConf.Ios.KeyID != "" && PushConf.Ios.TeamID != "" {
