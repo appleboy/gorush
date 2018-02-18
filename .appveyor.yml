@@ -1,0 +1,61 @@
+version: '{build}'
+image: 'Visual Studio 2017'
+platform: x64
+
+clone_folder: 'c:\go\src\github.com\appleboy\gorush'
+max_jobs: 1
+
+environment:
+  GOPATH: c:\go
+  docker_username:
+    secure: em/TNLUXxG19O/HvbvfJuQ==
+  docker_password:
+    secure: Yo9FJJqihaNz5q8T4Jz8tQ==
+
+branches:
+  only:
+    - master
+
+install:
+  - ps: |
+      docker version
+      go version
+
+build_script:
+  - ps: |
+      if ( $env:APPVEYOR_REPO_TAG -eq 'false' ) {
+        go build -ldflags "-X main.Version=$env:APPVEYOR_REPO_COMMIT -X main.BuildNum=$env:APPVEYOR_BUILD_VERSION" -a -o gorush.exe
+      } else {
+        $version = $env:APPVEYOR_REPO_TAG_NAME
+        go build -ldflags "-X main.Version=$version -X main.BuildNum=$env:APPVEYOR_BUILD_VERSION" -a -o gorush.exe
+      }
+      dir
+      docker pull microsoft/nanoserver:10.0.14393.1884
+      docker build -f Dockerfile.windows -t appleboy/gorush:windows-amd64 .
+
+test_script:
+  - ps: |
+      docker run --rm appleboy/gorush:windows-amd64 --version
+
+deploy_script:
+  - ps: |
+      $ErrorActionPreference = 'Stop';
+      if ( $env:APPVEYOR_PULL_REQUEST_NUMBER ) {
+        Write-Host Nothing to deploy.
+      } else {
+        docker login --username $env:DOCKER_USERNAME --password $env:DOCKER_PASSWORD
+        if ( $env:APPVEYOR_REPO_TAG -eq 'true' ) {
+          $major,$minor,$patch = $env:APPVEYOR_REPO_TAG_NAME.split('.')
+          docker push appleboy/gorush:windows-amd64
+          docker tag appleboy/gorush:windows-amd64 appleboy/gorush:$major.$minor.$patch-windows-amd64
+          docker push appleboy/gorush:$major.$minor.$patch-windows-amd64
+          docker tag appleboy/gorush:windows-amd64 appleboy/gorush:$major.$minor-windows-amd64
+          docker push appleboy/gorush:$major.$minor-windows-amd64
+          docker tag appleboy/gorush:windows-amd64 appleboy/gorush:$major-windows-amd64
+          docker push appleboy/gorush:$major-windows-amd64
+        } else {
+          if ( $env:APPVEYOR_REPO_BRANCH -eq 'master' ) {
+            docker push appleboy/gorush:windows-amd64
+          }
+        }
+      }
