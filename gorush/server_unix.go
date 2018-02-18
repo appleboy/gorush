@@ -4,6 +4,8 @@ package gorush
 
 import (
 	"crypto/tls"
+	"encoding/base64"
+	"errors"
 	"net/http"
 
 	"github.com/facebookgo/grace/gracehttp"
@@ -19,7 +21,7 @@ func RunHTTPServer() (err error) {
 	LogAccess.Debug("HTTPD server is running on " + PushConf.Core.Port + " port.")
 	if PushConf.Core.AutoTLS.Enabled {
 		err = gracehttp.Serve(autoTLSServer())
-	} else if PushConf.Core.SSL && PushConf.Core.CertPath != "" && PushConf.Core.KeyPath != "" {
+	} else if PushConf.Core.SSL {
 		config := &tls.Config{
 			MinVersion: tls.VersionTLS10,
 		}
@@ -29,10 +31,26 @@ func RunHTTPServer() (err error) {
 		}
 
 		config.Certificates = make([]tls.Certificate, 1)
-		config.Certificates[0], err = tls.LoadX509KeyPair(PushConf.Core.CertPath, PushConf.Core.KeyPath)
-		if err != nil {
-			LogError.Error("Failed to load https cert file: ", err)
-			return err
+		if PushConf.Core.CertPath != "" && PushConf.Core.KeyPath != "" {
+			config.Certificates[0], err = tls.LoadX509KeyPair(PushConf.Core.CertPath, PushConf.Core.KeyPath)
+			if err != nil {
+				LogError.Error("Failed to load https cert file: ", err)
+				return err
+			}
+		} else if PushConf.Core.CertBase64 != "" && PushConf.Core.KeyBase64 != "" {
+			cert, err := base64.StdEncoding.DecodeString(PushConf.Core.CertBase64)
+			if err != nil {
+				LogError.Error("base64 decode error:", err.Error())
+				return err
+			}
+			key, err := base64.StdEncoding.DecodeString(PushConf.Core.KeyBase64)
+			if err != nil {
+				LogError.Error("base64 decode error:", err.Error())
+				return err
+			}
+			config.Certificates[0], err = tls.X509KeyPair(cert, key)
+		} else {
+			return errors.New("missing https cert config")
 		}
 
 		err = gracehttp.Serve(&http.Server{
