@@ -912,7 +912,7 @@ $ http -v --verify=no --json GET http://your.docker.host/api/stat/go
 
 ### Quick Start
 
-Create name space as `gorush` and configuration map:
+Create namespace as `gorush` as `gorush` and then your configuration map:
 
 ```sh
 $ kubectl create -f k8s/gorush-namespace.yaml
