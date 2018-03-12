@@ -6,5 +6,5 @@ LABEL maintainer="Bo-Yi Wu <appleboy.tw@gmail.com>" \
   org.label-schema.vendor="Bo-Yi Wu" \
   org.label-schema.schema-version="1.0"
 
-ADD release/gorush.exe c:\gorush.exe
-ENTRYPOINT [ "c:\\gorush.exe" ]
+ADD release/gorush.exe /drone-line.exe
+ENTRYPOINT [ "\\drone-line.exe" ]
