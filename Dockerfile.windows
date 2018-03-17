@@ -6,4 +6,7 @@ LABEL maintainer="Bo-Yi Wu <appleboy.tw@gmail.com>" \
   org.label-schema.schema-version="1.0"
 
 ADD release/gorush.exe /gorush.exe
+HEALTHCHECK --start-period=2s --interval=10s --timeout=5s \
+  CMD ["\\gorush.exe", "--ping"]
+
 ENTRYPOINT [ "\\gorush.exe" ]

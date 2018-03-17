@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -19,6 +20,7 @@ func main() {
 	opts := config.ConfYaml{}
 
 	var (
+		ping        bool
 		showVersion bool
 		configFile  string
 		topic       string
@@ -56,6 +58,7 @@ func main() {
 	flag.BoolVar(&opts.Ios.Production, "production", false, "production mode in iOS")
 	flag.StringVar(&topic, "topic", "", "apns topic in iOS")
 	flag.StringVar(&proxy, "proxy", "", "http proxy url")
+	flag.BoolVar(&ping, "ping", false, "ping server")
 
 	flag.Usage = usage
 	flag.Parse()
@@ -124,6 +127,13 @@ func main() {
 		if err != nil {
 			gorush.LogError.Fatalf("Set Proxy error: %v", err)
 		}
+	}
+
+	if ping {
+		if err := pinger(); err != nil {
+			gorush.LogError.Warnf("ping server error: %v", err)
+		}
+		return
 	}
 
 	// send android notification
@@ -270,6 +280,7 @@ Server Options:
     --proxy <proxy>                  Proxy URL (only for GCM)
     --pid <pid path>                 Process identifier path
     --redis-addr <redis addr>        Redis addr (default: localhost:6379)
+    --ping                           healthy check command for container
 iOS Options:
     -i, --key <file>                 certificate key file path
     -P, --password <password>        certificate key password
@@ -288,6 +299,20 @@ Common Options:
 func usage() {
 	fmt.Printf("%s\n", usageStr)
 	os.Exit(0)
+}
+
+// handles pinging the endpoint and returns an error if the
+// agent is in an unhealthy state.
+func pinger() error {
+	resp, err := http.Get("http://localhost:" + gorush.PushConf.Core.Port + gorush.PushConf.API.HealthURI)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return fmt.Errorf("server returned non-200 status code")
+	}
+	return nil
 }
 
 func createPIDFile() error {
