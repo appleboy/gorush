@@ -85,7 +85,7 @@ func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*prot
 	go gorush.SendNotification(notification)
 
 	return &proto.NotificationReply{
-		Success: false,
+		Success: true,
 		Counts:  int32(len(notification.Tokens)),
 	}, nil
 }
