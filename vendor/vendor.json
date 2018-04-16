@@ -3,10 +3,22 @@
 	"ignore": "test",
 	"package": [
 		{
+			"checksumSHA1": "+Bo3QheGAtKFk7QPb+pdIEZNiYI=",
+			"path": "github.com/AndreasBriese/bbloom",
+			"revision": "28f7e881ca57bc00e028f9ede9f0d9104cfeef5e",
+			"revisionTime": "2017-07-02T08:40:17Z"
+		},
+		{
 			"checksumSHA1": "DBuGaMCW5qcB56KbHNMdfpF797Y=",
 			"path": "github.com/apex/gateway",
 			"revision": "e9c6ccec8851cbed57b52e96858f3dc0572921dc",
 			"revisionTime": "2018-01-21T23:10:47Z"
+		},
+		{
+			"checksumSHA1": "WBKIBKW4e4CON63PqRvGEvmg7Yc=",
+			"path": "github.com/appleboy/com/convert",
+			"revision": "c0b5901f9622d5256343198ed54af65af5d08cff",
+			"revisionTime": "2018-04-10T03:06:38Z"
 		},
 		{
 			"checksumSHA1": "1Jql7x7zDOmbDxGr4gsa8rFEC5g=",
@@ -101,10 +113,52 @@
 			"revisionTime": "2016-10-29T20:57:26Z"
 		},
 		{
+			"checksumSHA1": "7vwfpEh4rCpq6gS0D7qY+UhvAR4=",
+			"path": "github.com/dgraph-io/badger",
+			"revision": "deb140b6378159c58f803c01430a1b6ba3af248e",
+			"revisionTime": "2018-04-06T05:54:07Z"
+		},
+		{
+			"checksumSHA1": "oOuT7ebEiZ1ViHLKdFxKFOvobAQ=",
+			"path": "github.com/dgraph-io/badger/options",
+			"revision": "deb140b6378159c58f803c01430a1b6ba3af248e",
+			"revisionTime": "2018-04-06T05:54:07Z"
+		},
+		{
+			"checksumSHA1": "gGTDnTVVw5kcT2P5NXZV1YSckOU=",
+			"path": "github.com/dgraph-io/badger/protos",
+			"revision": "deb140b6378159c58f803c01430a1b6ba3af248e",
+			"revisionTime": "2018-04-06T05:54:07Z"
+		},
+		{
+			"checksumSHA1": "xBLLiAouTGA/lCAcQ5qjxQiuPCc=",
+			"path": "github.com/dgraph-io/badger/skl",
+			"revision": "deb140b6378159c58f803c01430a1b6ba3af248e",
+			"revisionTime": "2018-04-06T05:54:07Z"
+		},
+		{
+			"checksumSHA1": "I33KkP2lnYqJDasvvsAlebzkeko=",
+			"path": "github.com/dgraph-io/badger/table",
+			"revision": "deb140b6378159c58f803c01430a1b6ba3af248e",
+			"revisionTime": "2018-04-06T05:54:07Z"
+		},
+		{
+			"checksumSHA1": "gIZmO4zSlwCmPC99HpuBL8H6kjM=",
+			"path": "github.com/dgraph-io/badger/y",
+			"revision": "deb140b6378159c58f803c01430a1b6ba3af248e",
+			"revisionTime": "2018-04-06T05:54:07Z"
+		},
+		{
 			"checksumSHA1": "+TKtBzv23ywvmmqRiGEjUba4YmI=",
 			"path": "github.com/dgrijalva/jwt-go",
 			"revision": "dbeaa9332f19a944acb5736b4456cfcc02140e29",
 			"revisionTime": "2017-10-19T21:57:19Z"
+		},
+		{
+			"checksumSHA1": "+MUIij/Y6vqAkx0P5GjHeqnU9ZU=",
+			"path": "github.com/dgryski/go-farm",
+			"revision": "2de33835d10275975374b37b2dcfd22c9020a1f5",
+			"revisionTime": "2018-01-09T07:02:41Z"
 		},
 		{
 			"checksumSHA1": "rRYbBQkVsd/+EIryahsywNi34Lo=",
