@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/appleboy/gorush/storage/badger"
 	"github.com/appleboy/gorush/storage/boltdb"
 	"github.com/appleboy/gorush/storage/buntdb"
 	"github.com/appleboy/gorush/storage/leveldb"
@@ -52,6 +53,8 @@ func InitAppStatus() error {
 		StatStorage = buntdb.New(PushConf)
 	case "leveldb":
 		StatStorage = leveldb.New(PushConf)
+	case "badger":
+		StatStorage = badger.New(PushConf)
 	default:
 		LogError.Error("storage error: can't find storage driver")
 		return errors.New("can't find storage driver")

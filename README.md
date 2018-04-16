@@ -60,7 +60,7 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 * Support notification queue and multiple workers.
 * Support `/api/stat/app` show notification success and failure counts.
 * Support `/api/config` show your [YAML](https://en.wikipedia.org/wiki/YAML) config.
-* Support store app stat to memory, [Redis](http://redis.io/), [BoltDB](https://github.com/boltdb/bolt), [BuntDB](https://github.com/tidwall/buntdb) or [LevelDB](https://github.com/syndtr/goleveldb).
+* Support store app stat to memory, [Redis](http://redis.io/), [BoltDB](https://github.com/boltdb/bolt), [BuntDB](https://github.com/tidwall/buntdb), [LevelDB](https://github.com/syndtr/goleveldb) or [BadgerDB](https://github.com/dgraph-io/badger).
 * Support `p8`, `p12` or `pem` format of iOS certificate file.
 * Support `/sys/stats` show response time, status code count, etc.
 * Support for HTTP proxy to Google server (FCM).
