@@ -10,21 +10,21 @@ clone:
 
 pipeline:
   deps:
-    image: appleboy/golang-testing:1.10.0
+    image: golang:1.10.1
     group: golang
     commands:
       - make deps
       - make embedmd
 
   lint:
-    image: appleboy/golang-testing:1.10.0
+    image: golang:1.10.1
     group: golang
     commands:
       - make vet
       - make lint
 
   vendor:
-    image: appleboy/golang-testing:1.10.0
+    image: golang:1.10.1
     group: golang
     commands:
       - make test-vendor
@@ -32,50 +32,58 @@ pipeline:
       - make fmt-check
 
   build_linux_amd64:
-    image: appleboy/golang-testing
+    image: golang:1.10.1
     pull: true
     group: golang
     commands:
       - make build_linux_amd64
 
   build_linux_i386:
-    image: appleboy/golang-testing:1.10.0
+    image: golang:1.10.1
     pull: true
     group: golang
     commands:
       - make build_linux_i386
 
   build_linux_arm64:
-    image: appleboy/golang-testing:1.10.0
+    image: golang:1.10.1
     pull: true
     group: golang
     commands:
       - make build_linux_arm64
 
   build_linux_arm:
-    image: appleboy/golang-testing:1.10.0
+    image: golang:1.10.1
     pull: true
     group: golang
     commands:
       - make build_linux_arm
 
   coverage:
-    image: appleboy/golang-testing:1.10.0
+    image: golang:1.10.1
     group: golang
     secrets: [ android_test_token, android_api_key ]
     commands:
-      - coverage all
+      - make unit-test-coverage
+
+  generate-coverage:
+    image: golang:1.10.1
+    pull: true
+    commands:
+      - make coverage
+    when:
+      event: [ push, pull_request ]
 
   codecov:
     image: robertstettner/drone-codecov
     secrets: [ codecov_token ]
     files:
-      - .cover/coverage.txt
+      - coverage.all
     when:
       event: [ push, pull_request ]
 
   release:
-    image: appleboy/golang-testing:1.10.0
+    image: golang:1.10.1
     pull: true
     commands:
       - make release
