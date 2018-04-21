@@ -120,10 +120,10 @@ coverage:
 	gocovmerge $(shell find . -type f -name "coverage.out") > coverage.all;\
 
 .PHONY: unit-test-coverage
-unit-test-coverage:
+unit-test-coverage: init
 	for PKG in $(PACKAGES); do $(GO) test -cover -coverprofile $$GOPATH/src/$$PKG/coverage.out $$PKG || exit 1; done;
 
-test:
+test: init
 	for PKG in $(PACKAGES); do $(GO) test -v $$PKG || exit 1; done;
 
 .PHONY: test-vendor
