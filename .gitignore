@@ -34,3 +34,4 @@ coverage.txt
 dist
 custom
 release
+coverage.out
