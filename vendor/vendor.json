@@ -451,16 +451,16 @@
 			"versionExact": "v0.13"
 		},
 		{
-			"checksumSHA1": "c3x81Xq+gIn5JBgs1eCTVeRwDDo=",
+			"checksumSHA1": "EHOwwdWPJGt1vNVeJxyRDRHBhl8=",
 			"path": "github.com/sideshow/apns2/certificate",
-			"revision": "c23f4b07d9e47aa490ff76001001decc688243f8",
-			"revisionTime": "2017-01-05T14:10:18Z"
+			"revision": "c6554aff77e6e5580dec977c8c33cc238f329ab0",
+			"revisionTime": "2018-04-13T21:53:35Z"
 		},
 		{
 			"checksumSHA1": "9Lxz0w+q8pqp/Do/kNa8hLoQeY0=",
 			"path": "github.com/sideshow/apns2/payload",
-			"revision": "c23f4b07d9e47aa490ff76001001decc688243f8",
-			"revisionTime": "2017-01-05T14:10:18Z"
+			"revision": "c6554aff77e6e5580dec977c8c33cc238f329ab0",
+			"revisionTime": "2018-04-13T21:53:35Z"
 		},
 		{
 			"checksumSHA1": "nkQ/1JoIY4jh8XlI8LClfFVux9U=",
