@@ -63,7 +63,7 @@ pipeline:
       - make build_linux_arm
 
   coverage:
-    image: golang:1.10.1
+    image: golang:1.10
     pull: true
     group: golang
     secrets: [ android_test_token, android_api_key ]
