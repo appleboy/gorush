@@ -10,21 +10,24 @@ clone:
 
 pipeline:
   deps:
-    image: golang:1.10.1
+    image: golang:1.10
+    pull: true
     group: golang
     commands:
       - make deps
       - make embedmd
 
   lint:
-    image: golang:1.10.1
+    image: golang:1.10
+    pull: true
     group: golang
     commands:
       - make vet
       - make lint
 
   vendor:
-    image: golang:1.10.1
+    image: golang:1.10
+    pull: true
     group: golang
     commands:
       - make test-vendor
@@ -32,42 +35,43 @@ pipeline:
       - make fmt-check
 
   build_linux_amd64:
-    image: golang:1.10.1
+    image: golang:1.10
     pull: true
     group: golang
     commands:
       - make build_linux_amd64
 
   build_linux_i386:
-    image: golang:1.10.1
+    image: golang:1.10
     pull: true
     group: golang
     commands:
       - make build_linux_i386
 
   build_linux_arm64:
-    image: golang:1.10.1
+    image: golang:1.10
     pull: true
     group: golang
     commands:
       - make build_linux_arm64
 
   build_linux_arm:
-    image: golang:1.10.1
+    image: golang:1.10
     pull: true
     group: golang
     commands:
       - make build_linux_arm
 
   coverage:
-    image: golang:1.10.1
+    image: golang:1.10
+    pull: true
     group: golang
     secrets: [ android_test_token, android_api_key ]
     commands:
       - make unit-test-coverage
 
   generate-coverage:
-    image: golang:1.10.1
+    image: golang:1.10
     pull: true
     commands:
       - make coverage
@@ -83,7 +87,7 @@ pipeline:
       event: [ push, pull_request ]
 
   release:
-    image: golang:1.10.1
+    image: golang:1.10
     pull: true
     commands:
       - make release
