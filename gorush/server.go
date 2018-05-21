@@ -49,7 +49,7 @@ func pushHandler(c *gin.Context) {
 
 	if err := c.ShouldBindWith(&form, binding.JSON); err != nil {
 		msg = "Missing notifications field."
-		LogAccess.Debug(msg)
+		LogAccess.Debug(err)
 		abortWithError(c, http.StatusBadRequest, msg)
 		return
 	}
