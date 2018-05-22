@@ -69,6 +69,8 @@ pipeline:
     secrets: [ android_test_token, android_api_key ]
     commands:
       - make unit-test-coverage
+    when:
+      event: [ push, pull_request ]
 
   generate-coverage:
     image: golang:1.10
