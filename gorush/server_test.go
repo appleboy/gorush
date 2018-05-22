@@ -218,6 +218,35 @@ func TestEmptyNotifications(t *testing.T) {
 		})
 }
 
+func TestMutableContent(t *testing.T) {
+	initTest()
+
+	r := gofight.New()
+
+	// notifications is empty.
+	r.POST("/api/push").
+		SetJSON(gofight.D{
+			"notifications": []gofight.D{
+				{
+					"tokens":          []string{"aaaaa", "bbbbb"},
+					"platform":        PlatFormAndroid,
+					"message":         "Welcome",
+					"mutable-content": 1,
+					"topic":           "test",
+					"badge":           1,
+					"alert": gofight.D{
+						"title": "title",
+						"body":  "body",
+					},
+				},
+			},
+		}).
+		Run(routerEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+			// json: cannot unmarshal number into Go struct field PushNotification.mutable-content of type bool
+			assert.Equal(t, http.StatusBadRequest, r.Code)
+		})
+}
+
 func TestOutOfRangeMaxNotifications(t *testing.T) {
 	initTest()
 
