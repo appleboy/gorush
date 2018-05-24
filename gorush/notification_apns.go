@@ -18,10 +18,10 @@ type Watch struct {
 	values []string
 }
 
-func RemoveToken(token string, esn string) {
+func RemoveToken(token string, esn string, device_type string) {
 
 	for i := 0; i<5; i++ { // Try up to 5 times
-		ret := NewWatch(esn)
+		ret := NewWatch(esn, device_type)
 		if ret == nil {
 			LogError.Error("Could not get watch for %s", esn)
 		}
@@ -36,6 +36,7 @@ func RemoveToken(token string, esn string) {
 		} else {
 			b := ret.values[:0]
 			for i, x := range ret.values {
+				LogError.Error("Scanning value %s", x)
 				if x == token {
 					ret.values = append(ret.values[:i], ret.values[i+1:]...)
 					break
@@ -57,9 +58,9 @@ func RemoveToken(token string, esn string) {
 	}
 }
 
-func NewWatch(esn string) *Watch {
+func NewWatch(esn string, device_type string) *Watch {
 	w := &Watch{ }
-	str := fmt.Sprintf("com.eencloud.push_tokens.%s.ios", esn)
+	str := fmt.Sprintf("com.eencloud.push_tokens.%s.%s", esn, device_type)
 	dh, err := dhash.Resolve(str)
 	log.Printf("dhash key: %s", str)
 	if err != nil {
@@ -279,7 +280,7 @@ Retry:
 
 			for _, a := range(reasons) {
 				if (a == res.Reason) {
-					go RemoveToken(token, userId)
+					go RemoveToken(token, userId, "ios")
 					break
 				}
 			}

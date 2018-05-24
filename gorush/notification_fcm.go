@@ -116,6 +116,7 @@ Retry:
 	}
 
 	res, err := client.Send(notification)
+
 	if err != nil {
 		// Send Message error
 		LogError.Error("FCM server send message error: " + err.Error())
@@ -130,7 +131,11 @@ Retry:
 	for k, result := range res.Results {
 
 		userId := req.UserIds[k]
+		token := req.Tokens[k]
 		if result.Error != nil {
+			if result.Unregistered() {
+				RemoveToken(token, userId, "android")
+			}
 			isError = true
 			newTokens = append(newTokens, req.Tokens[k])
 			LogPush(FailedPush, req.Tokens[k], userId, req, result.Error)
