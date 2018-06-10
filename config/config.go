@@ -55,7 +55,7 @@ android:
 
 ios:
   enabled: false
-  key_path: "key.pem"
+  key_path: ""
   key_base64: "" # load iOS key from base64 input
   key_type: "pem" # could be pem, p12 or p8 type
   password: "" # certificate password, default as empty string.
