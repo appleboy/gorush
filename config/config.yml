@@ -42,7 +42,7 @@ ios:
   enabled: true
   key_path: "ios_prod.p12"
   password: "" # certificate password, default as empty string.
-  production: false
+  production: true
   max_retry: 0 # resend fail notification, default value zero is disabled
 
 log:
