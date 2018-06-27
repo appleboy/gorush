@@ -194,6 +194,12 @@ On Windows
 $ wget https://github.com/appleboy/gorush/releases/download/1.10.0/gorush-1.10.0-windows-amd64.exe -O gorush.exe
 ```
 
+On macOS, use Homebrew.
+
+```
+$ brew install --HEAD https://github.com/appleboy/gorush/raw/master/HomebrewFormula/gorush.rb
+```
+
 ### Command Usage
 
 ```
