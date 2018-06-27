@@ -43,7 +43,7 @@ deploy_script:
       if ( $env:APPVEYOR_PULL_REQUEST_NUMBER ) {
         Write-Host Nothing to deploy.
       } else {
-        docker login --username $env:DOCKER_USERNAME --password $env:DOCKER_PASSWORD
+        echo $env:DOCKER_PASSWORD | docker login --username $env:DOCKER_USERNAME --password-stdin
         if ( $env:APPVEYOR_REPO_TAG -eq 'true' ) {
           $major,$minor,$patch = $env:APPVEYOR_REPO_TAG_NAME.split('.')
           docker push appleboy/gorush:windows-amd64
