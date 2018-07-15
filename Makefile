@@ -6,7 +6,7 @@ DEPLOY_ACCOUNT := appleboy
 DEPLOY_IMAGE := $(EXECUTABLE)
 GOFMT ?= gofmt "-s"
 
-TARGETS ?= linux darwin windows
+TARGETS ?= linux darwin windows openbsd
 ARCHS ?= amd64 386
 PACKAGES ?= $(shell $(GO) list ./... | grep -v /vendor/)
 GOFILES := $(shell find . -name "*.go" -type f -not -path "./vendor/*")
