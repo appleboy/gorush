@@ -36,6 +36,7 @@ func GetAndroidNotification(req PushNotification) *fcm.Message {
 		Condition:             req.Condition,
 		CollapseKey:           req.CollapseKey,
 		ContentAvailable:      req.ContentAvailable,
+		MutableContent:        req.MutableContent,
 		DelayWhileIdle:        req.DelayWhileIdle,
 		TimeToLive:            req.TimeToLive,
 		RestrictedPackageName: req.RestrictedPackageName,

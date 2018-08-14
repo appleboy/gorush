@@ -231,7 +231,7 @@ func TestMutableContent(t *testing.T) {
 					"tokens":          []string{"aaaaa", "bbbbb"},
 					"platform":        PlatFormAndroid,
 					"message":         "Welcome",
-					"mutable-content": 1,
+					"mutable_content": 1,
 					"topic":           "test",
 					"badge":           1,
 					"alert": gofight.D{
@@ -242,7 +242,7 @@ func TestMutableContent(t *testing.T) {
 			},
 		}).
 		Run(routerEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
-			// json: cannot unmarshal number into Go struct field PushNotification.mutable-content of type bool
+			// json: cannot unmarshal number into Go struct field PushNotification.mutable_content of type bool
 			assert.Equal(t, http.StatusBadRequest, r.Code)
 		})
 }
