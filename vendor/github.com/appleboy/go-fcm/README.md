@@ -1,10 +1,10 @@
 # go-fcm
 
-[![GoDoc](https://godoc.org/github.com/appleboy/go-fcm?status.svg)](https://godoc.org/github.com/edganiukov/fcm)
-[![Build Status](https://travis-ci.org/appleboy/go-fcm.svg?branch=master)](https://travis-ci.org/edganiukov/fcm)
-[![Go Report Card](https://goreportcard.com/badge/github.com/appleboy/go-fcm)](https://goreportcard.com/report/github.com/edganiukov/fcm)
+[![GoDoc](https://godoc.org/github.com/appleboy/go-fcm?status.svg)](https://godoc.org/github.com/appleboy/go-fcm)
+[![Build Status](https://travis-ci.org/appleboy/go-fcm.svg?branch=master)](https://travis-ci.org/appleboy/go-fcm)
+[![Go Report Card](https://goreportcard.com/badge/github.com/appleboy/go-fcm)](https://goreportcard.com/report/github.com/appleboy/go-fcmm)
 
-This project was forked from [github.com/edganiukov/fcmfcm](https://github.com/edganiukov/fcm).
+This project was forked from [github.com/edganiukov/fcm](https://github.com/edganiukov/fcm).
 
 Golang client library for Firebase Cloud Messaging. Implemented only [HTTP client](https://firebase.google.com/docs/cloud-messaging/http-server-ref#downstream).
 

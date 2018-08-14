@@ -21,12 +21,10 @@
 			"revisionTime": "2018-04-10T03:06:38Z"
 		},
 		{
-			"checksumSHA1": "1Jql7x7zDOmbDxGr4gsa8rFEC5g=",
+			"checksumSHA1": "gm1OOCOLjT16sLsu2jyvpXksx20=",
 			"path": "github.com/appleboy/go-fcm",
-			"revision": "3bc382cee4180b7e4753761fda69a003de97b0e9",
-			"revisionTime": "2017-10-25T02:33:50Z",
-			"version": "0.1.1",
-			"versionExact": "0.1.1"
+			"revision": "834eba2ee169f0930af5b355519f22f908cf3e49",
+			"revisionTime": "2018-08-14T17:09:15Z"
 		},
 		{
 			"checksumSHA1": "Ab7MUtqX0iq2PUzzBxWpgzPSydw=",
