@@ -45,7 +45,6 @@ type Message struct {
 	CollapseKey              string                 `json:"collapse_key,omitempty"`
 	Priority                 string                 `json:"priority,omitempty"`
 	ContentAvailable         bool                   `json:"content_available,omitempty"`
-	MutableContent           bool                   `json:"mutable_content,omitempty"`
 	DelayWhileIdle           bool                   `json:"delay_while_idle,omitempty"`
 	TimeToLive               *uint                  `json:"time_to_live,omitempty"`
 	DeliveryReceiptRequested bool                   `json:"delivery_receipt_requested,omitempty"`
