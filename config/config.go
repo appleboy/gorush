@@ -227,7 +227,9 @@ func LoadConf(confPath string) (ConfYaml, error) {
 			return conf, err
 		}
 
-		viper.ReadConfig(bytes.NewBuffer(content))
+		if err := viper.ReadConfig(bytes.NewBuffer(content)); err != nil {
+			return conf, err
+		}
 	} else {
 		// Search config in home directory with name ".gorush" (without extension).
 		viper.AddConfigPath("/etc/gorush/")
@@ -240,7 +242,9 @@ func LoadConf(confPath string) (ConfYaml, error) {
 			fmt.Println("Using config file:", viper.ConfigFileUsed())
 		} else {
 			// load default config
-			viper.ReadConfig(bytes.NewBuffer(defaultConf))
+			if err := viper.ReadConfig(bytes.NewBuffer(defaultConf)); err != nil {
+				return conf, err
+			}
 		}
 	}
 
