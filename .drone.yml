@@ -62,31 +62,31 @@ pipeline:
     commands:
       - make build_linux_arm
 
-  coverage:
-    image: golang:1.10
-    pull: true
-    group: golang
-    secrets: [ android_test_token, android_api_key ]
-    commands:
-      - make unit-test-coverage
-    when:
-      event: [ push, pull_request ]
+  # coverage:
+  #   image: golang:1.10
+  #   pull: true
+  #   group: golang
+  #   secrets: [ android_test_token, android_api_key ]
+  #   commands:
+  #     - make unit-test-coverage
+  #   when:
+  #     event: [ push, pull_request ]
 
-  generate-coverage:
-    image: golang:1.10
-    pull: true
-    commands:
-      - make coverage
-    when:
-      event: [ push, pull_request ]
+  # generate-coverage:
+  #   image: golang:1.10
+  #   pull: true
+  #   commands:
+  #     - make coverage
+  #   when:
+  #     event: [ push, pull_request ]
 
-  codecov:
-    image: robertstettner/drone-codecov
-    secrets: [ codecov_token ]
-    files:
-      - coverage.all
-    when:
-      event: [ push, pull_request ]
+  # codecov:
+  #   image: robertstettner/drone-codecov
+  #   secrets: [ codecov_token ]
+  #   files:
+  #     - coverage.all
+  #   when:
+  #     event: [ push, pull_request ]
 
   release:
     image: golang:1.10
