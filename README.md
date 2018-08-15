@@ -72,7 +72,7 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 
 See the default [YAML config example](config/config.yml):
 
-[embedmd]:# (config/config.yml yaml)
+[embedmd]:# (config/testdata/config.yml yaml)
 ```yaml
 core:
   enabled: true # enabale httpd server
