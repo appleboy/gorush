@@ -486,7 +486,7 @@ Request body must has a notifications array. The following is a parameter table 
 | badge                   | int          | badge count                                                                                       | -        | only iOS                                                      |
 | category                | string       | the UIMutableUserNotificationCategory object                                                      | -        | only iOS                                                      |
 | alert                   | string array | payload of a iOS message                                                                          | -        | only iOS. See the [detail](#ios-alert-payload)                |
-| mutable-content         | bool         | enable Notification Service app extension.                                                        | -        | only iOS(10.0+).                                              |
+| mutable_content         | bool         | enable Notification Service app extension.                                                        | -        | only iOS(10.0+).                                              |
 ### iOS alert payload
 
 | name           | type             | description                                                                                      | required | note |

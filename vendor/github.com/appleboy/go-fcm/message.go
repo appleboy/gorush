@@ -24,6 +24,7 @@ var (
 type Notification struct {
 	Title        string `json:"title,omitempty"`
 	Body         string `json:"body,omitempty"`
+	ChannelId    string `json:"android_channel_id, omitempty"`
 	Icon         string `json:"icon,omitempty"`
 	Sound        string `json:"sound,omitempty"`
 	Badge        string `json:"badge,omitempty"`
@@ -45,6 +46,7 @@ type Message struct {
 	CollapseKey              string                 `json:"collapse_key,omitempty"`
 	Priority                 string                 `json:"priority,omitempty"`
 	ContentAvailable         bool                   `json:"content_available,omitempty"`
+	MutableContent           bool                   `json:"mutable_content,omitempty"`
 	DelayWhileIdle           bool                   `json:"delay_while_idle,omitempty"`
 	TimeToLive               *uint                  `json:"time_to_live,omitempty"`
 	DeliveryReceiptRequested bool                   `json:"delivery_receipt_requested,omitempty"`

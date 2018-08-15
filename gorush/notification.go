@@ -56,6 +56,7 @@ type PushNotification struct {
 	Title            string   `json:"title,omitempty"`
 	Priority         string   `json:"priority,omitempty"`
 	ContentAvailable bool     `json:"content_available,omitempty"`
+	MutableContent   bool     `json:"mutable_content,omitempty"`
 	Sound            string   `json:"sound,omitempty"`
 	Data             D        `json:"data,omitempty"`
 	Retry            int      `json:"retry,omitempty"`
@@ -74,18 +75,17 @@ type PushNotification struct {
 	Notification          fcm.Notification `json:"notification,omitempty"`
 
 	// iOS
-	Expiration     int64    `json:"expiration,omitempty"`
-	ApnsID         string   `json:"apns_id,omitempty"`
-	CollapseID     string   `json:"collapse_id,omitempty"`
-	Topic          string   `json:"topic,omitempty"`
-	Badge          *int     `json:"badge,omitempty"`
-	Category       string   `json:"category,omitempty"`
-	ThreadID       string   `json:"thread-id,omitempty"`
-	URLArgs        []string `json:"url-args,omitempty"`
-	Alert          Alert    `json:"alert,omitempty"`
-	MutableContent bool     `json:"mutable-content,omitempty"`
-	Production     bool     `json:"production,omitempty"`
-	Development    bool     `json:"development,omitempty"`
+	Expiration  int64    `json:"expiration,omitempty"`
+	ApnsID      string   `json:"apns_id,omitempty"`
+	CollapseID  string   `json:"collapse_id,omitempty"`
+	Topic       string   `json:"topic,omitempty"`
+	Badge       *int     `json:"badge,omitempty"`
+	Category    string   `json:"category,omitempty"`
+	ThreadID    string   `json:"thread-id,omitempty"`
+	URLArgs     []string `json:"url-args,omitempty"`
+	Alert       Alert    `json:"alert,omitempty"`
+	Production  bool     `json:"production,omitempty"`
+	Development bool     `json:"development,omitempty"`
 }
 
 // WaitDone decrements the WaitGroup counter.
