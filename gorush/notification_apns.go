@@ -14,6 +14,13 @@ import (
 	"github.com/sideshow/apns2/token"
 )
 
+// Sound sets the aps sound on the payload.
+type Sound struct {
+	Critical int     `json:"critical,omitempty"`
+	Name     string  `json:"name,omitempty"`
+	Volume   float32 `json:"volume,omitempty"`
+}
+
 // InitAPNSClient use for initialize APNs Client.
 func InitAPNSClient() error {
 	if PushConf.Ios.Enabled {
@@ -183,8 +190,16 @@ func GetIOSNotification(req PushNotification) *apns2.Notification {
 		payload.MutableContent()
 	}
 
-	if len(req.Sound) > 0 {
-		payload.Sound(req.Sound)
+	if _, ok := req.Sound.(Sound); ok {
+		payload.Sound(&req.Sound)
+	}
+
+	if len(req.SoundName) > 0 {
+		payload.SoundName(req.SoundName)
+	}
+
+	if req.SoundVolume > 0 {
+		payload.SoundVolume(req.SoundVolume)
 	}
 
 	if req.ContentAvailable {

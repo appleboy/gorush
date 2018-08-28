@@ -56,13 +56,17 @@ func TestIOSNotificationStructure(t *testing.T) {
 	expectBadge := 0
 	message := "Welcome notification Server"
 	req := PushNotification{
-		ApnsID:           test,
-		Topic:            test,
-		Expiration:       time.Now().Unix(),
-		Priority:         "normal",
-		Message:          message,
-		Badge:            &expectBadge,
-		Sound:            test,
+		ApnsID:     test,
+		Topic:      test,
+		Expiration: time.Now().Unix(),
+		Priority:   "normal",
+		Message:    message,
+		Badge:      &expectBadge,
+		Sound: Sound{
+			Critical: 1,
+			Name:     test,
+			Volume:   1.0,
+		},
 		ContentAvailable: true,
 		Data: D{
 			"key1": "test",
@@ -78,13 +82,14 @@ func TestIOSNotificationStructure(t *testing.T) {
 	data := []byte(string(dump))
 
 	if err := json.Unmarshal(data, &dat); err != nil {
-		log.Println(err)
 		panic(err)
 	}
 
 	alert, _ := jsonparser.GetString(data, "aps", "alert")
 	badge, _ := jsonparser.GetInt(data, "aps", "badge")
-	sound, _ := jsonparser.GetString(data, "aps", "sound")
+	soundName, _ := jsonparser.GetString(data, "aps", "sound", "name")
+	soundCritical, _ := jsonparser.GetInt(data, "aps", "sound", "critical")
+	soundVolume, _ := jsonparser.GetFloat(data, "aps", "sound", "volume")
 	contentAvailable, _ := jsonparser.GetInt(data, "aps", "content-available")
 	category, _ := jsonparser.GetString(data, "aps", "category")
 	key1 := dat["key1"].(interface{})
@@ -99,13 +104,57 @@ func TestIOSNotificationStructure(t *testing.T) {
 	assert.Equal(t, message, alert)
 	assert.Equal(t, expectBadge, int(badge))
 	assert.Equal(t, expectBadge, *req.Badge)
-	assert.Equal(t, test, sound)
+	assert.Equal(t, test, soundName)
+	assert.Equal(t, 1.0, soundVolume)
+	assert.Equal(t, int64(1), soundCritical)
 	assert.Equal(t, 1, int(contentAvailable))
 	assert.Equal(t, "test", key1)
 	assert.Equal(t, 2, int(key2.(float64)))
 	assert.Equal(t, test, category)
 	assert.Contains(t, urlArgs, "a")
 	assert.Contains(t, urlArgs, "b")
+}
+
+func TestIOSSoundAndVolume(t *testing.T) {
+	var dat map[string]interface{}
+
+	test := "test"
+	message := "Welcome notification Server"
+	req := PushNotification{
+		ApnsID:   test,
+		Topic:    test,
+		Priority: "normal",
+		Message:  message,
+		Sound: Sound{
+			Critical: 2,
+			Name:     test,
+			Volume:   1.0,
+		},
+		SoundName:   "foo",
+		SoundVolume: 2.0,
+	}
+
+	notification := GetIOSNotification(req)
+
+	dump, _ := json.Marshal(notification.Payload)
+	data := []byte(string(dump))
+
+	if err := json.Unmarshal(data, &dat); err != nil {
+		panic(err)
+	}
+
+	alert, _ := jsonparser.GetString(data, "aps", "alert")
+	soundName, _ := jsonparser.GetString(data, "aps", "sound", "name")
+	soundCritical, _ := jsonparser.GetInt(data, "aps", "sound", "critical")
+	soundVolume, _ := jsonparser.GetFloat(data, "aps", "sound", "volume")
+
+	assert.Equal(t, test, notification.ApnsID)
+	assert.Equal(t, test, notification.Topic)
+	assert.Equal(t, ApnsPriorityLow, notification.Priority)
+	assert.Equal(t, message, alert)
+	assert.Equal(t, "foo", soundName)
+	assert.Equal(t, 2.0, soundVolume)
+	assert.Equal(t, int64(1), soundCritical)
 }
 
 // Silent Notification which payload’s aps dictionary must not contain the alert, sound, or badge keys.

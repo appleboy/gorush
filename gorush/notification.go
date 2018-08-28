@@ -50,16 +50,16 @@ type RequestPush struct {
 // PushNotification is single notification request
 type PushNotification struct {
 	// Common
-	Tokens           []string `json:"tokens" binding:"required"`
-	Platform         int      `json:"platform" binding:"required"`
-	Message          string   `json:"message,omitempty"`
-	Title            string   `json:"title,omitempty"`
-	Priority         string   `json:"priority,omitempty"`
-	ContentAvailable bool     `json:"content_available,omitempty"`
-	MutableContent   bool     `json:"mutable_content,omitempty"`
-	Sound            string   `json:"sound,omitempty"`
-	Data             D        `json:"data,omitempty"`
-	Retry            int      `json:"retry,omitempty"`
+	Tokens           []string    `json:"tokens" binding:"required"`
+	Platform         int         `json:"platform" binding:"required"`
+	Message          string      `json:"message,omitempty"`
+	Title            string      `json:"title,omitempty"`
+	Priority         string      `json:"priority,omitempty"`
+	ContentAvailable bool        `json:"content_available,omitempty"`
+	MutableContent   bool        `json:"mutable_content,omitempty"`
+	Sound            interface{} `json:"sound,omitempty"`
+	Data             D           `json:"data,omitempty"`
+	Retry            int         `json:"retry,omitempty"`
 	wg               *sync.WaitGroup
 	log              *[]LogPushEntry
 
@@ -86,6 +86,8 @@ type PushNotification struct {
 	Alert       Alert    `json:"alert,omitempty"`
 	Production  bool     `json:"production,omitempty"`
 	Development bool     `json:"development,omitempty"`
+	SoundName   string   `json:"name,omitempty"`
+	SoundVolume float32  `json:"volume,omitempty"`
 }
 
 // WaitDone decrements the WaitGroup counter.

@@ -133,13 +133,13 @@ func (c *Client) Production() *Client {
 // indicating whether the notification was accepted or rejected by the APNs
 // gateway, or an error if something goes wrong.
 //
-// Use PushWithContext if you need better cancelation and timeout control.
+// Use PushWithContext if you need better cancellation and timeout control.
 func (c *Client) Push(n *Notification) (*Response, error) {
 	return c.PushWithContext(nil, n)
 }
 
 // PushWithContext sends a Notification to the APNs gateway. Context carries a
-// deadline and a cancelation signal and allows you to close long running
+// deadline and a cancellation signal and allows you to close long running
 // requests when the context timeout is exceeded. Context can be nil, for
 // backwards compatibility.
 //
