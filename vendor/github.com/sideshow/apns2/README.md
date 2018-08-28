@@ -1,7 +1,5 @@
 # APNS/2
 
-NOTE: This is an experimental branch for the purpose of testing the new token based authentication
-
 APNS/2 is a go package designed for simple, flexible and fast Apple Push Notifications on iOS, OSX and Safari using the new HTTP/2 Push provider API.
 
 [![Build Status](https://travis-ci.org/sideshow/apns2.svg?branch=master)](https://travis-ci.org/sideshow/apns2)  [![Coverage Status](https://coveralls.io/repos/sideshow/apns2/badge.svg?branch=master&service=github)](https://coveralls.io/github/sideshow/apns2?branch=master)  [![GoDoc](https://godoc.org/github.com/sideshow/apns2?status.svg)](https://godoc.org/github.com/sideshow/apns2)
@@ -123,7 +121,7 @@ You can use raw bytes for the `notification.Payload` as above, or you can use th
 ```go
 // {"aps":{"alert":"hello","badge":1},"key":"val"}
 
-payload := apns2.NewPayload().Alert("hello").Badge(1).Custom("key", "val")
+payload := payload.NewPayload().Alert("hello").Badge(1).Custom("key", "val")
 
 notification.Payload = payload
 client.Push(notification)
@@ -156,7 +154,7 @@ if res.Sent() {
 
 ## Context & Timeouts
 
-For better control over request cancelations and timeouts APNS/2 supports
+For better control over request cancellations and timeouts APNS/2 supports
 contexts. Using a context can be helpful if you want to cancel all pushes when
 the parent process is cancelled, or need finer grained control over individual
 push timeouts. See the [Google post](https://blog.golang.org/context) for more

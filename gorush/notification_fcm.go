@@ -70,8 +70,8 @@ func GetAndroidNotification(req PushNotification) *fcm.Message {
 		notification.Notification.Title = req.Title
 	}
 
-	if len(req.Sound) > 0 {
-		notification.Notification.Sound = req.Sound
+	if v, ok := req.Sound.(string); ok && len(v) > 0 {
+		notification.Notification.Sound = v
 	}
 
 	return notification

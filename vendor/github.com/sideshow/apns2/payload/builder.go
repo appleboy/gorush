@@ -16,7 +16,7 @@ type aps struct {
 	Category         string      `json:"category,omitempty"`
 	ContentAvailable int         `json:"content-available,omitempty"`
 	MutableContent   int         `json:"mutable-content,omitempty"`
-	Sound            string      `json:"sound,omitempty"`
+	Sound            interface{} `json:"sound,omitempty"`
 	ThreadID         string      `json:"thread-id,omitempty"`
 	URLArgs          []string    `json:"url-args,omitempty"`
 }
@@ -32,6 +32,12 @@ type alert struct {
 	Subtitle     string   `json:"subtitle,omitempty"`
 	TitleLocArgs []string `json:"title-loc-args,omitempty"`
 	TitleLocKey  string   `json:"title-loc-key,omitempty"`
+}
+
+type sound struct {
+	Critical int     `json:"critical,omitempty"`
+	Name     string  `json:"name,omitempty"`
+	Volume   float32 `json:"volume,omitempty"`
 }
 
 // NewPayload returns a new Payload struct
@@ -84,7 +90,7 @@ func (p *Payload) UnsetBadge() *Payload {
 // This will play a sound from the app bundle, or the default sound otherwise.
 //
 //	{"aps":{"sound":sound}}
-func (p *Payload) Sound(sound string) *Payload {
+func (p *Payload) Sound(sound interface{}) *Payload {
 	p.aps().Sound = sound
 	return p
 }
@@ -274,6 +280,26 @@ func (p *Payload) URLArgs(urlArgs []string) *Payload {
 	return p
 }
 
+// SoundName sets the name value on the aps sound dictionary.
+// This function makes the notification a critical alert, which should be pre-approved by Apple.
+// See: https://developer.apple.com/contact/request/notifications-critical-alerts-entitlement/
+//
+// {"aps":{"sound":{"critical":1,"name":name,"volume":1.0}}}
+func (p *Payload) SoundName(name string) *Payload {
+	p.aps().sound().Name = name
+	return p
+}
+
+// SoundVolume sets the volume value on the aps sound dictionary.
+// This function makes the notification a critical alert, which should be pre-approved by Apple.
+// See: https://developer.apple.com/contact/request/notifications-critical-alerts-entitlement/
+//
+// {"aps":{"sound":{"critical":1,"name":"default","volume":volume}}}
+func (p *Payload) SoundVolume(volume float32) *Payload {
+	p.aps().sound().Volume = volume
+	return p
+}
+
 // MarshalJSON returns the JSON encoded version of the Payload
 func (p *Payload) MarshalJSON() ([]byte, error) {
 	return json.Marshal(p.content)
@@ -288,4 +314,11 @@ func (a *aps) alert() *alert {
 		a.Alert = &alert{}
 	}
 	return a.Alert.(*alert)
+}
+
+func (a *aps) sound() *sound {
+	if _, ok := a.Sound.(*sound); !ok {
+		a.Sound = &sound{Critical: 1, Name: "default", Volume: 1.0}
+	}
+	return a.Sound.(*sound)
 }
