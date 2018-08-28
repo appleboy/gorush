@@ -631,8 +631,7 @@ Support send notification from different environment. See the detail of [issue](
       "platform": 1,
 +     "development": true,
       "message": "Hello World iOS Sandbox!"
-    },
-    .....
+    }
   ]
 }
 ```
