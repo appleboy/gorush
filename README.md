@@ -469,7 +469,7 @@ Request body must has a notifications array. The following is a parameter table 
 | title                   | string       | notification title                                                                                | -        |                                                               |
 | priority                | string       | Sets the priority of the message.                                                                 | -        | `normal` or `high`                                            |
 | content_available       | bool         | data messages wake the app by default.                                                            | -        |                                                               |
-| sound                   | string       | sound type                                                                                        | -        |                                                               |
+| sound                   | interface{}  | sound type                                                                                        | -        |                                                               |
 | data                    | string array | extensible partition                                                                              | -        |                                                               |
 | retry                   | int          | retry send notification if fail response from server. Value must be small than `max_retry` field. | -        |                                                               |
 | topic                   | string       | send messages to topics                                                                           |          |                                                               |
@@ -487,6 +487,9 @@ Request body must has a notifications array. The following is a parameter table 
 | category                | string       | the UIMutableUserNotificationCategory object                                                      | -        | only iOS                                                      |
 | alert                   | string array | payload of a iOS message                                                                          | -        | only iOS. See the [detail](#ios-alert-payload)                |
 | mutable_content         | bool         | enable Notification Service app extension.                                                        | -        | only iOS(10.0+).                                              |
+| name                    | string       | sets the name value on the aps sound dictionary.                                                  | -        | only iOS                                                      |
+| volume                  | float32      | sets the volume value on the aps sound dictionary.                                                | -        | only iOS                                                      |
+
 ### iOS alert payload
 
 | name           | type             | description                                                                                      | required | note |
@@ -503,6 +506,26 @@ Request body must has a notifications array. The following is a parameter table 
 | title-loc-key  | string           | The key to a title string in the Localizable.strings file for the current localization.          | -        |      |
 
 See more detail about [APNs Remote Notification Payload](https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/PayloadKeyReference.html).
+
+### iOS sound payload
+
+| name           | type             | description                                                                                      | required | note |
+|----------------|------------------|--------------------------------------------------------------------------------------------------|----------|------|
+| name           | string           | sets the name value on the aps sound dictionary.                                                 | -        |      |
+| volume         | float32          | sets the volume value on the aps sound dictionary.                                               | -        |      |
+| critical       | int              | sets the critical value on the aps sound dictionary.                                             | -        |      |
+
+request format:
+
+```json
+{
+  "sound": {
+    "critical": 1,
+    "name": "default",
+    "volume": volume
+  }
+}
+```
 
 ### Android notification payload
 
@@ -564,7 +587,11 @@ The following payload specifies that the device should display an alert message,
       "platform": 1,
       "message": "You got your emails.",
       "badge": 9,
-      "sound": "bingbong.aiff"
+      "sound": {
+        "critical": 1,
+        "name": "default",
+        "volume": 1.0
+      }
     }
   ]
 }
