@@ -522,7 +522,7 @@ request format:
   "sound": {
     "critical": 1,
     "name": "default",
-    "volume": volume
+    "volume": 2.0
   }
 }
 ```
