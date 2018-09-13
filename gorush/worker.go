@@ -34,8 +34,9 @@ func startWorker() {
 func queueNotification(req RequestPush) (int, []LogPushEntry) {
 	var count int
 	wg := sync.WaitGroup{}
-	newNotification := []PushNotification{}
-	for _, notification := range req.Notifications {
+	newNotification := []*PushNotification{}
+	for i := range req.Notifications {
+		notification := &req.Notifications[i]
 		switch notification.Platform {
 		case PlatFormIos:
 			if !PushConf.Ios.Enabled {
@@ -56,7 +57,7 @@ func queueNotification(req RequestPush) (int, []LogPushEntry) {
 			notification.log = &log
 			notification.AddWaitCount()
 		}
-		QueueNotification <- notification
+		QueueNotification <- *notification
 		count += len(notification.Tokens)
 		// Count topic message
 		if notification.To != "" {
