@@ -111,7 +111,6 @@ func main() {
 
 	if err = gorush.InitLog(); err != nil {
 		log.Fatalf("Can't load log module, error: %v", err)
-		return
 	}
 
 	// set http proxy for GCM
