@@ -232,23 +232,15 @@ func main() {
 
 	var g errgroup.Group
 
-	g.Go(func() error {
-		return gorush.InitAPNSClient()
-	})
+	g.Go(gorush.InitAPNSClient)
 
 	g.Go(func() error {
 		_, err := gorush.InitFCMClient(gorush.PushConf.Android.APIKey)
 		return err
 	})
 
-	g.Go(func() error {
-		// Run httpd server
-		return gorush.RunHTTPServer()
-	})
-	g.Go(func() error {
-		// Run gRPC internal server
-		return rpc.RunGRPCServer()
-	})
+	g.Go(gorush.RunHTTPServer) // Run httpd server
+	g.Go(rpc.RunGRPCServer)    // Run gRPC internal server
 
 	if err = g.Wait(); err != nil {
 		gorush.LogError.Fatal(err)
