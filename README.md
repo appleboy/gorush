@@ -210,7 +210,7 @@ $ brew install --HEAD https://github.com/appleboy/gorush/raw/master/HomebrewForm
 
 #### Fetch from GitHub
 
-Gorush uses the Go Modules support built into Go 1.11 to build. The easiest way to get started is to clone Hugo in a directory outside of the GOPATH, as in the following example:
+Gorush uses the Go Modules support built into Go 1.11 to build. The easiest way to get started is to clone Gorush in a directory outside of the GOPATH, as in the following example:
 
 ```
 $ mkdir $HOME/src
