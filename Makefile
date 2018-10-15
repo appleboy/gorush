@@ -69,6 +69,9 @@ fmt-check:
 vet:
 	$(GO) vet $(PACKAGES)
 
+module:
+	$(GO) mod download
+
 deps:
 	$(GO) get github.com/campoy/embedmd
 
@@ -200,7 +203,7 @@ endif
 	docker push $(DEPLOY_ACCOUNT)/$(EXECUTABLE):$(tag)
 
 clean:
-	$(GO) clean -x -i ./...
+	$(GO) clean -modcache -x -i ./...
 	find . -name coverage.txt -delete
 	find . -name *.tar.gz -delete
 	find . -name *.db -delete
