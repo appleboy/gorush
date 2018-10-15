@@ -20,6 +20,7 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 - [Memory Usage](#memory-usage)
 - [Basic Usage](#basic-usage)
   - [Download a binary](#download-a-binary)
+  - [Install from source](#install-from-source)
   - [Command Usage](#command-usage)
   - [Send Android notification](#send-android-notification)
   - [Send iOS notification](#send-ios-notification)
@@ -198,6 +199,25 @@ On macOS, use Homebrew.
 
 ```
 $ brew install --HEAD https://github.com/appleboy/gorush/raw/master/HomebrewFormula/gorush.rb
+```
+
+### Install from source
+
+#### Prerequisite Tools
+
+* [Git](http://git-scm.com/)
+* [Go (at least Go 1.11)](https://golang.org/dl/)
+
+#### Fetch from GitHub
+
+Gorush uses the Go Modules support built into Go 1.11 to build. The easiest way to get started is to clone Hugo in a directory outside of the GOPATH, as in the following example:
+
+```
+$ mkdir $HOME/src
+$ cd $HOME/src
+$ git clone https://github.com/appleboy/gorush.git
+$ cd hugo
+$ go install
 ```
 
 ### Command Usage
