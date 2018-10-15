@@ -9,6 +9,14 @@ clone:
     tags: true
 
 pipeline:
+  module-install:
+    image: golang:1.11
+    pull: true
+    environment:
+      - GO111MODULE=on
+    commands:
+      - make module
+
   deps:
     image: golang:1.11
     pull: true
