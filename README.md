@@ -216,7 +216,7 @@ Gorush uses the Go Modules support built into Go 1.11 to build. The easiest way 
 $ mkdir $HOME/src
 $ cd $HOME/src
 $ git clone https://github.com/appleboy/gorush.git
-$ cd hugo
+$ cd gorush
 $ go install
 ```
 
