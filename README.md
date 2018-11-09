@@ -1055,9 +1055,13 @@ $ AWS_ACCESS_KEY_ID=YOUR_AWS_ACCESS_KEY_ID \
 ## Stargazers over time
 
 [![Stargazers over time](https://starcharts.herokuapp.com/appleboy/gorush.svg)](https://starcharts.herokuapp.com/appleboy/gorush)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fappleboy%2Fgorush.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fappleboy%2Fgorush?ref=badge_shield)
 
 ## License
 
 Copyright 2018 Bo-Yi Wu [@appleboy](https://twitter.com/appleboy).
 
 Licensed under the MIT License.
+
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fappleboy%2Fgorush.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fappleboy%2Fgorush?ref=badge_large)
