@@ -9,14 +9,6 @@ clone:
     tags: true
 
 pipeline:
-  module-install:
-    image: golang:1.11
-    pull: true
-    environment:
-      - GO111MODULE=on
-    commands:
-      - make module
-
   deps:
     image: golang:1.11
     pull: true
@@ -41,6 +33,16 @@ pipeline:
       - make test-vendor
       - make misspell-check
       - make fmt-check
+
+  go_module_build_linux_amd64:
+    image: golang:1.11
+    pull: true
+    group: golang
+    environment:
+      - GO111MODULE=on
+    commands:
+      - make module
+      - make build_linux_amd64
 
   build_linux_amd64:
     image: golang:1.11
