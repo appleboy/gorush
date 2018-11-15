@@ -1,8 +1,6 @@
-// +build go1.8
-
 /*
  *
- * Copyright 2017 gRPC authors.
+ * Copyright 2018 gRPC authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,21 +16,20 @@
  *
  */
 
-package credentials
+// Package envconfig contains grpc settings configured by environment variables.
+package envconfig
 
 import (
-	"crypto/tls"
+	"os"
+	"strings"
 )
 
-// cloneTLSConfig returns a shallow clone of the exported
-// fields of cfg, ignoring the unexported sync.Once, which
-// contains a mutex and must not be copied.
-//
-// If cfg is nil, a new zero tls.Config is returned.
-func cloneTLSConfig(cfg *tls.Config) *tls.Config {
-	if cfg == nil {
-		return &tls.Config{}
-	}
+const (
+	prefix   = "GRPC_GO_"
+	retryStr = prefix + "RETRY"
+)
 
-	return cfg.Clone()
-}
+var (
+	// Retry is set if retry is explicitly enabled via "GRPC_GO_RETRY=on".
+	Retry = strings.EqualFold(os.Getenv(retryStr), "on")
+)
