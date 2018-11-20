@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/mitchellh/mapstructure"
 	"github.com/sideshow/apns2"
 	"github.com/sideshow/apns2/certificate"
 	"github.com/sideshow/apns2/payload"
@@ -197,7 +198,13 @@ func GetIOSNotification(req PushNotification) *apns2.Notification {
 		payload.MutableContent()
 	}
 
-	if _, ok := req.Sound.(Sound); ok {
+	switch req.Sound.(type) {
+	// from http request binding
+	case map[string]interface{}:
+		result := &Sound{}
+		_ = mapstructure.Decode(req.Sound, &result)
+		payload.Sound(result)
+	case Sound:
 		payload.Sound(&req.Sound)
 	}
 
