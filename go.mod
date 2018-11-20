@@ -38,7 +38,7 @@ require (
 	github.com/prometheus/client_model v0.0.0-20170216185247-6f3806018612 // indirect
 	github.com/prometheus/common v0.0.0-20170218233558-3007b6072c17 // indirect
 	github.com/prometheus/procfs v0.0.0-20170216223256-a1dba9ce8bae // indirect
-	github.com/sideshow/apns2 v0.0.0-20180827055107-3c5d4af1700e
+	github.com/sideshow/apns2 v0.0.0-20181014012405-060d44b53d05
 	github.com/sirupsen/logrus v0.0.0-20170620144510-3d4380f53a34
 	github.com/spf13/afero v0.0.0-20171021110813-5660eeed305f // indirect
 	github.com/spf13/cast v1.1.0 // indirect

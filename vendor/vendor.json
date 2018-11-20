@@ -449,22 +449,22 @@
 		{
 			"checksumSHA1": "DL5vX9aOefzIAxMDdaQBtgRdR0Y=",
 			"path": "github.com/sideshow/apns2",
-			"revision": "3c5d4af1700ed9111ecb16a9a99a92a00c8b2f27",
-			"revisionTime": "2018-08-27T05:51:07Z",
-			"version": "master",
-			"versionExact": "master"
+			"revision": "5c6f7afc0242dbeab1c0b26a1efd761a67228004",
+			"revisionTime": "2018-10-12T08:22:23Z",
+			"version": "v0.15",
+			"versionExact": "v0.15"
 		},
 		{
 			"checksumSHA1": "EHOwwdWPJGt1vNVeJxyRDRHBhl8=",
 			"path": "github.com/sideshow/apns2/certificate",
-			"revision": "c6554aff77e6e5580dec977c8c33cc238f329ab0",
-			"revisionTime": "2018-04-13T21:53:35Z"
+			"revision": "060d44b53d05502e715958efde28063cd0746dba",
+			"revisionTime": "2018-10-14T01:24:05Z"
 		},
 		{
-			"checksumSHA1": "36bPwB1aiQCxfmdwfgYmI89I9nI=",
+			"checksumSHA1": "uwySZ0Z4LZ+9PIYqg7twpCQxv+I=",
 			"path": "github.com/sideshow/apns2/payload",
-			"revision": "3c5d4af1700ed9111ecb16a9a99a92a00c8b2f27",
-			"revisionTime": "2018-08-27T05:51:07Z"
+			"revision": "060d44b53d05502e715958efde28063cd0746dba",
+			"revisionTime": "2018-10-14T01:24:05Z"
 		},
 		{
 			"checksumSHA1": "nkQ/1JoIY4jh8XlI8LClfFVux9U=",

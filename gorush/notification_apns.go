@@ -148,9 +148,16 @@ func iosAlertDictionary(payload *payload.Payload, req PushNotification) *payload
 	}
 
 	// General
-
 	if len(req.Category) > 0 {
 		payload.Category(req.Category)
+	}
+
+	if len(req.Alert.SummaryArg) > 0 {
+		payload.AlertSummaryArg(req.Alert.SummaryArg)
+	}
+
+	if req.Alert.SummaryArgCount > 0 {
+		payload.AlertSummaryArgCount(req.Alert.SummaryArgCount)
 	}
 
 	return payload

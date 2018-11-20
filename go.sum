@@ -74,6 +74,8 @@ github.com/prometheus/procfs v0.0.0-20170216223256-a1dba9ce8bae h1:4W6eGKy6DVCKy
 github.com/prometheus/procfs v0.0.0-20170216223256-a1dba9ce8bae/go.mod h1:c3At6R/oaqEKCNdg8wHV1ftS6bRYblBhIjjI8uT2IGk=
 github.com/sideshow/apns2 v0.0.0-20180827055107-3c5d4af1700e h1:L+MeVX9/PAI/RJkx5YSlwgYtIMNIF6uLb4SVoZsXgLU=
 github.com/sideshow/apns2 v0.0.0-20180827055107-3c5d4af1700e/go.mod h1:f7dArLPLbiZ3qPdzzrZXdCSlMp8FD0p6z7tHssDOLvk=
+github.com/sideshow/apns2 v0.0.0-20181014012405-060d44b53d05 h1:3M+RJyiSlS8LumIYw9HbwwhKMQzJZ1HzTbU3FVmXy8o=
+github.com/sideshow/apns2 v0.0.0-20181014012405-060d44b53d05/go.mod h1:f7dArLPLbiZ3qPdzzrZXdCSlMp8FD0p6z7tHssDOLvk=
 github.com/sirupsen/logrus v0.0.0-20170620144510-3d4380f53a34 h1:kVLTAexkb0RpvzqHGdmxz80/bPLGuZn4qnUR0a4sW9Y=
 github.com/sirupsen/logrus v0.0.0-20170620144510-3d4380f53a34/go.mod h1:pMByvHTf9Beacp5x1UXfOR9xyW/9antXMhjMPG0dEzc=
 github.com/spf13/afero v0.0.0-20171021110813-5660eeed305f h1:+Dx5AA/mr18sj78olfUUNWiBBH18xbGhdXiOnLoKnzY=

@@ -157,6 +157,38 @@ func TestIOSSoundAndVolume(t *testing.T) {
 	assert.Equal(t, int64(1), soundCritical)
 }
 
+func TestIOSSummaryArg(t *testing.T) {
+	var dat map[string]interface{}
+
+	test := "test"
+	message := "Welcome notification Server"
+	req := PushNotification{
+		ApnsID:   test,
+		Topic:    test,
+		Priority: "normal",
+		Message:  message,
+		Alert: Alert{
+			SummaryArg:      "test",
+			SummaryArgCount: 3,
+		},
+	}
+
+	notification := GetIOSNotification(req)
+
+	dump, _ := json.Marshal(notification.Payload)
+	data := []byte(string(dump))
+
+	if err := json.Unmarshal(data, &dat); err != nil {
+		panic(err)
+	}
+
+	assert.Equal(t, test, notification.ApnsID)
+	assert.Equal(t, test, notification.Topic)
+	assert.Equal(t, ApnsPriorityLow, notification.Priority)
+	assert.Equal(t, "test", dat["aps"].(map[string]interface{})["alert"].(map[string]interface{})["summary-arg"])
+	assert.Equal(t, float64(3), dat["aps"].(map[string]interface{})["alert"].(map[string]interface{})["summary-arg-count"])
+}
+
 // Silent Notification which payload’s aps dictionary must not contain the alert, sound, or badge keys.
 // ref: https://goo.gl/m9xyqG
 func TestSendZeroValueForBadgeKey(t *testing.T) {
