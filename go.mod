@@ -30,7 +30,7 @@ require (
 	github.com/magiconair/properties v0.0.0-20170902060319-8d7837e64d3c // indirect
 	github.com/mattn/go-isatty v0.0.0-20170216235908-dda3de49cbfc
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
-	github.com/mitchellh/mapstructure v0.0.0-20171017171808-06020f85339e // indirect
+	github.com/mitchellh/mapstructure v1.1.2
 	github.com/pelletier/go-toml v0.0.0-20171022022338-8c31c2ec65b2 // indirect
 	github.com/pkg/errors v0.0.0-20171216070316-e881fd58d78e // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
