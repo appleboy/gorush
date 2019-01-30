@@ -25,6 +25,7 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
   - [Command Usage](#command-usage)
   - [Send Android notification](#send-android-notification)
   - [Send iOS notification](#send-ios-notification)
+  - [Send Android or iOS notifications using Firebase](#send-android-or-ios-notifications-using-firebase)
 - [Run gorush web server](#run-gorush-web-server)
 - [Web API](#web-api)
   - [GET /api/stat/go](#get-apistatgo)
@@ -305,7 +306,7 @@ $ gorush -ios -m "your message" -i "your certificate path" \
   -production
 ```
 
-### Send notification on Android or iOS devices using Firebase
+### Send Android or iOS notifications using Firebase
 Send single notification with the following command:
 
 ```bash
