@@ -104,6 +104,7 @@ install: $(SOURCES)
 .PHONY: build
 build: $(EXECUTABLE)
 
+.PHONY: $(EXECUTABLE)
 $(EXECUTABLE): $(SOURCES)
 	$(GO) build -v -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)' -o release/$@
 
