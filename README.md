@@ -25,6 +25,7 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
   - [Command Usage](#command-usage)
   - [Send Android notification](#send-android-notification)
   - [Send iOS notification](#send-ios-notification)
+  - [Send Android or iOS notifications using Firebase](#send-android-or-ios-notifications-using-firebase)
 - [Run gorush web server](#run-gorush-web-server)
 - [Web API](#web-api)
   - [GET /api/stat/go](#get-apistatgo)
@@ -305,6 +306,13 @@ $ gorush -ios -m "your message" -i "your certificate path" \
   -production
 ```
 
+### Send Android or iOS notifications using Firebase
+Send single notification with the following command:
+
+```bash
+$ gorush -android -m "your message" -k "API key" -t "Device token"
+```
+
 ## Run gorush web server
 
 Please make sure your [config.yml](config/config.yml) exist. Default port is `8088`.
@@ -450,6 +458,18 @@ Simple send Android notification example, the `platform` value is `2`:
   ]
 }
 ```
+Simple send notification on Android and iOS devices using Firebase, the `platform` value is `2`:
+```json
+{
+  "notifications": [
+    {
+      "tokens": ["token_a", "token_b"],
+      "platform": 2,
+      "message": "This notification will go to iOS and Android platform via Firebase!"
+    }
+  ]
+}
+```
 
 Send multiple notifications as below:
 
@@ -485,7 +505,7 @@ Request body must has a notifications array. The following is a parameter table 
 | name                    | type         | description                                                                                       | required | note                                                          |
 |-------------------------|--------------|---------------------------------------------------------------------------------------------------|----------|---------------------------------------------------------------|
 | tokens                  | string array | device tokens                                                                                     | o        |                                                               |
-| platform                | int          | platform(iOS,Android)                                                                             | o        | 1=iOS, 2=Android                                              |
+| platform                | int          | platform(iOS,Android)                                                                             | o        | 1=iOS, 2=Android (Firebase)                                   |
 | message                 | string       | message for notification                                                                          | -        |                                                               |
 | title                   | string       | notification title                                                                                | -        |                                                               |
 | priority                | string       | Sets the priority of the message.                                                                 | -        | `normal` or `high`                                            |
