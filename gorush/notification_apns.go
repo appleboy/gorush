@@ -204,6 +204,9 @@ func GetIOSNotification(req PushNotification) *apns2.Notification {
 		result := &Sound{}
 		_ = mapstructure.Decode(req.Sound, &result)
 		payload.Sound(result)
+	// from http request binding for non critical alerts
+	case string:
+		payload.Sound(&req.Sound)
 	case Sound:
 		payload.Sound(&req.Sound)
 	}

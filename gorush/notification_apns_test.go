@@ -197,6 +197,25 @@ func TestIOSSoundAndVolume(t *testing.T) {
 	assert.Equal(t, 4.5, soundVolume)
 	assert.Equal(t, int64(3), soundCritical)
 	assert.Equal(t, "test", soundName)
+
+	req = PushNotification{
+		ApnsID:   test,
+		Topic:    test,
+		Priority: "normal",
+		Message:  message,
+		Sound:    "default",
+	}
+
+	notification = GetIOSNotification(req)
+	dump, _ = json.Marshal(notification.Payload)
+	data = []byte(string(dump))
+
+	if err := json.Unmarshal(data, &dat); err != nil {
+		panic(err)
+	}
+
+	soundName, _ = jsonparser.GetString(data, "aps", "sound")
+	assert.Equal(t, "default", soundName)
 }
 
 func TestIOSSummaryArg(t *testing.T) {
