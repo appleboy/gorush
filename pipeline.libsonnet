@@ -109,7 +109,7 @@
         temp: {},
       },
     ],
-    service: [
+    services: [
       {
         name: 'redis',
         image: 'redis',

@@ -73,6 +73,10 @@ steps:
     token:
       from_secret: codecov_token
 
+services:
+- name: redis
+  image: redis
+
 volumes:
 - name: gopath
   temp: {}
