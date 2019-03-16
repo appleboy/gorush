@@ -30,7 +30,7 @@ build_script:
         $version = $env:APPVEYOR_REPO_TAG_NAME
         $buildDate = $env:APPVEYOR_REPO_COMMIT_TIMESTAMP
       }
-      go build -ldflags "-X github.com/go-ggz/ggz/version.Version=$version -X github.com/go-ggz/ggz/version.BuildDate=$buildDate" -a -o release/ggz-server.exe .
+      go build -a -o release/gorush.exe .
 
       docker pull microsoft/nanoserver:10.0.14393.1884
       docker build -f docker/Dockerfile.windows.amd64 -t appleboy/gorush:windows-amd64 .
