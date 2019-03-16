@@ -129,7 +129,7 @@ func TestSyncModeForNotifications(t *testing.T) {
 
 	count, logs := queueNotification(req)
 	assert.Equal(t, 3, count)
-	assert.Equal(t, 3, len(logs))
+	assert.Equal(t, 2, len(logs))
 }
 
 func TestSyncModeForTopicNotification(t *testing.T) {
