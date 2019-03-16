@@ -93,6 +93,6 @@ func StatMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		beginning, recorder := Stats.Begin(c.Writer)
 		c.Next()
-		Stats.End(beginning, recorder)
+		Stats.End(beginning, stats.WithRecorder(recorder))
 	}
 }
