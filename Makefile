@@ -8,16 +8,12 @@ GOFMT ?= gofmt "-s"
 
 TARGETS ?= linux darwin windows openbsd
 ARCHS ?= amd64 386
-PACKAGES ?= $(shell $(GO) list ./... | grep -v /vendor/)
-GOFILES := $(shell find . -name "*.go" -type f -not -path "./vendor/*")
-SOURCES ?= $(shell find . -name "*.go" -type f)
-TAGS ?=
+PACKAGES ?= $(shell $(GO) list ./...)
+GOFILES := $(shell find . -name "*.go" -type f)
+TAGS ?= sqlite
 LDFLAGS ?= -X 'main.Version=$(VERSION)'
 TMPDIR := $(shell mktemp -d 2>/dev/null || mktemp -d -t 'tempdir')
 NODE_PROTOC_PLUGIN := $(shell which grpc_tools_node_protoc_plugin)
-GOVENDOR := $(GOPATH)/bin/govendor
-GOX := $(GOPATH)/bin/gox
-MISSPELL := $(GOPATH)/bin/misspell
 
 ifneq ($(shell uname), Darwin)
 	EXTLDFLAGS = -extldflags "-static" $(null)
@@ -45,15 +41,10 @@ ifeq ($(ANDROID_TEST_TOKEN),)
 endif
 	@echo "Already set ANDROID_API_KEY and ANDROID_TEST_TOKEN globale variable."
 
-$(GOVENDOR):
-	$(GO) get -u github.com/kardianos/govendor
-
-$(GOX):
-	$(GO) get -u github.com/mitchellh/gox
-
 $(MISSPELL):
 	$(GO) get -u github.com/client9/misspell/cmd/misspell
 
+.PHONY: fmt
 fmt:
 	$(GOFMT) -w $(GOFILES)
 
@@ -69,35 +60,20 @@ fmt-check:
 vet:
 	$(GO) vet $(PACKAGES)
 
-module:
-	$(GO) mod download
-
-deps:
-	$(GO) get github.com/campoy/embedmd
-
 embedmd:
+	@hash embedmd > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
+		$(GO) get -u github.com/campoy/embedmd; \
+	fi
 	embedmd -d *.md
 
-errcheck:
-	@hash errcheck > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		$(GO) get -u github.com/kisielk/errcheck; \
-	fi
-	errcheck $(PACKAGES)
-
 lint:
-	@hash golint > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		$(GO) get -u golang.org/x/lint/golint; \
+	@hash revive > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
+		$(GO) get -u github.com/mgechev/revive; \
 	fi
-	for PKG in $(PACKAGES); do golint -set_exit_status $$PKG || exit 1; done;
-
-unconvert:
-	@hash unconvert > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		$(GO) get -u github.com/mdempsky/unconvert; \
-	fi
-	for PKG in $(PACKAGES); do unconvert -v $$PKG || exit 1; done;
+	revive -config .revive.toml ./... || exit 1
 
 .PHONY: install
-install: $(SOURCES)
+install: $(GOFILES)
 	$(GO) install -v -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)'
 	@echo "==> Installed gorush ${GOPATH}/bin/gorush"
 
@@ -105,69 +81,37 @@ install: $(SOURCES)
 build: $(EXECUTABLE)
 
 .PHONY: $(EXECUTABLE)
-$(EXECUTABLE): $(SOURCES)
+$(EXECUTABLE): $(GOFILES)
 	$(GO) build -v -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)' -o release/$@
 
 .PHONY: misspell-check
-misspell-check: $(MISSPELL)
-	$(MISSPELL) -error $(GOFILES)
+misspell-check:
+	@hash misspell > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
+		$(GO) get -u github.com/client9/misspell/cmd/misspell; \
+	fi
+	misspell -error $(GOFILES)
 
 .PHONY: misspell
-misspell: $(MISSPELL)
-	$(MISSPELL) -w $(GOFILES)
-
-.PHONY: coverage
-coverage:
-	@hash gocovmerge > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		$(GO) get -u github.com/wadey/gocovmerge; \
+misspell:
+	@hash misspell > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
+		$(GO) get -u github.com/client9/misspell/cmd/misspell; \
 	fi
-	gocovmerge $(shell find . -type f -name "coverage.out") > coverage.all;\
+	misspell -w $(GOFILES)
 
-.PHONY: unit-test-coverage
-unit-test-coverage: init
-	for PKG in $(PACKAGES); do $(GO) test -cover -coverprofile $$GOPATH/src/$$PKG/coverage.out $$PKG || exit 1; done;
-
-test: init
-	for PKG in $(PACKAGES); do $(GO) test -v $$PKG || exit 1; done;
-
-.PHONY: test-vendor
-test-vendor: $(GOVENDOR)
-	$(GOVENDOR) list +unused | tee "$(TMPDIR)/wc-gitea-unused"
-	[ $$(cat "$(TMPDIR)/wc-gitea-unused" | wc -l) -eq 0 ] || echo "Warning: /!\\ Some vendor are not used /!\\"
-
-	$(GOVENDOR) list +outside | tee "$(TMPDIR)/wc-gitea-outside"
-	[ $$(cat "$(TMPDIR)/wc-gitea-outside" | wc -l) -eq 0 ] || exit 1
-
-	$(GOVENDOR) status || exit 1
-
-redis_test: init
-	$(GO) test -v -cover ./storage/redis/...
-
-boltdb_test: init
-	$(GO) test -v -cover ./storage/boltdb/...
-
-memory_test: init
-	$(GO) test -v -cover ./storage/memory/...
-
-buntdb_test: init
-	$(GO) test -v -cover ./storage/buntdb/...
-
-leveldb_test: init
-	$(GO) test -v -cover ./storage/leveldb/...
-
-config_test: init
-	$(GO) test -v -cover ./config/...
-
-html:
-	$(GO) tool cover -html=.cover/coverage.txt
+.PHONY: test
+test: init fmt-check
+	@$(GO) test -v -cover -tags $(TAGS) -coverprofile coverage.txt $(PACKAGES) && echo "\n==>\033[32m Ok\033[m\n" || exit 1
 
 release: release-dirs release-build release-copy release-check
 
 release-dirs:
 	mkdir -p $(DIST)/binaries $(DIST)/release
 
-release-build: $(GOX)
-	$(GOX) -os="$(TARGETS)" -arch="$(ARCHS)" -tags="$(TAGS)" -ldflags="$(EXTLDFLAGS)-s -w $(LDFLAGS)" -output="$(DIST)/binaries/$(EXECUTABLE)-$(VERSION)-{{.OS}}-{{.Arch}}"
+release-build:
+	@hash gox > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
+		$(GO) get -u github.com/mitchellh/gox; \
+	fi
+	gox -os="$(TARGETS)" -arch="$(ARCHS)" -tags="$(TAGS)" -ldflags="$(EXTLDFLAGS)-s -w $(LDFLAGS)" -output="$(DIST)/binaries/$(EXECUTABLE)-$(VERSION)-{{.OS}}-{{.Arch}}"
 
 release-copy:
 	$(foreach file,$(wildcard $(DIST)/binaries/$(EXECUTABLE)-*),cp $(file) $(DIST)/release/$(notdir $(file));)

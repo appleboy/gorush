@@ -33,8 +33,6 @@ func (s *Storage) Init() error {
 	s.opts = badger.DefaultOptions
 	s.opts.Dir = os.TempDir() + "badger"
 	s.opts.ValueDir = os.TempDir() + "badger"
-	fmt.Println(s.opts.Dir)
-	fmt.Println(s.opts.ValueDir)
 	return nil
 }
 
