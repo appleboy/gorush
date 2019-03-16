@@ -24,14 +24,16 @@ install:
 build_script:
   - ps: |
       if ( $env:APPVEYOR_REPO_TAG -eq 'false' ) {
-        go build -ldflags "-X main.Version=$env:APPVEYOR_REPO_COMMIT -X main.BuildNum=$env:APPVEYOR_BUILD_VERSION" -a -o release/gorush.exe
+        $version = $env:APPVEYOR_REPO_COMMIT
+        $buildDate = $env:APPVEYOR_REPO_COMMIT_TIMESTAMP
       } else {
         $version = $env:APPVEYOR_REPO_TAG_NAME
-        go build -ldflags "-X main.Version=$version -X main.BuildNum=$env:APPVEYOR_BUILD_VERSION" -a -o release/gorush.exe
+        $buildDate = $env:APPVEYOR_REPO_COMMIT_TIMESTAMP
       }
-      dir
+      go build -ldflags "-X github.com/go-ggz/ggz/version.Version=$version -X github.com/go-ggz/ggz/version.BuildDate=$buildDate" -a -o release/ggz-server.exe .
+
       docker pull microsoft/nanoserver:10.0.14393.1884
-      docker build -f Dockerfile.windows -t appleboy/gorush:windows-amd64 .
+      docker build -f docker/Dockerfile.windows.amd64 -t appleboy/gorush:windows-amd64 .
 
 test_script:
   - ps: |
