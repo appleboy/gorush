@@ -76,7 +76,8 @@ func TestPushToAndroidRightTokenForJSONLog(t *testing.T) {
 	}
 
 	isError := PushToAndroid(req)
-	assert.False(t, isError)
+	// mismatched sender id
+	assert.True(t, isError)
 }
 
 func TestPushToAndroidRightTokenForStringLog(t *testing.T) {
@@ -94,7 +95,8 @@ func TestPushToAndroidRightTokenForStringLog(t *testing.T) {
 	}
 
 	isError := PushToAndroid(req)
-	assert.False(t, isError)
+	// mismatched sender id
+	assert.True(t, isError)
 }
 
 func TestOverwriteAndroidAPIKey(t *testing.T) {
