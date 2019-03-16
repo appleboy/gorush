@@ -203,11 +203,6 @@ func TestLoadConfigFromEnv(t *testing.T) {
 	assert.Equal(t, "/healthz", ConfGorush.API.HealthURI)
 }
 
-func TestLoadWrongYAMLConfig(t *testing.T) {
-	_, err := LoadConf("testdata/wrong.yml")
-	assert.Error(t, err)
-}
-
 func TestLoadWrongDefaultYAMLConfig(t *testing.T) {
 	defaultConf = []byte(`a`)
 	_, err := LoadConf("")
