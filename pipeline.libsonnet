@@ -81,6 +81,8 @@
         pull: 'always',
         environment: {
           GO111MODULE: 'on',
+          ANDROID_API_KEY: { 'from_secret': 'android_api_key' },
+          ANDROID_TEST_TOKEN: { 'from_secret': 'android_test_token' },
         },
         commands: [
           'make test',

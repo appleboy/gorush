@@ -57,6 +57,10 @@ steps:
   commands:
   - make test
   environment:
+    ANDROID_API_KEY:
+      from_secret: android_api_key
+    ANDROID_TEST_TOKEN:
+      from_secret: android_test_token
     GO111MODULE: on
   volumes:
   - name: gopath
