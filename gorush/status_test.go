@@ -166,7 +166,8 @@ func TestStatForBuntDBEngine(t *testing.T) {
 func TestStatForLevelDBEngine(t *testing.T) {
 	var val int64
 	PushConf.Stat.Engine = "leveldb"
-	InitAppStatus()
+	err := InitAppStatus()
+	assert.Nil(t, err)
 
 	StatStorage.Reset()
 
