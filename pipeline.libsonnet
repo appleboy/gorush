@@ -7,74 +7,74 @@
       arch: 'amd64',
     },
     steps: [
-      {
-        name: 'vet',
-        image: 'golang:1.12',
-        pull: 'always',
-        environment: {
-          GO111MODULE: 'on',
-        },
-        commands: [
-          'make vet',
-        ],
-        volumes: [
-          {
-            name: 'gopath',
-            path: '/go',
-          },
-        ],
-      },
-      {
-        name: 'lint',
-        image: 'golang:1.12',
-        pull: 'always',
-        environment: {
-          GO111MODULE: 'on',
-        },
-        commands: [
-          'make lint',
-        ],
-        volumes: [
-          {
-            name: 'gopath',
-            path: '/go',
-          },
-        ],
-      },
-      {
-        name: 'misspell',
-        image: 'golang:1.12',
-        pull: 'always',
-        environment: {
-          GO111MODULE: 'on',
-        },
-        commands: [
-          'make misspell-check',
-        ],
-        volumes: [
-          {
-            name: 'gopath',
-            path: '/go',
-          },
-        ],
-      },
-      {
-        name: 'embedmd',
-        image: 'golang:1.12',
-        pull: 'always',
-        environment: {
-          GO111MODULE: 'on',
-        },
-        commands: [
-          'make embedmd',
-        ],
-        volumes: [
-          {
-            name: 'gopath',
-            path: '/go',
-          },
-        ],
-      },
+      // {
+      //   name: 'vet',
+      //   image: 'golang:1.12',
+      //   pull: 'always',
+      //   environment: {
+      //     GO111MODULE: 'on',
+      //   },
+      //   commands: [
+      //     'make vet',
+      //   ],
+      //   volumes: [
+      //     {
+      //       name: 'gopath',
+      //       path: '/go',
+      //     },
+      //   ],
+      // },
+      // {
+      //   name: 'lint',
+      //   image: 'golang:1.12',
+      //   pull: 'always',
+      //   environment: {
+      //     GO111MODULE: 'on',
+      //   },
+      //   commands: [
+      //     'make lint',
+      //   ],
+      //   volumes: [
+      //     {
+      //       name: 'gopath',
+      //       path: '/go',
+      //     },
+      //   ],
+      // },
+      // {
+      //   name: 'misspell',
+      //   image: 'golang:1.12',
+      //   pull: 'always',
+      //   environment: {
+      //     GO111MODULE: 'on',
+      //   },
+      //   commands: [
+      //     'make misspell-check',
+      //   ],
+      //   volumes: [
+      //     {
+      //       name: 'gopath',
+      //       path: '/go',
+      //     },
+      //   ],
+      // },
+      // {
+      //   name: 'embedmd',
+      //   image: 'golang:1.12',
+      //   pull: 'always',
+      //   environment: {
+      //     GO111MODULE: 'on',
+      //   },
+      //   commands: [
+      //     'make embedmd',
+      //   ],
+      //   volumes: [
+      //     {
+      //       name: 'gopath',
+      //       path: '/go',
+      //     },
+      //   ],
+      // },
       {
         name: 'test',
         image: 'golang:1.12',
