@@ -31,11 +31,13 @@ endif
 all: build
 
 init:
-ifeq ($(ANDROID_API_KEY),)
+	@echo $(android_api_key)
+	@echo $(ANDROID_API_KEY)
+ifeq ($(android_api_key),)
 	@echo "Missing ANDROID_API_KEY Parameter"
 	@exit 1
 endif
-ifeq ($(ANDROID_TEST_TOKEN),)
+ifeq ($(android_test_token),)
 	@echo "Missing ANDROID_TEST_TOKEN Parameter"
 	@exit 1
 endif
