@@ -111,7 +111,7 @@
     ],
     service: [
       {
-        name: 'cache',
+        name: 'redis',
         image: 'redis',
       },
     ],
