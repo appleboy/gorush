@@ -12,7 +12,6 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 [![Docker Pulls](https://img.shields.io/docker/pulls/appleboy/gorush.svg)](https://hub.docker.com/r/appleboy/gorush/)
 [![](https://images.microbadger.com/badges/image/appleboy/gorush.svg)](https://microbadger.com/images/appleboy/gorush "Get your own image badge on microbadger.com")
 [![Release](https://github-release-version.herokuapp.com/github/appleboy/gorush/release.svg?style=flat)](https://github.com/appleboy/gorush/releases/latest)
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fappleboy%2Fgorush.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fappleboy%2Fgorush?ref=badge_shield)
 
 ## Contents
 
