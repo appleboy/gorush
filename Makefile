@@ -10,7 +10,7 @@ TARGETS ?= linux darwin windows openbsd
 ARCHS ?= amd64 386
 PACKAGES ?= $(shell $(GO) list ./...)
 GOFILES := $(shell find . -name "*.go" -type f)
-TAGS ?=
+TAGS ?= sqlite
 LDFLAGS ?= -X 'main.Version=$(VERSION)'
 TMPDIR := $(shell mktemp -d 2>/dev/null || mktemp -d -t 'tempdir')
 NODE_PROTOC_PLUGIN := $(shell which grpc_tools_node_protoc_plugin)
@@ -31,8 +31,6 @@ endif
 all: build
 
 init:
-	@echo $(android_api_key)
-	@echo $(ANDROID_API_KEY)
 ifeq ($(ANDROID_API_KEY),)
 	@echo "Missing ANDROID_API_KEY Parameter"
 	@exit 1
@@ -103,27 +101,6 @@ misspell:
 .PHONY: test
 test: init fmt-check
 	@$(GO) test -v -cover -tags $(TAGS) -coverprofile coverage.txt $(PACKAGES) && echo "\n==>\033[32m Ok\033[m\n" || exit 1
-
-redis_test: init
-	$(GO) test -v -cover ./storage/redis/...
-
-boltdb_test: init
-	$(GO) test -v -cover ./storage/boltdb/...
-
-memory_test: init
-	$(GO) test -v -cover ./storage/memory/...
-
-buntdb_test: init
-	$(GO) test -v -cover ./storage/buntdb/...
-
-leveldb_test: init
-	$(GO) test -v -cover ./storage/leveldb/...
-
-config_test: init
-	$(GO) test -v -cover ./config/...
-
-html:
-	$(GO) tool cover -html=.cover/coverage.txt
 
 release: release-dirs release-build release-copy release-check
 
