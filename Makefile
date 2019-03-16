@@ -7,7 +7,7 @@ DEPLOY_IMAGE := $(EXECUTABLE)
 GOFMT ?= gofmt "-s"
 
 TARGETS ?= linux darwin windows openbsd
-ARCHS ?=
+ARCHS ?= amd64 386 arm arm64
 PACKAGES ?= $(shell $(GO) list ./...)
 GOFILES := $(shell find . -name "*.go" -type f)
 TAGS ?= sqlite
