@@ -41,9 +41,6 @@ ifeq ($(ANDROID_TEST_TOKEN),)
 endif
 	@echo "Already set ANDROID_API_KEY and ANDROID_TEST_TOKEN globale variable."
 
-$(MISSPELL):
-	$(GO) get -u github.com/client9/misspell/cmd/misspell
-
 .PHONY: fmt
 fmt:
 	$(GOFMT) -w $(GOFILES)
