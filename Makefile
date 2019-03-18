@@ -72,7 +72,7 @@ lint:
 .PHONY: install
 install: $(GOFILES)
 	$(GO) install -v -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)'
-	@echo "==> Installed gorush ${GOPATH}/bin/gorush"
+	@echo "\n==>\033[32m Installed gorush to ${GOPATH}/bin/gorush\033[m"
 
 .PHONY: build
 build: $(EXECUTABLE)
