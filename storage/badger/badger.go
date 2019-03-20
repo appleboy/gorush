@@ -90,12 +90,18 @@ func (s *Storage) getBager(key string, count *int64) {
 		if err != nil {
 			return err
 		}
-		val, err := item.Value()
+
+		var valCopy []byte
+		err = item.Value(func(val []byte) error {
+			valCopy = append([]byte{}, val...)
+
+			return nil
+		})
 		if err != nil {
 			return err
 		}
 
-		i, err := strconv.ParseInt(fmt.Sprintf("%s", val), 10, 64)
+		i, err := strconv.ParseInt(fmt.Sprintf("%s", valCopy), 10, 64)
 		if err != nil {
 			return err
 		}
