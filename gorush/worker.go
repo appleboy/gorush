@@ -57,7 +57,9 @@ func queueNotification(req RequestPush) (int, []LogPushEntry) {
 			notification.log = &log
 			notification.AddWaitCount()
 		}
-		QueueNotification <- *notification
+		if !tryEnqueue(*notification, QueueNotification) {
+			LogError.Error("max capacity reached")
+		}
 		count += len(notification.Tokens)
 		// Count topic message
 		if notification.To != "" {
@@ -72,4 +74,16 @@ func queueNotification(req RequestPush) (int, []LogPushEntry) {
 	StatStorage.AddTotalCount(int64(count))
 
 	return count, log
+}
+
+// tryEnqueue tries to enqueue a job to the given job channel. Returns true if
+// the operation was successful, and false if enqueuing would not have been
+// possible without blocking. Job is not enqueued in the latter case.
+func tryEnqueue(job PushNotification, jobChan chan<- PushNotification) bool {
+	select {
+	case jobChan <- job:
+		return true
+	default:
+		return false
+	}
 }
