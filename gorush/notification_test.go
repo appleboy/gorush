@@ -25,8 +25,6 @@ func TestCorrectConf(t *testing.T) {
 func TestSenMultipleNotifications(t *testing.T) {
 	PushConf, _ = config.LoadConf("")
 
-	InitWorkers(int64(2), 2)
-
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.KeyPath = "../certificate/certificate-valid.pem"
 	err := InitAPNSClient()
