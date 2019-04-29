@@ -169,7 +169,10 @@ func RunHTTPServer() (err error) {
 				LogError.Error("base64 decode error:", err.Error())
 				return err
 			}
-			config.Certificates[0], err = tls.X509KeyPair(cert, key)
+			if config.Certificates[0], err = tls.X509KeyPair(cert, key); err != nil {
+				LogError.Error("tls key pair error:", err.Error())
+				return err
+			}
 		} else {
 			return errors.New("missing https cert config")
 		}
