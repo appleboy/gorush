@@ -18,14 +18,6 @@ require (
 	github.com/dgrijalva/jwt-go v3.1.0+incompatible // indirect
 	github.com/dgryski/go-farm v0.0.0-20180109070241-2de33835d102 // indirect
 	github.com/emirpasic/gods v0.0.0-20170204130913-fc3e4a43ff31 // indirect
-	github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a // indirect
-	github.com/facebookgo/ensure v0.0.0-20160127193407-b4ab57deab51 // indirect
-	github.com/facebookgo/freeport v0.0.0-20150612182905-d4adf43b75b9 // indirect
-	github.com/facebookgo/grace v0.0.0-20170218225239-4afe952a37a4
-	github.com/facebookgo/httpdown v0.0.0-20160323221027-a3b1354551a2 // indirect
-	github.com/facebookgo/stack v0.0.0-20160209184415-751773369052 // indirect
-	github.com/facebookgo/stats v0.0.0-20151006221625-1b76add642e4 // indirect
-	github.com/facebookgo/subset v0.0.0-20150612182917-8dac2c3c4870 // indirect
 	github.com/gin-contrib/sse v0.0.0-20170109093832-22d885f9ecc7 // indirect
 	github.com/gin-gonic/gin v0.0.0-20170929084810-b8b68314faa0
 	github.com/gogo/protobuf v1.1.1
