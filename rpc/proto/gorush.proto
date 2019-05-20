@@ -1,4 +1,5 @@
 syntax = "proto3";
+import "google/protobuf/struct.proto";
 
 package proto;
 
@@ -29,6 +30,7 @@ message NotificationRequest {
   bool contentAvailable = 11;
   string threadID = 12;
   bool mutableContent = 13;
+  google.protobuf.Struct data = 14;
 }
 
 message NotificationReply {

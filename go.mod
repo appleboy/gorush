@@ -20,8 +20,8 @@ require (
 	github.com/emirpasic/gods v0.0.0-20170204130913-fc3e4a43ff31 // indirect
 	github.com/gin-contrib/sse v0.0.0-20170109093832-22d885f9ecc7 // indirect
 	github.com/gin-gonic/gin v0.0.0-20170929084810-b8b68314faa0
-	github.com/gogo/protobuf v1.1.1
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b // indirect
+	github.com/golang/protobuf v1.2.0
 	github.com/golang/snappy v0.0.0-20170215233205-553a64147049 // indirect
 	github.com/hashicorp/hcl v0.0.0-20171017181929-23c074d0eceb // indirect
 	github.com/json-iterator/go v0.0.0-20170713110145-8b0360418449 // indirect
