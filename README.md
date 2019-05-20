@@ -839,6 +839,7 @@ package main
 
 import (
 	"context"
+	structpb "github.com/golang/protobuf/ptypes/struct"
 	"log"
 
 	"github.com/appleboy/gorush/rpc/proto"
@@ -872,6 +873,16 @@ func main() {
 			Subtitle: "Test Alert Sub Title",
 			LocKey:   "Test loc key",
 			LocArgs:  []string{"test", "test"},
+		},
+		Data: &structpb.Struct{
+			Fields: map[string]*structpb.Value{
+				"key1": {
+					Kind: &structpb.Value_StringValue{StringValue: "welcome"},
+				},
+				"key2": {
+					Kind: &structpb.Value_NumberValue{NumberValue: 2},
+				},
+			},
 		},
 	})
 	if err != nil {
@@ -929,6 +940,7 @@ package main
 
 import (
 	"context"
+	structpb "github.com/golang/protobuf/ptypes/struct"
 	"log"
 
 	"github.com/appleboy/gorush/rpc/proto"
@@ -962,6 +974,16 @@ func main() {
 			Subtitle: "Test Alert Sub Title",
 			LocKey:   "Test loc key",
 			LocArgs:  []string{"test", "test"},
+		},
+		Data: &structpb.Struct{
+			Fields: map[string]*structpb.Value{
+				"key1": {
+					Kind: &structpb.Value_StringValue{StringValue: "welcome"},
+				},
+				"key2": {
+					Kind: &structpb.Value_NumberValue{NumberValue: 2},
+				},
+			},
 		},
 	})
 	if err != nil {
