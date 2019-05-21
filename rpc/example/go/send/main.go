@@ -2,11 +2,11 @@ package main
 
 import (
 	"context"
-	structpb "github.com/golang/protobuf/ptypes/struct"
 	"log"
 
 	"github.com/appleboy/gorush/rpc/proto"
 
+	structpb "github.com/golang/protobuf/ptypes/struct"
 	"google.golang.org/grpc"
 )
 
