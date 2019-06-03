@@ -7,27 +7,28 @@ import (
 )
 
 // DispatchFeedback sends a feedback to the configured gateway.
-func DispatchFeedback(log LogPushEntry) (*http.Response, error) {
+func DispatchFeedback(log LogPushEntry) {
 
 	if PushConf.Core.FeedbackURL == "" {
-		return nil, nil
+		return
 	}
 
 	payload, err := json.Marshal(log)
 
 	if err != nil {
-		return nil, err
+		LogError.Error(err)
+		return
 	}
 
 	req, _ := http.NewRequest("POST", PushConf.Core.FeedbackURL, bytes.NewBuffer(payload))
 	req.Header.Set("Content-Type", "application/json; charset=utf-8")
 
 	HTTPClient := &http.Client{}
-	httpRes, err := HTTPClient.Do(req)
+	resp, err := HTTPClient.Do(req)
 
 	if err != nil {
-		return nil, err
+		LogError.Error(err)
 	}
 
-	return httpRes, nil
+	defer resp.Body.Close()
 }
