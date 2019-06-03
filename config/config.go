@@ -18,7 +18,8 @@ core:
   worker_num: 0 # default worker number is runtime.NumCPU()
   queue_num: 0 # default queue number is 8192
   max_notification: 100
-  sync: false # set true if you need get error message from fail push notification in API response.
+	sync: false # set true if you need get error message from fail push notification in API response.
+	feedback_hook_url: "" # set webhook url if you need get error message asynchronously from fail push notification in API response.
   mode: "release"
   ssl: false
   cert_path: "cert.pem"
@@ -114,6 +115,7 @@ type SectionCore struct {
 	CertBase64      string         `yaml:"cert_base64"`
 	KeyBase64       string         `yaml:"key_base64"`
 	HTTPProxy       string         `yaml:"http_proxy"`
+	FeedbackURL     string         `yaml:"feedback_hook_url"`
 	PID             SectionPID     `yaml:"pid"`
 	AutoTLS         SectionAutoTLS `yaml:"auto_tls"`
 }
@@ -256,6 +258,7 @@ func LoadConf(confPath string) (ConfYaml, error) {
 	conf.Core.QueueNum = int64(viper.GetInt("core.queue_num"))
 	conf.Core.Mode = viper.GetString("core.mode")
 	conf.Core.Sync = viper.GetBool("core.sync")
+	conf.Core.FeedbackURL = viper.GetString("core.feedback_hook_url")
 	conf.Core.SSL = viper.GetBool("core.ssl")
 	conf.Core.CertPath = viper.GetString("core.cert_path")
 	conf.Core.KeyPath = viper.GetString("core.key_path")

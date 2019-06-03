@@ -97,6 +97,7 @@ core:
   queue_num: 0 # default queue number is 8192
   max_notification: 100
   sync: false # set true if you need get error message from fail push notification in API response.
+  feedback_hook_url: "" # set webhook url if you need get error message asynchronously from fail push notification in API response.
   mode: "release"
   ssl: false
   cert_path: "cert.pem"
@@ -516,6 +517,7 @@ Request body must has a notifications array. The following is a parameter table 
 
 | name                    | type         | description                                                                                       | required | note                                                          |
 |-------------------------|--------------|---------------------------------------------------------------------------------------------------|----------|---------------------------------------------------------------|
+| notif_id                | string       | A unique string that identifies the notification for async feedback                               | -        |                                                               |
 | tokens                  | string array | device tokens                                                                                     | o        |                                                               |
 | platform                | int          | platform(iOS,Android)                                                                             | o        | 1=iOS, 2=Android (Firebase)                                   |
 | message                 | string       | message for notification                                                                          | -        |                                                               |
@@ -526,7 +528,7 @@ Request body must has a notifications array. The following is a parameter table 
 | data                    | string array | extensible partition                                                                              | -        |                                                               |
 | retry                   | int          | retry send notification if fail response from server. Value must be small than `max_retry` field. | -        |                                                               |
 | topic                   | string       | send messages to topics                                                                           |          |                                                               |
-| api_key                 | string       | api key for firebase cloud message                                                                                   | -        | only Android                                                  |
+| api_key                 | string       | api key for firebase cloud message                                                                | -        | only Android                                                  |
 | to                      | string       | The value must be a registration token, notification key, or topic.                               | -        | only Android                                                  |
 | collapse_key            | string       | a key for collapsing notifications                                                                | -        | only Android                                                  |
 | delay_while_idle        | bool         | a flag for device idling                                                                          | -        | only Android                                                  |
@@ -779,7 +781,20 @@ Success response:
 }
 ```
 
-If you need error logs from sending fail notifications, please set `sync` as `true` on yaml config.
+If you need error logs from sending fail notifications, please set a `feedback_hook_url`. The server with send the failing logs asynchronously to your API as `POST` requests. 
+
+```diff
+core:
+  port: "8088" # ignore this port number if auto_tls is enabled (listen 443).
+  worker_num: 0 # default worker number is runtime.NumCPU()
+  queue_num: 0 # default queue number is 8192
+  max_notification: 100
+  sync: false 
+- feedback_hook_url: ""
++ feedback_hook_url: "https://exemple.com/api/hook"
+```
+
+You can also switch to **sync** mode by setting the `sync` as `true` on yaml config.
 
 ```diff
 core:

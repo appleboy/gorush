@@ -44,6 +44,7 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 	assert.Equal(suite.T(), int64(8192), suite.ConfGorushDefault.Core.QueueNum)
 	assert.Equal(suite.T(), "release", suite.ConfGorushDefault.Core.Mode)
 	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Core.Sync)
+	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Core.FeedbackURL)
 	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Core.SSL)
 	assert.Equal(suite.T(), "cert.pem", suite.ConfGorushDefault.Core.CertPath)
 	assert.Equal(suite.T(), "key.pem", suite.ConfGorushDefault.Core.KeyPath)

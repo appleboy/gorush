@@ -149,6 +149,8 @@ Retry:
 			LogPush(FailedPush, to, req, result.Error)
 			if PushConf.Core.Sync {
 				req.AddLog(getLogPushEntry(FailedPush, to, req, result.Error))
+			} else if PushConf.Core.FeedbackURL != "" {
+				go DispatchFeedback(getLogPushEntry(FailedPush, to, req, result.Error))
 			}
 			continue
 		}
