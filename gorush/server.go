@@ -7,12 +7,12 @@ import (
 	"fmt"
 	"net/http"
 
+	api "github.com/appleboy/gin-status-api"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"golang.org/x/crypto/acme/autocert"
-	api "gopkg.in/appleboy/gin-status-api.v1"
 )
 
 func init() {

@@ -15,6 +15,8 @@ github.com/apex/gateway v1.1.1 h1:dPE3y2LQ/fSJuZikCOvekqXLyn/Wrbgt10MSECobH/Q=
 github.com/apex/gateway v1.1.1/go.mod h1:x7iPY22zu9D8sfrynawEwh1wZEO/kQTRaOM5ye02tWU=
 github.com/appleboy/com v0.0.1 h1:SeP6J/YlZGWRwH7jdPYXXWA+qJy4GoQfcQFPda0ERYU=
 github.com/appleboy/com v0.0.1/go.mod h1:rtwjPnHClMOJw4K5oW3ASx9BCPCJ1SDbFbzJjY4Ebqw=
+github.com/appleboy/gin-status-api v1.0.1 h1:uOrEE6JIgUfzta8t4mji1HiOz9l9da3TV2mjj+PYAmQ=
+github.com/appleboy/gin-status-api v1.0.1/go.mod h1:p5zjajMLnWnWcNUR0dkjRhOggK8z4NkhLQaWO1eK/yA=
 github.com/appleboy/go-fcm v0.1.4 h1:p7nwHI75akAi0Yahrkc7zfOgET4v6ylhqfPfGZliXjw=
 github.com/appleboy/go-fcm v0.1.4/go.mod h1:1XhaeJtn9X5nOVPTQkljQfG034bGhm5SUXluohDJ8OI=
 github.com/appleboy/gofight v1.0.4 h1:CaO/h/RHl+EigTqZ37BQhu6FnbUaJ2ngZG6NtPcOtR8=
@@ -279,8 +281,6 @@ google.golang.org/grpc v1.21.0/go.mod h1:oYelfM1adQP15Ek0mdvEgi9Df8B9CZIaU1084ij
 google.golang.org/grpc v1.21.1 h1:j6XxA85m/6txkUCHvzlV5f+HBNl/1r5cZ2A/3IEFOO8=
 google.golang.org/grpc v1.21.1/go.mod h1:oYelfM1adQP15Ek0mdvEgi9Df8B9CZIaU1084ijfRaM=
 gopkg.in/alecthomas/kingpin.v2 v2.2.6/go.mod h1:FMv+mEhP44yOT+4EoQTLFTRgOQ1FBLkstjWtayDeSgw=
-gopkg.in/appleboy/gin-status-api.v1 v1.0.1 h1:c80nPT2SftCfE/2I9g/BbH5bQjG3kbnMMQ1083ugapU=
-gopkg.in/appleboy/gin-status-api.v1 v1.0.1/go.mod h1:X8bhgN2h4PXwJthf69L7rIAqDdnRZptEroSSpFiSnUg=
 gopkg.in/appleboy/gofight.v1 v1.0.4 h1:TTaDOzxoUYfSoCnX6Bccct4EQUVPZwfv53aE5YEoyt4=
 gopkg.in/appleboy/gofight.v1 v1.0.4/go.mod h1:+uRfN6FDYnxTJ+ErmYp2sESG/haICL6CahBhD6RzsVw=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=

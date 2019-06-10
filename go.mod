@@ -8,6 +8,7 @@ require (
 	github.com/Sereal/Sereal v0.0.0-20190606082811-cf1bab6c7a3a // indirect
 	github.com/apex/gateway v1.1.1
 	github.com/appleboy/com v0.0.1
+	github.com/appleboy/gin-status-api v1.0.1
 	github.com/appleboy/go-fcm v0.1.4
 	github.com/appleboy/gofight v1.0.4 // indirect
 	github.com/appleboy/gofight/v2 v2.1.1
@@ -17,7 +18,6 @@ require (
 	github.com/dgraph-io/badger v1.5.4
 	github.com/dgryski/go-farm v0.0.0-20190423205320-6a90982ecee2 // indirect
 	github.com/gin-gonic/gin v1.4.0
-	github.com/go-logfmt/logfmt v0.4.0 // indirect
 	github.com/golang/protobuf v1.3.1
 	github.com/mattn/go-isatty v0.0.8
 	github.com/mitchellh/mapstructure v1.1.2
@@ -39,7 +39,6 @@ require (
 	golang.org/x/net v0.0.0-20190607181551-461777fb6f67
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
 	google.golang.org/grpc v1.21.1
-	gopkg.in/appleboy/gin-status-api.v1 v1.0.1
 	gopkg.in/appleboy/gofight.v1 v1.0.4 // indirect
 	gopkg.in/fukata/golang-stats-api-handler.v1 v1.0.0 // indirect
 	gopkg.in/redis.v5 v5.2.9
