@@ -30,5 +30,7 @@ func DispatchFeedback(log LogPushEntry) {
 		LogError.Error(err)
 	}
 
-	defer resp.Body.Close()
+	if resp != nil {
+		defer resp.Body.Close()
+	}
 }
