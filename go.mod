@@ -9,7 +9,7 @@ require (
 	github.com/appleboy/com v0.0.1
 	github.com/appleboy/gin-status-api v1.0.2
 	github.com/appleboy/go-fcm v0.1.4
-	github.com/appleboy/gofight/v2 v2.1.1
+	github.com/appleboy/gofight v2.1.1
 	github.com/asdine/storm v2.1.2+incompatible
 	github.com/aws/aws-lambda-go v1.11.1 // indirect
 	github.com/buger/jsonparser v0.0.0-20181115193947-bf1c66bbce23
