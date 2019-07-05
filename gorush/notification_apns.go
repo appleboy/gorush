@@ -300,7 +300,7 @@ Retry:
 			if PushConf.Core.Sync {
 				req.AddLog(getLogPushEntry(FailedPush, token, req, err))
 			} else if PushConf.Core.FeedbackURL != "" {
-				go DispatchFeedback(getLogPushEntry(FailedPush, token, req, err))
+				go DispatchFeedback(getLogPushEntry(FailedPush, token, req, err), PushConf.Core.FeedbackURL)
 			}
 
 			StatStorage.AddIosError(1)

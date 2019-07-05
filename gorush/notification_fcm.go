@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/appleboy/go-fcm"
+	fcm "github.com/appleboy/go-fcm"
 )
 
 // InitFCMClient use for initialize FCM Client.
@@ -150,7 +150,7 @@ Retry:
 			if PushConf.Core.Sync {
 				req.AddLog(getLogPushEntry(FailedPush, to, req, result.Error))
 			} else if PushConf.Core.FeedbackURL != "" {
-				go DispatchFeedback(getLogPushEntry(FailedPush, to, req, result.Error))
+				go DispatchFeedback(getLogPushEntry(FailedPush, to, req, result.Error), PushConf.Core.FeedbackURL)
 			}
 			continue
 		}
