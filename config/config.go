@@ -18,8 +18,8 @@ core:
   worker_num: 0 # default worker number is runtime.NumCPU()
   queue_num: 0 # default queue number is 8192
   max_notification: 100
-	sync: false # set true if you need get error message from fail push notification in API response.
-	feedback_hook_url: "" # set webhook url if you need get error message asynchronously from fail push notification in API response.
+  sync: false # set true if you need get error message from fail push notification in API response.
+  feedback_hook_url: "" # set webhook url if you need get error message asynchronously from fail push notification in API response.
   mode: "release"
   ssl: false
   cert_path: "cert.pem"
