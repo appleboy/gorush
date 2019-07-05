@@ -1,6 +1,7 @@
 package gorush
 
 import (
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -47,7 +48,12 @@ func TestSuccessfulFeedbackCall(t *testing.T) {
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if r.URL.Path == "/dispatch" {
 				w.Header().Add("Content-Type", "application/json")
-				w.Write([]byte(`{}`))
+				_, err := w.Write([]byte(`{}`))
+
+				if err != nil {
+					log.Println(err)
+					panic(err)
+				}
 			}
 		}),
 	)

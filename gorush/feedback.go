@@ -17,7 +17,6 @@ func DispatchFeedback(log LogPushEntry, url string) error {
 	payload, err := json.Marshal(log)
 
 	if err != nil {
-		LogError.Error(err)
 		return err
 	}
 
@@ -32,7 +31,6 @@ func DispatchFeedback(log LogPushEntry, url string) error {
 	}
 
 	if err != nil {
-		LogError.Error(err)
 		return err
 	}
 

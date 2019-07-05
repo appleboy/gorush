@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	fcm "github.com/appleboy/go-fcm"
+	"github.com/sirupsen/logrus"
 )
 
 // InitFCMClient use for initialize FCM Client.
@@ -150,7 +151,12 @@ Retry:
 			if PushConf.Core.Sync {
 				req.AddLog(getLogPushEntry(FailedPush, to, req, result.Error))
 			} else if PushConf.Core.FeedbackURL != "" {
-				go DispatchFeedback(getLogPushEntry(FailedPush, to, req, result.Error), PushConf.Core.FeedbackURL)
+				go func(logger *logrus.Logger, log LogPushEntry, url string) {
+					err := DispatchFeedback(log, url)
+					if err != nil {
+						logger.Error(err)
+					}
+				}(LogError, getLogPushEntry(FailedPush, to, req, result.Error), PushConf.Core.FeedbackURL)
 			}
 			continue
 		}

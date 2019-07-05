@@ -13,6 +13,7 @@ import (
 	"github.com/sideshow/apns2/certificate"
 	"github.com/sideshow/apns2/payload"
 	"github.com/sideshow/apns2/token"
+	"github.com/sirupsen/logrus"
 )
 
 // Sound sets the aps sound on the payload.
@@ -300,7 +301,12 @@ Retry:
 			if PushConf.Core.Sync {
 				req.AddLog(getLogPushEntry(FailedPush, token, req, err))
 			} else if PushConf.Core.FeedbackURL != "" {
-				go DispatchFeedback(getLogPushEntry(FailedPush, token, req, err), PushConf.Core.FeedbackURL)
+				go func(logger *logrus.Logger, log LogPushEntry, url string) {
+					err := DispatchFeedback(log, url)
+					if err != nil {
+						logger.Error(err)
+					}
+				}(LogError, getLogPushEntry(FailedPush, token, req, err), PushConf.Core.FeedbackURL)
 			}
 
 			StatStorage.AddIosError(1)
