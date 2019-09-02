@@ -1,0 +1,59 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ template "gorush.fullname" . }}
+  labels:
+    app: {{ template "gorush.name" . }}
+    chart: {{ template "gorush.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    rollingUpdate:
+      maxSurge: {{ .Values.strategy.maxSurge }}
+      maxUnavailable: {{ .Values.strategy.maxUnavailable }}
+    type: {{ .Values.strategy.type }}
+  selector:
+    matchLabels:
+      app: {{ template "gorush.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "gorush.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+      - env:
+        - name: EEN_DHASH_ADDRESS
+          value: {{ .Values.eenDhashAddress }}
+        - name: EEN_IOS_PROD_CERT
+          value: {{ .Values.secret.iodProdCert }}
+        - name: EEN_ANDROID_API_KEY
+          value: {{ .Values.secret.androidApiKey}}
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        name: {{ .Chart.Name }}
+        ports:
+        - containerPort: {{ .Values.ports.containerPort }}
+          protocol: {{ .Values.ports.protocol }}
+        resources: {}
+      dnsPolicy: {{ .Values.dnsPolicy }}
+      resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.securityContext }}
+      securityContext: {{ .Values.securityContext }}
+    {{- end }}

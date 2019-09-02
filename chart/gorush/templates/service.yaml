@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "gorush.fullname" . }}
+  labels:
+    app: {{ template "gorush.name" . }}
+    chart: {{ template "gorush.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.port }}
+      protocol: {{ .Values.service.protocol }}
+      name: {{ .Release.Name }}
+  selector:
+    app: {{ template "gorush.name" . }}
+    release: {{ .Release.Name }}
