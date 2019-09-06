@@ -52,6 +52,7 @@ type RequestPush struct {
 // PushNotification is single notification request
 type PushNotification struct {
 	// Common
+	ID               string      `json:"notif_id,omitempty"`
 	Tokens           []string    `json:"tokens" binding:"required"`
 	Platform         int         `json:"platform" binding:"required"`
 	Message          string      `json:"message,omitempty"`

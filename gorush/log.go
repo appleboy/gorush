@@ -34,6 +34,7 @@ type LogReq struct {
 
 // LogPushEntry is push response log
 type LogPushEntry struct {
+	ID       string `json:"notif_id,omitempty"`
 	Type     string `json:"type"`
 	Platform string `json:"platform"`
 	Token    string `json:"token"`
@@ -211,6 +212,7 @@ func getLogPushEntry(status, token string, req PushNotification, errPush error) 
 	}
 
 	return LogPushEntry{
+		ID:       req.ID,
 		Type:     status,
 		Platform: plat,
 		Token:    token,

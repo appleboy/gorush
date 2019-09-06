@@ -13,6 +13,7 @@ import (
 	"github.com/sideshow/apns2/certificate"
 	"github.com/sideshow/apns2/payload"
 	"github.com/sideshow/apns2/token"
+	"github.com/sirupsen/logrus"
 )
 
 // Sound sets the aps sound on the payload.
@@ -288,25 +289,26 @@ Retry:
 		// send ios notification
 		res, err := client.Push(notification)
 
-		if err != nil {
+		if err != nil || res.StatusCode != 200 {
+			if err == nil {
+				// error message:
+				// ref: https://github.com/sideshow/apns2/blob/master/response.go#L14-L65
+				err = errors.New(res.Reason)
+			}
 			// apns server error
 			LogPush(FailedPush, token, req, err)
+
 			if PushConf.Core.Sync {
 				req.AddLog(getLogPushEntry(FailedPush, token, req, err))
+			} else if PushConf.Core.FeedbackURL != "" {
+				go func(logger *logrus.Logger, log LogPushEntry, url string) {
+					err := DispatchFeedback(log, url)
+					if err != nil {
+						logger.Error(err)
+					}
+				}(LogError, getLogPushEntry(FailedPush, token, req, err), PushConf.Core.FeedbackURL)
 			}
-			StatStorage.AddIosError(1)
-			newTokens = append(newTokens, token)
-			isError = true
-			continue
-		}
 
-		if res.StatusCode != 200 {
-			// error message:
-			// ref: https://github.com/sideshow/apns2/blob/master/response.go#L14-L65
-			LogPush(FailedPush, token, req, errors.New(res.Reason))
-			if PushConf.Core.Sync {
-				req.AddLog(getLogPushEntry(FailedPush, token, req, errors.New(res.Reason)))
-			}
 			StatStorage.AddIosError(1)
 			newTokens = append(newTokens, token)
 			isError = true
