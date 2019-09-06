@@ -32,6 +32,7 @@ require (
 	github.com/tidwall/rtree v0.0.0-20180113144539-6cd427091e0e // indirect
 	github.com/tidwall/tinyqueue v0.0.0-20180302190814-1e39f5511563 // indirect
 	github.com/tj/assert v0.0.0-20171129193455-018094318fb0 // indirect
+	github.com/ugorji/go v1.1.7 // indirect
 	github.com/vmihailenco/msgpack v4.0.4+incompatible // indirect
 	golang.org/x/crypto v0.0.0-20190617133340-57b3e21c3d56
 	golang.org/x/net v0.0.0-20190613194153-d28f0bde5980
