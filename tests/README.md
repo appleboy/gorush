@@ -30,5 +30,5 @@ see the JSON format:
 run the following command.
 
 ```sh
-$ bat POST localhost:8088/api/push < tests/test.json
+bat POST localhost:8088/api/push < tests/test.json
 ```
