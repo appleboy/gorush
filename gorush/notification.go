@@ -82,6 +82,7 @@ type PushNotification struct {
 	ApnsID      string   `json:"apns_id,omitempty"`
 	CollapseID  string   `json:"collapse_id,omitempty"`
 	Topic       string   `json:"topic,omitempty"`
+	PushType    string   `json:"push_type,omitempty"`
 	Badge       *int     `json:"badge,omitempty"`
 	Category    string   `json:"category,omitempty"`
 	ThreadID    string   `json:"thread-id,omitempty"`
