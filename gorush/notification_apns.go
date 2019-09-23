@@ -183,6 +183,10 @@ func GetIOSNotification(req PushNotification) *apns2.Notification {
 		notification.Priority = apns2.PriorityLow
 	}
 
+	if len(req.PushType) > 0 {
+		notification.PushType = apns2.EPushType(req.PushType)
+	}
+
 	payload := payload.NewPayload()
 
 	// add alert object if message length > 0

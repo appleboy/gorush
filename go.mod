@@ -19,7 +19,7 @@ require (
 	github.com/mattn/go-isatty v0.0.8
 	github.com/mitchellh/mapstructure v1.1.2
 	github.com/prometheus/client_golang v1.0.0
-	github.com/sideshow/apns2 v0.16.0
+	github.com/sideshow/apns2 v0.19.0
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/viper v1.4.0
 	github.com/stretchr/testify v1.3.0
