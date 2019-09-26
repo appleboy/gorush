@@ -95,7 +95,7 @@ func SetLogOut(log *logrus.Logger, outString string) error {
 	case "stderr":
 		log.Out = os.Stderr
 	default:
-		f, err := os.OpenFile(outString, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
+		f, err := os.OpenFile(outString, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
 
 		if err != nil {
 			return err
