@@ -513,7 +513,7 @@ See more example about [iOS](#ios-example) or [Android](#android-example).
 
 ### Request body
 
-Request body must has a notifications array. The following is a parameter table for each notification.
+The Request body must have a notifications array. The following is a parameter table for each notification.
 
 | name                    | type         | description                                                                                       | required | note                                                          |
 |-------------------------|--------------|---------------------------------------------------------------------------------------------------|----------|---------------------------------------------------------------|
