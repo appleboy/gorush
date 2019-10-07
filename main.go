@@ -325,7 +325,7 @@ func createPIDFile() error {
 		}
 		defer file.Close()
 		if _, err := file.WriteString(strconv.FormatInt(int64(currentPid), 10)); err != nil {
-			return fmt.Errorf("Can'write PID information on %s: %v", pidPath, err)
+			return fmt.Errorf("Can't write PID information on %s: %v", pidPath, err)
 		}
 	} else {
 		return fmt.Errorf("%s already exists", pidPath)
