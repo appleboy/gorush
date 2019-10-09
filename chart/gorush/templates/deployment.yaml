@@ -32,7 +32,7 @@ spec:
           value: {{ .Values.secret.iodProdCert }}
         - name: EEN_ANDROID_API_KEY
           value: {{ .Values.secret.androidApiKey}}
-        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        image: {{ .Values.image.repository }}:{{ tpl .Values.image.tag . }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         name: {{ .Chart.Name }}
         ports:

@@ -10,8 +10,8 @@ strategy:
   type: RollingUpdate
 
 image:
-  repository: docker.eencloud.com/gorush
-  tag: latest
+  repository: harbor.eencloud.com/vms/gorush
+  tag: "{{ .Chart.AppVersion }}"
   pullPolicy: Always
 
 service:
