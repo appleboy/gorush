@@ -37,7 +37,7 @@ func markFailedNotification(notification *PushNotification, reason string) {
 	for _, token := range notification.Tokens {
 		notification.AddLog(getLogPushEntry(FailedPush, token, *notification, errors.New(reason)))
 	}
-	notification.wg.Done()
+	notification.WaitDone()
 }
 
 // queueNotification add notification to queue list.
