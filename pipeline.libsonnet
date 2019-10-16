@@ -260,14 +260,6 @@
           ignore_missing: true,
         },
       },
-      {
-        name: 'microbadger',
-        image: 'plugins/webhook:1',
-        pull: 'always',
-        settings: {
-          url: { 'from_secret': 'microbadger_url' },
-        },
-      },
     ],
     depends_on: depends_on,
     trigger: {
