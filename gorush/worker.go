@@ -1,6 +1,7 @@
 package gorush
 
 import (
+	"errors"
 	"sync"
 )
 
@@ -28,6 +29,15 @@ func startWorker() {
 		notification := <-QueueNotification
 		SendNotification(notification)
 	}
+}
+
+// markFailedNotification adds failure logs for all tokens in push notification
+func markFailedNotification(notification *PushNotification, reason string) {
+	LogError.Error(reason)
+	for _, token := range notification.Tokens {
+		notification.AddLog(getLogPushEntry(FailedPush, token, *notification, errors.New(reason)))
+	}
+	notification.WaitDone()
 }
 
 // queueNotification add notification to queue list.
@@ -58,7 +68,7 @@ func queueNotification(req RequestPush) (int, []LogPushEntry) {
 			notification.AddWaitCount()
 		}
 		if !tryEnqueue(*notification, QueueNotification) {
-			LogError.Error("max capacity reached")
+			markFailedNotification(notification, "max capacity reached")
 		}
 		count += len(notification.Tokens)
 		// Count topic message
