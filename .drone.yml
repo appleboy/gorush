@@ -85,7 +85,7 @@ steps:
   pull: always
   image: golang:1.13
   commands:
-  - "go build -v -ldflags '-X main.build=${DRONE_BUILD_NUMBER}' -a -o release/linux/amd64/gorush"
+  - go build -v -ldflags '-X main.build=${DRONE_BUILD_NUMBER}' -a -o release/linux/amd64/gorush
   environment:
     CGO_ENABLED: 0
   when:
@@ -97,7 +97,7 @@ steps:
   pull: always
   image: golang:1.13
   commands:
-  - "go build -v -ldflags '-X main.version=${DRONE_TAG##v} -X main.build=${DRONE_BUILD_NUMBER}' -a -o release/linux/amd64/gorush"
+  - go build -v -ldflags '-X main.version=${DRONE_TAG##v} -X main.build=${DRONE_BUILD_NUMBER}' -a -o release/linux/amd64/gorush
   environment:
     CGO_ENABLED: 0
   when:
@@ -145,8 +145,8 @@ steps:
 trigger:
   ref:
   - refs/heads/master
-  - "refs/pull/**"
-  - "refs/tags/**"
+  - refs/pull/**
+  - refs/tags/**
 
 depends_on:
 - testing
@@ -164,7 +164,7 @@ steps:
   pull: always
   image: golang:1.13
   commands:
-  - "go build -v -ldflags '-X main.build=${DRONE_BUILD_NUMBER}' -a -o release/linux/arm64/gorush"
+  - go build -v -ldflags '-X main.build=${DRONE_BUILD_NUMBER}' -a -o release/linux/arm64/gorush
   environment:
     CGO_ENABLED: 0
   when:
@@ -176,7 +176,7 @@ steps:
   pull: always
   image: golang:1.13
   commands:
-  - "go build -v -ldflags '-X main.version=${DRONE_TAG##v} -X main.build=${DRONE_BUILD_NUMBER}' -a -o release/linux/arm64/gorush"
+  - go build -v -ldflags '-X main.version=${DRONE_TAG##v} -X main.build=${DRONE_BUILD_NUMBER}' -a -o release/linux/arm64/gorush
   environment:
     CGO_ENABLED: 0
   when:
@@ -224,8 +224,8 @@ steps:
 trigger:
   ref:
   - refs/heads/master
-  - "refs/pull/**"
-  - "refs/tags/**"
+  - refs/pull/**
+  - refs/tags/**
 
 depends_on:
 - testing
@@ -243,7 +243,7 @@ steps:
   pull: always
   image: golang:1.13
   commands:
-  - "go build -v -ldflags '-X main.build=${DRONE_BUILD_NUMBER}' -a -o release/linux/arm/gorush"
+  - go build -v -ldflags '-X main.build=${DRONE_BUILD_NUMBER}' -a -o release/linux/arm/gorush
   environment:
     CGO_ENABLED: 0
   when:
@@ -255,7 +255,7 @@ steps:
   pull: always
   image: golang:1.13
   commands:
-  - "go build -v -ldflags '-X main.version=${DRONE_TAG##v} -X main.build=${DRONE_BUILD_NUMBER}' -a -o release/linux/arm/gorush"
+  - go build -v -ldflags '-X main.version=${DRONE_TAG##v} -X main.build=${DRONE_BUILD_NUMBER}' -a -o release/linux/arm/gorush
   environment:
     CGO_ENABLED: 0
   when:
@@ -303,8 +303,8 @@ steps:
 trigger:
   ref:
   - refs/heads/master
-  - "refs/pull/**"
-  - "refs/tags/**"
+  - refs/pull/**
+  - refs/tags/**
 
 depends_on:
 - testing
@@ -334,14 +334,14 @@ steps:
     api_key:
       from_secret: github_release_api_key
     files:
-    - "dist/release/*"
+    - dist/release/*
   when:
     event:
     - tag
 
 trigger:
   ref:
-  - "refs/tags/**"
+  - refs/tags/**
 
 depends_on:
 - testing
@@ -366,17 +366,10 @@ steps:
     username:
       from_secret: docker_username
 
-- name: microbadger
-  pull: always
-  image: plugins/webhook:1
-  settings:
-    url:
-      from_secret: microbadger_url
-
 trigger:
   ref:
   - refs/heads/master
-  - "refs/tags/**"
+  - refs/tags/**
 
 depends_on:
 - linux-amd64
