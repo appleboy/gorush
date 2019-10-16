@@ -81,9 +81,6 @@ func GetAndroidNotification(req PushNotification) *fcm.Message {
 // PushToAndroid provide send notification to Android server.
 func PushToAndroid(req PushNotification) bool {
 	LogAccess.Debug("Start push notification for Android")
-	if PushConf.Core.Sync {
-		defer req.WaitDone()
-	}
 
 	var (
 		client     *fcm.Client

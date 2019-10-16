@@ -1,6 +1,7 @@
 package gorush
 
 import (
+	"context"
 	"errors"
 	"sync"
 )
@@ -15,12 +16,20 @@ func InitWorkers(workerNum int64, queueNum int64) {
 }
 
 // SendNotification is send message to iOS or Android
-func SendNotification(msg PushNotification) {
-	switch msg.Platform {
-	case PlatFormIos:
-		PushToIOS(msg)
-	case PlatFormAndroid:
-		PushToAndroid(msg)
+func SendNotification(req PushNotification) {
+	if PushConf.Core.Sync {
+		defer req.WaitDone()
+	}
+
+	select {
+	case <-req.ctx.Done():
+	default:
+		switch req.Platform {
+		case PlatFormIos:
+			PushToIOS(req)
+		case PlatFormAndroid:
+			PushToAndroid(req)
+		}
 	}
 }
 
@@ -41,7 +50,7 @@ func markFailedNotification(notification *PushNotification, reason string) {
 }
 
 // queueNotification add notification to queue list.
-func queueNotification(req RequestPush) (int, []LogPushEntry) {
+func queueNotification(ctx context.Context, req RequestPush) (int, []LogPushEntry) {
 	var count int
 	wg := sync.WaitGroup{}
 	newNotification := []*PushNotification{}
@@ -62,6 +71,7 @@ func queueNotification(req RequestPush) (int, []LogPushEntry) {
 
 	log := make([]LogPushEntry, 0, count)
 	for _, notification := range newNotification {
+		notification.ctx = ctx
 		if PushConf.Core.Sync {
 			notification.wg = &wg
 			notification.log = &log

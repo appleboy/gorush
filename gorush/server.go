@@ -1,6 +1,7 @@
 package gorush
 
 import (
+	"context"
 	"crypto/tls"
 	"encoding/base64"
 	"errors"
@@ -70,7 +71,19 @@ func pushHandler(c *gin.Context) {
 		return
 	}
 
-	counts, logs := queueNotification(form)
+	ctx, cancel := context.WithCancel(context.Background())
+	notifier := c.Writer.CloseNotify()
+	go func(closer <-chan bool) {
+		<-closer
+		// Don't send notification after client timeout or disconnected.
+		// See the following issue for detail information.
+		// https://github.com/appleboy/gorush/issues/422
+		if PushConf.Core.Sync {
+			cancel()
+		}
+	}(notifier)
+
+	counts, logs := queueNotification(ctx, form)
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": "ok",

@@ -265,9 +265,6 @@ func getApnsClient(req PushNotification) (client *apns2.Client) {
 // PushToIOS provide send notification to APNs server.
 func PushToIOS(req PushNotification) bool {
 	LogAccess.Debug("Start push notification for iOS")
-	if PushConf.Core.Sync {
-		defer req.WaitDone()
-	}
 
 	var (
 		retryCount = 0

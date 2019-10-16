@@ -1,6 +1,7 @@
 package gorush
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"os"
@@ -503,6 +504,7 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 }
 
 func TestDisabledIosNotifications(t *testing.T) {
+	ctx := context.Background()
 	PushConf, _ = config.LoadConf("")
 
 	PushConf.Ios.Enabled = false
@@ -532,7 +534,7 @@ func TestDisabledIosNotifications(t *testing.T) {
 		},
 	}
 
-	count, logs := queueNotification(req)
+	count, logs := queueNotification(ctx, req)
 	assert.Equal(t, 2, count)
 	assert.Equal(t, 0, len(logs))
 }

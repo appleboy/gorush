@@ -176,6 +176,8 @@ github.com/siddontang/ledisdb v0.0.0-20181029004158-becf5f38d373/go.mod h1:mF1Dp
 github.com/siddontang/rdb v0.0.0-20150307021120-fc89ed2e418d/go.mod h1:AMEsy7v5z92TR1JKMkLLoaOQk++LVnOKL3ScbJ8GNGA=
 github.com/sideshow/apns2 v0.16.0 h1:OLwkgkse4ZEak+kCIG+B+T4h1e7zLUFxuFFHtyCyTEM=
 github.com/sideshow/apns2 v0.16.0/go.mod h1:f7dArLPLbiZ3qPdzzrZXdCSlMp8FD0p6z7tHssDOLvk=
+github.com/sideshow/apns2 v0.19.0 h1:6b/CtfMEwRZrw2sHbX3WOKjF9tGUVu7EMBdJ3egHJks=
+github.com/sideshow/apns2 v0.19.0/go.mod h1:f7dArLPLbiZ3qPdzzrZXdCSlMp8FD0p6z7tHssDOLvk=
 github.com/sirupsen/logrus v1.2.0/go.mod h1:LxeOpSwHxABJmUn/MG1IvRgCAasNZTLOkJPxbbu5VWo=
 github.com/sirupsen/logrus v1.4.2 h1:SPIRibHv4MatM3XXNO2BJeFLZwZ2LvZgfQ5+UNI2im4=
 github.com/sirupsen/logrus v1.4.2/go.mod h1:tLMulIdttU9McNUspp0xgXVQah82FyeX6MwdIuYE2rE=
