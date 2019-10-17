@@ -278,6 +278,7 @@ func TestOutOfRangeMaxNotifications(t *testing.T) {
 }
 
 func TestSuccessPushHandler(t *testing.T) {
+	t.Skip()
 	initTest()
 
 	PushConf.Android.Enabled = true
