@@ -139,7 +139,7 @@ func TestRootHandler(t *testing.T) {
 
 			assert.Equal(t, "Welcome to notification server.", value)
 			assert.Equal(t, http.StatusOK, r.Code)
-			assert.Equal(t, "application/json; charset=utf-8", r.HeaderMap["Content-Type"])
+			assert.Equal(t, "application/json; charset=utf-8", r.HeaderMap.Get("Content-Type"))
 		})
 }
 
@@ -199,7 +199,7 @@ func TestMissingNotificationsParameter(t *testing.T) {
 		Run(routerEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 
 			assert.Equal(t, http.StatusBadRequest, r.Code)
-			assert.Equal(t, "application/json; charset=utf-8", r.HeaderMap["Content-Type"])
+			assert.Equal(t, "application/json; charset=utf-8", r.HeaderMap.Get("Content-Type"))
 		})
 }
 
