@@ -798,7 +798,7 @@ core:
 + feedback_hook_url: "https://exemple.com/api/hook"
 ```
 
-You can also switch to **sync** mode by setting the `sync` as `true` on yaml config.
+You can also switch to **sync** mode by setting the `sync` value as `true` on yaml config.
 
 ```diff
 core:
