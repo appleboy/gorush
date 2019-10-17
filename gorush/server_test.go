@@ -133,7 +133,7 @@ func TestRootHandler(t *testing.T) {
 
 	r.GET("/").
 		Run(routerEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
-			data := []byte(r.Body.String())
+			data := r.Body.Bytes()
 
 			value, _ := jsonparser.GetString(data, "text")
 
@@ -150,7 +150,7 @@ func TestAPIStatusGoHandler(t *testing.T) {
 
 	r.GET("/api/stat/go").
 		Run(routerEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
-			data := []byte(r.Body.String())
+			data := r.Body.Bytes()
 
 			value, _ := jsonparser.GetString(data, "go_version")
 
@@ -169,7 +169,7 @@ func TestAPIStatusAppHandler(t *testing.T) {
 
 	r.GET("/api/stat/app").
 		Run(routerEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
-			data := []byte(r.Body.String())
+			data := r.Body.Bytes()
 
 			value, _ := jsonparser.GetString(data, "version")
 
@@ -346,7 +346,7 @@ func TestVersionHandler(t *testing.T) {
 	r.GET("/version").
 		Run(routerEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 			assert.Equal(t, http.StatusOK, r.Code)
-			data := []byte(r.Body.String())
+			data := r.Body.Bytes()
 
 			value, _ := jsonparser.GetString(data, "version")
 

@@ -186,9 +186,7 @@ Retry:
 	// Device Group HTTP Response
 	if len(res.FailedRegistrationIDs) > 0 {
 		isError = true
-		for _, id := range res.FailedRegistrationIDs {
-			newTokens = append(newTokens, id)
-		}
+		newTokens = append(newTokens, res.FailedRegistrationIDs...)
 
 		LogPush(FailedPush, notification.To, req, errors.New("device group: partial success or all fails"))
 		if PushConf.Core.Sync {
