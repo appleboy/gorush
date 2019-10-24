@@ -38,10 +38,9 @@ spec:
         ports:
         - containerPort: {{ .Values.ports.containerPort }}
           protocol: {{ .Values.ports.protocol }}
-        resources: {}
+        resources:
+{{ toYaml .Values.resources | indent 10 }}
       dnsPolicy: {{ .Values.dnsPolicy }}
-      resources:
-{{ toYaml .Values.resources | indent 12 }}
     {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
