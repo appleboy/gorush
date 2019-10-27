@@ -3,12 +3,13 @@
 'use strict';
 var grpc = require('grpc');
 var gorush_pb = require('./gorush_pb.js');
+var google_protobuf_struct_pb = require('google-protobuf/google/protobuf/struct_pb.js');
 
 function serialize_proto_HealthCheckRequest(arg) {
   if (!(arg instanceof gorush_pb.HealthCheckRequest)) {
     throw new Error('Expected argument of type proto.HealthCheckRequest');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_proto_HealthCheckRequest(buffer_arg) {
@@ -19,7 +20,7 @@ function serialize_proto_HealthCheckResponse(arg) {
   if (!(arg instanceof gorush_pb.HealthCheckResponse)) {
     throw new Error('Expected argument of type proto.HealthCheckResponse');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_proto_HealthCheckResponse(buffer_arg) {
@@ -30,7 +31,7 @@ function serialize_proto_NotificationReply(arg) {
   if (!(arg instanceof gorush_pb.NotificationReply)) {
     throw new Error('Expected argument of type proto.NotificationReply');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_proto_NotificationReply(buffer_arg) {
@@ -41,7 +42,7 @@ function serialize_proto_NotificationRequest(arg) {
   if (!(arg instanceof gorush_pb.NotificationRequest)) {
     throw new Error('Expected argument of type proto.NotificationRequest');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_proto_NotificationRequest(buffer_arg) {
