@@ -2,12 +2,12 @@
 
 ## PREREQUISITES
 
-`node`: This requires Node 0.12.x or greater.
+`node`: This requires Node 12.x or greater.
 
 ## INSTALL
 
 ```sh
-yarn install
+npm install
 npm install -g grpc-tools
 ```
 
