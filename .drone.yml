@@ -97,7 +97,7 @@ steps:
   pull: always
   image: golang:1.13
   commands:
-  - go build -v -ldflags -tags 'lambda' '-X main.build=${DRONE_BUILD_NUMBER}' -a -o release/linux/amd64/lambda/gorush
+  - go build -v -tags 'lambda' -ldflags '-X main.build=${DRONE_BUILD_NUMBER}' -a -o release/linux/amd64/lambda/gorush
   environment:
     CGO_ENABLED: 0
   when:
@@ -191,7 +191,7 @@ steps:
   pull: always
   image: golang:1.13
   commands:
-  - go build -v -ldflags -tags 'lambda' '-X main.build=${DRONE_BUILD_NUMBER}' -a -o release/linux/arm64/lambda/gorush
+  - go build -v -tags 'lambda' -ldflags '-X main.build=${DRONE_BUILD_NUMBER}' -a -o release/linux/arm64/lambda/gorush
   environment:
     CGO_ENABLED: 0
   when:
@@ -285,7 +285,7 @@ steps:
   pull: always
   image: golang:1.13
   commands:
-  - go build -v -ldflags -tags 'lambda' '-X main.build=${DRONE_BUILD_NUMBER}' -a -o release/linux/arm/lambda/gorush
+  - go build -v -tags 'lambda' -ldflags '-X main.build=${DRONE_BUILD_NUMBER}' -a -o release/linux/arm/lambda/gorush
   environment:
     CGO_ENABLED: 0
   when:

@@ -136,7 +136,7 @@
           CGO_ENABLED: '0',
         },
         commands: [
-          'go build -v -ldflags -tags \'lambda\' \'-X main.build=${DRONE_BUILD_NUMBER}\' -a -o release/' + os + '/' + arch + '/lambda/' + name,
+          'go build -v -tags \'lambda\' -ldflags \'-X main.build=${DRONE_BUILD_NUMBER}\' -a -o release/' + os + '/' + arch + '/lambda/' + name,
         ],
         when: {
           event: {
