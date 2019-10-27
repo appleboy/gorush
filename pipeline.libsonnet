@@ -129,6 +129,22 @@
         },
       },
       {
+        name: 'build-push-lambda',
+        image: 'golang:1.13',
+        pull: 'always',
+        environment: {
+          CGO_ENABLED: '0',
+        },
+        commands: [
+          'go build -v -ldflags -tags \'lambda\' \'-X main.build=${DRONE_BUILD_NUMBER}\' -a -o release/' + os + '/' + arch + '/lambda/' + name,
+        ],
+        when: {
+          event: {
+            exclude: [ 'tag' ],
+          },
+        },
+      },
+      {
         name: 'build-tag',
         image: 'golang:1.13',
         pull: 'always',
@@ -148,6 +164,10 @@
         pull: 'always',
         commands: [
           './release/' + os + '/' + arch + '/' + name + ' --help',
+        ],
+        depends_on: [
+          'build-push',
+          'build-push-lambda',
         ],
       },
       {

@@ -93,6 +93,18 @@ steps:
       exclude:
       - tag
 
+- name: build-push-lambda
+  pull: always
+  image: golang:1.13
+  commands:
+  - go build -v -ldflags -tags 'lambda' '-X main.build=${DRONE_BUILD_NUMBER}' -a -o release/linux/amd64/lambda/gorush
+  environment:
+    CGO_ENABLED: 0
+  when:
+    event:
+      exclude:
+      - tag
+
 - name: build-tag
   pull: always
   image: golang:1.13
@@ -109,6 +121,9 @@ steps:
   image: golang:1.13
   commands:
   - ./release/linux/amd64/gorush --help
+  depends_on:
+  - build-push
+  - build-push-lambda
 
 - name: dryrun
   pull: always
@@ -172,6 +187,18 @@ steps:
       exclude:
       - tag
 
+- name: build-push-lambda
+  pull: always
+  image: golang:1.13
+  commands:
+  - go build -v -ldflags -tags 'lambda' '-X main.build=${DRONE_BUILD_NUMBER}' -a -o release/linux/arm64/lambda/gorush
+  environment:
+    CGO_ENABLED: 0
+  when:
+    event:
+      exclude:
+      - tag
+
 - name: build-tag
   pull: always
   image: golang:1.13
@@ -188,6 +215,9 @@ steps:
   image: golang:1.13
   commands:
   - ./release/linux/arm64/gorush --help
+  depends_on:
+  - build-push
+  - build-push-lambda
 
 - name: dryrun
   pull: always
@@ -251,6 +281,18 @@ steps:
       exclude:
       - tag
 
+- name: build-push-lambda
+  pull: always
+  image: golang:1.13
+  commands:
+  - go build -v -ldflags -tags 'lambda' '-X main.build=${DRONE_BUILD_NUMBER}' -a -o release/linux/arm/lambda/gorush
+  environment:
+    CGO_ENABLED: 0
+  when:
+    event:
+      exclude:
+      - tag
+
 - name: build-tag
   pull: always
   image: golang:1.13
@@ -267,6 +309,9 @@ steps:
   image: golang:1.13
   commands:
   - ./release/linux/arm/gorush --help
+  depends_on:
+  - build-push
+  - build-push-lambda
 
 - name: dryrun
   pull: always
