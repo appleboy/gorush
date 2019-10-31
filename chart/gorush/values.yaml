@@ -1,0 +1,51 @@
+# Default values for gorush.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+strategy:
+  maxSurge: 1
+  maxUnavailable: 1
+  type: RollingUpdate
+
+image:
+  repository: harbor.eencloud.com/vms/gorush
+  tag: "{{ .Chart.AppVersion }}"
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 8088
+  protocol: TCP
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi
+
+nodeSelector: {
+  role: server
+}
+
+eenDhashAddress: 192.40.4.24
+
+# To run outside of concourse, the below values must be filled in via an override-values.yaml file
+secret:
+  iosProdCert: ios_prod_cert
+  androidApiKey: android_api_key
+
+ports:
+  containerPort: 8088
+  protocol: TCP
+
+tolerations: []
+
+affinity: {}
