@@ -175,8 +175,8 @@ func GetIOSNotification(req PushNotification) *apns2.Notification {
 		CollapseID: req.CollapseID,
 	}
 
-	if req.Expiration > 0 {
-		notification.Expiration = time.Unix(req.Expiration, 0)
+	if req.Expiration != nil {
+		notification.Expiration = time.Unix(*req.Expiration, 0)
 	}
 
 	if len(req.Priority) > 0 && req.Priority == "normal" {
