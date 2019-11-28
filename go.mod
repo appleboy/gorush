@@ -14,15 +14,15 @@ require (
 	github.com/aws/aws-lambda-go v1.11.1 // indirect
 	github.com/buger/jsonparser v0.0.0-20181115193947-bf1c66bbce23
 	github.com/dgraph-io/badger v1.5.5
-	github.com/gin-gonic/gin v1.4.0
-	github.com/golang/protobuf v1.3.1
-	github.com/mattn/go-isatty v0.0.8
+	github.com/gin-gonic/gin v1.5.0
+	github.com/golang/protobuf v1.3.2
+	github.com/mattn/go-isatty v0.0.9
 	github.com/mitchellh/mapstructure v1.1.2
 	github.com/prometheus/client_golang v1.0.0
 	github.com/sideshow/apns2 v0.19.0
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/viper v1.4.0
-	github.com/stretchr/testify v1.3.0
+	github.com/stretchr/testify v1.4.0
 	github.com/syndtr/goleveldb v1.0.0
 	github.com/thoas/stats v0.0.0-20190407194641-965cb2de1678
 	github.com/tidwall/btree v0.0.0-20170113224114-9876f1454cf0 // indirect
@@ -32,7 +32,6 @@ require (
 	github.com/tidwall/rtree v0.0.0-20180113144539-6cd427091e0e // indirect
 	github.com/tidwall/tinyqueue v0.0.0-20180302190814-1e39f5511563 // indirect
 	github.com/tj/assert v0.0.0-20171129193455-018094318fb0 // indirect
-	github.com/ugorji/go v1.1.7 // indirect
 	github.com/vmihailenco/msgpack v4.0.4+incompatible // indirect
 	golang.org/x/crypto v0.0.0-20190617133340-57b3e21c3d56
 	golang.org/x/net v0.0.0-20190613194153-d28f0bde5980
