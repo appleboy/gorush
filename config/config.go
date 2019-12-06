@@ -26,7 +26,7 @@ core:
   key_path: "key.pem"
   cert_base64: ""
   key_base64: ""
-  http_proxy: "" # only working for FCM server
+  http_proxy: ""
   pid:
     enabled: false
     path: "gorush.pid"
