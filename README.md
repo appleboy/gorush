@@ -77,7 +77,7 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 - Support store app stat to memory, [Redis](http://redis.io/), [BoltDB](https://github.com/boltdb/bolt), [BuntDB](https://github.com/tidwall/buntdb), [LevelDB](https://github.com/syndtr/goleveldb) or [BadgerDB](https://github.com/dgraph-io/badger).
 - Support `p8`, `p12` or `pem` format of iOS certificate file.
 - Support `/sys/stats` show response time, status code count, etc.
-- Support for HTTP proxy.
+- Support for HTTP, HTTPS or SOCKS5 proxy.
 - Support retry send notification if server response is fail.
 - Support expose [prometheus](https://prometheus.io/) metrics.
 - Support install TLS certificates from [Let's Encrypt](https://letsencrypt.org/) automatically.
@@ -254,7 +254,7 @@ Server Options:
     -t, --token <token>              Notification token
     -e, --engine <engine>            Storage engine (memory, redis ...)
     --title <title>                  Notification title
-    --proxy <proxy>                  Proxy URL
+    --proxy <proxy>                  Proxy URL (support http, https, or socks5)
     --pid <pid path>                 Process identifier path
     --redis-addr <redis addr>        Redis addr (default: localhost:6379)
 iOS Options:
@@ -292,7 +292,7 @@ gorush --android --topic "/topics/foo-bar" \
 - `-t`: Device token.
 - `--title`: Notification title.
 - `--topic`: Send messages to topics. note: don't add device token.
-- `--proxy`: Set http proxy url.
+- `--proxy`: Set `http`, `https` or `socks5` proxy url.
 
 ### Send iOS notification
 
