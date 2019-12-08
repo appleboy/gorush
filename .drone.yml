@@ -1,191 +1,380 @@
-workspace:
-  base: /go/src
-  path: github.com/appleboy/gorush
+---
+kind: pipeline
+name: testing
 
-clone:
-  git:
-    image: plugins/git
-    depth: 50
-    tags: true
+platform:
+  os: linux
+  arch: amd64
 
-pipeline:
-  deps:
-    image: golang:1.11
-    pull: true
-    group: golang
-    commands:
-      - make deps
-      - make embedmd
+steps:
+- name: vet
+  pull: always
+  image: golang:1.13
+  commands:
+  - make vet
+  volumes:
+  - name: gopath
+    path: /go
 
-  lint:
-    image: golang:1.11
-    pull: true
-    group: golang
-    commands:
-      - make vet
-      - make lint
+- name: lint
+  pull: always
+  image: golang:1.13
+  commands:
+  - make lint
+  volumes:
+  - name: gopath
+    path: /go
 
-  vendor:
-    image: golang:1.11
-    pull: true
-    group: golang
-    commands:
-      - make test-vendor
-      - make misspell-check
-      - make fmt-check
+- name: misspell
+  pull: always
+  image: golang:1.13
+  commands:
+  - make misspell-check
+  volumes:
+  - name: gopath
+    path: /go
 
-  go_module_build_linux_amd64:
-    image: golang:1.11
-    pull: true
-    group: golang
-    environment:
-      - GO111MODULE=on
-    commands:
-      - make module
-      - make build_linux_amd64
+- name: embedmd
+  pull: always
+  image: golang:1.13
+  commands:
+  - make embedmd
+  volumes:
+  - name: gopath
+    path: /go
 
-  build_linux_amd64:
-    image: golang:1.11
-    pull: true
-    group: golang
-    commands:
-      - make build_linux_amd64
+- name: test
+  pull: always
+  image: golang:1.13
+  commands:
+  - make test
+  environment:
+    ANDROID_API_KEY:
+      from_secret: android_api_key
+    ANDROID_TEST_TOKEN:
+      from_secret: android_test_token
+  volumes:
+  - name: gopath
+    path: /go
 
-  build_linux_i386:
-    image: golang:1.11
-    pull: true
-    group: golang
-    commands:
-      - make build_linux_i386
-
-  build_linux_arm64:
-    image: golang:1.11
-    pull: true
-    group: golang
-    commands:
-      - make build_linux_arm64
-
-  build_linux_arm:
-    image: golang:1.11
-    pull: true
-    group: golang
-    commands:
-      - make build_linux_arm
-
-  # coverage:
-  #   image: golang:1.11
-  #   pull: true
-  #   group: golang
-  #   secrets: [ android_test_token, android_api_key ]
-  #   commands:
-  #     - make unit-test-coverage
-  #   when:
-  #     event: [ push, pull_request ]
-
-  # generate-coverage:
-  #   image: golang:1.11
-  #   pull: true
-  #   commands:
-  #     - make coverage
-  #   when:
-  #     event: [ push, pull_request ]
-
-  # codecov:
-  #   image: robertstettner/drone-codecov
-  #   secrets: [ codecov_token ]
-  #   files:
-  #     - coverage.all
-  #   when:
-  #     event: [ push, pull_request ]
-
-  release:
-    image: golang:1.11
-    pull: true
-    commands:
-      - make release
-    when:
-      event: [ tag ]
-
-  publish_linux_amd64:
-    image: plugins/docker
-    group: release
-    pull: true
-    secrets: [ docker_username, docker_password ]
-    default_tags: true
-    repo: ${DRONE_REPO}
-    when:
-      event: [ push, tag ]
-      local: false
-
-  publish_linux_alpine:
-    image: plugins/docker
-    group: release
-    pull: true
-    dockerfile: Dockerfile.alpine
-    secrets: [ docker_username, docker_password ]
-    default_tags: true
-    default_suffix: alpine
-    repo: ${DRONE_REPO}
-    when:
-      event: [ push, tag ]
-      local: false
-
-  publish_linux_i386:
-    image: plugins/docker
-    group: release
-    pull: true
-    dockerfile: Dockerfile.i386
-    secrets: [ docker_username, docker_password ]
-    default_tags: true
-    default_suffix: i386
-    repo: ${DRONE_REPO}
-    when:
-      event: [ push, tag ]
-      local: false
-
-  publish_linux_arm:
-    image: plugins/docker
-    group: release
-    pull: true
-    dockerfile: Dockerfile.arm
-    secrets: [ docker_username, docker_password ]
-    default_tags: true
-    default_suffix: arm
-    repo: ${DRONE_REPO}
-    when:
-      event: [ push, tag ]
-      local: false
-
-  publish_linux_arm64:
-    image: plugins/docker
-    group: release
-    pull: true
-    dockerfile: Dockerfile.arm64
-    secrets: [ docker_username, docker_password ]
-    default_tags: true
-    default_suffix: arm64
-    repo: ${DRONE_REPO}
-    when:
-      event: [ push, tag ]
-      local: false
-
-  release_tag:
-    image: plugins/github-release
-    secrets: [ github_release_api_key ]
-    group: release
-    files:
-      - dist/release/*
-    when:
-      event: [ tag ]
-      local: false
-
-  discord:
-    image: appleboy/drone-discord
-    pull: true
-    secrets: [ discord_webhook_id, discord_webhook_token ]
-    when:
-      status: [ success, failure ]
+- name: codecov
+  pull: always
+  image: robertstettner/drone-codecov
+  settings:
+    token:
+      from_secret: codecov_token
 
 services:
-  redis:
-    image: redis:alpine
+- name: redis
+  image: redis
+
+volumes:
+- name: gopath
+  temp: {}
+
+---
+kind: pipeline
+name: linux-amd64
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: build-push
+  pull: always
+  image: golang:1.13
+  commands:
+  - go build -v -ldflags '-X main.build=${DRONE_BUILD_NUMBER}' -a -o release/linux/amd64/gorush
+  environment:
+    CGO_ENABLED: 0
+  when:
+    event:
+      exclude:
+      - tag
+
+- name: build-tag
+  pull: always
+  image: golang:1.13
+  commands:
+  - go build -v -ldflags '-X main.version=${DRONE_TAG##v} -X main.build=${DRONE_BUILD_NUMBER}' -a -o release/linux/amd64/gorush
+  environment:
+    CGO_ENABLED: 0
+  when:
+    event:
+    - tag
+
+- name: executable
+  pull: always
+  image: golang:1.13
+  commands:
+  - ./release/linux/amd64/gorush --help
+
+- name: dryrun
+  pull: always
+  image: plugins/docker:linux-amd64
+  settings:
+    cache_from: appleboy/gorush
+    dockerfile: docker/Dockerfile.linux.amd64
+    dry_run: true
+    repo: appleboy/gorush
+    tags: linux-amd64
+  when:
+    event:
+    - pull_request
+
+- name: publish
+  pull: always
+  image: plugins/docker:linux-amd64
+  settings:
+    auto_tag: true
+    auto_tag_suffix: linux-amd64
+    cache_from: appleboy/gorush
+    daemon_off: false
+    dockerfile: docker/Dockerfile.linux.amd64
+    password:
+      from_secret: docker_password
+    repo: appleboy/gorush
+    username:
+      from_secret: docker_username
+  when:
+    event:
+      exclude:
+      - pull_request
+
+trigger:
+  ref:
+  - refs/heads/master
+  - refs/pull/**
+  - refs/tags/**
+
+depends_on:
+- testing
+
+---
+kind: pipeline
+name: linux-arm64
+
+platform:
+  os: linux
+  arch: arm64
+
+steps:
+- name: build-push
+  pull: always
+  image: golang:1.13
+  commands:
+  - go build -v -ldflags '-X main.build=${DRONE_BUILD_NUMBER}' -a -o release/linux/arm64/gorush
+  environment:
+    CGO_ENABLED: 0
+  when:
+    event:
+      exclude:
+      - tag
+
+- name: build-tag
+  pull: always
+  image: golang:1.13
+  commands:
+  - go build -v -ldflags '-X main.version=${DRONE_TAG##v} -X main.build=${DRONE_BUILD_NUMBER}' -a -o release/linux/arm64/gorush
+  environment:
+    CGO_ENABLED: 0
+  when:
+    event:
+    - tag
+
+- name: executable
+  pull: always
+  image: golang:1.13
+  commands:
+  - ./release/linux/arm64/gorush --help
+
+- name: dryrun
+  pull: always
+  image: plugins/docker:linux-arm64
+  settings:
+    cache_from: appleboy/gorush
+    dockerfile: docker/Dockerfile.linux.arm64
+    dry_run: true
+    repo: appleboy/gorush
+    tags: linux-arm64
+  when:
+    event:
+    - pull_request
+
+- name: publish
+  pull: always
+  image: plugins/docker:linux-arm64
+  settings:
+    auto_tag: true
+    auto_tag_suffix: linux-arm64
+    cache_from: appleboy/gorush
+    daemon_off: false
+    dockerfile: docker/Dockerfile.linux.arm64
+    password:
+      from_secret: docker_password
+    repo: appleboy/gorush
+    username:
+      from_secret: docker_username
+  when:
+    event:
+      exclude:
+      - pull_request
+
+trigger:
+  ref:
+  - refs/heads/master
+  - refs/pull/**
+  - refs/tags/**
+
+depends_on:
+- testing
+
+---
+kind: pipeline
+name: linux-arm
+
+platform:
+  os: linux
+  arch: arm
+
+steps:
+- name: build-push
+  pull: always
+  image: golang:1.13
+  commands:
+  - go build -v -ldflags '-X main.build=${DRONE_BUILD_NUMBER}' -a -o release/linux/arm/gorush
+  environment:
+    CGO_ENABLED: 0
+  when:
+    event:
+      exclude:
+      - tag
+
+- name: build-tag
+  pull: always
+  image: golang:1.13
+  commands:
+  - go build -v -ldflags '-X main.version=${DRONE_TAG##v} -X main.build=${DRONE_BUILD_NUMBER}' -a -o release/linux/arm/gorush
+  environment:
+    CGO_ENABLED: 0
+  when:
+    event:
+    - tag
+
+- name: executable
+  pull: always
+  image: golang:1.13
+  commands:
+  - ./release/linux/arm/gorush --help
+
+- name: dryrun
+  pull: always
+  image: plugins/docker:linux-arm
+  settings:
+    cache_from: appleboy/gorush
+    dockerfile: docker/Dockerfile.linux.arm
+    dry_run: true
+    repo: appleboy/gorush
+    tags: linux-arm
+  when:
+    event:
+    - pull_request
+
+- name: publish
+  pull: always
+  image: plugins/docker:linux-arm
+  settings:
+    auto_tag: true
+    auto_tag_suffix: linux-arm
+    cache_from: appleboy/gorush
+    daemon_off: false
+    dockerfile: docker/Dockerfile.linux.arm
+    password:
+      from_secret: docker_password
+    repo: appleboy/gorush
+    username:
+      from_secret: docker_username
+  when:
+    event:
+      exclude:
+      - pull_request
+
+trigger:
+  ref:
+  - refs/heads/master
+  - refs/pull/**
+  - refs/tags/**
+
+depends_on:
+- testing
+
+---
+kind: pipeline
+name: release-binary
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: build-all-binary
+  pull: always
+  image: golang:1.13
+  commands:
+  - make release
+  when:
+    event:
+    - tag
+
+- name: deploy-all-binary
+  pull: always
+  image: plugins/github-release
+  settings:
+    api_key:
+      from_secret: github_release_api_key
+    files:
+    - dist/release/*
+  when:
+    event:
+    - tag
+
+trigger:
+  ref:
+  - refs/tags/**
+
+depends_on:
+- testing
+
+---
+kind: pipeline
+name: notifications
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: manifest
+  pull: always
+  image: plugins/manifest
+  settings:
+    ignore_missing: true
+    password:
+      from_secret: docker_password
+    spec: docker/manifest.tmpl
+    username:
+      from_secret: docker_username
+
+trigger:
+  ref:
+  - refs/heads/master
+  - refs/tags/**
+
+depends_on:
+- linux-amd64
+- linux-arm64
+- linux-arm
+- release-binary
+
+...

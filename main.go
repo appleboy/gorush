@@ -26,7 +26,6 @@ func main() {
 		topic       string
 		message     string
 		token       string
-		proxy       string
 		title       string
 	)
 
@@ -57,7 +56,7 @@ func main() {
 	flag.BoolVar(&opts.Ios.Enabled, "ios", false, "send ios notification")
 	flag.BoolVar(&opts.Ios.Production, "production", false, "production mode in iOS")
 	flag.StringVar(&topic, "topic", "", "apns topic in iOS")
-	flag.StringVar(&proxy, "proxy", "", "http proxy url")
+	flag.StringVar(&opts.Core.HTTPProxy, "proxy", "", "http proxy url")
 	flag.BoolVar(&ping, "ping", false, "ping server")
 
 	flag.Usage = usage
@@ -113,14 +112,11 @@ func main() {
 		log.Fatalf("Can't load log module, error: %v", err)
 	}
 
-	// set http proxy for GCM
-	if proxy != "" {
-		err = gorush.SetProxy(proxy)
+	if opts.Core.HTTPProxy != "" {
+		gorush.PushConf.Core.HTTPProxy = opts.Core.HTTPProxy
+	}
 
-		if err != nil {
-			gorush.LogError.Fatalf("Set Proxy error: %v", err)
-		}
-	} else if gorush.PushConf.Core.HTTPProxy != "" {
+	if gorush.PushConf.Core.HTTPProxy != "" {
 		err = gorush.SetProxy(gorush.PushConf.Core.HTTPProxy)
 
 		if err != nil {
@@ -268,7 +264,7 @@ Server Options:
     -t, --token <token>              Notification token
     -e, --engine <engine>            Storage engine (memory, redis ...)
     --title <title>                  Notification title
-    --proxy <proxy>                  Proxy URL (only for GCM)
+    --proxy <proxy>                  Proxy URL
     --pid <pid path>                 Process identifier path
     --redis-addr <redis addr>        Redis addr (default: localhost:6379)
     --ping                           healthy check command for container
@@ -325,7 +321,7 @@ func createPIDFile() error {
 		}
 		defer file.Close()
 		if _, err := file.WriteString(strconv.FormatInt(int64(currentPid), 10)); err != nil {
-			return fmt.Errorf("Can'write PID information on %s: %v", pidPath, err)
+			return fmt.Errorf("Can't write PID information on %s: %v", pidPath, err)
 		}
 	} else {
 		return fmt.Errorf("%s already exists", pidPath)

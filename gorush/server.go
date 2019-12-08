@@ -1,16 +1,17 @@
 package gorush
 
 import (
+	"context"
 	"crypto/tls"
 	"fmt"
 	"net/http"
 
+	api "github.com/appleboy/gin-status-api"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"golang.org/x/crypto/acme/autocert"
-	api "gopkg.in/appleboy/gin-status-api.v1"
 )
 
 func init() {
@@ -68,7 +69,19 @@ func pushHandler(c *gin.Context) {
 		return
 	}
 
-	counts, logs := queueNotification(form)
+	ctx, cancel := context.WithCancel(context.Background())
+	notifier := c.Writer.CloseNotify()
+	go func(closer <-chan bool) {
+		<-closer
+		// Don't send notification after client timeout or disconnected.
+		// See the following issue for detail information.
+		// https://github.com/appleboy/gorush/issues/422
+		if PushConf.Core.Sync {
+			cancel()
+		}
+	}(notifier)
+
+	counts, logs := queueNotification(ctx, form)
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": "ok",

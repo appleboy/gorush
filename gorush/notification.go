@@ -1,6 +1,7 @@
 package gorush
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"net/url"
@@ -51,7 +52,12 @@ type RequestPush struct {
 
 // PushNotification is single notification request
 type PushNotification struct {
+	ctx context.Context
+	wg  *sync.WaitGroup
+	log *[]LogPushEntry
+
 	// Common
+	ID               string      `json:"notif_id,omitempty"`
 	Tokens           []string    `json:"tokens" binding:"required"`
 	Platform         int         `json:"platform" binding:"required"`
 	Message          string      `json:"message,omitempty"`
@@ -62,8 +68,6 @@ type PushNotification struct {
 	Sound            interface{} `json:"sound,omitempty"`
 	Data             D           `json:"data,omitempty"`
 	Retry            int         `json:"retry,omitempty"`
-	wg               *sync.WaitGroup
-	log              *[]LogPushEntry
 
 	// Android
 	APIKey                string           `json:"api_key,omitempty"`
@@ -77,10 +81,11 @@ type PushNotification struct {
 	Notification          fcm.Notification `json:"notification,omitempty"`
 
 	// iOS
-	Expiration  int64    `json:"expiration,omitempty"`
+	Expiration  *int64   `json:"expiration,omitempty"`
 	ApnsID      string   `json:"apns_id,omitempty"`
 	CollapseID  string   `json:"collapse_id,omitempty"`
 	Topic       string   `json:"topic,omitempty"`
+	PushType    string   `json:"push_type,omitempty"`
 	Badge       *int     `json:"badge,omitempty"`
 	Category    string   `json:"category,omitempty"`
 	ThreadID    string   `json:"thread-id,omitempty"`

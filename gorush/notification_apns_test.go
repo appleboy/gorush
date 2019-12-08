@@ -1,8 +1,11 @@
 package gorush
 
 import (
+	"context"
 	"encoding/json"
 	"log"
+	"net/http"
+	"net/url"
 	"os"
 	"testing"
 	"time"
@@ -55,10 +58,11 @@ func TestIOSNotificationStructure(t *testing.T) {
 	test := "test"
 	expectBadge := 0
 	message := "Welcome notification Server"
+	expiration := int64(time.Now().Unix())
 	req := PushNotification{
 		ApnsID:     test,
 		Topic:      test,
-		Expiration: time.Now().Unix(),
+		Expiration: &expiration,
 		Priority:   "normal",
 		Message:    message,
 		Badge:      &expectBadge,
@@ -197,6 +201,25 @@ func TestIOSSoundAndVolume(t *testing.T) {
 	assert.Equal(t, 4.5, soundVolume)
 	assert.Equal(t, int64(3), soundCritical)
 	assert.Equal(t, "test", soundName)
+
+	req = PushNotification{
+		ApnsID:   test,
+		Topic:    test,
+		Priority: "normal",
+		Message:  message,
+		Sound:    "default",
+	}
+
+	notification = GetIOSNotification(req)
+	dump, _ = json.Marshal(notification.Payload)
+	data = []byte(string(dump))
+
+	if err := json.Unmarshal(data, &dat); err != nil {
+		panic(err)
+	}
+
+	soundName, _ = jsonparser.GetString(data, "aps", "sound")
+	assert.Equal(t, "default", soundName)
 }
 
 func TestIOSSummaryArg(t *testing.T) {
@@ -484,6 +507,7 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 }
 
 func TestDisabledIosNotifications(t *testing.T) {
+	ctx := context.Background()
 	PushConf, _ = config.LoadConf("")
 
 	PushConf.Ios.Enabled = false
@@ -513,7 +537,7 @@ func TestDisabledIosNotifications(t *testing.T) {
 		},
 	}
 
-	count, logs := queueNotification(req)
+	count, logs := queueNotification(ctx, req)
 	assert.Equal(t, 2, count)
 	assert.Equal(t, 0, len(logs))
 }
@@ -614,6 +638,42 @@ func TestAPNSClientVaildToken(t *testing.T) {
 	err = InitAPNSClient()
 	assert.NoError(t, err)
 	assert.Equal(t, apns2.HostProduction, ApnsClient.Host)
+}
+
+func TestAPNSClientUseProxy(t *testing.T) {
+	PushConf, _ = config.LoadConf("")
+
+	PushConf.Ios.Enabled = true
+	PushConf.Ios.KeyPath = "../certificate/certificate-valid.p12"
+	PushConf.Core.HTTPProxy = "http://127.0.0.1:8080"
+	_ = SetProxy(PushConf.Core.HTTPProxy)
+	err := InitAPNSClient()
+	assert.Nil(t, err)
+	assert.Equal(t, apns2.HostDevelopment, ApnsClient.Host)
+
+	req, _ := http.NewRequest("GET", apns2.HostDevelopment, nil)
+	actualProxyURL, err := ApnsClient.HTTPClient.Transport.(*http.Transport).Proxy(req)
+	assert.Nil(t, err)
+
+	expectedProxyURL, _ := url.ParseRequestURI(PushConf.Core.HTTPProxy)
+	assert.Equal(t, expectedProxyURL, actualProxyURL)
+
+	PushConf.Ios.KeyPath = "../certificate/authkey-valid.p8"
+	PushConf.Ios.TeamID = "example.team"
+	PushConf.Ios.KeyID = "example.key"
+	err = InitAPNSClient()
+	assert.Nil(t, err)
+	assert.Equal(t, apns2.HostDevelopment, ApnsClient.Host)
+	assert.NotNil(t, ApnsClient.Token)
+
+	req, _ = http.NewRequest("GET", apns2.HostDevelopment, nil)
+	actualProxyURL, err = ApnsClient.HTTPClient.Transport.(*http.Transport).Proxy(req)
+	assert.Nil(t, err)
+
+	expectedProxyURL, _ = url.ParseRequestURI(PushConf.Core.HTTPProxy)
+	assert.Equal(t, expectedProxyURL, actualProxyURL)
+
+	http.DefaultTransport.(*http.Transport).Proxy = nil
 }
 
 func TestPushToIOS(t *testing.T) {

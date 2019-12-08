@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"encoding/base64"
 	"errors"
+	"net/http"
 	"path/filepath"
 	"time"
 
@@ -13,7 +14,11 @@ import (
 	"github.com/sideshow/apns2/certificate"
 	"github.com/sideshow/apns2/payload"
 	"github.com/sideshow/apns2/token"
+	"github.com/sirupsen/logrus"
+	"golang.org/x/net/http2"
 )
+
+var idleConnTimeout = 90 * time.Second
 
 // Sound sets the aps sound on the payload.
 type Sound struct {
@@ -83,21 +88,85 @@ func InitAPNSClient() error {
 				// TeamID from developer account (View Account -> Membership)
 				TeamID: PushConf.Ios.TeamID,
 			}
-			if PushConf.Ios.Production {
-				ApnsClient = apns2.NewTokenClient(token).Production()
-			} else {
-				ApnsClient = apns2.NewTokenClient(token).Development()
-			}
+
+			ApnsClient, err = newApnsTokenClient(token)
 		} else {
-			if PushConf.Ios.Production {
-				ApnsClient = apns2.NewClient(certificateKey).Production()
-			} else {
-				ApnsClient = apns2.NewClient(certificateKey).Development()
-			}
+			ApnsClient, err = newApnsClient(certificateKey)
+		}
+
+		if err != nil {
+			LogError.Error("Transport Error:", err.Error())
+
+			return err
 		}
 	}
 
 	return nil
+}
+
+func newApnsClient(certificate tls.Certificate) (*apns2.Client, error) {
+	var client *apns2.Client
+
+	if PushConf.Ios.Production {
+		client = apns2.NewClient(certificate).Production()
+	} else {
+		client = apns2.NewClient(certificate).Development()
+	}
+
+	if PushConf.Core.HTTPProxy == "" {
+		return client, nil
+	}
+
+	tlsConfig := &tls.Config{
+		Certificates: []tls.Certificate{certificate},
+	}
+
+	if len(certificate.Certificate) > 0 {
+		tlsConfig.BuildNameToCertificate()
+	}
+
+	transport := &http.Transport{
+		TLSClientConfig: tlsConfig,
+		Proxy:           http.DefaultTransport.(*http.Transport).Proxy,
+		IdleConnTimeout: idleConnTimeout,
+	}
+
+	transportErr := http2.ConfigureTransport(transport)
+	if transportErr != nil {
+		return nil, transportErr
+	}
+
+	client.HTTPClient.Transport = transport
+
+	return client, nil
+}
+
+func newApnsTokenClient(token *token.Token) (*apns2.Client, error) {
+	var client *apns2.Client
+
+	if PushConf.Ios.Production {
+		client = apns2.NewTokenClient(token).Production()
+	} else {
+		client = apns2.NewTokenClient(token).Development()
+	}
+
+	if PushConf.Core.HTTPProxy == "" {
+		return client, nil
+	}
+
+	transport := &http.Transport{
+		Proxy:           http.DefaultTransport.(*http.Transport).Proxy,
+		IdleConnTimeout: idleConnTimeout,
+	}
+
+	transportErr := http2.ConfigureTransport(transport)
+	if transportErr != nil {
+		return nil, transportErr
+	}
+
+	client.HTTPClient.Transport = transport
+
+	return client, nil
 }
 
 func iosAlertDictionary(payload *payload.Payload, req PushNotification) *payload.Payload {
@@ -174,12 +243,16 @@ func GetIOSNotification(req PushNotification) *apns2.Notification {
 		CollapseID: req.CollapseID,
 	}
 
-	if req.Expiration > 0 {
-		notification.Expiration = time.Unix(req.Expiration, 0)
+	if req.Expiration != nil {
+		notification.Expiration = time.Unix(*req.Expiration, 0)
 	}
 
 	if len(req.Priority) > 0 && req.Priority == "normal" {
 		notification.Priority = apns2.PriorityLow
+	}
+
+	if len(req.PushType) > 0 {
+		notification.PushType = apns2.EPushType(req.PushType)
 	}
 
 	payload := payload.NewPayload()
@@ -204,6 +277,9 @@ func GetIOSNotification(req PushNotification) *apns2.Notification {
 		result := &Sound{}
 		_ = mapstructure.Decode(req.Sound, &result)
 		payload.Sound(result)
+	// from http request binding for non critical alerts
+	case string:
+		payload.Sound(&req.Sound)
 	case Sound:
 		payload.Sound(&req.Sound)
 	}
@@ -257,9 +333,6 @@ func getApnsClient(req PushNotification) (client *apns2.Client) {
 // PushToIOS provide send notification to APNs server.
 func PushToIOS(req PushNotification) bool {
 	LogAccess.Debug("Start push notification for iOS")
-	if PushConf.Core.Sync {
-		defer req.WaitDone()
-	}
 
 	var (
 		retryCount = 0
@@ -285,25 +358,26 @@ Retry:
 		// send ios notification
 		res, err := client.Push(notification)
 
-		if err != nil {
+		if err != nil || res.StatusCode != 200 {
+			if err == nil {
+				// error message:
+				// ref: https://github.com/sideshow/apns2/blob/master/response.go#L14-L65
+				err = errors.New(res.Reason)
+			}
 			// apns server error
 			LogPush(FailedPush, token, req, err)
+
 			if PushConf.Core.Sync {
 				req.AddLog(getLogPushEntry(FailedPush, token, req, err))
+			} else if PushConf.Core.FeedbackURL != "" {
+				go func(logger *logrus.Logger, log LogPushEntry, url string) {
+					err := DispatchFeedback(log, url)
+					if err != nil {
+						logger.Error(err)
+					}
+				}(LogError, getLogPushEntry(FailedPush, token, req, err), PushConf.Core.FeedbackURL)
 			}
-			StatStorage.AddIosError(1)
-			newTokens = append(newTokens, token)
-			isError = true
-			continue
-		}
 
-		if res.StatusCode != 200 {
-			// error message:
-			// ref: https://github.com/sideshow/apns2/blob/master/response.go#L14-L65
-			LogPush(FailedPush, token, req, errors.New(res.Reason))
-			if PushConf.Core.Sync {
-				req.AddLog(getLogPushEntry(FailedPush, token, req, errors.New(res.Reason)))
-			}
 			StatStorage.AddIosError(1)
 			newTokens = append(newTokens, token)
 			isError = true

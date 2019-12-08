@@ -4,7 +4,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/appleboy/go-fcm"
+	fcm "github.com/appleboy/go-fcm"
+	"github.com/sirupsen/logrus"
 )
 
 // InitFCMClient use for initialize FCM Client.
@@ -80,9 +81,6 @@ func GetAndroidNotification(req PushNotification) *fcm.Message {
 // PushToAndroid provide send notification to Android server.
 func PushToAndroid(req PushNotification) bool {
 	LogAccess.Debug("Start push notification for Android")
-	if PushConf.Core.Sync {
-		defer req.WaitDone()
-	}
 
 	var (
 		client     *fcm.Client
@@ -149,6 +147,13 @@ Retry:
 			LogPush(FailedPush, to, req, result.Error)
 			if PushConf.Core.Sync {
 				req.AddLog(getLogPushEntry(FailedPush, to, req, result.Error))
+			} else if PushConf.Core.FeedbackURL != "" {
+				go func(logger *logrus.Logger, log LogPushEntry, url string) {
+					err := DispatchFeedback(log, url)
+					if err != nil {
+						logger.Error(err)
+					}
+				}(LogError, getLogPushEntry(FailedPush, to, req, result.Error), PushConf.Core.FeedbackURL)
 			}
 			continue
 		}
@@ -181,9 +186,7 @@ Retry:
 	// Device Group HTTP Response
 	if len(res.FailedRegistrationIDs) > 0 {
 		isError = true
-		for _, id := range res.FailedRegistrationIDs {
-			newTokens = append(newTokens, id)
-		}
+		newTokens = append(newTokens, res.FailedRegistrationIDs...)
 
 		LogPush(FailedPush, notification.To, req, errors.New("device group: partial success or all fails"))
 		if PushConf.Core.Sync {

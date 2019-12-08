@@ -29,12 +29,8 @@ type Storage struct {
 
 // Init client storage.
 func (s *Storage) Init() error {
-	s.name = "bager"
-	s.opts = badger.DefaultOptions
-	s.opts.Dir = os.TempDir() + "badger"
-	s.opts.ValueDir = os.TempDir() + "badger"
-	fmt.Println(s.opts.Dir)
-	fmt.Println(s.opts.ValueDir)
+	s.name = "badger"
+	s.opts = badger.DefaultOptions(os.TempDir() + "badger")
 	return nil
 }
 
@@ -72,7 +68,7 @@ func (s *Storage) setBadger(key string, count int64) {
 	}
 }
 
-func (s *Storage) getBager(key string, count *int64) {
+func (s *Storage) getBadger(key string, count *int64) {
 	db, err := badger.Open(s.opts)
 
 	if err != nil {
@@ -92,7 +88,8 @@ func (s *Storage) getBager(key string, count *int64) {
 		if err != nil {
 			return err
 		}
-		val, err := item.Value()
+		dst := []byte{}
+		val, err := item.ValueCopy(dst)
 		if err != nil {
 			return err
 		}
@@ -145,7 +142,7 @@ func (s *Storage) AddAndroidError(count int64) {
 // GetTotalCount show counts of all notification.
 func (s *Storage) GetTotalCount() int64 {
 	var count int64
-	s.getBager(storage.TotalCountKey, &count)
+	s.getBadger(storage.TotalCountKey, &count)
 
 	return count
 }
@@ -153,7 +150,7 @@ func (s *Storage) GetTotalCount() int64 {
 // GetIosSuccess show success counts of iOS notification.
 func (s *Storage) GetIosSuccess() int64 {
 	var count int64
-	s.getBager(storage.IosSuccessKey, &count)
+	s.getBadger(storage.IosSuccessKey, &count)
 
 	return count
 }
@@ -161,7 +158,7 @@ func (s *Storage) GetIosSuccess() int64 {
 // GetIosError show error counts of iOS notification.
 func (s *Storage) GetIosError() int64 {
 	var count int64
-	s.getBager(storage.IosErrorKey, &count)
+	s.getBadger(storage.IosErrorKey, &count)
 
 	return count
 }
@@ -169,7 +166,7 @@ func (s *Storage) GetIosError() int64 {
 // GetAndroidSuccess show success counts of Android notification.
 func (s *Storage) GetAndroidSuccess() int64 {
 	var count int64
-	s.getBager(storage.AndroidSuccessKey, &count)
+	s.getBadger(storage.AndroidSuccessKey, &count)
 
 	return count
 }
@@ -177,7 +174,7 @@ func (s *Storage) GetAndroidSuccess() int64 {
 // GetAndroidError show error counts of Android notification.
 func (s *Storage) GetAndroidError() int64 {
 	var count int64
-	s.getBager(storage.AndroidErrorKey, &count)
+	s.getBadger(storage.AndroidErrorKey, &count)
 
 	return count
 }

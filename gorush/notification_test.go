@@ -1,6 +1,7 @@
 package gorush
 
 import (
+	"context"
 	"os"
 	"testing"
 
@@ -23,9 +24,8 @@ func TestCorrectConf(t *testing.T) {
 }
 
 func TestSenMultipleNotifications(t *testing.T) {
+	ctx := context.Background()
 	PushConf, _ = config.LoadConf("")
-
-	InitWorkers(int64(2), 2)
 
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.KeyPath = "../certificate/certificate-valid.pem"
@@ -54,12 +54,13 @@ func TestSenMultipleNotifications(t *testing.T) {
 		},
 	}
 
-	count, logs := queueNotification(req)
+	count, logs := queueNotification(ctx, req)
 	assert.Equal(t, 3, count)
 	assert.Equal(t, 0, len(logs))
 }
 
 func TestDisabledAndroidNotifications(t *testing.T) {
+	ctx := context.Background()
 	PushConf, _ = config.LoadConf("")
 
 	PushConf.Ios.Enabled = true
@@ -89,12 +90,13 @@ func TestDisabledAndroidNotifications(t *testing.T) {
 		},
 	}
 
-	count, logs := queueNotification(req)
+	count, logs := queueNotification(ctx, req)
 	assert.Equal(t, 1, count)
 	assert.Equal(t, 0, len(logs))
 }
 
 func TestSyncModeForNotifications(t *testing.T) {
+	ctx := context.Background()
 	PushConf, _ = config.LoadConf("")
 
 	PushConf.Ios.Enabled = true
@@ -127,12 +129,13 @@ func TestSyncModeForNotifications(t *testing.T) {
 		},
 	}
 
-	count, logs := queueNotification(req)
+	count, logs := queueNotification(ctx, req)
 	assert.Equal(t, 3, count)
 	assert.Equal(t, 2, len(logs))
 }
 
 func TestSyncModeForTopicNotification(t *testing.T) {
+	ctx := context.Background()
 	PushConf, _ = config.LoadConf("")
 
 	PushConf.Android.Enabled = true
@@ -169,12 +172,13 @@ func TestSyncModeForTopicNotification(t *testing.T) {
 		},
 	}
 
-	count, logs := queueNotification(req)
+	count, logs := queueNotification(ctx, req)
 	assert.Equal(t, 2, count)
 	assert.Equal(t, 1, len(logs))
 }
 
 func TestSyncModeForDeviceGroupNotification(t *testing.T) {
+	ctx := context.Background()
 	PushConf, _ = config.LoadConf("")
 
 	PushConf.Android.Enabled = true
@@ -195,7 +199,7 @@ func TestSyncModeForDeviceGroupNotification(t *testing.T) {
 		},
 	}
 
-	count, logs := queueNotification(req)
+	count, logs := queueNotification(ctx, req)
 	assert.Equal(t, 1, count)
 	assert.Equal(t, 1, len(logs))
 }

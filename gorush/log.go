@@ -34,6 +34,7 @@ type LogReq struct {
 
 // LogPushEntry is push response log
 type LogPushEntry struct {
+	ID       string `json:"notif_id,omitempty"`
 	Type     string `json:"type"`
 	Platform string `json:"platform"`
 	Token    string `json:"token"`
@@ -94,7 +95,7 @@ func SetLogOut(log *logrus.Logger, outString string) error {
 	case "stderr":
 		log.Out = os.Stderr
 	default:
-		f, err := os.OpenFile(outString, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
+		f, err := os.OpenFile(outString, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
 
 		if err != nil {
 			return err
@@ -211,6 +212,7 @@ func getLogPushEntry(status, token string, req PushNotification, errPush error) 
 	}
 
 	return LogPushEntry{
+		ID:       req.ID,
 		Type:     status,
 		Platform: plat,
 		Token:    token,
