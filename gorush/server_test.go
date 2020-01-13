@@ -1,6 +1,9 @@
 package gorush
 
 import (
+	"crypto/tls"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"runtime"
@@ -20,6 +23,30 @@ var goVersion = runtime.Version()
 func initTest() {
 	PushConf, _ = config.LoadConf("")
 	PushConf.Core.Mode = "test"
+}
+
+// testRequest is testing url string if server is running
+func testRequest(t *testing.T, url string) {
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	client := &http.Client{
+		Timeout:   time.Second * 10,
+		Transport: tr,
+	}
+
+	resp, err := client.Get(url)
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			log.Println("close body err:", err)
+		}
+	}()
+
+	assert.NoError(t, err)
+
+	_, ioerr := ioutil.ReadAll(resp.Body)
+	assert.NoError(t, ioerr)
+	assert.Equal(t, "200 OK", resp.Status, "should get a 200")
 }
 
 func TestPrintGoRushVersion(t *testing.T) {
@@ -43,7 +70,7 @@ func TestRunNormalServer(t *testing.T) {
 	time.Sleep(5 * time.Millisecond)
 
 	assert.Error(t, RunHTTPServer())
-	gofight.TestRequest(t, "http://localhost:8088/api/stat/go")
+	testRequest(t, "http://localhost:8088/api/stat/go")
 }
 
 func TestRunTLSServer(t *testing.T) {
@@ -61,7 +88,7 @@ func TestRunTLSServer(t *testing.T) {
 	// otherwise the main thread will complete
 	time.Sleep(5 * time.Millisecond)
 
-	gofight.TestRequest(t, "https://localhost:8087/api/stat/go")
+	testRequest(t, "https://localhost:8087/api/stat/go")
 }
 
 func TestRunTLSBase64Server(t *testing.T) {
@@ -83,7 +110,7 @@ func TestRunTLSBase64Server(t *testing.T) {
 	// otherwise the main thread will complete
 	time.Sleep(5 * time.Millisecond)
 
-	gofight.TestRequest(t, "https://localhost:8089/api/stat/go")
+	testRequest(t, "https://localhost:8089/api/stat/go")
 }
 
 func TestRunAutoTLSServer(t *testing.T) {
