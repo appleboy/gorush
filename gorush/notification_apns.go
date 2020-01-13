@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"encoding/base64"
 	"errors"
+	"net/http"
 	"path/filepath"
 	"time"
 
@@ -14,7 +15,10 @@ import (
 	"github.com/sideshow/apns2/payload"
 	"github.com/sideshow/apns2/token"
 	"github.com/sirupsen/logrus"
+	"golang.org/x/net/http2"
 )
+
+var idleConnTimeout = 90 * time.Second
 
 // Sound sets the aps sound on the payload.
 type Sound struct {
@@ -84,21 +88,85 @@ func InitAPNSClient() error {
 				// TeamID from developer account (View Account -> Membership)
 				TeamID: PushConf.Ios.TeamID,
 			}
-			if PushConf.Ios.Production {
-				ApnsClient = apns2.NewTokenClient(token).Production()
-			} else {
-				ApnsClient = apns2.NewTokenClient(token).Development()
-			}
+
+			ApnsClient, err = newApnsTokenClient(token)
 		} else {
-			if PushConf.Ios.Production {
-				ApnsClient = apns2.NewClient(certificateKey).Production()
-			} else {
-				ApnsClient = apns2.NewClient(certificateKey).Development()
-			}
+			ApnsClient, err = newApnsClient(certificateKey)
+		}
+
+		if err != nil {
+			LogError.Error("Transport Error:", err.Error())
+
+			return err
 		}
 	}
 
 	return nil
+}
+
+func newApnsClient(certificate tls.Certificate) (*apns2.Client, error) {
+	var client *apns2.Client
+
+	if PushConf.Ios.Production {
+		client = apns2.NewClient(certificate).Production()
+	} else {
+		client = apns2.NewClient(certificate).Development()
+	}
+
+	if PushConf.Core.HTTPProxy == "" {
+		return client, nil
+	}
+
+	tlsConfig := &tls.Config{
+		Certificates: []tls.Certificate{certificate},
+	}
+
+	if len(certificate.Certificate) > 0 {
+		tlsConfig.BuildNameToCertificate()
+	}
+
+	transport := &http.Transport{
+		TLSClientConfig: tlsConfig,
+		Proxy:           http.DefaultTransport.(*http.Transport).Proxy,
+		IdleConnTimeout: idleConnTimeout,
+	}
+
+	transportErr := http2.ConfigureTransport(transport)
+	if transportErr != nil {
+		return nil, transportErr
+	}
+
+	client.HTTPClient.Transport = transport
+
+	return client, nil
+}
+
+func newApnsTokenClient(token *token.Token) (*apns2.Client, error) {
+	var client *apns2.Client
+
+	if PushConf.Ios.Production {
+		client = apns2.NewTokenClient(token).Production()
+	} else {
+		client = apns2.NewTokenClient(token).Development()
+	}
+
+	if PushConf.Core.HTTPProxy == "" {
+		return client, nil
+	}
+
+	transport := &http.Transport{
+		Proxy:           http.DefaultTransport.(*http.Transport).Proxy,
+		IdleConnTimeout: idleConnTimeout,
+	}
+
+	transportErr := http2.ConfigureTransport(transport)
+	if transportErr != nil {
+		return nil, transportErr
+	}
+
+	client.HTTPClient.Transport = transport
+
+	return client, nil
 }
 
 func iosAlertDictionary(payload *payload.Payload, req PushNotification) *payload.Payload {
@@ -175,8 +243,8 @@ func GetIOSNotification(req PushNotification) *apns2.Notification {
 		CollapseID: req.CollapseID,
 	}
 
-	if req.Expiration > 0 {
-		notification.Expiration = time.Unix(req.Expiration, 0)
+	if req.Expiration != nil {
+		notification.Expiration = time.Unix(*req.Expiration, 0)
 	}
 
 	if len(req.Priority) > 0 {
