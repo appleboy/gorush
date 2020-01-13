@@ -8,7 +8,7 @@ require (
 	github.com/Sereal/Sereal v0.0.0-20190606082811-cf1bab6c7a3a // indirect
 	github.com/apex/gateway v1.1.1
 	github.com/appleboy/com v0.0.2
-	github.com/appleboy/gin-status-api v1.0.3
+	github.com/appleboy/gin-status-api v1.0.3-0.20200112153628-43a878e4f9ab
 	github.com/appleboy/go-fcm v0.1.4
 	github.com/appleboy/gofight/v2 v2.1.2
 	github.com/asdine/storm v2.1.2+incompatible
