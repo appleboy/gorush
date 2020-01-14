@@ -235,9 +235,10 @@ func TestAndroidNotificationStructure(t *testing.T) {
 			"a": "1",
 			"b": 2,
 		},
-		Notification: fcm.Notification{
+		Notification: &fcm.Notification{
 			Color: test,
 			Tag:   test,
+			Body: "",
 		},
 	}
 
@@ -263,6 +264,9 @@ func TestAndroidNotificationStructure(t *testing.T) {
 	req = PushNotification{
 		Tokens: []string{"a", "b"},
 		To:     test,
+		Notification: &fcm.Notification{
+			Body: "",
+		},
 	}
 	notification = GetAndroidNotification(req)
 
