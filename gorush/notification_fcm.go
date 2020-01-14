@@ -60,20 +60,23 @@ func GetAndroidNotification(req PushNotification) *fcm.Message {
 		}
 	}
 
-	notification.Notification = &req.Notification
+	notification.Notification = req.Notification
 
-	// Set request message if body is empty
-	if len(req.Message) > 0 {
-		notification.Notification.Body = req.Message
+	if req.Notification != nil {
+		// Set request message if body is empty
+		if len(req.Message) > 0 {
+			notification.Notification.Body = req.Message
+		}
+
+		if len(req.Title) > 0 {
+			notification.Notification.Title = req.Title
+		}
+
+		if v, ok := req.Sound.(string); ok && len(v) > 0 {
+			notification.Notification.Sound = v
+		}
 	}
 
-	if len(req.Title) > 0 {
-		notification.Notification.Title = req.Title
-	}
-
-	if v, ok := req.Sound.(string); ok && len(v) > 0 {
-		notification.Notification.Sound = v
-	}
 
 	return notification
 }

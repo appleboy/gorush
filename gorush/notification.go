@@ -78,7 +78,7 @@ type PushNotification struct {
 	RestrictedPackageName string           `json:"restricted_package_name,omitempty"`
 	DryRun                bool             `json:"dry_run,omitempty"`
 	Condition             string           `json:"condition,omitempty"`
-	Notification          fcm.Notification `json:"notification,omitempty"`
+	Notification          *fcm.Notification `json:"notification,omitempty"`
 
 	// iOS
 	Expiration  int64    `json:"expiration,omitempty"`
