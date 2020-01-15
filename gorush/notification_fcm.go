@@ -1,6 +1,7 @@
 package gorush
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -72,6 +73,10 @@ func GetAndroidNotification(req PushNotification) *fcm.Message {
 			notification.Notification.Title = req.Title
 		}
 
+		if len(req.Image) > 0 {
+			notification.Notification.Image = req.Image
+		}
+
 		if v, ok := req.Sound.(string); ok && len(v) > 0 {
 			notification.Notification.Sound = v
 		}
@@ -119,6 +124,7 @@ Retry:
 		LogError.Error("FCM server error: " + err.Error())
 		return false
 	}
+
 
 	res, err := client.Send(notification)
 	if err != nil {

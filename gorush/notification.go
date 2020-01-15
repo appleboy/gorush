@@ -62,6 +62,7 @@ type PushNotification struct {
 	Platform         int         `json:"platform" binding:"required"`
 	Message          string      `json:"message,omitempty"`
 	Title            string      `json:"title,omitempty"`
+	Image            string      `json:"image,omitempty"`
 	Priority         string      `json:"priority,omitempty"`
 	ContentAvailable bool        `json:"content_available,omitempty"`
 	MutableContent   bool        `json:"mutable_content,omitempty"`
