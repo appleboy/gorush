@@ -96,6 +96,7 @@ type PushNotification struct {
 	Development bool     `json:"development,omitempty"`
 	SoundName   string   `json:"name,omitempty"`
 	SoundVolume float32  `json:"volume,omitempty"`
+	Apns        D        `json:"apns,omitempty"`
 }
 
 // WaitDone decrements the WaitGroup counter.

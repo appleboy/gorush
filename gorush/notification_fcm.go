@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	fcm "github.com/appleboy/go-fcm"
+	"github.com/appleboy/go-fcm"
 	"github.com/sirupsen/logrus"
 )
 
@@ -81,6 +81,11 @@ func GetAndroidNotification(req PushNotification) *fcm.Message {
 		}
 	}
 
+	// handle iOS apns in fcm
+
+	if len(req.Apns) > 0 {
+		notification.Apns = req.Apns
+	}
 
 	return notification
 }
@@ -123,7 +128,6 @@ Retry:
 		LogError.Error("FCM server error: " + err.Error())
 		return false
 	}
-
 
 	res, err := client.Send(notification)
 	if err != nil {
