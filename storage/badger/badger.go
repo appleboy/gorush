@@ -30,9 +30,7 @@ type Storage struct {
 // Init client storage.
 func (s *Storage) Init() error {
 	s.name = "badger"
-	s.opts = badger.DefaultOptions
-	s.opts.Dir = os.TempDir() + "badger"
-	s.opts.ValueDir = os.TempDir() + "badger"
+	s.opts = badger.DefaultOptions(os.TempDir() + "badger")
 	return nil
 }
 
