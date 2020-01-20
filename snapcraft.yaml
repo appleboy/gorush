@@ -1,0 +1,24 @@
+name: gorush
+version: '1.0'
+summary: A push notification server written in Go 
+description: |
+  A push notification server written in Go. 
+grade: stable
+confinement: strict
+base: core18
+parts:
+  gorush:
+    plugin: go
+    source: https://github.com/appleboy/gorush.git
+    go-importpath: github.com/appleboy/gorush
+    build-packages:
+      - build-essential
+apps:
+  gorush:
+    command: bin/gorush
+    daemon: simple
+    restart-condition: on-abnormal
+    plugs:
+      - home
+      - network
+      - network-bind

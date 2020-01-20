@@ -81,7 +81,7 @@ type PushNotification struct {
 	Notification          *fcm.Notification `json:"notification,omitempty"`
 
 	// iOS
-	Expiration  int64    `json:"expiration,omitempty"`
+	Expiration  *int64   `json:"expiration,omitempty"`
 	ApnsID      string   `json:"apns_id,omitempty"`
 	CollapseID  string   `json:"collapse_id,omitempty"`
 	Topic       string   `json:"topic,omitempty"`
