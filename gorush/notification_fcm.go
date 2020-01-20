@@ -77,7 +77,6 @@ func GetAndroidNotification(req PushNotification) *fcm.Message {
 		}
 	}
 
-
 	return notification
 }
 

@@ -238,7 +238,7 @@ func TestAndroidNotificationStructure(t *testing.T) {
 		Notification: &fcm.Notification{
 			Color: test,
 			Tag:   test,
-			Body: "",
+			Body:  "",
 		},
 	}
 
