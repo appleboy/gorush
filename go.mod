@@ -1,6 +1,6 @@
 module github.com/appleboy/gorush
 
-go 1.12
+go 1.13
 
 require (
 	github.com/AndreasBriese/bbloom v0.0.0-20190825152654-46b345b51c96 // indirect
@@ -8,12 +8,12 @@ require (
 	github.com/Sereal/Sereal v0.0.0-20190606082811-cf1bab6c7a3a // indirect
 	github.com/apex/gateway v1.1.1
 	github.com/appleboy/com v0.0.2
-	github.com/appleboy/gin-status-api v1.0.2
+	github.com/appleboy/gin-status-api v1.1.0
 	github.com/appleboy/go-fcm v0.1.4
-	github.com/appleboy/gofight/v2 v2.1.1
+	github.com/appleboy/gofight/v2 v2.1.2
 	github.com/asdine/storm v2.1.2+incompatible
 	github.com/aws/aws-lambda-go v1.13.3 // indirect
-	github.com/buger/jsonparser v0.0.0-20181115193947-bf1c66bbce23
+	github.com/buger/jsonparser v0.0.0-20191204142016-1a29609e0929
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect
 	github.com/dgraph-io/badger v1.6.0
 	github.com/dgryski/go-farm v0.0.0-20191112170834-c2139c5d712b // indirect
@@ -52,6 +52,5 @@ require (
 	google.golang.org/grpc v1.25.1
 	gopkg.in/go-playground/validator.v9 v9.30.2 // indirect
 	gopkg.in/redis.v5 v5.2.9
-	gopkg.in/urfave/cli.v1 v1.20.0 // indirect
 	gopkg.in/yaml.v2 v2.2.7 // indirect
 )

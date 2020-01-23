@@ -125,7 +125,7 @@ func routerEngine() *gin.Engine {
 	r.Use(LogMiddleware())
 	r.Use(StatMiddleware())
 
-	r.GET(PushConf.API.StatGoURI, api.StatusHandler)
+	r.GET(PushConf.API.StatGoURI, api.GinHandler)
 	r.GET(PushConf.API.StatAppURI, appStatusHandler)
 	r.GET(PushConf.API.ConfigURI, configHandler)
 	r.GET(PushConf.API.SysStatURI, sysStatsHandler)
