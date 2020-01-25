@@ -4,10 +4,12 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strconv"
+	"time"
 
 	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/gorush"
@@ -291,12 +293,22 @@ func usage() {
 // handles pinging the endpoint and returns an error if the
 // agent is in an unhealthy state.
 func pinger() error {
-	resp, err := http.Get("http://localhost:" + gorush.PushConf.Core.Port + gorush.PushConf.API.HealthURI)
+	var transport = &http.Transport{
+		Dial: (&net.Dialer{
+			Timeout: 5 * time.Second,
+		}).Dial,
+		TLSHandshakeTimeout: 5 * time.Second,
+	}
+	var client = &http.Client{
+		Timeout:   time.Second * 10,
+		Transport: transport,
+	}
+	resp, err := client.Get("http://localhost:" + gorush.PushConf.Core.Port + gorush.PushConf.API.HealthURI)
 	if err != nil {
 		return err
 	}
 	defer resp.Body.Close()
-	if resp.StatusCode != 200 {
+	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("server returned non-200 status code")
 	}
 	return nil
