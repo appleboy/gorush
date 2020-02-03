@@ -8,11 +8,9 @@ GOFMT ?= gofmt "-s"
 
 TARGETS ?= linux darwin windows openbsd
 ARCHS ?= amd64 386
-PACKAGES ?= $(shell $(GO) list ./...)
 GOFILES := $(shell find . -name "*.go" -type f)
 TAGS ?= sqlite
 LDFLAGS ?= -X 'main.Version=$(VERSION)'
-TMPDIR := $(shell mktemp -d 2>/dev/null || mktemp -d -t 'tempdir')
 NODE_PROTOC_PLUGIN := $(shell which grpc_tools_node_protoc_plugin)
 
 ifneq ($(shell uname), Darwin)
@@ -55,7 +53,7 @@ fmt-check:
 	fi;
 
 vet:
-	$(GO) vet $(PACKAGES)
+	$(GO) vet ./...
 
 embedmd:
 	@hash embedmd > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
@@ -97,7 +95,7 @@ misspell:
 
 .PHONY: test
 test: init fmt-check
-	@$(GO) test -v -cover -tags $(TAGS) -coverprofile coverage.txt $(PACKAGES) && echo "\n==>\033[32m Ok\033[m\n" || exit 1
+	@$(GO) test -v -cover -tags $(TAGS) -coverprofile coverage.txt ./... && echo "\n==>\033[32m Ok\033[m\n" || exit 1
 
 release: release-dirs release-build release-copy release-compress release-check
 
