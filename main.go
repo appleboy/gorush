@@ -248,12 +248,14 @@ func main() {
 		gorush.LogError.Fatal(err)
 	}
 
+	finished := make(chan struct{})
 	wg := &sync.WaitGroup{}
 	wg.Add(int(gorush.PushConf.Core.WorkerNum))
 	ctx := withContextFunc(context.Background(), func() {
 		gorush.LogAccess.Info("close the notification queue channel")
 		close(gorush.QueueNotification)
 		wg.Wait()
+		close(finished)
 		gorush.LogAccess.Info("the notification queue has been clear")
 	})
 
@@ -269,8 +271,19 @@ func main() {
 
 	var g errgroup.Group
 
-	g.Go(gorush.RunHTTPServer) // Run httpd server
-	g.Go(rpc.RunGRPCServer)    // Run gRPC internal server
+	g.Go(func() error {
+		return gorush.RunHTTPServer(ctx)
+	}) // Run httpd server
+
+	g.Go(rpc.RunGRPCServer) // Run gRPC internal server
+
+	// check job completely
+	g.Go(func() error {
+		select {
+		case <-finished:
+		}
+		return nil
+	})
 
 	if err = g.Wait(); err != nil {
 		gorush.LogError.Fatal(err)
