@@ -100,7 +100,7 @@ func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*prot
 // RunGRPCServer run gorush grpc server
 func RunGRPCServer() error {
 	if !gorush.PushConf.GRPC.Enabled {
-		gorush.LogAccess.Debug("gRPC server is disabled.")
+		gorush.LogAccess.Info("gRPC server is disabled.")
 		return nil
 	}
 

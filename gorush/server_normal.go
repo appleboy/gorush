@@ -21,7 +21,7 @@ func RunHTTPServer() (err error) {
 		Handler: routerEngine(),
 	}
 
-	LogAccess.Debug("HTTPD server is running on " + PushConf.Core.Port + " port.")
+	LogAccess.Info("HTTPD server is running on " + PushConf.Core.Port + " port.")
 	if PushConf.Core.AutoTLS.Enabled {
 		return startServer(autoTLSServer())
 	} else if PushConf.Core.SSL {

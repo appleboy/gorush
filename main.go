@@ -1,14 +1,18 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"log"
 	"net"
 	"net/http"
 	"os"
+	"os/signal"
 	"path/filepath"
 	"strconv"
+	"sync"
+	"syscall"
 	"time"
 
 	"github.com/appleboy/gorush/config"
@@ -17,6 +21,24 @@ import (
 
 	"golang.org/x/sync/errgroup"
 )
+
+func withContextFunc(ctx context.Context, f func()) context.Context {
+	ctx, cancel := context.WithCancel(ctx)
+	go func() {
+		c := make(chan os.Signal, 1)
+		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
+		defer signal.Stop(c)
+
+		select {
+		case <-ctx.Done():
+		case <-c:
+			cancel()
+			f()
+		}
+	}()
+
+	return ctx
+}
 
 func main() {
 	opts := config.ConfYaml{}
@@ -223,19 +245,29 @@ func main() {
 	}
 
 	if err = gorush.InitAppStatus(); err != nil {
-		return
+		gorush.LogError.Fatal(err)
 	}
 
-	gorush.InitWorkers(gorush.PushConf.Core.WorkerNum, gorush.PushConf.Core.QueueNum)
+	wg := &sync.WaitGroup{}
+	wg.Add(int(gorush.PushConf.Core.WorkerNum))
+	ctx := withContextFunc(context.Background(), func() {
+		gorush.LogAccess.Info("close the notification queue channel")
+		close(gorush.QueueNotification)
+		wg.Wait()
+		gorush.LogAccess.Info("the notification queue has been clear")
+	})
+
+	gorush.InitWorkers(ctx, wg, gorush.PushConf.Core.WorkerNum, gorush.PushConf.Core.QueueNum)
+
+	if err = gorush.InitAPNSClient(); err != nil {
+		gorush.LogError.Fatal(err)
+	}
+
+	if _, err = gorush.InitFCMClient(gorush.PushConf.Android.APIKey); err != nil {
+		gorush.LogError.Fatal(err)
+	}
 
 	var g errgroup.Group
-
-	g.Go(gorush.InitAPNSClient)
-
-	g.Go(func() error {
-		_, err := gorush.InitFCMClient(gorush.PushConf.Android.APIKey)
-		return err
-	})
 
 	g.Go(gorush.RunHTTPServer) // Run httpd server
 	g.Go(rpc.RunGRPCServer)    // Run gRPC internal server
