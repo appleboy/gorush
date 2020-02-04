@@ -257,7 +257,7 @@ func main() {
 		gorush.LogAccess.Info("the notification queue has been clear")
 	})
 
-	gorush.InitWorkers(wg, ctx, gorush.PushConf.Core.WorkerNum, gorush.PushConf.Core.QueueNum)
+	gorush.InitWorkers(ctx, wg, gorush.PushConf.Core.WorkerNum, gorush.PushConf.Core.QueueNum)
 
 	if err = gorush.InitAPNSClient(); err != nil {
 		gorush.LogError.Fatal(err)
