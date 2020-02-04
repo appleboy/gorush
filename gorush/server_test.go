@@ -62,15 +62,15 @@ func TestRunNormalServer(t *testing.T) {
 	initTest()
 
 	gin.SetMode(gin.TestMode)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
 	go func() {
-		assert.NoError(t, RunHTTPServer(context.Background()))
+		assert.NoError(t, RunHTTPServer(ctx))
 	}()
 	// have to wait for the goroutine to start and run the server
 	// otherwise the main thread will complete
-	time.Sleep(5 * time.Millisecond)
-
-	assert.Error(t, RunHTTPServer(context.Background()))
+	time.Sleep(3 * time.Millisecond)
 	testRequest(t, "http://localhost:8088/api/stat/go")
 }
 
