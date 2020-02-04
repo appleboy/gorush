@@ -271,11 +271,15 @@ func main() {
 
 	var g errgroup.Group
 
+	// Run httpd server
 	g.Go(func() error {
 		return gorush.RunHTTPServer(ctx)
-	}) // Run httpd server
+	})
 
-	g.Go(rpc.RunGRPCServer) // Run gRPC internal server
+	// Run gRPC internal server
+	g.Go(func() error {
+		return rpc.RunGRPCServer(ctx)
+	})
 
 	// check job completely
 	g.Go(func() error {

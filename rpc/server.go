@@ -1,13 +1,14 @@
 package rpc
 
 import (
-	"net"
+	"context"
+	"net/http"
 	"sync"
 
 	"github.com/appleboy/gorush/gorush"
 	"github.com/appleboy/gorush/rpc/proto"
+	"golang.org/x/sync/errgroup"
 
-	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/reflection"
@@ -98,28 +99,34 @@ func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*prot
 }
 
 // RunGRPCServer run gorush grpc server
-func RunGRPCServer() error {
+func RunGRPCServer(ctx context.Context) error {
 	if !gorush.PushConf.GRPC.Enabled {
 		gorush.LogAccess.Info("gRPC server is disabled.")
 		return nil
 	}
 
-	lis, err := net.Listen("tcp", ":"+gorush.PushConf.GRPC.Port)
-	if err != nil {
-		gorush.LogError.Errorf("failed to listen: %v", err)
-		return err
-	}
 	s := grpc.NewServer()
-	srv := NewServer()
-	proto.RegisterGorushServer(s, srv)
-	proto.RegisterHealthServer(s, srv)
+	rpcSrv := NewServer()
+	proto.RegisterGorushServer(s, rpcSrv)
+	proto.RegisterHealthServer(s, rpcSrv)
 	// Register reflection service on gRPC server.
 	reflection.Register(s)
-	gorush.LogAccess.Debug("gRPC server is running on " + gorush.PushConf.GRPC.Port + " port.")
-	if err := s.Serve(lis); err != nil {
-		gorush.LogError.Errorf("failed to serve: %v", err)
-		return err
+	gorush.LogAccess.Info("gRPC server is running on " + gorush.PushConf.GRPC.Port + " port.")
+
+	srv := &http.Server{
+		Addr:    ":" + gorush.PushConf.GRPC.Port,
+		Handler: s,
 	}
 
-	return nil
+	var g errgroup.Group
+	g.Go(func() error {
+		select {
+		case <-ctx.Done():
+			return srv.Shutdown(ctx)
+		}
+	})
+	g.Go(func() error {
+		return srv.ListenAndServe()
+	})
+	return g.Wait()
 }
