@@ -137,7 +137,7 @@ build_linux_lambda:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -tags 'lambda' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)' -o release/linux/lambda/$(DEPLOY_IMAGE)
 
 docker_image:
-	docker build -t $(DEPLOY_ACCOUNT)/$(DEPLOY_IMAGE) -f Dockerfile .
+	docker build -t $(DEPLOY_ACCOUNT)/$(DEPLOY_IMAGE) -f ./docker/Dockerfile.linux.amd64 .
 
 docker_release: docker_image
 

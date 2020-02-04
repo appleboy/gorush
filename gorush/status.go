@@ -10,6 +10,7 @@ import (
 	"github.com/appleboy/gorush/storage/leveldb"
 	"github.com/appleboy/gorush/storage/memory"
 	"github.com/appleboy/gorush/storage/redis"
+
 	"github.com/gin-gonic/gin"
 	"github.com/thoas/stats"
 )
@@ -41,7 +42,7 @@ type IosStatus struct {
 
 // InitAppStatus for initialize app status
 func InitAppStatus() error {
-	LogAccess.Debug("Init App Status Engine as ", PushConf.Stat.Engine)
+	LogAccess.Info("Init App Status Engine as ", PushConf.Stat.Engine)
 	switch PushConf.Stat.Engine {
 	case "memory":
 		StatStorage = memory.New()

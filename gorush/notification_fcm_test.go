@@ -1,8 +1,10 @@
 package gorush
 
 import (
+	"context"
 	"log"
 	"os"
+	"sync"
 	"testing"
 
 	"github.com/appleboy/go-fcm"
@@ -16,7 +18,10 @@ func init() {
 		log.Fatal(err)
 	}
 
-	InitWorkers(PushConf.Core.WorkerNum, PushConf.Core.QueueNum)
+	ctx := context.Background()
+	wg := &sync.WaitGroup{}
+	wg.Add(int(PushConf.Core.WorkerNum))
+	InitWorkers(wg, ctx, PushConf.Core.WorkerNum, PushConf.Core.QueueNum)
 
 	if err := InitAppStatus(); err != nil {
 		log.Fatal(err)

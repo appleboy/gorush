@@ -7,11 +7,11 @@ import (
 )
 
 // InitWorkers for initialize all workers.
-func InitWorkers(workerNum int64, queueNum int64) {
-	LogAccess.Debug("worker number is ", workerNum, ", queue number is ", queueNum)
+func InitWorkers(wg *sync.WaitGroup, ctx context.Context, workerNum int64, queueNum int64) {
+	LogAccess.Info("worker number is ", workerNum, ", queue number is ", queueNum)
 	QueueNotification = make(chan PushNotification, queueNum)
 	for i := int64(0); i < workerNum; i++ {
-		go startWorker()
+		go startWorker(wg, ctx, i)
 	}
 }
 
@@ -33,11 +33,12 @@ func SendNotification(req PushNotification) {
 	}
 }
 
-func startWorker() {
-	for {
-		notification := <-QueueNotification
+func startWorker(wg *sync.WaitGroup, ctx context.Context, num int64) {
+	defer wg.Done()
+	for notification := range QueueNotification {
 		SendNotification(notification)
 	}
+	LogAccess.Info("closed the worker num ", num)
 }
 
 // markFailedNotification adds failure logs for all tokens in push notification

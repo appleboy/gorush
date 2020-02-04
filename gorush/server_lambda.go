@@ -13,7 +13,7 @@ func RunHTTPServer() error {
 		return nil
 	}
 
-	LogAccess.Debug("HTTPD server is running on " + PushConf.Core.Port + " port.")
+	LogAccess.Info("HTTPD server is running on " + PushConf.Core.Port + " port.")
 
 	return gateway.ListenAndServe(PushConf.Core.Address+":"+PushConf.Core.Port, routerEngine())
 }
