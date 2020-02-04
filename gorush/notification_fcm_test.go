@@ -21,7 +21,7 @@ func init() {
 	ctx := context.Background()
 	wg := &sync.WaitGroup{}
 	wg.Add(int(PushConf.Core.WorkerNum))
-	InitWorkers(wg, ctx, PushConf.Core.WorkerNum, PushConf.Core.QueueNum)
+	InitWorkers(ctx, wg, PushConf.Core.WorkerNum, PushConf.Core.QueueNum)
 
 	if err := InitAppStatus(); err != nil {
 		log.Fatal(err)
