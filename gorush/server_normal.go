@@ -3,16 +3,19 @@
 package gorush
 
 import (
+	"context"
 	"crypto/tls"
 	"encoding/base64"
 	"errors"
 	"net/http"
+
+	"golang.org/x/sync/errgroup"
 )
 
 // RunHTTPServer provide run http or https protocol.
-func RunHTTPServer() (err error) {
+func RunHTTPServer(ctx context.Context) (err error) {
 	if !PushConf.Core.Enabled {
-		LogAccess.Debug("httpd server is disabled.")
+		LogAccess.Info("httpd server is disabled.")
 		return nil
 	}
 
@@ -23,7 +26,7 @@ func RunHTTPServer() (err error) {
 
 	LogAccess.Info("HTTPD server is running on " + PushConf.Core.Port + " port.")
 	if PushConf.Core.AutoTLS.Enabled {
-		return startServer(autoTLSServer())
+		return startServer(ctx, autoTLSServer())
 	} else if PushConf.Core.SSL {
 		config := &tls.Config{
 			MinVersion: tls.VersionTLS10,
@@ -62,12 +65,41 @@ func RunHTTPServer() (err error) {
 		server.TLSConfig = config
 	}
 
-	return startServer(server)
+	return startServer(ctx, server)
 }
 
-func startServer(s *http.Server) error {
-	if s.TLSConfig == nil {
+func listenAndServe(ctx context.Context, s *http.Server) error {
+	var g errgroup.Group
+	g.Go(func() error {
+		select {
+		case <-ctx.Done():
+			return s.Shutdown(ctx)
+		}
+	})
+	g.Go(func() error {
 		return s.ListenAndServe()
+	})
+	return g.Wait()
+}
+
+func listenAndServeTLS(ctx context.Context, s *http.Server) error {
+	var g errgroup.Group
+	g.Go(func() error {
+		select {
+		case <-ctx.Done():
+			return s.Shutdown(ctx)
+		}
+	})
+	g.Go(func() error {
+		return s.ListenAndServeTLS("", "")
+	})
+	return g.Wait()
+}
+
+func startServer(ctx context.Context, s *http.Server) error {
+	if s.TLSConfig == nil {
+		return listenAndServe(ctx, s)
 	}
-	return s.ListenAndServeTLS("", "")
+
+	return listenAndServeTLS(ctx, s)
 }
