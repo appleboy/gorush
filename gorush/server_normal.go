@@ -8,6 +8,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"net/http"
+	"time"
 
 	"golang.org/x/sync/errgroup"
 )
@@ -73,6 +74,9 @@ func listenAndServe(ctx context.Context, s *http.Server) error {
 	g.Go(func() error {
 		select {
 		case <-ctx.Done():
+			timeout := time.Duration(PushConf.Core.ShutdownTimeout) * time.Second
+			ctx, cancel := context.WithTimeout(context.Background(), timeout)
+			defer cancel()
 			return s.Shutdown(ctx)
 		}
 	})
@@ -87,6 +91,9 @@ func listenAndServeTLS(ctx context.Context, s *http.Server) error {
 	g.Go(func() error {
 		select {
 		case <-ctx.Done():
+			timeout := time.Duration(PushConf.Core.ShutdownTimeout) * time.Second
+			ctx, cancel := context.WithTimeout(context.Background(), timeout)
+			defer cancel()
 			return s.Shutdown(ctx)
 		}
 	})

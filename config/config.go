@@ -14,6 +14,7 @@ var defaultConf = []byte(`
 core:
   enabled: true # enabale httpd server
   address: "" # ip address to bind (default: any)
+  shutdown_timeout: 30 # default is 30 second
   port: "8088" # ignore this port number if auto_tls is enabled (listen 443).
   worker_num: 0 # default worker number is runtime.NumCPU()
   queue_num: 0 # default queue number is 8192
@@ -103,6 +104,7 @@ type ConfYaml struct {
 type SectionCore struct {
 	Enabled         bool           `yaml:"enabled"`
 	Address         string         `yaml:"address"`
+	ShutdownTimeout int64          `yaml:"shutdown_timeout"`
 	Port            string         `yaml:"port"`
 	MaxNotification int64          `yaml:"max_notification"`
 	WorkerNum       int64          `yaml:"worker_num"`
@@ -253,6 +255,7 @@ func LoadConf(confPath string) (ConfYaml, error) {
 	// Core
 	conf.Core.Address = viper.GetString("core.address")
 	conf.Core.Port = viper.GetString("core.port")
+	conf.Core.ShutdownTimeout = int64(viper.GetInt("core.shutdown_timeout"))
 	conf.Core.Enabled = viper.GetBool("core.enabled")
 	conf.Core.WorkerNum = int64(viper.GetInt("core.worker_num"))
 	conf.Core.QueueNum = int64(viper.GetInt("core.queue_num"))
