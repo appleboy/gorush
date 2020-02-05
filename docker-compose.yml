@@ -5,7 +5,7 @@ services:
     image: appleboy/gorush
     restart: always
     ports:
-      - "8080:8080"
+      - "8088:8088"
       - "9000:9000"
     logging:
       options:
