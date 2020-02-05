@@ -252,7 +252,7 @@ func main() {
 	wg := &sync.WaitGroup{}
 	wg.Add(int(gorush.PushConf.Core.WorkerNum))
 	ctx := withContextFunc(context.Background(), func() {
-		gorush.LogAccess.Info("close the notification queue channel")
+		gorush.LogAccess.Info("close the notification queue channel, current queue len: ", len(gorush.QueueNotification))
 		close(gorush.QueueNotification)
 		wg.Wait()
 		close(finished)

@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"sync"
+	"time"
 
 	"github.com/appleboy/gorush/gorush"
 	"github.com/appleboy/gorush/rpc/proto"
@@ -122,6 +123,9 @@ func RunGRPCServer(ctx context.Context) error {
 	g.Go(func() error {
 		select {
 		case <-ctx.Done():
+			timeout := time.Duration(gorush.PushConf.Core.ShutdownTimeout) * time.Second
+			ctx, cancel := context.WithTimeout(context.Background(), timeout)
+			defer cancel()
 			return srv.Shutdown(ctx)
 		}
 	})
