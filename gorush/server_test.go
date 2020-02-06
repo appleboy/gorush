@@ -1,6 +1,7 @@
 package gorush
 
 import (
+	"context"
 	"crypto/tls"
 	"io/ioutil"
 	"log"
@@ -63,13 +64,12 @@ func TestRunNormalServer(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	go func() {
-		assert.NoError(t, RunHTTPServer())
+		assert.NoError(t, RunHTTPServer(context.Background()))
 	}()
 	// have to wait for the goroutine to start and run the server
 	// otherwise the main thread will complete
 	time.Sleep(5 * time.Millisecond)
 
-	assert.Error(t, RunHTTPServer())
 	testRequest(t, "http://localhost:8088/api/stat/go")
 }
 
@@ -82,7 +82,7 @@ func TestRunTLSServer(t *testing.T) {
 	PushConf.Core.KeyPath = "../certificate/localhost.key"
 
 	go func() {
-		assert.NoError(t, RunHTTPServer())
+		assert.NoError(t, RunHTTPServer(context.Background()))
 	}()
 	// have to wait for the goroutine to start and run the server
 	// otherwise the main thread will complete
@@ -104,7 +104,7 @@ func TestRunTLSBase64Server(t *testing.T) {
 	PushConf.Core.KeyBase64 = key
 
 	go func() {
-		assert.NoError(t, RunHTTPServer())
+		assert.NoError(t, RunHTTPServer(context.Background()))
 	}()
 	// have to wait for the goroutine to start and run the server
 	// otherwise the main thread will complete
@@ -117,7 +117,7 @@ func TestRunAutoTLSServer(t *testing.T) {
 	initTest()
 	PushConf.Core.AutoTLS.Enabled = true
 	go func() {
-		assert.NoError(t, RunHTTPServer())
+		assert.NoError(t, RunHTTPServer(context.Background()))
 	}()
 	// have to wait for the goroutine to start and run the server
 	// otherwise the main thread will complete
@@ -132,7 +132,7 @@ func TestLoadTLSCertError(t *testing.T) {
 	PushConf.Core.CertPath = "../config/config.yml"
 	PushConf.Core.KeyPath = "../config/config.yml"
 
-	assert.Error(t, RunHTTPServer())
+	assert.Error(t, RunHTTPServer(context.Background()))
 }
 
 func TestMissingTLSCertConfg(t *testing.T) {
@@ -145,8 +145,8 @@ func TestMissingTLSCertConfg(t *testing.T) {
 	PushConf.Core.CertBase64 = ""
 	PushConf.Core.KeyBase64 = ""
 
-	err := RunHTTPServer()
-	assert.Error(t, RunHTTPServer())
+	err := RunHTTPServer(context.Background())
+	assert.Error(t, RunHTTPServer(context.Background()))
 	assert.Equal(t, "missing https cert config", err.Error())
 }
 
@@ -383,7 +383,7 @@ func TestVersionHandler(t *testing.T) {
 func TestDisabledHTTPServer(t *testing.T) {
 	initTest()
 	PushConf.Core.Enabled = false
-	err := RunHTTPServer()
+	err := RunHTTPServer(context.Background())
 	PushConf.Core.Enabled = true
 
 	assert.Nil(t, err)

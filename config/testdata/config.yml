@@ -1,6 +1,7 @@
 core:
   enabled: true # enabale httpd server
   address: "" # ip address to bind (default: any)
+  shutdown_timeout: 30 # default is 30 second
   port: "8088" # ignore this port number if auto_tls is enabled (listen 443).
   worker_num: 0 # default worker number is runtime.NumCPU()
   queue_num: 0 # default queue number is 8192

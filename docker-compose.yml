@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  gorush:
+    image: appleboy/gorush
+    restart: always
+    ports:
+      - "8088:8088"
+      - "9000:9000"
+    logging:
+      options:
+        max-size: "100k"
+        max-file: "3"
+    environment:
+      - GORUSH_CORE_QUEUE_NUM=512
