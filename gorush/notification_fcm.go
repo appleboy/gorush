@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	fcm "github.com/appleboy/go-fcm"
+	"github.com/appleboy/go-fcm"
 	"github.com/sirupsen/logrus"
 )
 
@@ -72,9 +72,19 @@ func GetAndroidNotification(req PushNotification) *fcm.Message {
 			notification.Notification.Title = req.Title
 		}
 
+		if len(req.Image) > 0 {
+			notification.Notification.Image = req.Image
+		}
+
 		if v, ok := req.Sound.(string); ok && len(v) > 0 {
 			notification.Notification.Sound = v
 		}
+	}
+
+	// handle iOS apns in fcm
+
+	if len(req.Apns) > 0 {
+		notification.Apns = req.Apns
 	}
 
 	return notification

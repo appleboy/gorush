@@ -62,6 +62,7 @@ type PushNotification struct {
 	Platform         int         `json:"platform" binding:"required"`
 	Message          string      `json:"message,omitempty"`
 	Title            string      `json:"title,omitempty"`
+	Image            string      `json:"image,omitempty"`
 	Priority         string      `json:"priority,omitempty"`
 	ContentAvailable bool        `json:"content_available,omitempty"`
 	MutableContent   bool        `json:"mutable_content,omitempty"`
@@ -95,6 +96,7 @@ type PushNotification struct {
 	Development bool     `json:"development,omitempty"`
 	SoundName   string   `json:"name,omitempty"`
 	SoundVolume float32  `json:"volume,omitempty"`
+	Apns        D        `json:"apns,omitempty"`
 }
 
 // WaitDone decrements the WaitGroup counter.
