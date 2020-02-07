@@ -55,5 +55,4 @@ require (
 	gopkg.in/go-playground/validator.v9 v9.30.2 // indirect
 	gopkg.in/redis.v5 v5.2.9
 	gopkg.in/yaml.v2 v2.2.7 // indirect
-	honnef.co/go/tools v0.0.0-20190523083050-ea95bdfd59fc // indirect
 )
