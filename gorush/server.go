@@ -5,13 +5,22 @@ import (
 	"crypto/tls"
 	"fmt"
 	"net/http"
+	"os"
+	"regexp"
 
 	api "github.com/appleboy/gin-status-api"
+	"github.com/gin-contrib/logger"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"golang.org/x/crypto/acme/autocert"
+)
+
+var (
+	rxURL = regexp.MustCompile(`^/healthz$`)
 )
 
 func init() {
@@ -113,16 +122,34 @@ func autoTLSServer() *http.Server {
 }
 
 func routerEngine() *gin.Engine {
+	zerolog.SetGlobalLevel(zerolog.InfoLevel)
+	if PushConf.Core.Mode == "debug" {
+		zerolog.SetGlobalLevel(zerolog.DebugLevel)
+	}
+
+	log.Logger = zerolog.New(os.Stdout).With().Timestamp().Logger()
+
+	if isTerm {
+		log.Logger = log.Output(
+			zerolog.ConsoleWriter{
+				Out:     os.Stdout,
+				NoColor: false,
+			},
+		)
+	}
+
 	// set server mode
 	gin.SetMode(PushConf.Core.Mode)
 
 	r := gin.New()
 
 	// Global middleware
-	r.Use(gin.Logger())
+	r.Use(logger.SetLogger(logger.Config{
+		UTC:            true,
+		SkipPathRegexp: rxURL,
+	}))
 	r.Use(gin.Recovery())
 	r.Use(VersionMiddleware())
-	r.Use(LogMiddleware())
 	r.Use(StatMiddleware())
 
 	r.GET(PushConf.API.StatGoURI, api.GinHandler)

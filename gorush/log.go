@@ -7,7 +7,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/gin-gonic/gin"
 	"github.com/mattn/go-isatty"
 	"github.com/sirupsen/logrus"
 )
@@ -22,15 +21,6 @@ var (
 	cyan    = string([]byte{27, 91, 57, 55, 59, 52, 54, 109})
 	reset   = string([]byte{27, 91, 48, 109})
 )
-
-// LogReq is http request log
-type LogReq struct {
-	URI         string `json:"uri"`
-	Method      string `json:"method"`
-	IP          string `json:"ip"`
-	ContentType string `json:"content_type"`
-	Agent       string `json:"agent"`
-}
 
 // LogPushEntry is push response log
 type LogPushEntry struct {
@@ -57,14 +47,19 @@ func InitLog() error {
 	LogAccess = logrus.New()
 	LogError = logrus.New()
 
-	LogAccess.Formatter = &logrus.TextFormatter{
-		TimestampFormat: "2006/01/02 - 15:04:05",
-		FullTimestamp:   true,
-	}
+	if !isTerm {
+		LogAccess.SetFormatter(&logrus.JSONFormatter{})
+		LogError.SetFormatter(&logrus.JSONFormatter{})
+	} else {
+		LogAccess.Formatter = &logrus.TextFormatter{
+			TimestampFormat: "2006/01/02 - 15:04:05",
+			FullTimestamp:   true,
+		}
 
-	LogError.Formatter = &logrus.TextFormatter{
-		TimestampFormat: "2006/01/02 - 15:04:05",
-		FullTimestamp:   true,
+		LogError.Formatter = &logrus.TextFormatter{
+			TimestampFormat: "2006/01/02 - 15:04:05",
+			FullTimestamp:   true,
+		}
 	}
 
 	// set logger
@@ -119,43 +114,6 @@ func SetLogLevel(log *logrus.Logger, levelString string) error {
 	log.Level = level
 
 	return nil
-}
-
-// LogRequest record http request
-func LogRequest(uri string, method string, ip string, contentType string, agent string) {
-	var output string
-	log := &LogReq{
-		URI:         uri,
-		Method:      method,
-		IP:          ip,
-		ContentType: contentType,
-		Agent:       agent,
-	}
-
-	if PushConf.Log.Format == "json" {
-		logJSON, _ := json.Marshal(log)
-
-		output = string(logJSON)
-	} else {
-		var headerColor, resetColor string
-
-		if isTerm {
-			headerColor = magenta
-			resetColor = reset
-		}
-
-		// format is string
-		output = fmt.Sprintf("|%s header %s| %s %s %s %s %s",
-			headerColor, resetColor,
-			log.Method,
-			log.URI,
-			log.IP,
-			log.ContentType,
-			log.Agent,
-		)
-	}
-
-	LogAccess.Info(output)
 }
 
 func colorForPlatForm(platform int) string {
@@ -270,13 +228,5 @@ func LogPush(status, token string, req PushNotification, errPush error) {
 		LogAccess.Info(output)
 	case FailedPush:
 		LogError.Error(output)
-	}
-}
-
-// LogMiddleware provide gin router handler.
-func LogMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		LogRequest(c.Request.URL.Path, c.Request.Method, c.ClientIP(), c.ContentType(), c.GetHeader("User-Agent"))
-		c.Next()
 	}
 }
