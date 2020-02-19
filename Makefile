@@ -136,19 +136,6 @@ build_linux_arm:
 build_linux_lambda:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -tags 'lambda' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)' -o release/linux/lambda/$(DEPLOY_IMAGE)
 
-docker_image:
-	docker build -t $(DEPLOY_ACCOUNT)/$(DEPLOY_IMAGE) -f ./docker/Dockerfile.linux.amd64 .
-
-docker_release: docker_image
-
-docker_deploy:
-ifeq ($(tag),)
-	@echo "Usage: make $@ tag=<tag>"
-	@exit 1
-endif
-	docker tag $(DEPLOY_ACCOUNT)/$(EXECUTABLE):latest $(DEPLOY_ACCOUNT)/$(EXECUTABLE):$(tag)
-	docker push $(DEPLOY_ACCOUNT)/$(EXECUTABLE):$(tag)
-
 clean:
 	$(GO) clean -modcache -x -i ./...
 	find . -name coverage.txt -delete
