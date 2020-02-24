@@ -160,12 +160,12 @@ Retry:
 			if PushConf.Core.Sync {
 				req.AddLog(getLogPushEntry(FailedPush, to, req, result.Error))
 			} else if PushConf.Core.FeedbackURL != "" {
-				go func(logger *logrus.Logger, log LogPushEntry, url string) {
-					err := DispatchFeedback(log, url)
+				go func(logger *logrus.Logger, log LogPushEntry, url string, timeout int64) {
+					err := DispatchFeedback(log, url, timeout)
 					if err != nil {
 						logger.Error(err)
 					}
-				}(LogError, getLogPushEntry(FailedPush, to, req, result.Error), PushConf.Core.FeedbackURL)
+				}(LogError, getLogPushEntry(FailedPush, to, req, result.Error), PushConf.Core.FeedbackURL, PushConf.Core.FeedbackTimeout)
 			}
 			continue
 		}
