@@ -60,25 +60,34 @@ func GetAndroidNotification(req PushNotification) *fcm.Message {
 		}
 	}
 
-	notification.Notification = req.Notification
-
 	if req.Notification != nil {
-		// Set request message if body is empty
-		if len(req.Message) > 0 {
-			notification.Notification.Body = req.Message
-		}
+		notification.Notification = req.Notification
+	}
 
-		if len(req.Title) > 0 {
-			notification.Notification.Title = req.Title
-		}
+	isNotificationSet := false
+	n := &fcm.Notification{}
+	if len(req.Message) > 0 {
+		isNotificationSet = true
+		n.Body = req.Message
+	}
 
-		if len(req.Image) > 0 {
-			notification.Notification.Image = req.Image
-		}
+	if len(req.Title) > 0 {
+		isNotificationSet = true
+		n.Title = req.Title
+	}
 
-		if v, ok := req.Sound.(string); ok && len(v) > 0 {
-			notification.Notification.Sound = v
-		}
+	if len(req.Image) > 0 {
+		isNotificationSet = true
+		n.Image = req.Image
+	}
+
+	if v, ok := req.Sound.(string); ok && len(v) > 0 {
+		isNotificationSet = true
+		n.Sound = v
+	}
+
+	if isNotificationSet {
+		notification.Notification = n
 	}
 
 	// handle iOS apns in fcm
