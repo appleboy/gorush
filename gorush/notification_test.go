@@ -208,7 +208,7 @@ func TestSetProxyURL(t *testing.T) {
 
 	err := SetProxy("87.236.233.92:8080")
 	assert.Error(t, err)
-	assert.Equal(t, "parse 87.236.233.92:8080: invalid URI for request", err.Error())
+	assert.Equal(t, "parse \"87.236.233.92:8080\": invalid URI for request", err.Error())
 
 	err = SetProxy("a.html")
 	assert.Error(t, err)
