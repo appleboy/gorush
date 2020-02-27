@@ -60,12 +60,13 @@ func GetAndroidNotification(req PushNotification) *fcm.Message {
 		}
 	}
 
+	n := &fcm.Notification{}
+	isNotificationSet := false
 	if req.Notification != nil {
-		notification.Notification = req.Notification
+		isNotificationSet = true
+		n = req.Notification
 	}
 
-	isNotificationSet := false
-	n := &fcm.Notification{}
 	if len(req.Message) > 0 {
 		isNotificationSet = true
 		n.Body = req.Message
