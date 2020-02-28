@@ -9,7 +9,7 @@ platform:
 steps:
 - name: vet
   pull: always
-  image: golang:1.13
+  image: golang:1.14
   commands:
   - make vet
   volumes:
@@ -18,7 +18,7 @@ steps:
 
 - name: lint
   pull: always
-  image: golang:1.13
+  image: golang:1.14
   commands:
   - make lint
   volumes:
@@ -27,7 +27,7 @@ steps:
 
 - name: misspell
   pull: always
-  image: golang:1.13
+  image: golang:1.14
   commands:
   - make misspell-check
   volumes:
@@ -36,7 +36,7 @@ steps:
 
 - name: embedmd
   pull: always
-  image: golang:1.13
+  image: golang:1.14
   commands:
   - make embedmd
   volumes:
@@ -45,7 +45,7 @@ steps:
 
 - name: test
   pull: always
-  image: golang:1.13
+  image: golang:1.14
   commands:
   - make test
   environment:
@@ -83,7 +83,7 @@ platform:
 steps:
 - name: build-push
   pull: always
-  image: golang:1.13
+  image: golang:1.14
   commands:
   - go build -v -ldflags '-X main.build=${DRONE_BUILD_NUMBER}' -a -o release/linux/amd64/gorush
   environment:
@@ -95,7 +95,7 @@ steps:
 
 - name: build-tag
   pull: always
-  image: golang:1.13
+  image: golang:1.14
   commands:
   - go build -v -ldflags '-X main.version=${DRONE_TAG##v} -X main.build=${DRONE_BUILD_NUMBER}' -a -o release/linux/amd64/gorush
   environment:
@@ -106,7 +106,7 @@ steps:
 
 - name: executable
   pull: always
-  image: golang:1.13
+  image: golang:1.14
   commands:
   - ./release/linux/amd64/gorush --help
 
@@ -162,7 +162,7 @@ platform:
 steps:
 - name: build-push
   pull: always
-  image: golang:1.13
+  image: golang:1.14
   commands:
   - go build -v -ldflags '-X main.build=${DRONE_BUILD_NUMBER}' -a -o release/linux/arm64/gorush
   environment:
@@ -174,7 +174,7 @@ steps:
 
 - name: build-tag
   pull: always
-  image: golang:1.13
+  image: golang:1.14
   commands:
   - go build -v -ldflags '-X main.version=${DRONE_TAG##v} -X main.build=${DRONE_BUILD_NUMBER}' -a -o release/linux/arm64/gorush
   environment:
@@ -185,7 +185,7 @@ steps:
 
 - name: executable
   pull: always
-  image: golang:1.13
+  image: golang:1.14
   commands:
   - ./release/linux/arm64/gorush --help
 
@@ -241,7 +241,7 @@ platform:
 steps:
 - name: build-push
   pull: always
-  image: golang:1.13
+  image: golang:1.14
   commands:
   - go build -v -ldflags '-X main.build=${DRONE_BUILD_NUMBER}' -a -o release/linux/arm/gorush
   environment:
@@ -253,7 +253,7 @@ steps:
 
 - name: build-tag
   pull: always
-  image: golang:1.13
+  image: golang:1.14
   commands:
   - go build -v -ldflags '-X main.version=${DRONE_TAG##v} -X main.build=${DRONE_BUILD_NUMBER}' -a -o release/linux/arm/gorush
   environment:
@@ -264,7 +264,7 @@ steps:
 
 - name: executable
   pull: always
-  image: golang:1.13
+  image: golang:1.14
   commands:
   - ./release/linux/arm/gorush --help
 
@@ -320,7 +320,7 @@ platform:
 steps:
 - name: build-all-binary
   pull: always
-  image: golang:1.13
+  image: golang:1.14
   commands:
   - make release
   when:
