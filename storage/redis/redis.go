@@ -46,47 +46,44 @@ func (s *Storage) Init() error {
 
 		return err
 	}
+	// Set initial values
+	s.Reset()
 
 	return nil
 }
 
 // Reset Client storage.
 func (s *Storage) Reset() {
-	redisClient.Set(storage.TotalCountKey, strconv.Itoa(0), 0)
-	redisClient.Set(storage.IosSuccessKey, strconv.Itoa(0), 0)
-	redisClient.Set(storage.IosErrorKey, strconv.Itoa(0), 0)
-	redisClient.Set(storage.AndroidSuccessKey, strconv.Itoa(0), 0)
-	redisClient.Set(storage.AndroidErrorKey, strconv.Itoa(0), 0)
+	redisClient.Set(storage.TotalCountKey, int64(0), 0)
+	redisClient.Set(storage.IosSuccessKey, int64(0), 0)
+	redisClient.Set(storage.IosErrorKey, int64(0), 0)
+	redisClient.Set(storage.AndroidSuccessKey, int64(0), 0)
+	redisClient.Set(storage.AndroidErrorKey, int64(0), 0)
 }
 
 // AddTotalCount record push notification count.
 func (s *Storage) AddTotalCount(count int64) {
-	total := s.GetTotalCount() + count
-	redisClient.Set(storage.TotalCountKey, strconv.Itoa(int(total)), 0)
+	redisClient.IncrBy(storage.TotalCountKey, count)
 }
 
 // AddIosSuccess record counts of success iOS push notification.
 func (s *Storage) AddIosSuccess(count int64) {
-	total := s.GetIosSuccess() + count
-	redisClient.Set(storage.IosSuccessKey, strconv.Itoa(int(total)), 0)
+	redisClient.IncrBy(storage.IosSuccessKey, count)
 }
 
 // AddIosError record counts of error iOS push notification.
 func (s *Storage) AddIosError(count int64) {
-	total := s.GetIosError() + count
-	redisClient.Set(storage.IosErrorKey, strconv.Itoa(int(total)), 0)
+	redisClient.IncrBy(storage.IosErrorKey, count)
 }
 
 // AddAndroidSuccess record counts of success Android push notification.
 func (s *Storage) AddAndroidSuccess(count int64) {
-	total := s.GetAndroidSuccess() + count
-	redisClient.Set(storage.AndroidSuccessKey, strconv.Itoa(int(total)), 0)
+	redisClient.IncrBy(storage.AndroidSuccessKey, count)
 }
 
 // AddAndroidError record counts of error Android push notification.
 func (s *Storage) AddAndroidError(count int64) {
-	total := s.GetAndroidError() + count
-	redisClient.Set(storage.AndroidErrorKey, strconv.Itoa(int(total)), 0)
+	redisClient.IncrBy(storage.AndroidErrorKey, count)
 }
 
 // GetTotalCount show counts of all notification.
