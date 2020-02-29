@@ -1,6 +1,7 @@
 package redis
 
 import (
+	"sync"
 	"testing"
 
 	c "github.com/appleboy/gorush/config"
@@ -55,4 +56,17 @@ func TestRedisEngine(t *testing.T) {
 	redis.Reset()
 	val = redis.GetAndroidError()
 	assert.Equal(t, int64(0), val)
+
+	// test concurrency issues
+	var wg sync.WaitGroup
+	for i := 0; i < 10; i++ {
+		wg.Add(1)
+		go func() {
+			redis.AddTotalCount(1)
+			wg.Done()
+		}()
+	}
+	wg.Wait()
+	val = redis.GetTotalCount()
+	assert.Equal(t, int64(10), val)
 }
