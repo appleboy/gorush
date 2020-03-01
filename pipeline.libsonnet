@@ -64,6 +64,24 @@
         ],
       },
       {
+        name: 'hadolint',
+        image: 'hadolint/hadolint:latest-debian',
+        pull: 'always',
+        commands: [
+          'hadolint --version',
+          'hadolint docker/Dockerfile.linux.amd64',
+          'hadolint docker/Dockerfile.linux.arm64',
+          'hadolint docker/Dockerfile.linux.arm',
+          'hadolint docker/Dockerfile.windows.amd64',
+        ],
+        volumes: [
+          {
+            name: 'gopath',
+            path: '/go',
+          },
+        ],
+      },
+      {
         name: 'test',
         image: 'golang:1.14',
         pull: 'always',
