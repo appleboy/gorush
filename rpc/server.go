@@ -2,7 +2,7 @@ package rpc
 
 import (
 	"context"
-	"net/http"
+	"net"
 	"sync"
 	"time"
 
@@ -114,9 +114,9 @@ func RunGRPCServer(ctx context.Context) error {
 	reflection.Register(s)
 	gorush.LogAccess.Info("gRPC server is running on " + gorush.PushConf.GRPC.Port + " port.")
 
-	srv := &http.Server{
-		Addr:    ":" + gorush.PushConf.GRPC.Port,
-		Handler: s,
+	lis, err := net.Listen("tcp", ":"+gorush.PushConf.GRPC.Port)
+	if err != nil {
+		return err
 	}
 
 	var g errgroup.Group
@@ -124,13 +124,14 @@ func RunGRPCServer(ctx context.Context) error {
 		select {
 		case <-ctx.Done():
 			timeout := time.Duration(gorush.PushConf.Core.ShutdownTimeout) * time.Second
-			ctx, cancel := context.WithTimeout(context.Background(), timeout)
+			_, cancel := context.WithTimeout(context.Background(), timeout)
 			defer cancel()
-			return srv.Shutdown(ctx)
+			s.Stop()
+			return nil
 		}
 	})
 	g.Go(func() error {
-		return srv.ListenAndServe()
+		return s.Serve(lis)
 	})
 	return g.Wait()
 }
