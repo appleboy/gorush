@@ -4,11 +4,9 @@ import (
 	"context"
 	"net"
 	"sync"
-	"time"
 
 	"github.com/appleboy/gorush/gorush"
 	"github.com/appleboy/gorush/rpc/proto"
-	"golang.org/x/sync/errgroup"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -110,28 +108,20 @@ func RunGRPCServer(ctx context.Context) error {
 	rpcSrv := NewServer()
 	proto.RegisterGorushServer(s, rpcSrv)
 	proto.RegisterHealthServer(s, rpcSrv)
+
 	// Register reflection service on gRPC server.
 	reflection.Register(s)
-	gorush.LogAccess.Info("gRPC server is running on " + gorush.PushConf.GRPC.Port + " port.")
 
 	lis, err := net.Listen("tcp", ":"+gorush.PushConf.GRPC.Port)
 	if err != nil {
 		return err
 	}
-
-	var g errgroup.Group
-	g.Go(func() error {
+	gorush.LogAccess.Info("gRPC server is running on " + gorush.PushConf.GRPC.Port + " port.")
+	go func() {
 		select {
 		case <-ctx.Done():
-			timeout := time.Duration(gorush.PushConf.Core.ShutdownTimeout) * time.Second
-			_, cancel := context.WithTimeout(context.Background(), timeout)
-			defer cancel()
-			s.Stop()
-			return nil
+			s.GracefulStop() // graceful shutdown
 		}
-	})
-	g.Go(func() error {
-		return s.Serve(lis)
-	})
-	return g.Wait()
+	}()
+	return s.Serve(lis)
 }
