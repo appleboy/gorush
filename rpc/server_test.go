@@ -4,10 +4,10 @@ import (
 	"context"
 	"testing"
 
+	"github.com/appleboy/gorush/gorush"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
-
-	"github.com/appleboy/gorush/gorush"
 )
 
 const gRPCAddr = "localhost:9000"
