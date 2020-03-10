@@ -114,6 +114,7 @@ func RunGRPCServer(ctx context.Context) error {
 
 	lis, err := net.Listen("tcp", ":"+gorush.PushConf.GRPC.Port)
 	if err != nil {
+		gorush.LogError.Fatalln(err)
 		return err
 	}
 	gorush.LogAccess.Info("gRPC server is running on " + gorush.PushConf.GRPC.Port + " port.")
@@ -123,5 +124,8 @@ func RunGRPCServer(ctx context.Context) error {
 			s.GracefulStop() // graceful shutdown
 		}
 	}()
-	return s.Serve(lis)
+	if err = s.Serve(lis); err != nil {
+		gorush.LogError.Fatalln(err)
+	}
+	return err
 }
