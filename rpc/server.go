@@ -61,6 +61,7 @@ func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*prot
 		ContentAvailable: in.ContentAvailable,
 		ThreadID:         in.ThreadID,
 		MutableContent:   in.MutableContent,
+		Image:            in.Image,
 	}
 
 	if badge > 0 {
