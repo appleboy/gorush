@@ -52,7 +52,7 @@ type RequestPush struct {
 
 // PushNotification is single notification request
 type PushNotification struct {
-	ctx context.Context
+	Ctx context.Context
 	wg  *sync.WaitGroup
 	log *[]LogPushEntry
 

@@ -22,7 +22,7 @@ func SendNotification(req PushNotification) {
 	}
 
 	select {
-	case <-req.ctx.Done():
+	case <-req.Ctx.Done():
 	default:
 		switch req.Platform {
 		case PlatFormIos:
@@ -72,7 +72,7 @@ func queueNotification(ctx context.Context, req RequestPush) (int, []LogPushEntr
 
 	log := make([]LogPushEntry, 0, count)
 	for _, notification := range newNotification {
-		notification.ctx = ctx
+		notification.Ctx = ctx
 		if PushConf.Core.Sync {
 			notification.wg = &wg
 			notification.log = &log
