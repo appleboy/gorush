@@ -505,7 +505,8 @@ proto.proto.NotificationRequest.toObject = function(includeInstance, msg) {
     contentavailable: jspb.Message.getFieldWithDefault(msg, 11, false),
     threadid: jspb.Message.getFieldWithDefault(msg, 12, ""),
     mutablecontent: jspb.Message.getFieldWithDefault(msg, 13, false),
-    data: (f = msg.getData()) && google_protobuf_struct_pb.Struct.toObject(includeInstance, f)
+    data: (f = msg.getData()) && google_protobuf_struct_pb.Struct.toObject(includeInstance, f),
+    image: jspb.Message.getFieldWithDefault(msg, 15, "")
   };
 
   if (includeInstance) {
@@ -599,6 +600,10 @@ proto.proto.NotificationRequest.deserializeBinaryFromReader = function(msg, read
       var value = new google_protobuf_struct_pb.Struct;
       reader.readMessage(value,google_protobuf_struct_pb.Struct.deserializeBinaryFromReader);
       msg.setData(value);
+      break;
+    case 15:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setImage(value);
       break;
     default:
       reader.skipField();
@@ -727,6 +732,13 @@ proto.proto.NotificationRequest.serializeBinaryToWriter = function(message, writ
       14,
       f,
       google_protobuf_struct_pb.Struct.serializeBinaryToWriter
+    );
+  }
+  f = message.getImage();
+  if (f.length > 0) {
+    writer.writeString(
+      15,
+      f
     );
   }
 };
@@ -987,6 +999,21 @@ proto.proto.NotificationRequest.prototype.clearData = function() {
  */
 proto.proto.NotificationRequest.prototype.hasData = function() {
   return jspb.Message.getField(this, 14) != null;
+};
+
+
+/**
+ * optional string image = 15;
+ * @return {string}
+ */
+proto.proto.NotificationRequest.prototype.getImage = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 15, ""));
+};
+
+
+/** @param {string} value */
+proto.proto.NotificationRequest.prototype.setImage = function(value) {
+  jspb.Message.setProto3StringField(this, 15, value);
 };
 
 
