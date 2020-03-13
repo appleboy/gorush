@@ -20,7 +20,7 @@ require (
 	github.com/gin-contrib/logger v0.0.2
 	github.com/gin-gonic/gin v1.5.0
 	github.com/go-playground/universal-translator v0.17.0 // indirect
-	github.com/golang/protobuf v1.3.2
+	github.com/golang/protobuf v1.3.5
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/json-iterator/go v1.1.8 // indirect
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
@@ -47,11 +47,11 @@ require (
 	github.com/vmihailenco/msgpack v4.0.4+incompatible // indirect
 	go.etcd.io/bbolt v1.3.3 // indirect
 	golang.org/x/crypto v0.0.0-20191202143827-86a70503ff7e
-	golang.org/x/net v0.0.0-20191204025024-5ee1b9f4859a
+	golang.org/x/net v0.0.0-20200301022130-244492dfa37a
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
-	golang.org/x/sys v0.0.0-20191204072324-ce4227a45e2e // indirect
-	google.golang.org/genproto v0.0.0-20191203220235-3fa9dbf08042 // indirect
-	google.golang.org/grpc v1.25.1
+	golang.org/x/sys v0.0.0-20200302150141-5c8b2ff67527 // indirect
+	google.golang.org/genproto v0.0.0-20200313141609-30c55424f95d // indirect
+	google.golang.org/grpc v1.28.0
 	gopkg.in/go-playground/validator.v9 v9.30.2 // indirect
 	gopkg.in/redis.v5 v5.2.9
 	gopkg.in/yaml.v2 v2.2.7 // indirect

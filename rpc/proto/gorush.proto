@@ -31,6 +31,7 @@ message NotificationRequest {
   string threadID = 12;
   bool mutableContent = 13;
   google.protobuf.Struct data = 14;
+  string image = 15;
 }
 
 message NotificationReply {
