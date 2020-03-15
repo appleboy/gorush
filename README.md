@@ -197,19 +197,19 @@ go get -u -v github.com/appleboy/gorush
 On linux
 
 ```sh
-wget https://github.com/appleboy/gorush/releases/download/v1.11.2/gorush-v1.11.2-linux-amd64 -O gorush
+wget https://github.com/appleboy/gorush/releases/download/v1.12.0/gorush-v1.12.0-linux-amd64 -O gorush
 ```
 
 On OS X
 
 ```sh
-wget https://github.com/appleboy/gorush/releases/download/v1.11.2/gorush-v1.11.2-darwin-amd64 -O gorush
+wget https://github.com/appleboy/gorush/releases/download/v1.12.0/gorush-v1.12.0-darwin-amd64 -O gorush
 ```
 
 On Windows
 
 ```sh
-wget https://github.com/appleboy/gorush/releases/download/v1.11.2/gorush-v1.11.2-windows-amd64.exe -O gorush.exe
+wget https://github.com/appleboy/gorush/releases/download/v1.12.0/gorush-v1.12.0-windows-amd64.exe -O gorush.exe
 ```
 
 On macOS, use Homebrew.
