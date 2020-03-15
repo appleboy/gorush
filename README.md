@@ -533,6 +533,7 @@ The Request body must have a notifications array. The following is a parameter t
 | data                    | string array | extensible partition                                                                              | -        |                                                               |
 | retry                   | int          | retry send notification if fail response from server. Value must be small than `max_retry` field. | -        |                                                               |
 | topic                   | string       | send messages to topics                                                                           |          |                                                               |
+| image                   | string       | image url to show in notification                                                                 | -        | only Android                                                  |
 | api_key                 | string       | api key for firebase cloud message                                                                | -        | only Android                                                  |
 | to                      | string       | The value must be a registration token, notification key, or topic.                               | -        | only Android                                                  |
 | collapse_key            | string       | a key for collapsing notifications                                                                | -        | only Android                                                  |
@@ -914,7 +915,7 @@ func main() {
 }
 ```
 
-See the Node.js example and see more detail frome [README](rpc/example/node/README.md): 
+See the Node.js example and see more detail frome [README](rpc/example/node/README.md):
 
 [embedmd]:# (rpc/example/node/client.js js)
 ```js
