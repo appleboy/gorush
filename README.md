@@ -54,6 +54,7 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
   - [Run gorush in AWS Lambda](#run-gorush-in-aws-lambda)
     - [Build gorush binary](#build-gorush-binary)
     - [Deploy gorush application](#deploy-gorush-application)
+    - [Without an AWS account](#without-an-aws-account)
   - [Stargazers over time](#stargazers-over-time)
   - [License](#license)
 
@@ -63,6 +64,8 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 
 - [APNS](https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/APNSOverview.html)
 - [FCM](https://firebase.google.com/)
+
+[A live demo on Netlify](https://gorush.netlify.com/).
 
 ## Features
 
@@ -1129,6 +1132,25 @@ $ AWS_ACCESS_KEY_ID=YOUR_AWS_ACCESS_KEY_ID \
   drone-lambda --region ap-southeast-1 \
   --function-name gorush \
   --source release/linux/lambda/gorush
+```
+
+### Without an AWS account
+
+Or you can deploy gorush to alternative solution like [netlify functions](https://docs.netlify.com/functions/overview/). [Netlify](https://www.netlify.com/) lets you deploy serverless Lambda functions without an AWS account, and with function management handled directly within Netlify. Please see the netlify.toml file:
+
+```toml
+[build]
+  command = "./build.sh"
+  functions = "release/linux/lambda"
+
+[build.environment]
+  GO_IMPORT_PATH = "github.com/appleboy/gorush"
+  GO111MODULE = "on"
+
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/gorush/:splat"
+  status = 200
 ```
 
 ## Stargazers over time
