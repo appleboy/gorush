@@ -1,1 +1,0 @@
-make build_linux_lambda

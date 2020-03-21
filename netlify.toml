@@ -1,5 +1,5 @@
 [build]
-  command = "./build.sh"
+  command = "make build_linux_lambda"
   functions = "release/linux/lambda"
 
 [build.environment]
