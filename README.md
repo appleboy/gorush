@@ -94,7 +94,7 @@ See the default [YAML config example](config/config.yml):
 [embedmd]:# (config/testdata/config.yml yaml)
 ```yaml
 core:
-  enabled: true # enabale httpd server
+  enabled: true # enable httpd server
   address: "" # ip address to bind (default: any)
   shutdown_timeout: 30 # default is 30 second
   port: "8088" # ignore this port number if auto_tls is enabled (listen 443).
@@ -121,7 +121,7 @@ core:
     host: "" # which domains the Let's Encrypt will attempt
 
 grpc:
-  enabled: false # enabale gRPC server
+  enabled: false # enable gRPC server
   port: 9000
 
 api:
