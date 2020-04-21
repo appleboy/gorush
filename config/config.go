@@ -19,6 +19,7 @@ core:
   worker_num: 0 # default worker number is runtime.NumCPU()
   queue_num: 0 # default queue number is 8192
   max_notification: 100
+  max_concurrent_pushes: 100
   sync: false # set true if you need get error message from fail push notification in API response.
   feedback_hook_url: "" # set webhook url if you need get error message asynchronously from fail push notification in API response.
   feedback_timeout: 10 # default is 10 second
@@ -103,25 +104,26 @@ type ConfYaml struct {
 
 // SectionCore is sub section of config.
 type SectionCore struct {
-	Enabled         bool           `yaml:"enabled"`
-	Address         string         `yaml:"address"`
-	ShutdownTimeout int64          `yaml:"shutdown_timeout"`
-	Port            string         `yaml:"port"`
-	MaxNotification int64          `yaml:"max_notification"`
-	WorkerNum       int64          `yaml:"worker_num"`
-	QueueNum        int64          `yaml:"queue_num"`
-	Mode            string         `yaml:"mode"`
-	Sync            bool           `yaml:"sync"`
-	SSL             bool           `yaml:"ssl"`
-	CertPath        string         `yaml:"cert_path"`
-	KeyPath         string         `yaml:"key_path"`
-	CertBase64      string         `yaml:"cert_base64"`
-	KeyBase64       string         `yaml:"key_base64"`
-	HTTPProxy       string         `yaml:"http_proxy"`
-	FeedbackURL     string         `yaml:"feedback_hook_url"`
-	FeedbackTimeout int64          `yaml:"feedback_timeout"`
-	PID             SectionPID     `yaml:"pid"`
-	AutoTLS         SectionAutoTLS `yaml:"auto_tls"`
+	Enabled         	bool           `yaml:"enabled"`
+	Address         	string         `yaml:"address"`
+	ShutdownTimeout 	int64          `yaml:"shutdown_timeout"`
+	Port            	string         `yaml:"port"`
+	MaxNotification 	int64          `yaml:"max_notification"`
+	MaxConcurrentPushes	uint           `yaml:"max_concurrent_pushes"`
+	WorkerNum       	int64          `yaml:"worker_num"`
+	QueueNum        	int64          `yaml:"queue_num"`
+	Mode            	string         `yaml:"mode"`
+	Sync            	bool           `yaml:"sync"`
+	SSL             	bool           `yaml:"ssl"`
+	CertPath        	string         `yaml:"cert_path"`
+	KeyPath         	string         `yaml:"key_path"`
+	CertBase64      	string         `yaml:"cert_base64"`
+	KeyBase64       	string         `yaml:"key_base64"`
+	HTTPProxy       	string         `yaml:"http_proxy"`
+	FeedbackURL     	string         `yaml:"feedback_hook_url"`
+	FeedbackTimeout 	int64          `yaml:"feedback_timeout"`
+	PID             	SectionPID     `yaml:"pid"`
+	AutoTLS         	SectionAutoTLS `yaml:"auto_tls"`
 }
 
 // SectionAutoTLS support Let's Encrypt setting.
@@ -271,6 +273,7 @@ func LoadConf(confPath string) (ConfYaml, error) {
 	conf.Core.CertBase64 = viper.GetString("core.cert_base64")
 	conf.Core.KeyBase64 = viper.GetString("core.key_base64")
 	conf.Core.MaxNotification = int64(viper.GetInt("core.max_notification"))
+	conf.Core.MaxConcurrentPushes = viper.GetUint("core.max_concurrent_pushes")
 	conf.Core.HTTPProxy = viper.GetString("core.http_proxy")
 	conf.Core.PID.Enabled = viper.GetBool("core.pid.enabled")
 	conf.Core.PID.Path = viper.GetString("core.pid.path")

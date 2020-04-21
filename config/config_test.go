@@ -53,6 +53,7 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Core.KeyBase64)
 	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Core.CertBase64)
 	assert.Equal(suite.T(), int64(100), suite.ConfGorushDefault.Core.MaxNotification)
+	assert.Equal(suite.T(), uint(100), suite.ConfGorushDefault.Core.MaxConcurrentPushes)
 	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Core.HTTPProxy)
 	// Pid
 	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Core.PID.Enabled)
@@ -128,6 +129,7 @@ func (suite *ConfigTestSuite) TestValidateConf() {
 	assert.Equal(suite.T(), "", suite.ConfGorush.Core.CertBase64)
 	assert.Equal(suite.T(), "", suite.ConfGorush.Core.KeyBase64)
 	assert.Equal(suite.T(), int64(100), suite.ConfGorush.Core.MaxNotification)
+	assert.Equal(suite.T(), uint(100), suite.ConfGorushDefault.Core.MaxConcurrentPushes)
 	assert.Equal(suite.T(), "", suite.ConfGorush.Core.HTTPProxy)
 	// Pid
 	assert.Equal(suite.T(), false, suite.ConfGorush.Core.PID.Enabled)

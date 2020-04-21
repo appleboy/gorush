@@ -101,6 +101,7 @@ core:
   worker_num: 0 # default worker number is runtime.NumCPU()
   queue_num: 0 # default queue number is 8192
   max_notification: 100
+  max_concurrent_pushes: 100
   sync: false # set true if you need get error message from fail push notification in API response.
   feedback_hook_url: "" # set a hook url if you need get error message asynchronously from fail push notification in API response.
   feedback_timeout: 10 # default is 10 second
@@ -801,6 +802,7 @@ core:
   worker_num: 0 # default worker number is runtime.NumCPU()
   queue_num: 0 # default queue number is 8192
   max_notification: 100
+  max_concurrent_pushes: 100
   sync: false
 - feedback_hook_url: ""
 + feedback_hook_url: "https://exemple.com/api/hook"
@@ -814,6 +816,7 @@ core:
   worker_num: 0 # default worker number is runtime.NumCPU()
   queue_num: 0 # default queue number is 8192
   max_notification: 100
+  max_concurrent_pushes: 100
 - sync: false
 + sync: true
 ```
