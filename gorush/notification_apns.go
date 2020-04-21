@@ -398,7 +398,7 @@ Retry:
 			lg.Done()
 		}(token)
 	}
-	lg.Wait();
+	lg.Wait()
 
 	if isError && retryCount < maxRetry {
 		retryCount++

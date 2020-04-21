@@ -104,26 +104,26 @@ type ConfYaml struct {
 
 // SectionCore is sub section of config.
 type SectionCore struct {
-	Enabled         	bool           `yaml:"enabled"`
-	Address         	string         `yaml:"address"`
-	ShutdownTimeout 	int64          `yaml:"shutdown_timeout"`
-	Port            	string         `yaml:"port"`
-	MaxNotification 	int64          `yaml:"max_notification"`
-	MaxConcurrentPushes	uint           `yaml:"max_concurrent_pushes"`
-	WorkerNum       	int64          `yaml:"worker_num"`
-	QueueNum        	int64          `yaml:"queue_num"`
-	Mode            	string         `yaml:"mode"`
-	Sync            	bool           `yaml:"sync"`
-	SSL             	bool           `yaml:"ssl"`
-	CertPath        	string         `yaml:"cert_path"`
-	KeyPath         	string         `yaml:"key_path"`
-	CertBase64      	string         `yaml:"cert_base64"`
-	KeyBase64       	string         `yaml:"key_base64"`
-	HTTPProxy       	string         `yaml:"http_proxy"`
-	FeedbackURL     	string         `yaml:"feedback_hook_url"`
-	FeedbackTimeout 	int64          `yaml:"feedback_timeout"`
-	PID             	SectionPID     `yaml:"pid"`
-	AutoTLS         	SectionAutoTLS `yaml:"auto_tls"`
+	Enabled             bool           `yaml:"enabled"`
+	Address             string         `yaml:"address"`
+	ShutdownTimeout     int64          `yaml:"shutdown_timeout"`
+	Port                string         `yaml:"port"`
+	MaxNotification     int64          `yaml:"max_notification"`
+	MaxConcurrentPushes uint           `yaml:"max_concurrent_pushes"`
+	WorkerNum           int64          `yaml:"worker_num"`
+	QueueNum            int64          `yaml:"queue_num"`
+	Mode                string         `yaml:"mode"`
+	Sync                bool           `yaml:"sync"`
+	SSL                 bool           `yaml:"ssl"`
+	CertPath            string         `yaml:"cert_path"`
+	KeyPath             string         `yaml:"key_path"`
+	CertBase64          string         `yaml:"cert_base64"`
+	KeyBase64           string         `yaml:"key_base64"`
+	HTTPProxy           string         `yaml:"http_proxy"`
+	FeedbackURL         string         `yaml:"feedback_hook_url"`
+	FeedbackTimeout     int64          `yaml:"feedback_timeout"`
+	PID                 SectionPID     `yaml:"pid"`
+	AutoTLS             SectionAutoTLS `yaml:"auto_tls"`
 }
 
 // SectionAutoTLS support Let's Encrypt setting.
