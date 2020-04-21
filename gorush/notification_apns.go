@@ -360,7 +360,7 @@ Retry:
 	lg := limitgroup.NewLimitGroup(PushConf.Core.MaxConcurrentPushes)
 	for _, token := range req.Tokens {
 		lg.Add(1)
-		go func() {
+		go func(token string) {
 			notification.DeviceToken = token
 
 			// send ios notification
@@ -396,7 +396,7 @@ Retry:
 				StatStorage.AddIosSuccess(1)
 			}
 			lg.Done()
-		}()
+		}(token)
 	}
 	lg.Wait();
 
