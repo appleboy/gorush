@@ -158,7 +158,7 @@ type SectionIos struct {
 	KeyType             string `yaml:"key_type"`
 	Password            string `yaml:"password"`
 	Production          bool   `yaml:"production"`
-	MaxConcurrentPushes uint   `yaml:"max_concurrent_pushes"`
+	MaxConcurrentPushes int   `yaml:"max_concurrent_pushes"`
 	MaxRetry            int    `yaml:"max_retry"`
 	KeyID               string `yaml:"key_id"`
 	TeamID              string `yaml:"team_id"`
@@ -302,7 +302,7 @@ func LoadConf(confPath string) (ConfYaml, error) {
 	conf.Ios.KeyType = viper.GetString("ios.key_type")
 	conf.Ios.Password = viper.GetString("ios.password")
 	conf.Ios.Production = viper.GetBool("ios.production")
-	conf.Ios.MaxConcurrentPushes = viper.GetUint("ios.max_concurrent_pushes")
+	conf.Ios.MaxConcurrentPushes = viper.GetInt("ios.max_concurrent_pushes")
 	conf.Ios.MaxRetry = viper.GetInt("ios.max_retry")
 	conf.Ios.KeyID = viper.GetString("ios.key_id")
 	conf.Ios.TeamID = viper.GetString("ios.team_id")

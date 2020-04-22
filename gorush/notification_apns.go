@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/facebookgo/limitgroup"
+	"github.com/remeh/sizedwaitgroup"
 	"github.com/mitchellh/mapstructure"
 	"github.com/sideshow/apns2"
 	"github.com/sideshow/apns2/certificate"
@@ -357,9 +357,9 @@ Retry:
 	notification := GetIOSNotification(req)
 	client := getApnsClient(req)
 
-	lg := limitgroup.NewLimitGroup(PushConf.Ios.MaxConcurrentPushes)
+	swg := sizedwaitgroup.New(PushConf.Ios.MaxConcurrentPushes)
 	for _, token := range req.Tokens {
-		lg.Add(1)
+		swg.Add()
 		go func(token string) {
 			notification.DeviceToken = token
 
@@ -395,10 +395,10 @@ Retry:
 				LogPush(SucceededPush, token, req, nil)
 				StatStorage.AddIosSuccess(1)
 			}
-			lg.Done()
+			swg.Done()
 		}(token)
 	}
-	lg.Wait()
+	swg.Wait()
 
 	if isError && retryCount < maxRetry {
 		retryCount++

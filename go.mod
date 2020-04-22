@@ -17,7 +17,6 @@ require (
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect
 	github.com/dgraph-io/badger v1.6.0
 	github.com/dgryski/go-farm v0.0.0-20191112170834-c2139c5d712b // indirect
-	github.com/facebookgo/limitgroup v0.0.0-20150612190941-6abd8d71ec01
 	github.com/gin-contrib/logger v0.0.2
 	github.com/gin-gonic/gin v1.5.0
 	github.com/go-playground/universal-translator v0.17.0 // indirect
@@ -32,6 +31,7 @@ require (
 	github.com/prometheus/client_golang v1.2.1
 	github.com/prometheus/client_model v0.0.0-20191202183732-d1d2010b5bee // indirect
 	github.com/prometheus/procfs v0.0.8 // indirect
+	github.com/remeh/sizedwaitgroup v1.0.0
 	github.com/rs/zerolog v1.16.0
 	github.com/sideshow/apns2 v0.20.0
 	github.com/sirupsen/logrus v1.4.2
