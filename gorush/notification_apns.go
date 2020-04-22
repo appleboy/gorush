@@ -398,7 +398,7 @@ Retry:
 				StatStorage.AddIosSuccess(1)
 			}
 			// free push slot
-			<- MaxConcurrentIOSPushes
+			<-MaxConcurrentIOSPushes
 			wg.Done()
 		}(token)
 	}
