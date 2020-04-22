@@ -678,6 +678,7 @@ func TestAPNSClientUseProxy(t *testing.T) {
 
 func TestPushToIOS(t *testing.T) {
 	PushConf, _ = config.LoadConf("")
+	MaxConcurrentIOSPushes = make(chan struct{}, 2)
 
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.KeyPath = "../certificate/certificate-valid.pem"
