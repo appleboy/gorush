@@ -357,7 +357,7 @@ Retry:
 	notification := GetIOSNotification(req)
 	client := getApnsClient(req)
 
-	lg := limitgroup.NewLimitGroup(PushConf.Core.MaxConcurrentPushes)
+	lg := limitgroup.NewLimitGroup(PushConf.Ios.MaxConcurrentPushes)
 	for _, token := range req.Tokens {
 		lg.Add(1)
 		go func(token string) {

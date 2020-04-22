@@ -53,7 +53,6 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Core.KeyBase64)
 	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Core.CertBase64)
 	assert.Equal(suite.T(), int64(100), suite.ConfGorushDefault.Core.MaxNotification)
-	assert.Equal(suite.T(), uint(100), suite.ConfGorushDefault.Core.MaxConcurrentPushes)
 	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Core.HTTPProxy)
 	// Pid
 	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Core.PID.Enabled)
@@ -84,6 +83,7 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 	assert.Equal(suite.T(), "pem", suite.ConfGorushDefault.Ios.KeyType)
 	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Ios.Password)
 	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Ios.Production)
+	assert.Equal(suite.T(), uint(100), suite.ConfGorushDefault.Ios.MaxConcurrentPushes)
 	assert.Equal(suite.T(), 0, suite.ConfGorushDefault.Ios.MaxRetry)
 	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Ios.KeyID)
 	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Ios.TeamID)
@@ -129,7 +129,6 @@ func (suite *ConfigTestSuite) TestValidateConf() {
 	assert.Equal(suite.T(), "", suite.ConfGorush.Core.CertBase64)
 	assert.Equal(suite.T(), "", suite.ConfGorush.Core.KeyBase64)
 	assert.Equal(suite.T(), int64(100), suite.ConfGorush.Core.MaxNotification)
-	assert.Equal(suite.T(), uint(100), suite.ConfGorushDefault.Core.MaxConcurrentPushes)
 	assert.Equal(suite.T(), "", suite.ConfGorush.Core.HTTPProxy)
 	// Pid
 	assert.Equal(suite.T(), false, suite.ConfGorush.Core.PID.Enabled)
@@ -160,6 +159,7 @@ func (suite *ConfigTestSuite) TestValidateConf() {
 	assert.Equal(suite.T(), "pem", suite.ConfGorush.Ios.KeyType)
 	assert.Equal(suite.T(), "", suite.ConfGorush.Ios.Password)
 	assert.Equal(suite.T(), false, suite.ConfGorush.Ios.Production)
+	assert.Equal(suite.T(), uint(100), suite.ConfGorush.Ios.MaxConcurrentPushes)
 	assert.Equal(suite.T(), 0, suite.ConfGorush.Ios.MaxRetry)
 	assert.Equal(suite.T(), "", suite.ConfGorush.Ios.KeyID)
 	assert.Equal(suite.T(), "", suite.ConfGorush.Ios.TeamID)
