@@ -356,7 +356,9 @@ Retry:
 
 	notification := GetIOSNotification(req)
 	clients := make(chan *apns2.Client, PushConf.Ios.MaxConcurrentPushes)
-	clients <- getApnsClient(req)
+	for i := uint(0); i < PushConf.Ios.MaxConcurrentPushes; i++ {
+		clients <- getApnsClient(req)
+	}
 
 	var wg sync.WaitGroup
 	for _, token := range req.Tokens {
