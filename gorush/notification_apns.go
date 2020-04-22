@@ -355,14 +355,12 @@ Retry:
 	)
 
 	notification := GetIOSNotification(req)
-	clients := make(chan *apns2.Client, PushConf.Ios.MaxConcurrentPushes)
-	for i := uint(0); i < PushConf.Ios.MaxConcurrentPushes; i++ {
-		clients <- getApnsClient(req)
-	}
+	client := getApnsClient(req)
 
 	var wg sync.WaitGroup
 	for _, token := range req.Tokens {
-		client := <-clients
+		// occupy push slot
+		MaxConcurrentIOSPushes <- struct{}{}
 		wg.Add(1)
 		go func(token string) {
 			notification.DeviceToken = token
@@ -399,8 +397,9 @@ Retry:
 				LogPush(SucceededPush, token, req, nil)
 				StatStorage.AddIosSuccess(1)
 			}
+			// free push slot
+			<- MaxConcurrentIOSPushes
 			wg.Done()
-			clients <- client
 		}(token)
 	}
 	wg.Wait()
