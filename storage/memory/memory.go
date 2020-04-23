@@ -40,6 +40,10 @@ func (s *Storage) Init() error {
 	return nil
 }
 
+func (s *Storage) Close() error {
+	return nil
+}
+
 // Reset Client storage.
 func (s *Storage) Reset() {
 	atomic.StoreInt64(&s.stat.TotalCount, 0)

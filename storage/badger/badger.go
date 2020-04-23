@@ -25,10 +25,12 @@ type Storage struct {
 	config config.ConfYaml
 	opts   badger.Options
 	name   string
+	db     *badger.DB
 }
 
 // Init client storage.
 func (s *Storage) Init() error {
+	var err error
 	s.name = "badger"
 	dbPath := s.config.Stat.BadgerDB.Path
 	if dbPath == "" {
@@ -36,7 +38,21 @@ func (s *Storage) Init() error {
 	}
 	s.opts = badger.DefaultOptions(dbPath)
 
+	s.db, err = badger.Open(s.opts)
+
+	if err != nil {
+		return err
+	}
+
 	return nil
+}
+
+func (s *Storage) Close() error {
+	if s.db == nil {
+		return nil
+	}
+
+	return s.db.Close()
 }
 
 // Reset Client storage.
@@ -49,21 +65,7 @@ func (s *Storage) Reset() {
 }
 
 func (s *Storage) setBadger(key string, count int64) {
-	db, err := badger.Open(s.opts)
-
-	if err != nil {
-		log.Println(s.name, "open error:", err.Error())
-		return
-	}
-
-	defer func() {
-		err := db.Close()
-		if err != nil {
-			log.Println(s.name, "close error:", err.Error())
-		}
-	}()
-
-	err = db.Update(func(txn *badger.Txn) error {
+	err := s.db.Update(func(txn *badger.Txn) error {
 		value := convert.ToString(count).(string)
 		return txn.Set([]byte(key), []byte(value))
 	})
@@ -74,21 +76,7 @@ func (s *Storage) setBadger(key string, count int64) {
 }
 
 func (s *Storage) getBadger(key string, count *int64) {
-	db, err := badger.Open(s.opts)
-
-	if err != nil {
-		log.Println(s.name, "open error:", err.Error())
-		return
-	}
-
-	defer func() {
-		err := db.Close()
-		if err != nil {
-			log.Println(s.name, "close error:", err.Error())
-		}
-	}()
-
-	err = db.View(func(txn *badger.Txn) error {
+	err := s.db.View(func(txn *badger.Txn) error {
 		item, err := txn.Get([]byte(key))
 		if err != nil {
 			return err

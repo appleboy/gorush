@@ -41,4 +41,6 @@ func TestMemoryEngine(t *testing.T) {
 	memory.Reset()
 	val = memory.GetTotalCount()
 	assert.Equal(t, int64(0), val)
+
+	assert.NoError(t, memory.Close())
 }

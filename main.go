@@ -255,8 +255,13 @@ func main() {
 		gorush.LogAccess.Info("close the notification queue channel, current queue len: ", len(gorush.QueueNotification))
 		close(gorush.QueueNotification)
 		wg.Wait()
-		close(finished)
 		gorush.LogAccess.Info("the notification queue has been clear")
+		close(finished)
+		// close the connection with storage
+		gorush.LogAccess.Info("close the storage connection: ", gorush.PushConf.Stat.Engine)
+		if err := gorush.StatStorage.Close(); err != nil {
+			gorush.LogError.Fatal("can't close the storage connection: ", err.Error())
+		}
 	})
 
 	gorush.InitWorkers(ctx, wg, gorush.PushConf.Core.WorkerNum, gorush.PushConf.Core.QueueNum)
