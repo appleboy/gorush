@@ -10,7 +10,7 @@ import (
 	"github.com/appleboy/gorush/storage"
 
 	"github.com/appleboy/com/convert"
-	"github.com/dgraph-io/badger"
+	"github.com/dgraph-io/badger/v2"
 )
 
 // New func implements the storage interface for gorush (https://github.com/appleboy/gorush)

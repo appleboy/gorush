@@ -3,8 +3,6 @@ module github.com/appleboy/gorush
 go 1.13
 
 require (
-	github.com/AndreasBriese/bbloom v0.0.0-20190825152654-46b345b51c96 // indirect
-	github.com/DataDog/zstd v1.4.0 // indirect
 	github.com/Sereal/Sereal v0.0.0-20190606082811-cf1bab6c7a3a // indirect
 	github.com/apex/gateway v1.1.1
 	github.com/appleboy/com v0.0.2
@@ -15,13 +13,12 @@ require (
 	github.com/aws/aws-lambda-go v1.13.3 // indirect
 	github.com/buger/jsonparser v0.0.0-20191204142016-1a29609e0929
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect
-	github.com/dgraph-io/badger v1.6.0
+	github.com/dgraph-io/badger/v2 v2.0.3
 	github.com/dgryski/go-farm v0.0.0-20191112170834-c2139c5d712b // indirect
 	github.com/gin-contrib/logger v0.0.2
 	github.com/gin-gonic/gin v1.5.0
 	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/golang/protobuf v1.3.5
-	github.com/golang/snappy v0.0.1 // indirect
 	github.com/json-iterator/go v1.1.8 // indirect
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
 	github.com/leodido/go-urn v1.2.0 // indirect
