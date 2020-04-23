@@ -329,6 +329,7 @@ func LoadConf(confPath string) (ConfYaml, error) {
 	conf.Stat.BoltDB.Bucket = viper.GetString("stat.boltdb.bucket")
 	conf.Stat.BuntDB.Path = viper.GetString("stat.buntdb.path")
 	conf.Stat.LevelDB.Path = viper.GetString("stat.leveldb.path")
+	conf.Stat.BadgerDB.Path = viper.GetString("stat.badgerdb.path")
 
 	// gRPC Server
 	conf.GRPC.Enabled = viper.GetBool("grpc.enabled")
