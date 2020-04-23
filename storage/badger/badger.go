@@ -10,7 +10,7 @@ import (
 	"github.com/appleboy/gorush/storage"
 
 	"github.com/appleboy/com/convert"
-	"github.com/dgraph-io/badger"
+	"github.com/dgraph-io/badger/v2"
 )
 
 // New func implements the storage interface for gorush (https://github.com/appleboy/gorush)
@@ -30,7 +30,12 @@ type Storage struct {
 // Init client storage.
 func (s *Storage) Init() error {
 	s.name = "badger"
-	s.opts = badger.DefaultOptions(os.TempDir() + "badger")
+	dbPath := s.config.Stat.BadgerDB.Path
+	if dbPath == "" {
+		dbPath = os.TempDir() + "badger"
+	}
+	s.opts = badger.DefaultOptions(dbPath)
+
 	return nil
 }
 
