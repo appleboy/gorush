@@ -7,6 +7,7 @@ import (
 	"errors"
 	"net/http"
 	"path/filepath"
+	"sync"
 	"time"
 
 	"github.com/mitchellh/mapstructure"
@@ -356,43 +357,52 @@ Retry:
 	notification := GetIOSNotification(req)
 	client := getApnsClient(req)
 
+	var wg sync.WaitGroup
 	for _, token := range req.Tokens {
-		notification.DeviceToken = token
+		// occupy push slot
+		MaxConcurrentIOSPushes <- struct{}{}
+		wg.Add(1)
+		go func(token string) {
+			notification.DeviceToken = token
 
-		// send ios notification
-		res, err := client.Push(notification)
+			// send ios notification
+			res, err := client.Push(notification)
 
-		if err != nil || res.StatusCode != 200 {
-			if err == nil {
-				// error message:
-				// ref: https://github.com/sideshow/apns2/blob/master/response.go#L14-L65
-				err = errors.New(res.Reason)
+			if err != nil || res.StatusCode != 200 {
+				if err == nil {
+					// error message:
+					// ref: https://github.com/sideshow/apns2/blob/master/response.go#L14-L65
+					err = errors.New(res.Reason)
+				}
+				// apns server error
+				LogPush(FailedPush, token, req, err)
+
+				if PushConf.Core.Sync {
+					req.AddLog(getLogPushEntry(FailedPush, token, req, err))
+				} else if PushConf.Core.FeedbackURL != "" {
+					go func(logger *logrus.Logger, log LogPushEntry, url string, timeout int64) {
+						err := DispatchFeedback(log, url, timeout)
+						if err != nil {
+							logger.Error(err)
+						}
+					}(LogError, getLogPushEntry(FailedPush, token, req, err), PushConf.Core.FeedbackURL, PushConf.Core.FeedbackTimeout)
+				}
+
+				StatStorage.AddIosError(1)
+				newTokens = append(newTokens, token)
+				isError = true
 			}
-			// apns server error
-			LogPush(FailedPush, token, req, err)
 
-			if PushConf.Core.Sync {
-				req.AddLog(getLogPushEntry(FailedPush, token, req, err))
-			} else if PushConf.Core.FeedbackURL != "" {
-				go func(logger *logrus.Logger, log LogPushEntry, url string, timeout int64) {
-					err := DispatchFeedback(log, url, timeout)
-					if err != nil {
-						logger.Error(err)
-					}
-				}(LogError, getLogPushEntry(FailedPush, token, req, err), PushConf.Core.FeedbackURL, PushConf.Core.FeedbackTimeout)
+			if res.Sent() && !isError {
+				LogPush(SucceededPush, token, req, nil)
+				StatStorage.AddIosSuccess(1)
 			}
-
-			StatStorage.AddIosError(1)
-			newTokens = append(newTokens, token)
-			isError = true
-			continue
-		}
-
-		if res.Sent() {
-			LogPush(SucceededPush, token, req, nil)
-			StatStorage.AddIosSuccess(1)
-		}
+			// free push slot
+			<-MaxConcurrentIOSPushes
+			wg.Done()
+		}(token)
 	}
+	wg.Wait()
 
 	if isError && retryCount < maxRetry {
 		retryCount++

@@ -104,6 +104,9 @@ func main() {
 		return
 	}
 
+	// Initialize push slots for concurrent iOS pushes
+	gorush.MaxConcurrentIOSPushes = make(chan struct{}, gorush.PushConf.Ios.MaxConcurrentPushes)
+
 	if opts.Ios.KeyPath != "" {
 		gorush.PushConf.Ios.KeyPath = opts.Ios.KeyPath
 	}
