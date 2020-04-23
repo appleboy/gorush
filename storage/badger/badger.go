@@ -10,7 +10,7 @@ import (
 	"github.com/appleboy/gorush/storage"
 
 	"github.com/appleboy/com/convert"
-	"github.com/dgraph-io/badger"
+	"github.com/dgraph-io/badger/v2"
 )
 
 // New func implements the storage interface for gorush (https://github.com/appleboy/gorush)
@@ -25,13 +25,31 @@ type Storage struct {
 	config config.ConfYaml
 	opts   badger.Options
 	name   string
+	db     *badger.DB
 }
 
 // Init client storage.
 func (s *Storage) Init() error {
+	var err error
 	s.name = "badger"
-	s.opts = badger.DefaultOptions(os.TempDir() + "badger")
-	return nil
+	dbPath := s.config.Stat.BadgerDB.Path
+	if dbPath == "" {
+		dbPath = os.TempDir() + "badger"
+	}
+	s.opts = badger.DefaultOptions(dbPath)
+
+	s.db, err = badger.Open(s.opts)
+
+	return err
+}
+
+// Close the storage connection
+func (s *Storage) Close() error {
+	if s.db == nil {
+		return nil
+	}
+
+	return s.db.Close()
 }
 
 // Reset Client storage.
@@ -44,21 +62,7 @@ func (s *Storage) Reset() {
 }
 
 func (s *Storage) setBadger(key string, count int64) {
-	db, err := badger.Open(s.opts)
-
-	if err != nil {
-		log.Println(s.name, "open error:", err.Error())
-		return
-	}
-
-	defer func() {
-		err := db.Close()
-		if err != nil {
-			log.Println(s.name, "close error:", err.Error())
-		}
-	}()
-
-	err = db.Update(func(txn *badger.Txn) error {
+	err := s.db.Update(func(txn *badger.Txn) error {
 		value := convert.ToString(count).(string)
 		return txn.Set([]byte(key), []byte(value))
 	})
@@ -69,21 +73,7 @@ func (s *Storage) setBadger(key string, count int64) {
 }
 
 func (s *Storage) getBadger(key string, count *int64) {
-	db, err := badger.Open(s.opts)
-
-	if err != nil {
-		log.Println(s.name, "open error:", err.Error())
-		return
-	}
-
-	defer func() {
-		err := db.Close()
-		if err != nil {
-			log.Println(s.name, "close error:", err.Error())
-		}
-	}()
-
-	err = db.View(func(txn *badger.Txn) error {
+	err := s.db.View(func(txn *badger.Txn) error {
 		item, err := txn.Get([]byte(key))
 		if err != nil {
 			return err

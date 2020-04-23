@@ -106,6 +106,7 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 
 	assert.Equal(suite.T(), "bunt.db", suite.ConfGorushDefault.Stat.BuntDB.Path)
 	assert.Equal(suite.T(), "level.db", suite.ConfGorushDefault.Stat.LevelDB.Path)
+	assert.Equal(suite.T(), "badger.db", suite.ConfGorushDefault.Stat.BadgerDB.Path)
 
 	// gRPC
 	assert.Equal(suite.T(), false, suite.ConfGorushDefault.GRPC.Enabled)
@@ -182,6 +183,7 @@ func (suite *ConfigTestSuite) TestValidateConf() {
 
 	assert.Equal(suite.T(), "bunt.db", suite.ConfGorush.Stat.BuntDB.Path)
 	assert.Equal(suite.T(), "level.db", suite.ConfGorush.Stat.LevelDB.Path)
+	assert.Equal(suite.T(), "badger.db", suite.ConfGorush.Stat.BadgerDB.Path)
 
 	// gRPC
 	assert.Equal(suite.T(), false, suite.ConfGorush.GRPC.Enabled)

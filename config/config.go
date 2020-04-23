@@ -89,6 +89,8 @@ stat:
     path: "bunt.db"
   leveldb:
     path: "level.db"
+  badgerdb:
+    path: "badger.db"
 `)
 
 // ConfYaml is config structure.
@@ -176,11 +178,12 @@ type SectionLog struct {
 
 // SectionStat is sub section of config.
 type SectionStat struct {
-	Engine  string         `yaml:"engine"`
-	Redis   SectionRedis   `yaml:"redis"`
-	BoltDB  SectionBoltDB  `yaml:"boltdb"`
-	BuntDB  SectionBuntDB  `yaml:"buntdb"`
-	LevelDB SectionLevelDB `yaml:"leveldb"`
+	Engine   string          `yaml:"engine"`
+	Redis    SectionRedis    `yaml:"redis"`
+	BoltDB   SectionBoltDB   `yaml:"boltdb"`
+	BuntDB   SectionBuntDB   `yaml:"buntdb"`
+	LevelDB  SectionLevelDB  `yaml:"leveldb"`
+	BadgerDB SectionBadgerDB `yaml:"badgerdb"`
 }
 
 // SectionRedis is sub section of config.
@@ -203,6 +206,11 @@ type SectionBuntDB struct {
 
 // SectionLevelDB is sub section of config.
 type SectionLevelDB struct {
+	Path string `yaml:"path"`
+}
+
+// SectionBadgerDB is sub section of config.
+type SectionBadgerDB struct {
 	Path string `yaml:"path"`
 }
 
@@ -324,6 +332,7 @@ func LoadConf(confPath string) (ConfYaml, error) {
 	conf.Stat.BoltDB.Bucket = viper.GetString("stat.boltdb.bucket")
 	conf.Stat.BuntDB.Path = viper.GetString("stat.buntdb.path")
 	conf.Stat.LevelDB.Path = viper.GetString("stat.leveldb.path")
+	conf.Stat.BadgerDB.Path = viper.GetString("stat.badgerdb.path")
 
 	// gRPC Server
 	conf.GRPC.Enabled = viper.GetBool("grpc.enabled")

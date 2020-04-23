@@ -21,11 +21,23 @@ func New(config config.ConfYaml) *Storage {
 // Storage is interface structure
 type Storage struct {
 	config config.ConfYaml
+	db     *buntdb.DB
 }
 
 // Init client storage.
 func (s *Storage) Init() error {
-	return nil
+	var err error
+	s.db, err = buntdb.Open(s.config.Stat.BuntDB.Path)
+	return err
+}
+
+// Close the storage connection
+func (s *Storage) Close() error {
+	if s.db == nil {
+		return nil
+	}
+
+	return s.db.Close()
 }
 
 // Reset Client storage.
@@ -38,9 +50,7 @@ func (s *Storage) Reset() {
 }
 
 func (s *Storage) setBuntDB(key string, count int64) {
-	db, _ := buntdb.Open(s.config.Stat.BuntDB.Path)
-
-	err := db.Update(func(tx *buntdb.Tx) error {
+	err := s.db.Update(func(tx *buntdb.Tx) error {
 		if _, _, err := tx.Set(key, fmt.Sprintf("%d", count), nil); err != nil {
 			return err
 		}
@@ -50,19 +60,10 @@ func (s *Storage) setBuntDB(key string, count int64) {
 	if err != nil {
 		log.Println("BuntDB update error:", err.Error())
 	}
-
-	defer func() {
-		err := db.Close()
-		if err != nil {
-			log.Println("BuntDB error:", err.Error())
-		}
-	}()
 }
 
 func (s *Storage) getBuntDB(key string, count *int64) {
-	db, _ := buntdb.Open(s.config.Stat.BuntDB.Path)
-
-	err := db.View(func(tx *buntdb.Tx) error {
+	err := s.db.View(func(tx *buntdb.Tx) error {
 		val, _ := tx.Get(key)
 		*count, _ = strconv.ParseInt(val, 10, 64)
 		return nil
@@ -71,13 +72,6 @@ func (s *Storage) getBuntDB(key string, count *int64) {
 	if err != nil {
 		log.Println("BuntDB get error:", err.Error())
 	}
-
-	defer func() {
-		err := db.Close()
-		if err != nil {
-			log.Println("BuntDB error:", err.Error())
-		}
-	}()
 }
 
 // AddTotalCount record push notification count.
