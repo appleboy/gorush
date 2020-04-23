@@ -30,7 +30,12 @@ type Storage struct {
 // Init client storage.
 func (s *Storage) Init() error {
 	s.name = "badger"
-	s.opts = badger.DefaultOptions(os.TempDir() + "badger")
+	dbPath := s.config.Stat.BadgerDB.Path
+	if dbPath == "" {
+		dbPath = os.TempDir() + "badger"
+	}
+	s.opts = badger.DefaultOptions(dbPath)
+
 	return nil
 }
 

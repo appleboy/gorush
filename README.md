@@ -170,6 +170,8 @@ stat:
     path: "bunt.db"
   leveldb:
     path: "level.db"
+  badgerdb:
+    path: "level.db"
 ```
 
 ## Memory Usage
