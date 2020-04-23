@@ -17,6 +17,7 @@ require (
 	github.com/gin-contrib/logger v0.0.2
 	github.com/gin-gonic/gin v1.5.0
 	github.com/go-playground/universal-translator v0.17.0 // indirect
+	github.com/go-redis/redis/v7 v7.2.0
 	github.com/golang/protobuf v1.3.5
 	github.com/json-iterator/go v1.1.8 // indirect
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
@@ -47,6 +48,5 @@ require (
 	google.golang.org/genproto v0.0.0-20200313141609-30c55424f95d // indirect
 	google.golang.org/grpc v1.28.0
 	gopkg.in/go-playground/validator.v9 v9.30.2 // indirect
-	gopkg.in/redis.v5 v5.2.9
 	gopkg.in/yaml.v2 v2.2.7 // indirect
 )
