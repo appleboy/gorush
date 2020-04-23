@@ -40,11 +40,7 @@ func (s *Storage) Init() error {
 
 	s.db, err = badger.Open(s.opts)
 
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
 
 // Close the storage connection
