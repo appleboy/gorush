@@ -17,6 +17,7 @@ branches:
 
 install:
   - ps: |
+      choco install -y mingw; export PATH=/c/tools/mingw64/bin:"$PATH"
       docker version
       go version
 
