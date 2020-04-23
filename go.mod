@@ -1,15 +1,14 @@
 module github.com/appleboy/gorush
 
-go 1.13
+go 1.14
 
 require (
-	github.com/Sereal/Sereal v0.0.0-20190606082811-cf1bab6c7a3a // indirect
 	github.com/apex/gateway v1.1.1
 	github.com/appleboy/com v0.0.2
 	github.com/appleboy/gin-status-api v1.1.0
 	github.com/appleboy/go-fcm v0.1.5
 	github.com/appleboy/gofight/v2 v2.1.2
-	github.com/asdine/storm v2.1.2+incompatible
+	github.com/asdine/storm/v3 v3.1.1
 	github.com/aws/aws-lambda-go v1.13.3 // indirect
 	github.com/buger/jsonparser v0.0.0-20191204142016-1a29609e0929
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect
@@ -41,8 +40,6 @@ require (
 	github.com/tidwall/buntdb v1.1.2
 	github.com/tidwall/gjson v1.3.5 // indirect
 	github.com/tj/assert v0.0.0-20171129193455-018094318fb0 // indirect
-	github.com/vmihailenco/msgpack v4.0.4+incompatible // indirect
-	go.etcd.io/bbolt v1.3.3 // indirect
 	golang.org/x/crypto v0.0.0-20191202143827-86a70503ff7e
 	golang.org/x/net v0.0.0-20200301022130-244492dfa37a
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
