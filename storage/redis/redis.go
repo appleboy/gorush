@@ -6,7 +6,7 @@ import (
 	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/storage"
 
-	"gopkg.in/redis.v5"
+	"github.com/go-redis/redis/v7"
 )
 
 // New func implements the storage interface for gorush (https://github.com/appleboy/gorush)
