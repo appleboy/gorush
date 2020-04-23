@@ -40,6 +40,7 @@ func (s *Storage) Init() error {
 	return nil
 }
 
+// Close the storage connection
 func (s *Storage) Close() error {
 	return nil
 }

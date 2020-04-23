@@ -39,6 +39,7 @@ func (s *Storage) Init() error {
 	return err
 }
 
+// Close the storage connection
 func (s *Storage) Close() error {
 	if s.client == nil {
 		return nil
@@ -113,7 +114,7 @@ func (s *Storage) GetAndroidSuccess() int64 {
 	return count
 }
 
-// GetAndroisdError show error counts of Android notification.
+// GetAndroidError show error counts of Android notification.
 func (s *Storage) GetAndroidError() int64 {
 	var count int64
 	s.getInt64(storage.AndroidErrorKey, &count)

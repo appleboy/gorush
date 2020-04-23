@@ -31,6 +31,7 @@ func (s *Storage) Init() error {
 	return err
 }
 
+// Close the storage connection
 func (s *Storage) Close() error {
 	if s.db == nil {
 		return nil
