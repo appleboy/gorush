@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/windows/nanoserver:1903
+FROM mcr.microsoft.com/windows/nanoserver:1909
 
 LABEL maintainer="Bo-Yi Wu <appleboy.tw@gmail.com>" \
   org.label-schema.name="Gorush" \
