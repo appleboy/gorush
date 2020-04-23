@@ -19,11 +19,23 @@ func New(config config.ConfYaml) *Storage {
 // Storage is interface structure
 type Storage struct {
 	config config.ConfYaml
+	db     *storm.DB
 }
 
 // Init client storage.
 func (s *Storage) Init() error {
-	return nil
+	var err error
+	s.db, err = storm.Open(s.config.Stat.BoltDB.Path)
+	return err
+}
+
+// Close the storage connection
+func (s *Storage) Close() error {
+	if s.db == nil {
+		return nil
+	}
+
+	return s.db.Close()
 }
 
 // Reset Client storage.
@@ -36,33 +48,17 @@ func (s *Storage) Reset() {
 }
 
 func (s *Storage) setBoltDB(key string, count int64) {
-	db, _ := storm.Open(s.config.Stat.BoltDB.Path)
-	err := db.Set(s.config.Stat.BoltDB.Bucket, key, count)
+	err := s.db.Set(s.config.Stat.BoltDB.Bucket, key, count)
 	if err != nil {
 		log.Println("BoltDB set error:", err.Error())
 	}
-
-	defer func() {
-		err := db.Close()
-		if err != nil {
-			log.Println("BoltDB error:", err.Error())
-		}
-	}()
 }
 
 func (s *Storage) getBoltDB(key string, count *int64) {
-	db, _ := storm.Open(s.config.Stat.BoltDB.Path)
-	err := db.Get(s.config.Stat.BoltDB.Bucket, key, count)
+	err := s.db.Get(s.config.Stat.BoltDB.Bucket, key, count)
 	if err != nil {
 		log.Println("BoltDB get error:", err.Error())
 	}
-
-	defer func() {
-		err := db.Close()
-		if err != nil {
-			log.Println("BoltDB error:", err.Error())
-		}
-	}()
 }
 
 // AddTotalCount record push notification count.
