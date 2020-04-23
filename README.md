@@ -171,7 +171,7 @@ stat:
   leveldb:
     path: "level.db"
   badgerdb:
-    path: "level.db"
+    path: "badger.db"
 ```
 
 ## Memory Usage
