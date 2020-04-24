@@ -44,4 +44,6 @@ func TestBadgerEngine(t *testing.T) {
 	badger.Reset()
 	val = badger.GetAndroidError()
 	assert.Equal(t, int64(0), val)
+
+	assert.NoError(t, badger.Close())
 }

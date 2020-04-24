@@ -69,4 +69,6 @@ func TestRedisEngine(t *testing.T) {
 	wg.Wait()
 	val = redis.GetTotalCount()
 	assert.Equal(t, int64(10), val)
+
+	assert.NoError(t, redis.Close())
 }
