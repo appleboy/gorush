@@ -50,8 +50,6 @@ func (s *Server) Check(ctx context.Context, in *proto.HealthCheckRequest) (*prot
 func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*proto.NotificationReply, error) {
 	var badge = int(in.Badge)
 	notification := gorush.PushNotification{
-		Ctx: ctx,
-
 		Platform:         int(in.Platform),
 		Tokens:           in.Tokens,
 		Message:          in.Message,
@@ -92,7 +90,7 @@ func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*prot
 		}
 	}
 
-	go gorush.SendNotification(notification)
+	go gorush.SendNotification(ctx, notification)
 
 	return &proto.NotificationReply{
 		Success: true,
@@ -125,6 +123,7 @@ func RunGRPCServer(ctx context.Context) error {
 		select {
 		case <-ctx.Done():
 			s.GracefulStop() // graceful shutdown
+			gorush.LogAccess.Info("shutdown the gRPC server")
 		}
 	}()
 	if err = s.Serve(lis); err != nil {
