@@ -16,27 +16,23 @@ func InitWorkers(ctx context.Context, wg *sync.WaitGroup, workerNum int64, queue
 }
 
 // SendNotification is send message to iOS or Android
-func SendNotification(req PushNotification) {
+func SendNotification(ctx context.Context, req PushNotification) {
 	if PushConf.Core.Sync {
 		defer req.WaitDone()
 	}
 
-	select {
-	case <-req.Ctx.Done():
-	default:
-		switch req.Platform {
-		case PlatFormIos:
-			PushToIOS(req)
-		case PlatFormAndroid:
-			PushToAndroid(req)
-		}
+	switch req.Platform {
+	case PlatFormIos:
+		PushToIOS(req)
+	case PlatFormAndroid:
+		PushToAndroid(req)
 	}
 }
 
 func startWorker(ctx context.Context, wg *sync.WaitGroup, num int64) {
 	defer wg.Done()
 	for notification := range QueueNotification {
-		SendNotification(notification)
+		SendNotification(ctx, notification)
 	}
 	LogAccess.Info("closed the worker num ", num)
 }
@@ -72,7 +68,6 @@ func queueNotification(ctx context.Context, req RequestPush) (int, []LogPushEntr
 
 	log := make([]LogPushEntry, 0, count)
 	for _, notification := range newNotification {
-		notification.Ctx = ctx
 		if PushConf.Core.Sync {
 			notification.wg = &wg
 			notification.log = &log
