@@ -393,8 +393,8 @@ Retry:
 				// https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/handling_notification_responses_from_apns
 				if res.StatusCode >= http.StatusInternalServerError {
 					newTokens = append(newTokens, token)
-					isError = true
 				}
+				isError = true
 			}
 
 			if res.Sent() && !isError {
