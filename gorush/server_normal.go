@@ -81,7 +81,10 @@ func listenAndServe(ctx context.Context, s *http.Server) error {
 		}
 	})
 	g.Go(func() error {
-		return s.ListenAndServe()
+		if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			return err
+		}
+		return nil
 	})
 	return g.Wait()
 }
@@ -98,7 +101,10 @@ func listenAndServeTLS(ctx context.Context, s *http.Server) error {
 		}
 	})
 	g.Go(func() error {
-		return s.ListenAndServeTLS("", "")
+		if err := s.ListenAndServeTLS("", ""); err != nil && err != http.ErrServerClosed {
+			return err
+		}
+		return nil
 	})
 	return g.Wait()
 }
