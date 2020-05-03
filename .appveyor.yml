@@ -30,7 +30,7 @@ build_script:
         $version = $env:APPVEYOR_REPO_TAG_NAME
         $buildDate = $env:APPVEYOR_REPO_COMMIT_TIMESTAMP
       }
-      go build -a -o release/gorush.exe .
+      go build -a -x -o release/gorush.exe .
 
       docker build -f docker/Dockerfile.windows.amd64 -t appleboy/gorush:windows-amd64 .
 
