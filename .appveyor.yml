@@ -32,7 +32,6 @@ build_script:
       }
       go build -a -o release/gorush.exe .
 
-      docker pull microsoft/nanoserver:10.0.14393.1884
       docker build -f docker/Dockerfile.windows.amd64 -t appleboy/gorush:windows-amd64 .
 
 test_script:
