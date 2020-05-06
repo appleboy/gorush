@@ -164,8 +164,13 @@ Retry:
 		}
 
 		if result.Error != nil {
+			// We should retry only "retryable" statuses. More info about response:
+			// https://firebase.google.com/docs/cloud-messaging/http-server-ref#downstream-http-messages-plain-text
+			if !result.Unregistered() {
+				newTokens = append(newTokens, to)
+			}
 			isError = true
-			newTokens = append(newTokens, to)
+
 			LogPush(FailedPush, to, req, result.Error)
 			if PushConf.Core.Sync {
 				req.AddLog(getLogPushEntry(FailedPush, to, req, result.Error))
