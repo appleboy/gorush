@@ -22,13 +22,13 @@ import (
 
 var (
 	idleConnTimeout = 90 * time.Second
-	tlsDialTimeout = 20 * time.Second
-	tcpKeepAlive = 60 * time.Second
+	tlsDialTimeout  = 20 * time.Second
+	tcpKeepAlive    = 60 * time.Second
 )
 
 // DialTLS is the default dial function for creating TLS connections for
 // non-proxied HTTPS requests.
-var DialTLS = func(cfg *tls.Config) (func(network, addr string) (net.Conn, error)) {
+var DialTLS = func(cfg *tls.Config) func(network, addr string) (net.Conn, error) {
 	return func(network, addr string) (net.Conn, error) {
 		dialer := &net.Dialer{
 			Timeout:   tlsDialTimeout,
