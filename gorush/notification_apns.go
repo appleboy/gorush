@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"encoding/base64"
 	"errors"
+	"net"
 	"net/http"
 	"path/filepath"
 	"sync"
@@ -19,7 +20,23 @@ import (
 	"golang.org/x/net/http2"
 )
 
-var idleConnTimeout = 90 * time.Second
+var (
+	idleConnTimeout = 90 * time.Second
+	tlsDialTimeout  = 20 * time.Second
+	tcpKeepAlive    = 60 * time.Second
+)
+
+// DialTLS is the default dial function for creating TLS connections for
+// non-proxied HTTPS requests.
+var DialTLS = func(cfg *tls.Config) func(network, addr string) (net.Conn, error) {
+	return func(network, addr string) (net.Conn, error) {
+		dialer := &net.Dialer{
+			Timeout:   tlsDialTimeout,
+			KeepAlive: tcpKeepAlive,
+		}
+		return tls.DialWithDialer(dialer, network, addr, cfg)
+	}
+}
 
 // Sound sets the aps sound on the payload.
 type Sound struct {
@@ -128,6 +145,7 @@ func newApnsClient(certificate tls.Certificate) (*apns2.Client, error) {
 
 	transport := &http.Transport{
 		TLSClientConfig: tlsConfig,
+		DialTLS:         DialTLS(tlsConfig),
 		Proxy:           http.DefaultTransport.(*http.Transport).Proxy,
 		IdleConnTimeout: idleConnTimeout,
 	}
@@ -156,6 +174,7 @@ func newApnsTokenClient(token *token.Token) (*apns2.Client, error) {
 	}
 
 	transport := &http.Transport{
+		DialTLS:         DialTLS(nil),
 		Proxy:           http.DefaultTransport.(*http.Transport).Proxy,
 		IdleConnTimeout: idleConnTimeout,
 	}
