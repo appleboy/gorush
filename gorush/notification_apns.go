@@ -24,6 +24,8 @@ var (
 	idleConnTimeout = 90 * time.Second
 	tlsDialTimeout  = 20 * time.Second
 	tcpKeepAlive    = 60 * time.Second
+
+	ErrEmptyKeyIDOrTeamID = errors.New("You should provide ios.KeyID and ios.TeamID for P8 token")
 )
 
 // DialTLS is the default dial function for creating TLS connections for
@@ -98,7 +100,11 @@ func InitAPNSClient() error {
 			}
 		}
 
-		if ext == ".p8" && PushConf.Ios.KeyID != "" && PushConf.Ios.TeamID != "" {
+		if ext == ".p8" {
+			if PushConf.Ios.KeyID == "" || PushConf.Ios.TeamID == "" {
+				LogError.Error(ErrEmptyKeyIDOrTeamID)
+				return ErrEmptyKeyIDOrTeamID
+			}
 			token := &token.Token{
 				AuthKey: authKey,
 				// KeyID from developer account (Certificates, Identifiers & Profiles -> Keys)

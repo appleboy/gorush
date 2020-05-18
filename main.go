@@ -60,6 +60,8 @@ func main() {
 	flag.StringVar(&opts.Core.PID.Path, "pid", "", "PID file path.")
 	flag.StringVar(&opts.Ios.KeyPath, "i", "", "iOS certificate key file path")
 	flag.StringVar(&opts.Ios.KeyPath, "key", "", "iOS certificate key file path")
+	flag.StringVar(&opts.Ios.KeyID, "key-id", "", "iOS Key ID for P8 token")
+	flag.StringVar(&opts.Ios.TeamID, "team-id", "", "iOS Team ID for P8 token")
 	flag.StringVar(&opts.Ios.Password, "P", "", "iOS certificate password for gorush")
 	flag.StringVar(&opts.Ios.Password, "password", "", "iOS certificate password for gorush")
 	flag.StringVar(&opts.Android.APIKey, "k", "", "Android api key configuration for gorush")
@@ -109,6 +111,14 @@ func main() {
 
 	if opts.Ios.KeyPath != "" {
 		gorush.PushConf.Ios.KeyPath = opts.Ios.KeyPath
+	}
+
+	if opts.Ios.KeyID != "" {
+		gorush.PushConf.Ios.KeyID = opts.Ios.KeyID
+	}
+
+	if opts.Ios.TeamID != "" {
+		gorush.PushConf.Ios.TeamID = opts.Ios.TeamID
 	}
 
 	if opts.Ios.Password != "" {
