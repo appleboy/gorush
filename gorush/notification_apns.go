@@ -98,7 +98,12 @@ func InitAPNSClient() error {
 			}
 		}
 
-		if ext == ".p8" && PushConf.Ios.KeyID != "" && PushConf.Ios.TeamID != "" {
+		if ext == ".p8" {
+			if PushConf.Ios.KeyID == "" || PushConf.Ios.TeamID == "" {
+				msg := "You should provide ios.KeyID and ios.TeamID for P8 token"
+				LogError.Error(msg)
+				return errors.New(msg)
+			}
 			token := &token.Token{
 				AuthKey: authKey,
 				// KeyID from developer account (Certificates, Identifiers & Profiles -> Keys)

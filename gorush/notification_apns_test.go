@@ -609,6 +609,22 @@ func TestAPNSClientInvaildToken(t *testing.T) {
 	PushConf.Ios.KeyType = "p8"
 	err = InitAPNSClient()
 	assert.Error(t, err)
+
+	//empty key-id or team-id
+	PushConf.Ios.Enabled = true
+	PushConf.Ios.KeyPath = "../certificate/authkey-valid.p8"
+	err = InitAPNSClient()
+	assert.Error(t, err)
+
+	PushConf.Ios.KeyID = "key-id"
+	PushConf.Ios.TeamID = ""
+	err = InitAPNSClient()
+	assert.Error(t, err)
+
+	PushConf.Ios.KeyID = ""
+	PushConf.Ios.TeamID = "team-id"
+	err = InitAPNSClient()
+	assert.Error(t, err)
 }
 
 func TestAPNSClientVaildToken(t *testing.T) {
@@ -616,6 +632,8 @@ func TestAPNSClientVaildToken(t *testing.T) {
 
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.KeyPath = "../certificate/authkey-valid.p8"
+	PushConf.Ios.KeyID = "key-id"
+	PushConf.Ios.TeamID = "team-id"
 	err := InitAPNSClient()
 	assert.NoError(t, err)
 	assert.Equal(t, apns2.HostDevelopment, ApnsClient.Host)
