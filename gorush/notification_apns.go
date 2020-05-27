@@ -275,9 +275,9 @@ func GetIOSNotification(req PushNotification) *apns2.Notification {
 	}
 
 	if len(req.Priority) > 0 {
-		if req.Priority == "normal" {
+		if req.Priority == consts.PriorityNormal {
 			notification.Priority = apns2.PriorityLow
-		} else if req.Priority == "high" {
+		} else if req.Priority == consts.PriorityHigh {
 			notification.Priority = apns2.PriorityHigh
 		}
 	}

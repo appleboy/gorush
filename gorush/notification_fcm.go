@@ -50,8 +50,8 @@ func GetAndroidNotification(req PushNotification) *fcm.Message {
 		notification.RegistrationIDs = req.Tokens
 	}
 
-	if len(req.Priority) > 0 && req.Priority == "high" {
-		notification.Priority = "high"
+	if len(req.Priority) > 0 && req.Priority == consts.PriorityHigh {
+		notification.Priority = string(consts.PriorityHigh)
 	}
 
 	// Add another field

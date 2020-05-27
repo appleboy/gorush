@@ -67,7 +67,7 @@ func TestIOSNotificationStructure(t *testing.T) {
 			ApnsID:     test,
 			Topic:      test,
 			Expiration: &expiration,
-			Priority:   "normal",
+			Priority:   consts.PriorityNormal,
 			Message:    message,
 			Badge:      &expectBadge,
 			Sound: Sound{
@@ -133,7 +133,7 @@ func TestIOSSoundAndVolume(t *testing.T) {
 		PushNotification: structs.PushNotification{
 			ApnsID:   test,
 			Topic:    test,
-			Priority: "normal",
+			Priority: consts.PriorityNormal,
 			Message:  message,
 			Sound: Sound{
 				Critical: 3,
@@ -186,7 +186,7 @@ func TestIOSSoundAndVolume(t *testing.T) {
 		PushNotification: structs.PushNotification{
 			ApnsID:   test,
 			Topic:    test,
-			Priority: "normal",
+			Priority: consts.PriorityNormal,
 			Message:  message,
 			Sound: map[string]interface{}{
 				"critical": 3,
@@ -215,7 +215,7 @@ func TestIOSSoundAndVolume(t *testing.T) {
 		PushNotification: structs.PushNotification{
 			ApnsID:   test,
 			Topic:    test,
-			Priority: "normal",
+			Priority: consts.PriorityNormal,
 			Message:  message,
 			Sound:    "default",
 		},
@@ -242,7 +242,7 @@ func TestIOSSummaryArg(t *testing.T) {
 		PushNotification: structs.PushNotification{
 			ApnsID:   test,
 			Topic:    test,
-			Priority: "normal",
+			Priority: consts.PriorityNormal,
 			Message:  message,
 			Alert: structs.Alert{
 				SummaryArg:      "test",
@@ -278,7 +278,7 @@ func TestSendZeroValueForBadgeKey(t *testing.T) {
 		PushNotification: structs.PushNotification{
 			ApnsID:           test,
 			Topic:            test,
-			Priority:         "normal",
+			Priority:         consts.PriorityNormal,
 			Message:          message,
 			Sound:            test,
 			ContentAvailable: true,
@@ -354,7 +354,7 @@ func TestCheckSilentNotification(t *testing.T) {
 			ApnsID:           test,
 			Topic:            test,
 			CollapseID:       test,
-			Priority:         "normal",
+			Priority:         consts.PriorityNormal,
 			ContentAvailable: true,
 		},
 	}
@@ -402,7 +402,7 @@ func TestAlertStringExample2ForIos(t *testing.T) {
 		PushNotification: structs.PushNotification{
 			ApnsID:   test,
 			Topic:    test,
-			Priority: "normal",
+			Priority: consts.PriorityNormal,
 			Alert: structs.Alert{
 				Title:        title,
 				Body:         body,
@@ -447,7 +447,7 @@ func TestAlertStringExample3ForIos(t *testing.T) {
 		PushNotification: structs.PushNotification{
 			ApnsID:           test,
 			Topic:            test,
-			Priority:         "normal",
+			Priority:         consts.PriorityNormal,
 			ContentAvailable: true,
 			Message:          test,
 			Badge:            &badge,
