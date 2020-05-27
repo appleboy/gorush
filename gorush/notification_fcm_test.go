@@ -254,7 +254,7 @@ func TestAndroidNotificationStructure(t *testing.T) {
 			Tokens:                []string{"a", "b"},
 			Message:               "Welcome",
 			To:                    test,
-			Priority:              consts.PriorityNormal,
+			Priority:              consts.PriorityHigh,
 			CollapseKey:           "1",
 			ContentAvailable:      true,
 			DelayWhileIdle:        true,
