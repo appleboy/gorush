@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/appleboy/gorush/gorush/consts"
+
 	"github.com/appleboy/go-fcm"
 	"github.com/sirupsen/logrus"
 )
@@ -171,21 +173,21 @@ Retry:
 			}
 			isError = true
 
-			LogPush(FailedPush, to, req, result.Error)
+			LogPush(consts.FailedPush, to, req, result.Error)
 			if PushConf.Core.Sync {
-				req.AddLog(getLogPushEntry(FailedPush, to, req, result.Error))
+				req.AddLog(getLogPushEntry(consts.FailedPush, to, req, result.Error))
 			} else if PushConf.Core.FeedbackURL != "" {
 				go func(logger *logrus.Logger, log LogPushEntry, url string, timeout int64) {
 					err := DispatchFeedback(log, url, timeout)
 					if err != nil {
 						logger.Error(err)
 					}
-				}(LogError, getLogPushEntry(FailedPush, to, req, result.Error), PushConf.Core.FeedbackURL, PushConf.Core.FeedbackTimeout)
+				}(LogError, getLogPushEntry(consts.FailedPush, to, req, result.Error), PushConf.Core.FeedbackURL, PushConf.Core.FeedbackTimeout)
 			}
 			continue
 		}
 
-		LogPush(SucceededPush, to, req, nil)
+		LogPush(consts.SucceededPush, to, req, nil)
 	}
 
 	// result from Send messages to topics
@@ -199,13 +201,13 @@ Retry:
 		LogAccess.Debug("Send Topic Message: ", to)
 		// Success
 		if res.MessageID != 0 {
-			LogPush(SucceededPush, to, req, nil)
+			LogPush(consts.SucceededPush, to, req, nil)
 		} else {
 			isError = true
 			// failure
-			LogPush(FailedPush, to, req, res.Error)
+			LogPush(consts.FailedPush, to, req, res.Error)
 			if PushConf.Core.Sync {
-				req.AddLog(getLogPushEntry(FailedPush, to, req, res.Error))
+				req.AddLog(getLogPushEntry(consts.FailedPush, to, req, res.Error))
 			}
 		}
 	}
@@ -215,9 +217,9 @@ Retry:
 		isError = true
 		newTokens = append(newTokens, res.FailedRegistrationIDs...)
 
-		LogPush(FailedPush, notification.To, req, errors.New("device group: partial success or all fails"))
+		LogPush(consts.FailedPush, notification.To, req, errors.New("device group: partial success or all fails"))
 		if PushConf.Core.Sync {
-			req.AddLog(getLogPushEntry(FailedPush, notification.To, req, errors.New("device group: partial success or all fails")))
+			req.AddLog(getLogPushEntry(consts.FailedPush, notification.To, req, errors.New("device group: partial success or all fails")))
 		}
 	}
 

@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"sync"
+
+	"github.com/appleboy/gorush/gorush/consts"
 )
 
 // InitWorkers for initialize all workers.
@@ -22,9 +24,9 @@ func SendNotification(ctx context.Context, req PushNotification) {
 	}
 
 	switch req.Platform {
-	case PlatFormIos:
+	case consts.PlatFormIos:
 		PushToIOS(req)
-	case PlatFormAndroid:
+	case consts.PlatFormAndroid:
 		PushToAndroid(req)
 	}
 }
@@ -41,7 +43,7 @@ func startWorker(ctx context.Context, wg *sync.WaitGroup, num int64) {
 func markFailedNotification(notification *PushNotification, reason string) {
 	LogError.Error(reason)
 	for _, token := range notification.Tokens {
-		notification.AddLog(getLogPushEntry(FailedPush, token, *notification, errors.New(reason)))
+		notification.AddLog(getLogPushEntry(consts.FailedPush, token, *notification, errors.New(reason)))
 	}
 	notification.WaitDone()
 }
@@ -54,11 +56,11 @@ func queueNotification(ctx context.Context, req RequestPush) (int, []LogPushEntr
 	for i := range req.Notifications {
 		notification := &req.Notifications[i]
 		switch notification.Platform {
-		case PlatFormIos:
+		case consts.PlatFormIos:
 			if !PushConf.Ios.Enabled {
 				continue
 			}
-		case PlatFormAndroid:
+		case consts.PlatFormAndroid:
 			if !PushConf.Android.Enabled {
 				continue
 			}

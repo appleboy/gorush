@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"github.com/appleboy/gorush/gorush"
+	"github.com/appleboy/gorush/gorush/structs"
 	"github.com/appleboy/gorush/rpc/proto"
 
 	"google.golang.org/grpc"
@@ -50,18 +51,20 @@ func (s *Server) Check(ctx context.Context, in *proto.HealthCheckRequest) (*prot
 func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*proto.NotificationReply, error) {
 	var badge = int(in.Badge)
 	notification := gorush.PushNotification{
-		Platform:         int(in.Platform),
-		Tokens:           in.Tokens,
-		Message:          in.Message,
-		Title:            in.Title,
-		Topic:            in.Topic,
-		APIKey:           in.Key,
-		Category:         in.Category,
-		Sound:            in.Sound,
-		ContentAvailable: in.ContentAvailable,
-		ThreadID:         in.ThreadID,
-		MutableContent:   in.MutableContent,
-		Image:            in.Image,
+		PushNotification: structs.PushNotification{
+			Platform:         structs.Platform(in.Platform),
+			Tokens:           in.Tokens,
+			Message:          in.Message,
+			Title:            in.Title,
+			Topic:            in.Topic,
+			APIKey:           in.Key,
+			Category:         in.Category,
+			Sound:            in.Sound,
+			ContentAvailable: in.ContentAvailable,
+			ThreadID:         in.ThreadID,
+			MutableContent:   in.MutableContent,
+			Image:            in.Image,
+		},
 	}
 
 	if badge > 0 {
@@ -69,7 +72,7 @@ func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*prot
 	}
 
 	if in.Alert != nil {
-		notification.Alert = gorush.Alert{
+		notification.Alert = structs.Alert{
 			Title:        in.Alert.Title,
 			Body:         in.Alert.Body,
 			Subtitle:     in.Alert.Subtitle,

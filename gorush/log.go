@@ -7,6 +7,9 @@ import (
 	"os"
 	"strings"
 
+	"github.com/appleboy/gorush/gorush/consts"
+	"github.com/appleboy/gorush/gorush/structs"
+
 	"github.com/mattn/go-isatty"
 	"github.com/sirupsen/logrus"
 )
@@ -116,22 +119,22 @@ func SetLogLevel(log *logrus.Logger, levelString string) error {
 	return nil
 }
 
-func colorForPlatForm(platform int) string {
+func colorForPlatForm(platform structs.Platform) string {
 	switch platform {
-	case PlatFormIos:
+	case consts.PlatFormIos:
 		return blue
-	case PlatFormAndroid:
+	case consts.PlatFormAndroid:
 		return yellow
 	default:
 		return reset
 	}
 }
 
-func typeForPlatForm(platform int) string {
+func typeForPlatForm(platform structs.Platform) string {
 	switch platform {
-	case PlatFormIos:
+	case consts.PlatFormIos:
 		return "ios"
-	case PlatFormAndroid:
+	case consts.PlatFormAndroid:
 		return "android"
 	default:
 		return ""
@@ -197,7 +200,7 @@ func LogPush(status, token string, req PushNotification, errPush error) {
 	} else {
 		var typeColor string
 		switch status {
-		case SucceededPush:
+		case consts.SucceededPush:
 			if isTerm {
 				typeColor = green
 			}
@@ -208,7 +211,7 @@ func LogPush(status, token string, req PushNotification, errPush error) {
 				log.Token,
 				log.Message,
 			)
-		case FailedPush:
+		case consts.FailedPush:
 			if isTerm {
 				typeColor = red
 			}
@@ -224,9 +227,9 @@ func LogPush(status, token string, req PushNotification, errPush error) {
 	}
 
 	switch status {
-	case SucceededPush:
+	case consts.SucceededPush:
 		LogAccess.Info(output)
-	case FailedPush:
+	case consts.FailedPush:
 		LogError.Error(output)
 	}
 }

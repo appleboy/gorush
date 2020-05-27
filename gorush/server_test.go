@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/appleboy/gorush/config"
+	"github.com/appleboy/gorush/gorush/consts"
 
 	"github.com/appleboy/gofight/v2"
 	"github.com/buger/jsonparser"
@@ -257,7 +258,7 @@ func TestMutableContent(t *testing.T) {
 			"notifications": []gofight.D{
 				{
 					"tokens":          []string{"aaaaa", "bbbbb"},
-					"platform":        PlatFormAndroid,
+					"platform":        consts.PlatFormAndroid,
 					"message":         "Welcome",
 					"mutable_content": 1,
 					"topic":           "test",
@@ -288,12 +289,12 @@ func TestOutOfRangeMaxNotifications(t *testing.T) {
 			"notifications": []gofight.D{
 				{
 					"tokens":   []string{"aaaaa", "bbbbb"},
-					"platform": PlatFormAndroid,
+					"platform": consts.PlatFormAndroid,
 					"message":  "Welcome",
 				},
 				{
 					"tokens":   []string{"aaaaa", "bbbbb"},
-					"platform": PlatFormAndroid,
+					"platform": consts.PlatFormAndroid,
 					"message":  "Welcome",
 				},
 			},
@@ -320,7 +321,7 @@ func TestSuccessPushHandler(t *testing.T) {
 			"notifications": []gofight.D{
 				{
 					"tokens":   []string{androidToken, "bbbbb"},
-					"platform": PlatFormAndroid,
+					"platform": consts.PlatFormAndroid,
 					"message":  "Welcome",
 				},
 			},

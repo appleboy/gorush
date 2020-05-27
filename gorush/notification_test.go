@@ -6,6 +6,9 @@ import (
 	"testing"
 
 	"github.com/appleboy/gorush/config"
+	"github.com/appleboy/gorush/gorush/consts"
+	"github.com/appleboy/gorush/gorush/structs"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -41,15 +44,19 @@ func TestSenMultipleNotifications(t *testing.T) {
 		Notifications: []PushNotification{
 			//ios
 			{
-				Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
-				Platform: PlatFormIos,
-				Message:  "Welcome",
+				PushNotification: structs.PushNotification{
+					Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
+					Platform: consts.PlatFormIos,
+					Message:  "Welcome",
+				},
 			},
 			// android
 			{
-				Tokens:   []string{androidToken, "bbbbb"},
-				Platform: PlatFormAndroid,
-				Message:  "Welcome",
+				PushNotification: structs.PushNotification{
+					Tokens:   []string{androidToken, "bbbbb"},
+					Platform: consts.PlatFormAndroid,
+					Message:  "Welcome",
+				},
 			},
 		},
 	}
@@ -77,15 +84,19 @@ func TestDisabledAndroidNotifications(t *testing.T) {
 		Notifications: []PushNotification{
 			//ios
 			{
-				Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
-				Platform: PlatFormIos,
-				Message:  "Welcome",
+				PushNotification: structs.PushNotification{
+					Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
+					Platform: consts.PlatFormIos,
+					Message:  "Welcome",
+				},
 			},
 			// android
 			{
-				Tokens:   []string{androidToken, "bbbbb"},
-				Platform: PlatFormAndroid,
-				Message:  "Welcome",
+				PushNotification: structs.PushNotification{
+					Tokens:   []string{androidToken, "bbbbb"},
+					Platform: consts.PlatFormAndroid,
+					Message:  "Welcome",
+				},
 			},
 		},
 	}
@@ -116,15 +127,19 @@ func TestSyncModeForNotifications(t *testing.T) {
 		Notifications: []PushNotification{
 			//ios
 			{
-				Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
-				Platform: PlatFormIos,
-				Message:  "Welcome",
+				PushNotification: structs.PushNotification{
+					Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
+					Platform: consts.PlatFormIos,
+					Message:  "Welcome",
+				},
 			},
 			// android
 			{
-				Tokens:   []string{androidToken, "bbbbb"},
-				Platform: PlatFormAndroid,
-				Message:  "Welcome",
+				PushNotification: structs.PushNotification{
+					Tokens:   []string{androidToken, "bbbbb"},
+					Platform: consts.PlatFormAndroid,
+					Message:  "Welcome",
+				},
 			},
 		},
 	}
@@ -149,25 +164,31 @@ func TestSyncModeForTopicNotification(t *testing.T) {
 		Notifications: []PushNotification{
 			// android
 			{
-				// error:InvalidParameters
-				// Check that the provided parameters have the right name and type.
-				To:       "/topics/foo-bar@@@##",
-				Platform: PlatFormAndroid,
-				Message:  "This is a Firebase Cloud Messaging Topic Message!",
+				PushNotification: structs.PushNotification{
+					// error:InvalidParameters
+					// Check that the provided parameters have the right name and type.
+					To:       "/topics/foo-bar@@@##",
+					Platform: consts.PlatFormAndroid,
+					Message:  "This is a Firebase Cloud Messaging Topic Message!",
+				},
 			},
 			// android
 			{
-				// success
-				To:       "/topics/foo-bar",
-				Platform: PlatFormAndroid,
-				Message:  "This is a Firebase Cloud Messaging Topic Message!",
+				PushNotification: structs.PushNotification{
+					// success
+					To:       "/topics/foo-bar",
+					Platform: consts.PlatFormAndroid,
+					Message:  "This is a Firebase Cloud Messaging Topic Message!",
+				},
 			},
 			// android
 			{
-				// success
-				Condition: "'dogs' in topics || 'cats' in topics",
-				Platform:  PlatFormAndroid,
-				Message:   "This is a Firebase Cloud Messaging Topic Message!",
+				PushNotification: structs.PushNotification{
+					// success
+					Condition: "'dogs' in topics || 'cats' in topics",
+					Platform:  consts.PlatFormAndroid,
+					Message:   "This is a Firebase Cloud Messaging Topic Message!",
+				},
 			},
 		},
 	}
@@ -192,9 +213,11 @@ func TestSyncModeForDeviceGroupNotification(t *testing.T) {
 		Notifications: []PushNotification{
 			// android
 			{
-				To:       "aUniqueKey",
-				Platform: PlatFormAndroid,
-				Message:  "This is a Firebase Cloud Messaging Device Group Message!",
+				PushNotification: structs.PushNotification{
+					To:       "aUniqueKey",
+					Platform: consts.PlatFormAndroid,
+					Message:  "This is a Firebase Cloud Messaging Device Group Message!",
+				},
 			},
 		},
 	}
