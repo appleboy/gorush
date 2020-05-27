@@ -96,7 +96,7 @@ func TestPushToAndroidRightTokenForStringLog(t *testing.T) {
 
 	PushConf.Android.Enabled = true
 	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
-	TestPushToAndroidRightTokenForStringLog
+
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
 	req := PushNotification{
