@@ -89,7 +89,7 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 - Support running in Docker, [Kubernetes](https://kubernetes.io/) or [AWS Lambda](https://aws.amazon.com/lambda) ([Native Support in Golang](https://aws.amazon.com/blogs/compute/announcing-go-support-for-aws-lambda/))
 - Support graceful shutdown that workers and queue have been sent to APNs/FCM before shutdown service.
 
-See the default [YAML config example](config/config.yml):
+See the default [YAML config example](config/testdata/config.yml):
 
 [embedmd]:# (config/testdata/config.yml yaml)
 ```yaml
@@ -338,7 +338,7 @@ gorush -android -m "your message" -k "API key" -t "Device token"
 
 ## Run gorush web server
 
-Please make sure your [config.yml](config/config.yml) exist. Default port is `8088`.
+Please make sure your [config.yml](config/testdata/config.yml) exist. Default port is `8088`.
 
 ```bash
 # for default config
