@@ -49,4 +49,6 @@ func TestLevelDBEngine(t *testing.T) {
 	levelDB.Reset()
 	val = levelDB.GetAndroidError()
 	assert.Equal(t, int64(0), val)
+
+	assert.NoError(t, levelDB.Close())
 }

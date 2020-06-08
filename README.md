@@ -10,8 +10,9 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 [![codebeat badge](https://codebeat.co/badges/0a4eff2d-c9ac-46ed-8fd7-b59942983390)](https://codebeat.co/projects/github-com-appleboy-gorush)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/c82e0ed283474c5686d705ce64d004f7)](https://www.codacy.com/app/appleboy/gorush?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=appleboy/gorush&amp;utm_campaign=Badge_Grade)
 [![Docker Pulls](https://img.shields.io/docker/pulls/appleboy/gorush.svg)](https://hub.docker.com/r/appleboy/gorush/)
-[![](https://images.microbadger.com/badges/image/appleboy/gorush.svg)](https://microbadger.com/images/appleboy/gorush "Get your own image badge on microbadger.com")
+[![microbadger](https://images.microbadger.com/badges/image/appleboy/gorush.svg)](https://microbadger.com/images/appleboy/gorush "Get your own image badge on microbadger.com")
 [![Release](https://github-release-version.herokuapp.com/github/appleboy/gorush/release.svg?style=flat)](https://github.com/appleboy/gorush/releases/latest)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/8ab14c9f-44fd-4d9a-8bba-f73f76d253b1/deploy-status)](https://app.netlify.com/sites/gorush/deploys)
 
 ## Contents
 
@@ -53,6 +54,7 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
   - [Run gorush in AWS Lambda](#run-gorush-in-aws-lambda)
     - [Build gorush binary](#build-gorush-binary)
     - [Deploy gorush application](#deploy-gorush-application)
+    - [Without an AWS account](#without-an-aws-account)
   - [Stargazers over time](#stargazers-over-time)
   - [License](#license)
 
@@ -62,6 +64,8 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 
 - [APNS](https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/APNSOverview.html)
 - [FCM](https://firebase.google.com/)
+
+[A live demo on Netlify](https://gorush.netlify.com/).
 
 ## Features
 
@@ -85,12 +89,12 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 - Support running in Docker, [Kubernetes](https://kubernetes.io/) or [AWS Lambda](https://aws.amazon.com/lambda) ([Native Support in Golang](https://aws.amazon.com/blogs/compute/announcing-go-support-for-aws-lambda/))
 - Support graceful shutdown that workers and queue have been sent to APNs/FCM before shutdown service.
 
-See the default [YAML config example](config/config.yml):
+See the default [YAML config example](config/testdata/config.yml):
 
 [embedmd]:# (config/testdata/config.yml yaml)
 ```yaml
 core:
-  enabled: true # enabale httpd server
+  enabled: true # enable httpd server
   address: "" # ip address to bind (default: any)
   shutdown_timeout: 30 # default is 30 second
   port: "8088" # ignore this port number if auto_tls is enabled (listen 443).
@@ -117,7 +121,7 @@ core:
     host: "" # which domains the Let's Encrypt will attempt
 
 grpc:
-  enabled: false # enabale gRPC server
+  enabled: false # enable gRPC server
   port: 9000
 
 api:
@@ -141,6 +145,7 @@ ios:
   key_type: "pem" # could be pem, p12 or p8 type
   password: "" # certificate password, default as empty string.
   production: false
+  max_concurrent_pushes: 100 # just for push ios notification
   max_retry: 0 # resend fail notification, default value zero is disabled
   key_id: "" # KeyID from developer account (Certificates, Identifiers & Profiles -> Keys)
   team_id: "" # TeamID from developer account (View Account -> Membership)
@@ -166,6 +171,8 @@ stat:
     path: "bunt.db"
   leveldb:
     path: "level.db"
+  badgerdb:
+    path: "badger.db"
 ```
 
 ## Memory Usage
@@ -197,19 +204,19 @@ go get -u -v github.com/appleboy/gorush
 On linux
 
 ```sh
-wget https://github.com/appleboy/gorush/releases/download/v1.11.2/gorush-v1.11.2-linux-amd64 -O gorush
+wget https://github.com/appleboy/gorush/releases/download/v1.12.0/gorush-v1.12.0-linux-amd64 -O gorush
 ```
 
 On OS X
 
 ```sh
-wget https://github.com/appleboy/gorush/releases/download/v1.11.2/gorush-v1.11.2-darwin-amd64 -O gorush
+wget https://github.com/appleboy/gorush/releases/download/v1.12.0/gorush-v1.12.0-darwin-amd64 -O gorush
 ```
 
 On Windows
 
 ```sh
-wget https://github.com/appleboy/gorush/releases/download/v1.11.2/gorush-v1.11.2-windows-amd64.exe -O gorush.exe
+wget https://github.com/appleboy/gorush/releases/download/v1.12.0/gorush-v1.12.0-windows-amd64.exe -O gorush.exe
 ```
 
 On macOS, use Homebrew.
@@ -331,7 +338,7 @@ gorush -android -m "your message" -k "API key" -t "Device token"
 
 ## Run gorush web server
 
-Please make sure your [config.yml](config/config.yml) exist. Default port is `8088`.
+Please make sure your [config.yml](config/testdata/config.yml) exist. Default port is `8088`.
 
 ```bash
 # for default config
@@ -533,6 +540,7 @@ The Request body must have a notifications array. The following is a parameter t
 | data                    | string array | extensible partition                                                                              | -        |                                                               |
 | retry                   | int          | retry send notification if fail response from server. Value must be small than `max_retry` field. | -        |                                                               |
 | topic                   | string       | send messages to topics                                                                           |          |                                                               |
+| image                   | string       | image url to show in notification                                                                 | -        | only Android                                                  |
 | api_key                 | string       | api key for firebase cloud message                                                                | -        | only Android                                                  |
 | to                      | string       | The value must be a registration token, notification key, or topic.                               | -        | only Android                                                  |
 | collapse_key            | string       | a key for collapsing notifications                                                                | -        | only Android                                                  |
@@ -543,6 +551,7 @@ The Request body must have a notifications array. The following is a parameter t
 | notification            | string array | payload of a FCM message                                                                          | -        | only Android. See the [detail](#android-notification-payload) |
 | expiration              | int          | expiration for notification                                                                       | -        | only iOS                                                      |
 | apns_id                 | string       | A canonical UUID that identifies the notification                                                 | -        | only iOS                                                      |
+| collapse_id             | string       | An identifier you use to coalesce multiple notifications into a single notification for the user  | -        | only iOS                                                      |
 | push_type               | string       | The type of the notification. The value of this header is alert or background.                    | -        | only iOS                                                      |
 | badge                   | int          | badge count                                                                                       | -        | only iOS                                                      |
 | category                | string       | the UIMutableUserNotificationCategory object                                                      | -        | only iOS                                                      |
@@ -914,7 +923,7 @@ func main() {
 }
 ```
 
-See the Node.js example and see more detail frome [README](rpc/example/node/README.md): 
+See the Node.js example and see more detail frome [README](rpc/example/node/README.md):
 
 [embedmd]:# (rpc/example/node/client.js js)
 ```js
@@ -1126,6 +1135,25 @@ $ AWS_ACCESS_KEY_ID=YOUR_AWS_ACCESS_KEY_ID \
   drone-lambda --region ap-southeast-1 \
   --function-name gorush \
   --source release/linux/lambda/gorush
+```
+
+### Without an AWS account
+
+Or you can deploy gorush to alternative solution like [netlify functions](https://docs.netlify.com/functions/overview/). [Netlify](https://www.netlify.com/) lets you deploy serverless Lambda functions without an AWS account, and with function management handled directly within Netlify. Please see the netlify.toml file:
+
+```toml
+[build]
+  command = "./build.sh"
+  functions = "release/linux/lambda"
+
+[build.environment]
+  GO_IMPORT_PATH = "github.com/appleboy/gorush"
+  GO111MODULE = "on"
+
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/gorush/:splat"
+  status = 200
 ```
 
 ## Stargazers over time

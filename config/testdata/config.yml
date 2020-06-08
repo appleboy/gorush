@@ -1,5 +1,5 @@
 core:
-  enabled: true # enabale httpd server
+  enabled: true # enable httpd server
   address: "" # ip address to bind (default: any)
   shutdown_timeout: 30 # default is 30 second
   port: "8088" # ignore this port number if auto_tls is enabled (listen 443).
@@ -26,7 +26,7 @@ core:
     host: "" # which domains the Let's Encrypt will attempt
 
 grpc:
-  enabled: false # enabale gRPC server
+  enabled: false # enable gRPC server
   port: 9000
 
 api:
@@ -50,6 +50,7 @@ ios:
   key_type: "pem" # could be pem, p12 or p8 type
   password: "" # certificate password, default as empty string.
   production: false
+  max_concurrent_pushes: 100 # just for push ios notification
   max_retry: 0 # resend fail notification, default value zero is disabled
   key_id: "" # KeyID from developer account (Certificates, Identifiers & Profiles -> Keys)
   team_id: "" # TeamID from developer account (View Account -> Membership)
@@ -75,3 +76,5 @@ stat:
     path: "bunt.db"
   leveldb:
     path: "level.db"
+  badgerdb:
+    path: "badger.db"

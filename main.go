@@ -60,6 +60,8 @@ func main() {
 	flag.StringVar(&opts.Core.PID.Path, "pid", "", "PID file path.")
 	flag.StringVar(&opts.Ios.KeyPath, "i", "", "iOS certificate key file path")
 	flag.StringVar(&opts.Ios.KeyPath, "key", "", "iOS certificate key file path")
+	flag.StringVar(&opts.Ios.KeyID, "key-id", "", "iOS Key ID for P8 token")
+	flag.StringVar(&opts.Ios.TeamID, "team-id", "", "iOS Team ID for P8 token")
 	flag.StringVar(&opts.Ios.Password, "P", "", "iOS certificate password for gorush")
 	flag.StringVar(&opts.Ios.Password, "password", "", "iOS certificate password for gorush")
 	flag.StringVar(&opts.Android.APIKey, "k", "", "Android api key configuration for gorush")
@@ -104,8 +106,19 @@ func main() {
 		return
 	}
 
+	// Initialize push slots for concurrent iOS pushes
+	gorush.MaxConcurrentIOSPushes = make(chan struct{}, gorush.PushConf.Ios.MaxConcurrentPushes)
+
 	if opts.Ios.KeyPath != "" {
 		gorush.PushConf.Ios.KeyPath = opts.Ios.KeyPath
+	}
+
+	if opts.Ios.KeyID != "" {
+		gorush.PushConf.Ios.KeyID = opts.Ios.KeyID
+	}
+
+	if opts.Ios.TeamID != "" {
+		gorush.PushConf.Ios.TeamID = opts.Ios.TeamID
 	}
 
 	if opts.Ios.Password != "" {
@@ -255,8 +268,13 @@ func main() {
 		gorush.LogAccess.Info("close the notification queue channel, current queue len: ", len(gorush.QueueNotification))
 		close(gorush.QueueNotification)
 		wg.Wait()
-		close(finished)
 		gorush.LogAccess.Info("the notification queue has been clear")
+		close(finished)
+		// close the connection with storage
+		gorush.LogAccess.Info("close the storage connection: ", gorush.PushConf.Stat.Engine)
+		if err := gorush.StatStorage.Close(); err != nil {
+			gorush.LogError.Fatal("can't close the storage connection: ", err.Error())
+		}
 	})
 
 	gorush.InitWorkers(ctx, wg, gorush.PushConf.Core.WorkerNum, gorush.PushConf.Core.QueueNum)

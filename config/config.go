@@ -12,7 +12,7 @@ import (
 
 var defaultConf = []byte(`
 core:
-  enabled: true # enabale httpd server
+  enabled: true # enable httpd server
   address: "" # ip address to bind (default: any)
   shutdown_timeout: 30 # default is 30 second
   port: "8088" # ignore this port number if auto_tls is enabled (listen 443).
@@ -39,7 +39,7 @@ core:
     host: "" # which domains the Let's Encrypt will attempt
 
 grpc:
-  enabled: false # enabale gRPC server
+  enabled: false # enable gRPC server
   port: 9000
 
 api:
@@ -63,6 +63,7 @@ ios:
   key_type: "pem" # could be pem, p12 or p8 type
   password: "" # certificate password, default as empty string.
   production: false
+  max_concurrent_pushes: 100 # just for push ios notification
   max_retry: 0 # resend fail notification, default value zero is disabled
   key_id: "" # KeyID from developer account (Certificates, Identifiers & Profiles -> Keys)
   team_id: "" # TeamID from developer account (View Account -> Membership)
@@ -88,6 +89,8 @@ stat:
     path: "bunt.db"
   leveldb:
     path: "level.db"
+  badgerdb:
+    path: "badger.db"
 `)
 
 // ConfYaml is config structure.
@@ -151,15 +154,16 @@ type SectionAndroid struct {
 
 // SectionIos is sub section of config.
 type SectionIos struct {
-	Enabled    bool   `yaml:"enabled"`
-	KeyPath    string `yaml:"key_path"`
-	KeyBase64  string `yaml:"key_base64"`
-	KeyType    string `yaml:"key_type"`
-	Password   string `yaml:"password"`
-	Production bool   `yaml:"production"`
-	MaxRetry   int    `yaml:"max_retry"`
-	KeyID      string `yaml:"key_id"`
-	TeamID     string `yaml:"team_id"`
+	Enabled             bool   `yaml:"enabled"`
+	KeyPath             string `yaml:"key_path"`
+	KeyBase64           string `yaml:"key_base64"`
+	KeyType             string `yaml:"key_type"`
+	Password            string `yaml:"password"`
+	Production          bool   `yaml:"production"`
+	MaxConcurrentPushes uint   `yaml:"max_concurrent_pushes"`
+	MaxRetry            int    `yaml:"max_retry"`
+	KeyID               string `yaml:"key_id"`
+	TeamID              string `yaml:"team_id"`
 }
 
 // SectionLog is sub section of config.
@@ -174,11 +178,12 @@ type SectionLog struct {
 
 // SectionStat is sub section of config.
 type SectionStat struct {
-	Engine  string         `yaml:"engine"`
-	Redis   SectionRedis   `yaml:"redis"`
-	BoltDB  SectionBoltDB  `yaml:"boltdb"`
-	BuntDB  SectionBuntDB  `yaml:"buntdb"`
-	LevelDB SectionLevelDB `yaml:"leveldb"`
+	Engine   string          `yaml:"engine"`
+	Redis    SectionRedis    `yaml:"redis"`
+	BoltDB   SectionBoltDB   `yaml:"boltdb"`
+	BuntDB   SectionBuntDB   `yaml:"buntdb"`
+	LevelDB  SectionLevelDB  `yaml:"leveldb"`
+	BadgerDB SectionBadgerDB `yaml:"badgerdb"`
 }
 
 // SectionRedis is sub section of config.
@@ -201,6 +206,11 @@ type SectionBuntDB struct {
 
 // SectionLevelDB is sub section of config.
 type SectionLevelDB struct {
+	Path string `yaml:"path"`
+}
+
+// SectionBadgerDB is sub section of config.
+type SectionBadgerDB struct {
 	Path string `yaml:"path"`
 }
 
@@ -300,6 +310,7 @@ func LoadConf(confPath string) (ConfYaml, error) {
 	conf.Ios.KeyType = viper.GetString("ios.key_type")
 	conf.Ios.Password = viper.GetString("ios.password")
 	conf.Ios.Production = viper.GetBool("ios.production")
+	conf.Ios.MaxConcurrentPushes = viper.GetUint("ios.max_concurrent_pushes")
 	conf.Ios.MaxRetry = viper.GetInt("ios.max_retry")
 	conf.Ios.KeyID = viper.GetString("ios.key_id")
 	conf.Ios.TeamID = viper.GetString("ios.team_id")
@@ -321,6 +332,7 @@ func LoadConf(confPath string) (ConfYaml, error) {
 	conf.Stat.BoltDB.Bucket = viper.GetString("stat.boltdb.bucket")
 	conf.Stat.BuntDB.Path = viper.GetString("stat.buntdb.path")
 	conf.Stat.LevelDB.Path = viper.GetString("stat.leveldb.path")
+	conf.Stat.BadgerDB.Path = viper.GetString("stat.badgerdb.path")
 
 	// gRPC Server
 	conf.GRPC.Enabled = viper.GetBool("grpc.enabled")

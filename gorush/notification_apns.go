@@ -5,8 +5,10 @@ import (
 	"crypto/tls"
 	"encoding/base64"
 	"errors"
+	"net"
 	"net/http"
 	"path/filepath"
+	"sync"
 	"time"
 
 	"github.com/mitchellh/mapstructure"
@@ -18,7 +20,23 @@ import (
 	"golang.org/x/net/http2"
 )
 
-var idleConnTimeout = 90 * time.Second
+var (
+	idleConnTimeout = 90 * time.Second
+	tlsDialTimeout  = 20 * time.Second
+	tcpKeepAlive    = 60 * time.Second
+)
+
+// DialTLS is the default dial function for creating TLS connections for
+// non-proxied HTTPS requests.
+var DialTLS = func(cfg *tls.Config) func(network, addr string) (net.Conn, error) {
+	return func(network, addr string) (net.Conn, error) {
+		dialer := &net.Dialer{
+			Timeout:   tlsDialTimeout,
+			KeepAlive: tcpKeepAlive,
+		}
+		return tls.DialWithDialer(dialer, network, addr, cfg)
+	}
+}
 
 // Sound sets the aps sound on the payload.
 type Sound struct {
@@ -80,7 +98,12 @@ func InitAPNSClient() error {
 			}
 		}
 
-		if ext == ".p8" && PushConf.Ios.KeyID != "" && PushConf.Ios.TeamID != "" {
+		if ext == ".p8" {
+			if PushConf.Ios.KeyID == "" || PushConf.Ios.TeamID == "" {
+				msg := "You should provide ios.KeyID and ios.TeamID for P8 token"
+				LogError.Error(msg)
+				return errors.New(msg)
+			}
 			token := &token.Token{
 				AuthKey: authKey,
 				// KeyID from developer account (Certificates, Identifiers & Profiles -> Keys)
@@ -127,6 +150,7 @@ func newApnsClient(certificate tls.Certificate) (*apns2.Client, error) {
 
 	transport := &http.Transport{
 		TLSClientConfig: tlsConfig,
+		DialTLS:         DialTLS(tlsConfig),
 		Proxy:           http.DefaultTransport.(*http.Transport).Proxy,
 		IdleConnTimeout: idleConnTimeout,
 	}
@@ -155,6 +179,7 @@ func newApnsTokenClient(token *token.Token) (*apns2.Client, error) {
 	}
 
 	transport := &http.Transport{
+		DialTLS:         DialTLS(nil),
 		Proxy:           http.DefaultTransport.(*http.Transport).Proxy,
 		IdleConnTimeout: idleConnTimeout,
 	}
@@ -356,43 +381,56 @@ Retry:
 	notification := GetIOSNotification(req)
 	client := getApnsClient(req)
 
+	var wg sync.WaitGroup
 	for _, token := range req.Tokens {
-		notification.DeviceToken = token
+		// occupy push slot
+		MaxConcurrentIOSPushes <- struct{}{}
+		wg.Add(1)
+		go func(token string) {
+			notification.DeviceToken = token
 
-		// send ios notification
-		res, err := client.Push(notification)
+			// send ios notification
+			res, err := client.Push(notification)
 
-		if err != nil || res.StatusCode != 200 {
-			if err == nil {
-				// error message:
-				// ref: https://github.com/sideshow/apns2/blob/master/response.go#L14-L65
-				err = errors.New(res.Reason)
+			if err != nil || res.StatusCode != 200 {
+				if err == nil {
+					// error message:
+					// ref: https://github.com/sideshow/apns2/blob/master/response.go#L14-L65
+					err = errors.New(res.Reason)
+				}
+				// apns server error
+				LogPush(FailedPush, token, req, err)
+
+				if PushConf.Core.Sync {
+					req.AddLog(getLogPushEntry(FailedPush, token, req, err))
+				} else if PushConf.Core.FeedbackURL != "" {
+					go func(logger *logrus.Logger, log LogPushEntry, url string, timeout int64) {
+						err := DispatchFeedback(log, url, timeout)
+						if err != nil {
+							logger.Error(err)
+						}
+					}(LogError, getLogPushEntry(FailedPush, token, req, err), PushConf.Core.FeedbackURL, PushConf.Core.FeedbackTimeout)
+				}
+
+				StatStorage.AddIosError(1)
+				// We should retry only "retryable" statuses. More info about response:
+				// https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/handling_notification_responses_from_apns
+				if res.StatusCode >= http.StatusInternalServerError {
+					newTokens = append(newTokens, token)
+				}
+				isError = true
 			}
-			// apns server error
-			LogPush(FailedPush, token, req, err)
 
-			if PushConf.Core.Sync {
-				req.AddLog(getLogPushEntry(FailedPush, token, req, err))
-			} else if PushConf.Core.FeedbackURL != "" {
-				go func(logger *logrus.Logger, log LogPushEntry, url string, timeout int64) {
-					err := DispatchFeedback(log, url, timeout)
-					if err != nil {
-						logger.Error(err)
-					}
-				}(LogError, getLogPushEntry(FailedPush, token, req, err), PushConf.Core.FeedbackURL, PushConf.Core.FeedbackTimeout)
+			if res.Sent() && !isError {
+				LogPush(SucceededPush, token, req, nil)
+				StatStorage.AddIosSuccess(1)
 			}
-
-			StatStorage.AddIosError(1)
-			newTokens = append(newTokens, token)
-			isError = true
-			continue
-		}
-
-		if res.Sent() {
-			LogPush(SucceededPush, token, req, nil)
-			StatStorage.AddIosSuccess(1)
-		}
+			// free push slot
+			<-MaxConcurrentIOSPushes
+			wg.Done()
+		}(token)
 	}
+	wg.Wait()
 
 	if isError && retryCount < maxRetry {
 		retryCount++

@@ -31,4 +31,5 @@ type Storage interface {
 	GetIosError() int64
 	GetAndroidSuccess() int64
 	GetAndroidError() int64
+	Close() error
 }

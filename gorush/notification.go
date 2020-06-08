@@ -1,7 +1,6 @@
 package gorush
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"net/url"
@@ -52,7 +51,6 @@ type RequestPush struct {
 
 // PushNotification is single notification request
 type PushNotification struct {
-	ctx context.Context
 	wg  *sync.WaitGroup
 	log *[]LogPushEntry
 
