@@ -148,6 +148,12 @@ func CheckMessage(req PushNotification) error {
 		return errors.New(msg)
 	}
 
+	if req.Platform == PlatformHuawei && len(req.Tokens) > 500 {
+		msg = "the message may specify at most 500 registration IDs for Huawei"
+		LogAccess.Debug(msg)
+		return errors.New(msg)
+	}
+
 	// ref: https://firebase.google.com/docs/cloud-messaging/http-server-ref
 	if req.Platform == PlatFormAndroid && req.TimeToLive != nil && (*req.TimeToLive < uint(0) || uint(2419200) < *req.TimeToLive) {
 		msg = "the message's TimeToLive field must be an integer " +

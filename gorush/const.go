@@ -5,6 +5,8 @@ const (
 	PlatFormIos = iota + 1
 	// PlatFormAndroid constant is 2 for Android
 	PlatFormAndroid
+	// PlatFormHuawei constant is 3 for Huawei
+	PlatFormHuawei
 )
 
 const (
