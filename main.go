@@ -244,7 +244,7 @@ func main() {
 			return
 		}
 
-		//gorush.PushToHuawei(req)
+		gorush.PushToHuawei(req)
 
 		return
 	}
@@ -334,7 +334,9 @@ func main() {
 		gorush.LogError.Fatal(err)
 	}
 
-	//TODO: Check this part later to add Log Error for Huwei Push
+	if _, err = gorush.InitHMSClient(gorush.PushConf.Huawei.APIKey, gorush.PushConf.Huawei.APPId); err != nil {
+		gorush.LogError.Fatal(err)
+	}
 
 	var g errgroup.Group
 

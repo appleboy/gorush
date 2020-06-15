@@ -27,7 +27,7 @@ func SendNotification(ctx context.Context, req PushNotification) {
 	case PlatFormAndroid:
 		PushToAndroid(req)
 	case PlatFormHuawei:
-		//PushToHuawei(req)
+		PushToHuawei(req)
 	}
 }
 
