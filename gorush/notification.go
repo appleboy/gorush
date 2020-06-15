@@ -182,8 +182,8 @@ func SetProxy(proxy string) error {
 
 // CheckPushConf provide check your yml config.
 func CheckPushConf() error {
-	if !PushConf.Ios.Enabled && !PushConf.Android.Enabled {
-		return errors.New("Please enable iOS or Android config in yml config")
+	if !PushConf.Ios.Enabled && !PushConf.Android.Enabled && !PushConf.Huawei.Enabled {
+		return errors.New("Please enable iOS, Android or Huawei config in yml config")
 	}
 
 	if PushConf.Ios.Enabled {
@@ -202,6 +202,16 @@ func CheckPushConf() error {
 	if PushConf.Android.Enabled {
 		if PushConf.Android.APIKey == "" {
 			return errors.New("Missing Android API Key")
+		}
+	}
+
+	if PushConf.Huawei.Enabled {
+		if PushConf.Huawei.APIKey == "" {
+			return errors.New("Missing Huawei API Key")
+		}
+
+		if PushConf.Huawei.APPId == "" {
+			return errors.New("Missing Huawei APP Id")
 		}
 	}
 
