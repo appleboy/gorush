@@ -378,7 +378,7 @@ Retry:
 		newTokens []string
 	)
 
-	notification := GetIOSNotification(req)
+	baseNotification := GetIOSNotification(req)
 	client := getApnsClient(req)
 
 	var wg sync.WaitGroup
@@ -387,10 +387,11 @@ Retry:
 		MaxConcurrentIOSPushes <- struct{}{}
 		wg.Add(1)
 		go func(token string) {
-			notification.DeviceToken = token
+			deviceNotification := baseNotification
+			deviceNotification.DeviceToken = token
 
 			// send ios notification
-			res, err := client.Push(notification)
+			res, err := client.Push(deviceNotification)
 
 			if err != nil || res.StatusCode != 200 {
 				if err == nil {
