@@ -79,6 +79,9 @@ type PushNotification struct {
 	Condition             string            `json:"condition,omitempty"`
 	Notification          *fcm.Notification `json:"notification,omitempty"`
 
+	// Huawei
+	APPId   string `json:"api_key,omitempty"`
+
 	// iOS
 	Expiration  *int64   `json:"expiration,omitempty"`
 	ApnsID      string   `json:"apns_id,omitempty"`
@@ -148,7 +151,7 @@ func CheckMessage(req PushNotification) error {
 		return errors.New(msg)
 	}
 
-	if req.Platform == PlatformHuawei && len(req.Tokens) > 500 {
+	if req.Platform == PlatFormHuawei && len(req.Tokens) > 500 {
 		msg = "the message may specify at most 500 registration IDs for Huawei"
 		LogAccess.Debug(msg)
 		return errors.New(msg)
