@@ -285,7 +285,7 @@ Android Options:
     --android                        enabled android (default: false)
 Huawei Options:
     -hk, --hmskey <hms_key>          HMS API Key
-    -hid, --hmsid <hms_id>       HMS APP Id
+    -hid, --hmsid <hms_id>           HMS APP Id
     --huawei                         enabled huawei (default: false)
 Common Options:
     --topic <topic>                  iOS or Android topic message
@@ -321,15 +321,16 @@ gorush --android --topic "/topics/foo-bar" \
 Send single notification with the following command.
 
 ```bash
-gorush -huawei -m "your message" -hk "API Key" -hid "APP Id" -t "Device token"
+gorush -huawei -title "Gorush with HMS" -m "your message" -hk "API Key" -hid "APP Id" -t "Device token"
 ```
 
 Send messages to topics.
 
 ```bash
-gorush --android --topic "foo-bar" \
+gorush --huawei --topic "foo-bar" \
+  -title "Gorush with HMS" \
   -m "This is a Firebase Cloud Messaging Topic Message" \
-  -hk "API Key"
+  -hk "API Key" \
   -hid "APP Id"
 ```
 
@@ -530,7 +531,8 @@ Simple send Huawei notification example, the `platform` value is `3`:
     {
       "tokens": ["token_a", "token_b"],
       "platform": 3,
-      "message": "Hello World Android!"
+      "title": "Gorush with HMS",
+      "message": "Hello World Huawei!"
     }
   ]
 }
@@ -568,7 +570,8 @@ Send multiple notifications as below:
     {
       "tokens": ["token_a", "token_b"],
       "platform": 3,
-      "message": "Hello World!"
+      "message": "Hello World Huawei!",
+      "title": "Gorush with HMS"
     },
     .....
   ]
@@ -675,13 +678,13 @@ See more detail about [Firebase Cloud Messaging HTTP Protocol reference](https:/
 
 ### Huawei notification
 
-#### app_id
-#### huawei_data
-#### huawei_notification
-#### huawei_ttl
-#### huawei_collapse_key
-#### bi_tag
-#### fast_app_target
+* app_id
+* huawei_data
+* huawei_notification
+* huawei_ttl
+* huawei_collapse_key
+* bi_tag
+* fast_app_target
 
 See more detail about [Huawei Mobulse Services Push API reference](https://developer.huawei.com/consumer/en/doc/development/HMS-References/push-sendapi).
 
@@ -907,7 +910,8 @@ Send messages to topics
     {
       "topic": "foo-bar",
       "platform": 3,
-      "message": "This is a Firebase Cloud Messaging Topic Message"
+      "message": "This is a Huawei Mobile Services Topic Message",
+      "title": "You got message"
     }
   ]
 }
