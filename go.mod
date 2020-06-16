@@ -21,7 +21,7 @@ require (
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
 	github.com/mattn/go-isatty v0.0.12
 	github.com/mitchellh/mapstructure v1.1.2
-	github.com/msalihkarakasli/go-hms-push v0.0.0-20200615195759-7a970b71c22c
+	github.com/msalihkarakasli/go-hms-push v0.0.0-20200616114002-91cd23dfeed4
 	github.com/pelletier/go-toml v1.6.0 // indirect
 	github.com/prometheus/client_golang v1.2.1
 	github.com/prometheus/client_model v0.0.0-20191202183732-d1d2010b5bee // indirect

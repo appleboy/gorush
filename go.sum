@@ -182,6 +182,14 @@ github.com/modern-go/reflect2 v1.0.1 h1:9f412s+6RmYXLWZSEzVVgPGK7C2PphHj5RJrvfx9
 github.com/modern-go/reflect2 v1.0.1/go.mod h1:bx2lNnkwVCuqBIxFjflWJWanXIb3RllmbCylyMrvgv0=
 github.com/msalihkarakasli/go-hms-push v0.0.0-20200615195759-7a970b71c22c h1:OG1NL81rADpFFYqfWQFGWQZLgxajiOS9cZApwDaPpNg=
 github.com/msalihkarakasli/go-hms-push v0.0.0-20200615195759-7a970b71c22c/go.mod h1:4X2lQHsWGt+e3uRK124A6ndq3IIVymTAzEI9A1kIQKc=
+github.com/msalihkarakasli/go-hms-push v0.0.0-20200616075053-ff4aeca924ee h1:GhSc8Bz6jeSlPukx9t3eyWK30udyAoACCR9jtci4tVI=
+github.com/msalihkarakasli/go-hms-push v0.0.0-20200616075053-ff4aeca924ee/go.mod h1:4X2lQHsWGt+e3uRK124A6ndq3IIVymTAzEI9A1kIQKc=
+github.com/msalihkarakasli/go-hms-push v0.0.0-20200616081907-aa182701f7a8 h1:anVdFSIgATqyCKkgRV8TZs8JLvzvlocQmYdW4/QXlfw=
+github.com/msalihkarakasli/go-hms-push v0.0.0-20200616081907-aa182701f7a8/go.mod h1:4X2lQHsWGt+e3uRK124A6ndq3IIVymTAzEI9A1kIQKc=
+github.com/msalihkarakasli/go-hms-push v0.0.0-20200616090445-02629345434a h1:8RhjWJXeVuHBGjGDbjNVT9/k1oOblgYkZR11hTfbHXM=
+github.com/msalihkarakasli/go-hms-push v0.0.0-20200616090445-02629345434a/go.mod h1:4X2lQHsWGt+e3uRK124A6ndq3IIVymTAzEI9A1kIQKc=
+github.com/msalihkarakasli/go-hms-push v0.0.0-20200616114002-91cd23dfeed4 h1:3cAiZwpOmIXbP+3/SAriDi9XlxBwZCGhS0UGhnlYhi0=
+github.com/msalihkarakasli/go-hms-push v0.0.0-20200616114002-91cd23dfeed4/go.mod h1:4X2lQHsWGt+e3uRK124A6ndq3IIVymTAzEI9A1kIQKc=
 github.com/mwitkow/go-conntrack v0.0.0-20161129095857-cc309e4a2223/go.mod h1:qRWi+5nqEBWmkhHvq77mSJWrCKwh8bxhgT7d/eI7P4U=
 github.com/oklog/ulid v1.3.1/go.mod h1:CirwcVhetQ6Lv90oh/F+FBtV6XMibvdAFo93nm5qn4U=
 github.com/onsi/ginkgo v1.6.0/go.mod h1:lLunBs/Ym6LB5Z9jYTR76FiuTmxDTDusOGeTQH+WWjE=
