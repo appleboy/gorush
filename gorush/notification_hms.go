@@ -68,73 +68,91 @@ func InitHMSClient(apiKey string, appId string) (*core.HMSClient, error) {
 func GetHuaweiNotification(req PushNotification) (*model.MessageRequest, error) {
 	
 	msgRequest := model.NewNotificationMsgRequest()
-	msgRequest.Message.Token = req.Tokens
 
 	msgRequest.Message.Android = model.GetDefaultAndroid()
 
-	msgRequest.Message.Condition = req.Condition
-	//msgRequest.Message.Android.CollapseKey = req.CollapseKey
-
-	// notification := &fcm.Message{
-	// 	To:                    req.To,
-	// 	Condition:             req.Condition,
-	// 	CollapseKey:           req.CollapseKey,
-	// 	ContentAvailable:      req.ContentAvailable,
-	// 	MutableContent:        req.MutableContent,
-	// 	DelayWhileIdle:        req.DelayWhileIdle,
-	// 	TimeToLive:            req.TimeToLive,
-	// 	RestrictedPackageName: req.RestrictedPackageName,
-	// 	DryRun:                req.DryRun,
-	// }
-
-	msgRequest.Message.Android.Notification = model.GetDefaultAndroidNotification()
-
 	if len(req.Tokens) > 0 {
-	 	msgRequest.Message.Token = req.Tokens
-	 }
-
-	if len(req.Priority) > 0 && req.Priority == "high" {
-	 	msgRequest.Message.Android.Urgency = "HIGH"
-	 }
-
-	// Add another field
-	// if len(req.Data) > 0 {
-	//  	msgRequest.Message.Android.Data = make(map[string]interface{})
-	//  	for k, v := range req.Data {
-	//  		msgRequest.Message.Android.Data[k] = v
-	//  	}
-	//  }
-
-	 n := msgRequest.Message.Android.Notification
-	 isNotificationSet := false
-	if req.Notification != nil {
-	 	isNotificationSet = true
-	 	n = req.HuaweiNotification
+		msgRequest.Message.Token = req.Tokens
 	}
 
-	if len(req.Message) > 0 {
-	 	isNotificationSet = true
-	 	n.Body = req.Message
+	if len(req.Topic) > 0 {
+		msgRequest.Message.Topic = req.Topic;
 	}
 
-	if len(req.Title) > 0 {
-	 	isNotificationSet = true
-	 	n.Title = req.Title
+	if len(req.Condition) > 0 {
+		msgRequest.Message.Condition = req.Condition
 	}
 
-	if len(req.Image) > 0 {
-	 	isNotificationSet = true
-	 	n.Image = req.Image
+	if req.Priority == "high" {
+		msgRequest.Message.Android.Urgency = "HIGH"
 	}
 
-	if v, ok := req.Sound.(string); ok && len(v) > 0 {
-	 	isNotificationSet = true
-	 	n.Sound = v
+	//if req.HuaweiCollapseKey != nil {
+		msgRequest.Message.Android.CollapseKey = req.HuaweiCollapseKey
+	//}
+
+	if len(req.Category) > 0 {
+		msgRequest.Message.Android.Category = req.Category
 	}
 
-	if isNotificationSet {
-	 	msgRequest.Message.Android.Notification = n
-	 }
+	if len(req.HuaweiTTL) > 0 {
+		msgRequest.Message.Android.TTL = req.HuaweiTTL
+	}
+
+	if len(req.BiTag) > 0 {
+		msgRequest.Message.Android.BiTag = req.BiTag
+	}
+
+	//if req.FastAppTarget != nil {
+		msgRequest.Message.Android.FastAppTarget = req.FastAppTarget
+	//}
+
+	//Add data fields
+	if len(req.HuaweiData) > 0 {
+	  	msgRequest.Message.Data = req.HuaweiData
+	} else {
+		//Notification Message
+		msgRequest.Message.Android.Notification = model.GetDefaultAndroidNotification()
+
+		n := msgRequest.Message.Android.Notification
+		isNotificationSet := false
+		
+		if req.HuaweiNotification != nil {
+		 	isNotificationSet = true
+		 	n = req.HuaweiNotification
+
+		 	if n.ClickAction == nil {
+		 		n.ClickAction = model.GetDefaultClickAction()
+		 	}
+		}
+
+		if len(req.Message) > 0 {
+		 	isNotificationSet = true
+		 	n.Body = req.Message
+		}
+
+		if len(req.Title) > 0 {
+		 	isNotificationSet = true
+		 	n.Title = req.Title
+		}
+
+		if len(req.Image) > 0 {
+		 	isNotificationSet = true
+		 	n.Image = req.Image
+		}
+
+		if v, ok := req.Sound.(string); ok && len(v) > 0 {
+		 	isNotificationSet = true
+		 	n.Sound = v
+		} else {
+			n.DefaultSound = true;
+		}
+
+
+		if isNotificationSet {
+		 	msgRequest.Message.Android.Notification = n
+		 }
+	}
 
 	// if len(req.Apns) > 0 {
 	// 	notification.Apns = req.Apns

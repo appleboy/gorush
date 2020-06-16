@@ -81,8 +81,13 @@ type PushNotification struct {
 	Notification          *fcm.Notification `json:"notification,omitempty"`
 
 	// Huawei
-	APPId                string `json:"api_key,omitempty"`
+	APPId                string                     `json:"api_key,omitempty"`
 	HuaweiNotification   *model.AndroidNotification `json:"huawei_notification,omitempty"`
+	HuaweiData           string                     `json:"huawei_data,omitempty"`
+	HuaweiCollapseKey    int                        `json:"huawei_collapse_key,omitempty"`
+	HuaweiTTL            string                     `json:"huawei_ttl,omitempty"`
+	BiTag                string                     `json:"bi_tag,omitempty"`
+	FastAppTarget        int                        `json:"fast_app_target,omitempty"`
 
 	// iOS
 	Expiration  *int64   `json:"expiration,omitempty"`
