@@ -108,12 +108,12 @@ func (c Metrics) Collect(ch chan<- prometheus.Metric) {
 		ch <- prometheus.MustNewConstMetric(
 		c.HuaweiSuccess,
 		prometheus.GaugeValue,
-		float64(StatStorage.GetAndroidSuccess()),
+		float64(StatStorage.GetHuaweiSuccess()),
 	)
 	ch <- prometheus.MustNewConstMetric(
 		c.HuaweiError,
 		prometheus.GaugeValue,
-		float64(StatStorage.GetAndroidError()),
+		float64(StatStorage.GetHuaweiError()),
 	)
 	ch <- prometheus.MustNewConstMetric(
 		c.QueueUsage,
