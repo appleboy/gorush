@@ -9,6 +9,7 @@ import (
 	"sync"
 
 	"github.com/appleboy/go-fcm"
+	"github.com/msalihkarakasli/go-hms-push/push/model"
 )
 
 // D provide string array
@@ -80,7 +81,8 @@ type PushNotification struct {
 	Notification          *fcm.Notification `json:"notification,omitempty"`
 
 	// Huawei
-	APPId   string `json:"api_key,omitempty"`
+	APPId                string `json:"api_key,omitempty"`
+	HuaweiNotification   *model.AndroidNotification `json:"huawei_notification,omitempty"`
 
 	// iOS
 	Expiration  *int64   `json:"expiration,omitempty"`

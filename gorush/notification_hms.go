@@ -18,6 +18,7 @@ var (
 	once        sync.Once
 )
 
+// GetPushClient use for create HMS Push
 func GetPushClient(conf *config.Config) (*core.HMSClient, error){
 	once.Do(func() {
 		client, err := core.NewHttpClient(conf)
@@ -68,19 +69,11 @@ func GetHuaweiNotification(req PushNotification) (*model.MessageRequest, error) 
 	
 	msgRequest := model.NewNotificationMsgRequest()
 	msgRequest.Message.Token = req.Tokens
+
 	msgRequest.Message.Android = model.GetDefaultAndroid()
-	msgRequest.Message.Android.Notification = model.GetDefaultAndroidNotification()
 
-	b, err := json.Marshal(msgRequest)
-	if err != nil {
-		fmt.Printf("Failed to marshal the default message! Error is %s\n", err.Error())
-		return nil, err
-	}
-
-	fmt.Printf("Default message is %s\n", string(b))
-	return msgRequest, nil
-
-	//TODO: Fix This part
+	msgRequest.Message.Condition = req.Condition
+	//msgRequest.Message.Android.CollapseKey = req.CollapseKey
 
 	// notification := &fcm.Message{
 	// 	To:                    req.To,
@@ -94,60 +87,67 @@ func GetHuaweiNotification(req PushNotification) (*model.MessageRequest, error) 
 	// 	DryRun:                req.DryRun,
 	// }
 
-	// if len(req.Tokens) > 0 {
-	// 	notification.RegistrationIDs = req.Tokens
-	// }
+	msgRequest.Message.Android.Notification = model.GetDefaultAndroidNotification()
 
-	// if len(req.Priority) > 0 && req.Priority == "high" {
-	// 	notification.Priority = "high"
-	// }
+	if len(req.Tokens) > 0 {
+	 	msgRequest.Message.Token = req.Tokens
+	 }
 
-	// // Add another field
+	if len(req.Priority) > 0 && req.Priority == "high" {
+	 	msgRequest.Message.Android.Urgency = "HIGH"
+	 }
+
+	// Add another field
 	// if len(req.Data) > 0 {
-	// 	notification.Data = make(map[string]interface{})
-	// 	for k, v := range req.Data {
-	// 		notification.Data[k] = v
-	// 	}
-	// }
+	//  	msgRequest.Message.Android.Data = make(map[string]interface{})
+	//  	for k, v := range req.Data {
+	//  		msgRequest.Message.Android.Data[k] = v
+	//  	}
+	//  }
 
-	// n := &fcm.Notification{}
-	// isNotificationSet := false
-	// if req.Notification != nil {
-	// 	isNotificationSet = true
-	// 	n = req.Notification
-	// }
+	 n := msgRequest.Message.Android.Notification
+	 isNotificationSet := false
+	if req.Notification != nil {
+	 	isNotificationSet = true
+	 	n = req.HuaweiNotification
+	}
 
-	// if len(req.Message) > 0 {
-	// 	isNotificationSet = true
-	// 	n.Body = req.Message
-	// }
+	if len(req.Message) > 0 {
+	 	isNotificationSet = true
+	 	n.Body = req.Message
+	}
 
-	// if len(req.Title) > 0 {
-	// 	isNotificationSet = true
-	// 	n.Title = req.Title
-	// }
+	if len(req.Title) > 0 {
+	 	isNotificationSet = true
+	 	n.Title = req.Title
+	}
 
-	// if len(req.Image) > 0 {
-	// 	isNotificationSet = true
-	// 	n.Image = req.Image
-	// }
+	if len(req.Image) > 0 {
+	 	isNotificationSet = true
+	 	n.Image = req.Image
+	}
 
-	// if v, ok := req.Sound.(string); ok && len(v) > 0 {
-	// 	isNotificationSet = true
-	// 	n.Sound = v
-	// }
+	if v, ok := req.Sound.(string); ok && len(v) > 0 {
+	 	isNotificationSet = true
+	 	n.Sound = v
+	}
 
-	// if isNotificationSet {
-	// 	notification.Notification = n
-	// }
-
-	// // handle iOS apns in fcm
+	if isNotificationSet {
+	 	msgRequest.Message.Android.Notification = n
+	 }
 
 	// if len(req.Apns) > 0 {
 	// 	notification.Apns = req.Apns
 	// }
 
-	// return notification
+	b, err := json.Marshal(msgRequest)
+	if err != nil {
+		fmt.Printf("Failed to marshal the default message! Error is %s\n", err.Error())
+		return nil, err
+	}
+
+	fmt.Printf("Default message is %s\n", string(b))
+	return msgRequest, nil
 }
 
 // PushToHuawei provide send notification to Android server.
@@ -192,91 +192,27 @@ Retry:
 		return false
 	}
 
-	fmt.Println(res);
-	// if !req.IsTopic() {
-	// 	LogAccess.Debug(fmt.Sprintf("Android Success count: %d, Failure count: %d", res.Success, res.Failure))
-	// }
+	fmt.Println(res.Code);
+	fmt.Println(res.Msg);
+	fmt.Println(res.RequestId);
 
-	
-	//StatStorage.AddAndroidSuccess(int64(res.Success))
-	//StatStorage.AddAndroidError(int64(res.Failure))
 
-	//var newTokens []string
-	// result from Send messages to specific devices
-	// for k, result := range res.Results {
-	// 	to := ""
-	// 	if k < len(req.Tokens) {
-	// 		to = req.Tokens[k]
-	// 	} else {
-	// 		to = req.To
-	// 	}
-
-	// 	if result.Error != nil {
-	// 		// We should retry only "retryable" statuses. More info about response:
-	// 		// https://firebase.google.com/docs/cloud-messaging/http-server-ref#downstream-http-messages-plain-text
-	// 		if !result.Unregistered() {
-	// 			newTokens = append(newTokens, to)
-	// 		}
-	// 		isError = true
-
-	// 		LogPush(FailedPush, to, req, result.Error)
-	// 		if PushConf.Core.Sync {
-	// 			req.AddLog(getLogPushEntry(FailedPush, to, req, result.Error))
-	// 		} else if PushConf.Core.FeedbackURL != "" {
-	// 			go func(logger *logrus.Logger, log LogPushEntry, url string, timeout int64) {
-	// 				err := DispatchFeedback(log, url, timeout)
-	// 				if err != nil {
-	// 					logger.Error(err)
-	// 				}
-	// 			}(LogError, getLogPushEntry(FailedPush, to, req, result.Error), PushConf.Core.FeedbackURL, PushConf.Core.FeedbackTimeout)
-	// 		}
-	// 		continue
-	// 	}
-
-	// 	LogPush(SucceededPush, to, req, nil)
-	// }
-
-	// result from Send messages to topics
-	// if req.IsTopic() {
-	// 	to := ""
-	// 	if req.To != "" {
-	// 		to = req.To
-	// 	} else {
-	// 		to = req.Condition
-	// 	}
-	// 	LogAccess.Debug("Send Topic Message: ", to)
-	// 	// Success
-	// 	if res.MessageID != 0 {
-	// 		LogPush(SucceededPush, to, req, nil)
-	// 	} else {
-	// 		isError = true
-	// 		// failure
-	// 		LogPush(FailedPush, to, req, res.Error)
-	// 		if PushConf.Core.Sync {
-	// 			req.AddLog(getLogPushEntry(FailedPush, to, req, res.Error))
-	// 		}
-	// 	}
-	// }
-
-	// // Device Group HTTP Response
-	// if len(res.FailedRegistrationIDs) > 0 {
-	// 	isError = true
-	// 	newTokens = append(newTokens, res.FailedRegistrationIDs...)
-
-	// 	LogPush(FailedPush, notification.To, req, errors.New("device group: partial success or all fails"))
-	// 	if PushConf.Core.Sync {
-	// 		req.AddLog(getLogPushEntry(FailedPush, notification.To, req, errors.New("device group: partial success or all fails")))
-	// 	}
-	// }
+	// Huawei Push Send API does not support exact results for each token
+	if res.Code=="80000000" {
+		StatStorage.AddHuaweiSuccess(int64(1))
+		LogAccess.Debug(fmt.Sprintf("Huwaei Send Notification is completed successfully!"))
+	} else {
+		isError = true
+		StatStorage.AddHuaweiError(int64(1))
+		LogAccess.Debug(fmt.Sprintf("Huwaei Send Notification is failed!"))
+	}
 
 	if isError && retryCount < maxRetry {
 	 	retryCount++
 
-	 	// resend fail token
-	 	//req.Tokens = newTokens
+	 	// resend all tokens
 	 	goto Retry
 	}
 
-	return false;
-	//return isError
+	return isError
 }

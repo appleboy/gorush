@@ -64,6 +64,10 @@ func queueNotification(ctx context.Context, req RequestPush) (int, []LogPushEntr
 			if !PushConf.Android.Enabled {
 				continue
 			}
+		case PlatFormHuawei:
+			if !PushConf.Huawei.Enabled {
+				continue
+			}
 		}
 		newNotification = append(newNotification, notification)
 	}
