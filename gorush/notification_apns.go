@@ -388,13 +388,13 @@ Retry:
 		MaxConcurrentIOSPushes <- struct{}{}
 		wg.Add(1)
 		go func(token string) {
-			deviceNotification := baseNotification
+			deviceNotification := *baseNotification
 			deviceNotification.DeviceToken = token
 
 			// send ios notification
 			url := fmt.Sprintf("before .../3/device/%v", deviceNotification.DeviceToken)
 			fmt.Println(url)
-			res, err := client.Push(deviceNotification)
+			res, err := client.Push(&deviceNotification)
 			url = fmt.Sprintf("after .../3/device/%v", deviceNotification.DeviceToken)
 			fmt.Println(url)
 
