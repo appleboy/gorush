@@ -316,7 +316,7 @@ gorush --android --topic "/topics/foo-bar" \
 - `--topic`: Send messages to topics. note: don't add device token.
 - `--proxy`: Set `http`, `https` or `socks5` proxy url.
 
-### Send Huawei(HMS) notification
+### Send Huawei (HMS) notification
 
 Send single notification with the following command.
 
@@ -329,7 +329,7 @@ Send messages to topics.
 ```bash
 gorush --huawei --topic "foo-bar" \
   -title "Gorush with HMS" \
-  -m "This is a Firebase Cloud Messaging Topic Message" \
+  -m "This is a Huawei Mobile Services Topic Message" \
   -hk "API Key" \
   -hid "APP Id"
 ```
@@ -678,13 +678,13 @@ See more detail about [Firebase Cloud Messaging HTTP Protocol reference](https:/
 
 ### Huawei notification
 
-* app_id
-* huawei_data
-* huawei_notification
-* huawei_ttl
-* huawei_collapse_key
-* bi_tag
-* fast_app_target
+* app_id: app id from huawei developer console
+* huawei_data: mapped to data
+* huawei_notification: mapped to notification
+* huawei_ttl: mapped to ttl
+* huawei_collapse_key: mapped to collapse_key
+* bi_tag: 
+* fast_app_target: 
 
 See more detail about [Huawei Mobulse Services Push API reference](https://developer.huawei.com/consumer/en/doc/development/HMS-References/push-sendapi).
 
@@ -862,7 +862,7 @@ Send normal notification.
     {
       "tokens": ["token_a", "token_b"],
       "platform": 3,
-      "message": "Hello World Android!",
+      "message": "Hello World Huawei!",
       "title": "You got message"
     }
   ]
@@ -877,9 +877,9 @@ Add `notification` payload.
     {
       "tokens": ["token_a", "token_b"],
       "platform": 3,
-      "message": "Hello World Android!",
+      "message": "Hello World Huawei!",
       "title": "You got message",
-      "notification" : {
+      "huawei_notification" : {
         "icon": "myicon",
         "color": "#112244"
       }
