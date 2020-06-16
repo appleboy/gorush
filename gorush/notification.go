@@ -131,8 +131,16 @@ func (p *PushNotification) AddLog(log LogPushEntry) {
 // IsTopic check if message format is topic for FCM
 // ref: https://firebase.google.com/docs/cloud-messaging/send-message#topic-http-post-request
 func (p *PushNotification) IsTopic() bool {
-	return (p.Platform == PlatFormAndroid && p.To != "" && strings.HasPrefix(p.To, "/topics/")) ||
-		p.Condition != ""
+	
+	if (p.Platform == PlatFormAndroid){
+		return p.To != "" && strings.HasPrefix(p.To, "/topics/") || p.Condition != ""
+	}
+
+	if (p.Platform == PlatFormHuawei) {
+		return p.Topic != "" || p.Condition != ""
+	}
+
+	return false
 }
 
 // CheckMessage for check request message

@@ -79,6 +79,10 @@ func GetHuaweiNotification(req PushNotification) (*model.MessageRequest, error) 
 		msgRequest.Message.Topic = req.Topic;
 	}
 
+	if len(req.To) > 0 {
+		msgRequest.Message.Topic = req.To;
+	}
+
 	if len(req.Condition) > 0 {
 		msgRequest.Message.Condition = req.Condition
 	}
