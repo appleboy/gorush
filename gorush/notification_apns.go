@@ -431,7 +431,7 @@ Retry:
 	}
 	wg.Wait()
 
-	if isError && retryCount < maxRetry {
+	if len(newTokens) > 0 && retryCount < maxRetry {
 		retryCount++
 
 		// resend fail token
