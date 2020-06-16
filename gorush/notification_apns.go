@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"encoding/base64"
 	"errors"
+	"fmt"
 	"net"
 	"net/http"
 	"path/filepath"
@@ -391,6 +392,8 @@ Retry:
 			deviceNotification.DeviceToken = token
 
 			// send ios notification
+			url := fmt.Sprintf(".../3/device/%v", deviceNotification.DeviceToken)
+			fmt.Println(url)
 			res, err := client.Push(deviceNotification)
 
 			if err != nil || res.StatusCode != 200 {
