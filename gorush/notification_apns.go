@@ -420,9 +420,7 @@ Retry:
 					newTokens = append(newTokens, token)
 				}
 				isError = true
-			}
-
-			if res.Sent() && !isError {
+			} else if res.Sent() {
 				LogPush(SucceededPush, token, req, nil)
 				StatStorage.AddIosSuccess(1)
 			}
