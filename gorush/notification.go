@@ -81,7 +81,7 @@ type PushNotification struct {
 	Notification          *fcm.Notification `json:"notification,omitempty"`
 
 	// Huawei
-	APPId                string                     `json:"api_key,omitempty"`
+	APPId                string                     `json:"app_id,omitempty"`
 	HuaweiNotification   *model.AndroidNotification `json:"huawei_notification,omitempty"`
 	HuaweiData           string                     `json:"huawei_data,omitempty"`
 	HuaweiCollapseKey    int                        `json:"huawei_collapse_key,omitempty"`
