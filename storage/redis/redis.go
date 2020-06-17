@@ -149,4 +149,3 @@ func (s *Storage) GetHuaweiError() int64 {
 
 	return count
 }
-

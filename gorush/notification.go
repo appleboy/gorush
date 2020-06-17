@@ -81,13 +81,13 @@ type PushNotification struct {
 	Notification          *fcm.Notification `json:"notification,omitempty"`
 
 	// Huawei
-	APPId                string                     `json:"app_id,omitempty"`
-	HuaweiNotification   *model.AndroidNotification `json:"huawei_notification,omitempty"`
-	HuaweiData           string                     `json:"huawei_data,omitempty"`
-	HuaweiCollapseKey    int                        `json:"huawei_collapse_key,omitempty"`
-	HuaweiTTL            string                     `json:"huawei_ttl,omitempty"`
-	BiTag                string                     `json:"bi_tag,omitempty"`
-	FastAppTarget        int                        `json:"fast_app_target,omitempty"`
+	APPId              string                     `json:"app_id,omitempty"`
+	HuaweiNotification *model.AndroidNotification `json:"huawei_notification,omitempty"`
+	HuaweiData         string                     `json:"huawei_data,omitempty"`
+	HuaweiCollapseKey  int                        `json:"huawei_collapse_key,omitempty"`
+	HuaweiTTL          string                     `json:"huawei_ttl,omitempty"`
+	BiTag              string                     `json:"bi_tag,omitempty"`
+	FastAppTarget      int                        `json:"fast_app_target,omitempty"`
 
 	// iOS
 	Expiration  *int64   `json:"expiration,omitempty"`
@@ -131,12 +131,12 @@ func (p *PushNotification) AddLog(log LogPushEntry) {
 // IsTopic check if message format is topic for FCM
 // ref: https://firebase.google.com/docs/cloud-messaging/send-message#topic-http-post-request
 func (p *PushNotification) IsTopic() bool {
-	
-	if (p.Platform == PlatFormAndroid){
+
+	if p.Platform == PlatFormAndroid {
 		return p.To != "" && strings.HasPrefix(p.To, "/topics/") || p.Condition != ""
 	}
 
-	if (p.Platform == PlatFormHuawei) {
+	if p.Platform == PlatFormHuawei {
 		return p.Topic != "" || p.Condition != ""
 	}
 
