@@ -2,24 +2,24 @@ package gorush
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"sync"
-	"encoding/json"
 
-	"github.com/msalihkarakasli/go-hms-push/push/model"
-	"github.com/msalihkarakasli/go-hms-push/push/core"
 	"github.com/msalihkarakasli/go-hms-push/push/config"
+	"github.com/msalihkarakasli/go-hms-push/push/core"
+	"github.com/msalihkarakasli/go-hms-push/push/model"
 )
 
 var (
-	pushError   error
-	pushClient  *core.HMSClient
-	once        sync.Once
+	pushError  error
+	pushClient *core.HMSClient
+	once       sync.Once
 )
 
 // GetPushClient use for create HMS Push
-func GetPushClient(conf *config.Config) (*core.HMSClient, error){
+func GetPushClient(conf *config.Config) (*core.HMSClient, error) {
 	once.Do(func() {
 		client, err := core.NewHttpClient(conf)
 		if err != nil {
@@ -34,24 +34,24 @@ func GetPushClient(conf *config.Config) (*core.HMSClient, error){
 }
 
 // InitHMSClient use for initialize HMS Client.
-func InitHMSClient(apiKey string, appId string) (*core.HMSClient, error) {
+func InitHMSClient(apiKey string, appID string) (*core.HMSClient, error) {
 
 	if apiKey == "" {
 		return nil, errors.New("Missing Huawei API Key")
 	}
 
-	if appId == "" {
+	if appID == "" {
 		return nil, errors.New("Missing Huawei App Id")
 	}
 
 	var conf = &config.Config{
-		AppId:     appId,
+		AppId:     appID,
 		AppSecret: apiKey,
-		AuthUrl: "https://login.cloud.huawei.com/oauth2/v2/token",
-		PushUrl: "https://api.push.hicloud.com",
+		AuthUrl:   "https://login.cloud.huawei.com/oauth2/v2/token",
+		PushUrl:   "https://api.push.hicloud.com",
 	}
 
-	if apiKey != PushConf.Huawei.APIKey || appId != PushConf.Huawei.APPId {
+	if apiKey != PushConf.Huawei.APIKey || appID != PushConf.Huawei.APPId {
 		return GetPushClient(conf)
 	}
 
@@ -66,7 +66,7 @@ func InitHMSClient(apiKey string, appId string) (*core.HMSClient, error) {
 // HTTP Connection Server Reference for HMS
 // https://developer.huawei.com/consumer/en/doc/development/HMS-References/push-sendapi
 func GetHuaweiNotification(req PushNotification) (*model.MessageRequest, error) {
-	
+
 	msgRequest := model.NewNotificationMsgRequest()
 
 	msgRequest.Message.Android = model.GetDefaultAndroid()
@@ -76,11 +76,11 @@ func GetHuaweiNotification(req PushNotification) (*model.MessageRequest, error) 
 	}
 
 	if len(req.Topic) > 0 {
-		msgRequest.Message.Topic = req.Topic;
+		msgRequest.Message.Topic = req.Topic
 	}
 
 	if len(req.To) > 0 {
-		msgRequest.Message.Topic = req.To;
+		msgRequest.Message.Topic = req.To
 	}
 
 	if len(req.Condition) > 0 {
@@ -92,7 +92,7 @@ func GetHuaweiNotification(req PushNotification) (*model.MessageRequest, error) 
 	}
 
 	//if req.HuaweiCollapseKey != nil {
-		msgRequest.Message.Android.CollapseKey = req.HuaweiCollapseKey
+	msgRequest.Message.Android.CollapseKey = req.HuaweiCollapseKey
 	//}
 
 	if len(req.Category) > 0 {
@@ -108,54 +108,53 @@ func GetHuaweiNotification(req PushNotification) (*model.MessageRequest, error) 
 	}
 
 	//if req.FastAppTarget != nil {
-		msgRequest.Message.Android.FastAppTarget = req.FastAppTarget
+	msgRequest.Message.Android.FastAppTarget = req.FastAppTarget
 	//}
 
 	//Add data fields
 	if len(req.HuaweiData) > 0 {
-	  	msgRequest.Message.Data = req.HuaweiData
+		msgRequest.Message.Data = req.HuaweiData
 	} else {
 		//Notification Message
 		msgRequest.Message.Android.Notification = model.GetDefaultAndroidNotification()
 
 		n := msgRequest.Message.Android.Notification
 		isNotificationSet := false
-		
-		if req.HuaweiNotification != nil {
-		 	isNotificationSet = true
-		 	n = req.HuaweiNotification
 
-		 	if n.ClickAction == nil {
-		 		n.ClickAction = model.GetDefaultClickAction()
-		 	}
+		if req.HuaweiNotification != nil {
+			isNotificationSet = true
+			n = req.HuaweiNotification
+
+			if n.ClickAction == nil {
+				n.ClickAction = model.GetDefaultClickAction()
+			}
 		}
 
 		if len(req.Message) > 0 {
-		 	isNotificationSet = true
-		 	n.Body = req.Message
+			isNotificationSet = true
+			n.Body = req.Message
 		}
 
 		if len(req.Title) > 0 {
-		 	isNotificationSet = true
-		 	n.Title = req.Title
+			isNotificationSet = true
+			n.Title = req.Title
 		}
 
 		if len(req.Image) > 0 {
-		 	isNotificationSet = true
-		 	n.Image = req.Image
+			isNotificationSet = true
+			n.Image = req.Image
 		}
 
 		if v, ok := req.Sound.(string); ok && len(v) > 0 {
-		 	isNotificationSet = true
-		 	n.Sound = v
+			isNotificationSet = true
+			n.Sound = v
 		} else {
-			n.DefaultSound = true;
+			n.DefaultSound = true
 		}
 
-
 		if isNotificationSet {
-		 	msgRequest.Message.Android.Notification = n
-		 }
+			msgRequest.Message.Android.Notification = n
+		}
 	}
 
 	// if len(req.Apns) > 0 {
@@ -214,13 +213,12 @@ Retry:
 		return false
 	}
 
-	fmt.Println(res.Code);
-	fmt.Println(res.Msg);
-	fmt.Println(res.RequestId);
-
+	fmt.Println(res.Code)
+	fmt.Println(res.Msg)
+	fmt.Println(res.RequestId)
 
 	// Huawei Push Send API does not support exact results for each token
-	if res.Code=="80000000" {
+	if res.Code == "80000000" {
 		StatStorage.AddHuaweiSuccess(int64(1))
 		LogAccess.Debug(fmt.Sprintf("Huwaei Send Notification is completed successfully!"))
 	} else {
@@ -230,10 +228,10 @@ Retry:
 	}
 
 	if isError && retryCount < maxRetry {
-	 	retryCount++
+		retryCount++
 
-	 	// resend all tokens
-	 	goto Retry
+		// resend all tokens
+		goto Retry
 	}
 
 	return isError

@@ -41,7 +41,7 @@ type IosStatus struct {
 	PushError   int64 `json:"push_error"`
 }
 
-// IosStatus is iOS structure
+// HuaweiStatus is huawei structure
 type HuaweiStatus struct {
 	PushSuccess int64 `json:"push_success"`
 	PushError   int64 `json:"push_error"`
