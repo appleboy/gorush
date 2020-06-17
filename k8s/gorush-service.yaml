@@ -12,8 +12,13 @@ spec:
     tier: frontend
   # if your cluster supports it, uncomment the following to automatically create
   # an external load-balanced IP for the frontend service.
-  type: LoadBalancer
+  # type: LoadBalancer
+  #
+  # if you want to expose the service to the outside (without a load balancer in front)
   # type: NodePort
+  #
+  # if you want gorush to be accessible only within the cluster
+  # type: ClusterIP
   ports:
   - protocol: TCP
     port: 80
