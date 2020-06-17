@@ -41,7 +41,7 @@ func InitHMSClient(apiKey string, appID string) (*core.HMSClient, error) {
 	}
 
 	if appID == "" {
-		return nil, errors.New("Missing Huawei App Id")
+		return nil, errors.New("Missing Huawei APP Id")
 	}
 
 	var conf = &config.Config{
