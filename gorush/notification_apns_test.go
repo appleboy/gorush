@@ -27,11 +27,12 @@ const authkeyValidP8 = `LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JR0hBZ0VBTUJNR0J5
 func TestDisabledAndroidIosConf(t *testing.T) {
 	PushConf, _ = config.LoadConf("")
 	PushConf.Android.Enabled = false
+	PushConf.Huawei.Enabled = false
 
 	err := CheckPushConf()
 
 	assert.Error(t, err)
-	assert.Equal(t, "Please enable iOS or Android config in yml config", err.Error())
+	assert.Equal(t, "Please enable iOS, Android or Huawei config in yml config", err.Error())
 }
 
 func TestMissingIOSCertificate(t *testing.T) {
