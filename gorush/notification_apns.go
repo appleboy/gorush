@@ -11,6 +11,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/appleboy/gorush/gorush/consts"
+
 	"github.com/mitchellh/mapstructure"
 	"github.com/sideshow/apns2"
 	"github.com/sideshow/apns2/certificate"
@@ -273,9 +275,9 @@ func GetIOSNotification(req PushNotification) *apns2.Notification {
 	}
 
 	if len(req.Priority) > 0 {
-		if req.Priority == "normal" {
+		if req.Priority == consts.PriorityNormal {
 			notification.Priority = apns2.PriorityLow
-		} else if req.Priority == "high" {
+		} else if req.Priority == consts.PriorityHigh {
 			notification.Priority = apns2.PriorityHigh
 		}
 	}
@@ -399,17 +401,17 @@ Retry:
 					err = errors.New(res.Reason)
 				}
 				// apns server error
-				LogPush(FailedPush, token, req, err)
+				LogPush(consts.FailedPush, token, req, err)
 
 				if PushConf.Core.Sync {
-					req.AddLog(getLogPushEntry(FailedPush, token, req, err))
+					req.AddLog(getLogPushEntry(consts.FailedPush, token, req, err))
 				} else if PushConf.Core.FeedbackURL != "" {
 					go func(logger *logrus.Logger, log LogPushEntry, url string, timeout int64) {
 						err := DispatchFeedback(log, url, timeout)
 						if err != nil {
 							logger.Error(err)
 						}
-					}(LogError, getLogPushEntry(FailedPush, token, req, err), PushConf.Core.FeedbackURL, PushConf.Core.FeedbackTimeout)
+					}(LogError, getLogPushEntry(consts.FailedPush, token, req, err), PushConf.Core.FeedbackURL, PushConf.Core.FeedbackTimeout)
 				}
 
 				StatStorage.AddIosError(1)
@@ -422,7 +424,7 @@ Retry:
 			}
 
 			if res.Sent() && !isError {
-				LogPush(SucceededPush, token, req, nil)
+				LogPush(consts.SucceededPush, token, req, nil)
 				StatStorage.AddIosSuccess(1)
 			}
 			// free push slot

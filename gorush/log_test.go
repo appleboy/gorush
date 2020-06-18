@@ -4,6 +4,8 @@ import (
 	"testing"
 
 	"github.com/appleboy/gorush/config"
+	"github.com/appleboy/gorush/gorush/consts"
+
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 )
@@ -79,14 +81,14 @@ func TestErrorLogPath(t *testing.T) {
 }
 
 func TestPlatFormType(t *testing.T) {
-	assert.Equal(t, "ios", typeForPlatForm(PlatFormIos))
-	assert.Equal(t, "android", typeForPlatForm(PlatFormAndroid))
+	assert.Equal(t, "ios", typeForPlatForm(consts.PlatFormIos))
+	assert.Equal(t, "android", typeForPlatForm(consts.PlatFormAndroid))
 	assert.Equal(t, "", typeForPlatForm(10000))
 }
 
 func TestPlatFormColor(t *testing.T) {
-	assert.Equal(t, blue, colorForPlatForm(PlatFormIos))
-	assert.Equal(t, yellow, colorForPlatForm(PlatFormAndroid))
+	assert.Equal(t, blue, colorForPlatForm(consts.PlatFormIos))
+	assert.Equal(t, yellow, colorForPlatForm(consts.PlatFormAndroid))
 	assert.Equal(t, reset, colorForPlatForm(1000000))
 }
 

@@ -11,6 +11,9 @@ import (
 	"time"
 
 	"github.com/appleboy/gorush/config"
+	"github.com/appleboy/gorush/gorush/consts"
+	"github.com/appleboy/gorush/gorush/structs"
+
 	"github.com/buger/jsonparser"
 	"github.com/sideshow/apns2"
 	"github.com/stretchr/testify/assert"
@@ -60,24 +63,26 @@ func TestIOSNotificationStructure(t *testing.T) {
 	message := "Welcome notification Server"
 	expiration := int64(time.Now().Unix())
 	req := PushNotification{
-		ApnsID:     test,
-		Topic:      test,
-		Expiration: &expiration,
-		Priority:   "normal",
-		Message:    message,
-		Badge:      &expectBadge,
-		Sound: Sound{
-			Critical: 1,
-			Name:     test,
-			Volume:   1.0,
+		PushNotification: structs.PushNotification{
+			ApnsID:     test,
+			Topic:      test,
+			Expiration: &expiration,
+			Priority:   consts.PriorityNormal,
+			Message:    message,
+			Badge:      &expectBadge,
+			Sound: Sound{
+				Critical: 1,
+				Name:     test,
+				Volume:   1.0,
+			},
+			ContentAvailable: true,
+			Data: structs.D{
+				"key1": "test",
+				"key2": 2,
+			},
+			Category: test,
+			URLArgs:  []string{"a", "b"},
 		},
-		ContentAvailable: true,
-		Data: D{
-			"key1": "test",
-			"key2": 2,
-		},
-		Category: test,
-		URLArgs:  []string{"a", "b"},
 	}
 
 	notification := GetIOSNotification(req)
@@ -104,7 +109,7 @@ func TestIOSNotificationStructure(t *testing.T) {
 	assert.Equal(t, test, notification.ApnsID)
 	assert.Equal(t, test, notification.Topic)
 	assert.Equal(t, unix, notification.Expiration.Unix())
-	assert.Equal(t, ApnsPriorityLow, notification.Priority)
+	assert.Equal(t, consts.ApnsPriorityLow, notification.Priority)
 	assert.Equal(t, message, alert)
 	assert.Equal(t, expectBadge, int(badge))
 	assert.Equal(t, expectBadge, *req.Badge)
@@ -125,14 +130,16 @@ func TestIOSSoundAndVolume(t *testing.T) {
 	test := "test"
 	message := "Welcome notification Server"
 	req := PushNotification{
-		ApnsID:   test,
-		Topic:    test,
-		Priority: "normal",
-		Message:  message,
-		Sound: Sound{
-			Critical: 3,
-			Name:     test,
-			Volume:   4.5,
+		PushNotification: structs.PushNotification{
+			ApnsID:   test,
+			Topic:    test,
+			Priority: consts.PriorityNormal,
+			Message:  message,
+			Sound: Sound{
+				Critical: 3,
+				Name:     test,
+				Volume:   4.5,
+			},
 		},
 	}
 
@@ -152,7 +159,7 @@ func TestIOSSoundAndVolume(t *testing.T) {
 
 	assert.Equal(t, test, notification.ApnsID)
 	assert.Equal(t, test, notification.Topic)
-	assert.Equal(t, ApnsPriorityLow, notification.Priority)
+	assert.Equal(t, consts.ApnsPriorityLow, notification.Priority)
 	assert.Equal(t, message, alert)
 	assert.Equal(t, test, soundName)
 	assert.Equal(t, 4.5, soundVolume)
@@ -176,14 +183,16 @@ func TestIOSSoundAndVolume(t *testing.T) {
 	assert.Equal(t, "foobar", soundName)
 
 	req = PushNotification{
-		ApnsID:   test,
-		Topic:    test,
-		Priority: "normal",
-		Message:  message,
-		Sound: map[string]interface{}{
-			"critical": 3,
-			"name":     "test",
-			"volume":   4.5,
+		PushNotification: structs.PushNotification{
+			ApnsID:   test,
+			Topic:    test,
+			Priority: consts.PriorityNormal,
+			Message:  message,
+			Sound: map[string]interface{}{
+				"critical": 3,
+				"name":     "test",
+				"volume":   4.5,
+			},
 		},
 	}
 
@@ -203,11 +212,13 @@ func TestIOSSoundAndVolume(t *testing.T) {
 	assert.Equal(t, "test", soundName)
 
 	req = PushNotification{
-		ApnsID:   test,
-		Topic:    test,
-		Priority: "normal",
-		Message:  message,
-		Sound:    "default",
+		PushNotification: structs.PushNotification{
+			ApnsID:   test,
+			Topic:    test,
+			Priority: consts.PriorityNormal,
+			Message:  message,
+			Sound:    "default",
+		},
 	}
 
 	notification = GetIOSNotification(req)
@@ -228,13 +239,15 @@ func TestIOSSummaryArg(t *testing.T) {
 	test := "test"
 	message := "Welcome notification Server"
 	req := PushNotification{
-		ApnsID:   test,
-		Topic:    test,
-		Priority: "normal",
-		Message:  message,
-		Alert: Alert{
-			SummaryArg:      "test",
-			SummaryArgCount: 3,
+		PushNotification: structs.PushNotification{
+			ApnsID:   test,
+			Topic:    test,
+			Priority: consts.PriorityNormal,
+			Message:  message,
+			Alert: structs.Alert{
+				SummaryArg:      "test",
+				SummaryArgCount: 3,
+			},
 		},
 	}
 
@@ -249,7 +262,7 @@ func TestIOSSummaryArg(t *testing.T) {
 
 	assert.Equal(t, test, notification.ApnsID)
 	assert.Equal(t, test, notification.Topic)
-	assert.Equal(t, ApnsPriorityLow, notification.Priority)
+	assert.Equal(t, consts.ApnsPriorityLow, notification.Priority)
 	assert.Equal(t, "test", dat["aps"].(map[string]interface{})["alert"].(map[string]interface{})["summary-arg"])
 	assert.Equal(t, float64(3), dat["aps"].(map[string]interface{})["alert"].(map[string]interface{})["summary-arg-count"])
 }
@@ -262,14 +275,16 @@ func TestSendZeroValueForBadgeKey(t *testing.T) {
 	test := "test"
 	message := "Welcome notification Server"
 	req := PushNotification{
-		ApnsID:           test,
-		Topic:            test,
-		Priority:         "normal",
-		Message:          message,
-		Sound:            test,
-		ContentAvailable: true,
-		MutableContent:   true,
-		ThreadID:         test,
+		PushNotification: structs.PushNotification{
+			ApnsID:           test,
+			Topic:            test,
+			Priority:         consts.PriorityNormal,
+			Message:          message,
+			Sound:            test,
+			ContentAvailable: true,
+			MutableContent:   true,
+			ThreadID:         test,
+		},
 	}
 
 	notification := GetIOSNotification(req)
@@ -295,7 +310,7 @@ func TestSendZeroValueForBadgeKey(t *testing.T) {
 
 	assert.Equal(t, test, notification.ApnsID)
 	assert.Equal(t, test, notification.Topic)
-	assert.Equal(t, ApnsPriorityLow, notification.Priority)
+	assert.Equal(t, consts.ApnsPriorityLow, notification.Priority)
 	assert.Equal(t, message, alert)
 	assert.Equal(t, 0, int(badge))
 	assert.Equal(t, test, sound)
@@ -335,11 +350,13 @@ func TestCheckSilentNotification(t *testing.T) {
 
 	test := "test"
 	req := PushNotification{
-		ApnsID:           test,
-		Topic:            test,
-		CollapseID:       test,
-		Priority:         "normal",
-		ContentAvailable: true,
+		PushNotification: structs.PushNotification{
+			ApnsID:           test,
+			Topic:            test,
+			CollapseID:       test,
+			Priority:         consts.PriorityNormal,
+			ContentAvailable: true,
+		},
 	}
 
 	notification := GetIOSNotification(req)
@@ -382,13 +399,15 @@ func TestAlertStringExample2ForIos(t *testing.T) {
 	body := "Bob wants to play poker"
 	actionLocKey := "PLAY"
 	req := PushNotification{
-		ApnsID:   test,
-		Topic:    test,
-		Priority: "normal",
-		Alert: Alert{
-			Title:        title,
-			Body:         body,
-			ActionLocKey: actionLocKey,
+		PushNotification: structs.PushNotification{
+			ApnsID:   test,
+			Topic:    test,
+			Priority: consts.PriorityNormal,
+			Alert: structs.Alert{
+				Title:        title,
+				Body:         body,
+				ActionLocKey: actionLocKey,
+			},
 		},
 	}
 
@@ -425,13 +444,15 @@ func TestAlertStringExample3ForIos(t *testing.T) {
 	badge := 9
 	sound := "bingbong.aiff"
 	req := PushNotification{
-		ApnsID:           test,
-		Topic:            test,
-		Priority:         "normal",
-		ContentAvailable: true,
-		Message:          test,
-		Badge:            &badge,
-		Sound:            sound,
+		PushNotification: structs.PushNotification{
+			ApnsID:           test,
+			Topic:            test,
+			Priority:         consts.PriorityNormal,
+			ContentAvailable: true,
+			Message:          test,
+			Badge:            &badge,
+			Sound:            sound,
+		},
 	}
 
 	notification := GetIOSNotification(req)
@@ -454,18 +475,20 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 
 	test := "test"
 	req := PushNotification{
-		Message: "Welcome",
-		Title:   test,
-		Alert: Alert{
-			Action:       test,
-			ActionLocKey: test,
-			Body:         test,
-			LaunchImage:  test,
-			LocArgs:      []string{"a", "b"},
-			LocKey:       test,
-			Subtitle:     test,
-			TitleLocArgs: []string{"a", "b"},
-			TitleLocKey:  test,
+		PushNotification: structs.PushNotification{
+			Message: "Welcome",
+			Title:   test,
+			Alert: structs.Alert{
+				Action:       test,
+				ActionLocKey: test,
+				Body:         test,
+				LaunchImage:  test,
+				LocArgs:      []string{"a", "b"},
+				LocKey:       test,
+				Subtitle:     test,
+				TitleLocArgs: []string{"a", "b"},
+				TitleLocKey:  test,
+			},
 		},
 	}
 
@@ -524,15 +547,19 @@ func TestDisabledIosNotifications(t *testing.T) {
 		Notifications: []PushNotification{
 			//ios
 			{
-				Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
-				Platform: PlatFormIos,
-				Message:  "Welcome",
+				PushNotification: structs.PushNotification{
+					Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
+					Platform: consts.PlatFormIos,
+					Message:  "Welcome",
+				},
 			},
 			// android
 			{
-				Tokens:   []string{androidToken, androidToken + "_"},
-				Platform: PlatFormAndroid,
-				Message:  "Welcome",
+				PushNotification: structs.PushNotification{
+					Tokens:   []string{androidToken, androidToken + "_"},
+					Platform: consts.PlatFormAndroid,
+					Message:  "Welcome",
+				},
 			},
 		},
 	}
@@ -706,9 +733,11 @@ func TestPushToIOS(t *testing.T) {
 	assert.Nil(t, err)
 
 	req := PushNotification{
-		Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
-		Platform: 1,
-		Message:  "Welcome",
+		PushNotification: structs.PushNotification{
+			Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
+			Platform: 1,
+			Message:  "Welcome",
+		},
 	}
 
 	// send fail
@@ -727,13 +756,17 @@ func TestApnsHostFromRequest(t *testing.T) {
 	assert.Nil(t, err)
 
 	req := PushNotification{
-		Production: true,
+		PushNotification: structs.PushNotification{
+			Production: true,
+		},
 	}
 	client := getApnsClient(req)
 	assert.Equal(t, apns2.HostProduction, client.Host)
 
 	req = PushNotification{
-		Development: true,
+		PushNotification: structs.PushNotification{
+			Development: true,
+		},
 	}
 	client = getApnsClient(req)
 	assert.Equal(t, apns2.HostDevelopment, client.Host)

@@ -7,8 +7,11 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/appleboy/go-fcm"
 	"github.com/appleboy/gorush/config"
+	"github.com/appleboy/gorush/gorush/consts"
+	"github.com/appleboy/gorush/gorush/structs"
+
+	"github.com/appleboy/go-fcm"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -54,9 +57,11 @@ func TestPushToAndroidWrongToken(t *testing.T) {
 	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
 
 	req := PushNotification{
-		Tokens:   []string{"aaaaaa", "bbbbb"},
-		Platform: PlatFormAndroid,
-		Message:  "Welcome",
+		PushNotification: structs.PushNotification{
+			Tokens:   []string{"aaaaaa", "bbbbb"},
+			Platform: consts.PlatFormAndroid,
+			Message:  "Welcome",
+		},
 	}
 
 	// Android Success count: 0, Failure count: 2
@@ -75,9 +80,11 @@ func TestPushToAndroidRightTokenForJSONLog(t *testing.T) {
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
 	req := PushNotification{
-		Tokens:   []string{androidToken},
-		Platform: PlatFormAndroid,
-		Message:  "Welcome",
+		PushNotification: structs.PushNotification{
+			Tokens:   []string{androidToken},
+			Platform: consts.PlatFormAndroid,
+			Message:  "Welcome",
+		},
 	}
 
 	isError := PushToAndroid(req)
@@ -93,9 +100,11 @@ func TestPushToAndroidRightTokenForStringLog(t *testing.T) {
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
 	req := PushNotification{
-		Tokens:   []string{androidToken},
-		Platform: PlatFormAndroid,
-		Message:  "Welcome",
+		PushNotification: structs.PushNotification{
+			Tokens:   []string{androidToken},
+			Platform: consts.PlatFormAndroid,
+			Message:  "Welcome",
+		},
 	}
 
 	isError := PushToAndroid(req)
@@ -111,11 +120,13 @@ func TestOverwriteAndroidAPIKey(t *testing.T) {
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
 	req := PushNotification{
-		Tokens:   []string{androidToken, "bbbbb"},
-		Platform: PlatFormAndroid,
-		Message:  "Welcome",
-		// overwrite android api key
-		APIKey: "1234",
+		PushNotification: structs.PushNotification{
+			Tokens:   []string{androidToken, "bbbbb"},
+			Platform: consts.PlatFormAndroid,
+			Message:  "Welcome",
+			// overwrite android api key
+			APIKey: "1234",
+		},
 	}
 
 	// FCM server error: 401 error: 401 Unauthorized (Wrong API Key)
@@ -129,8 +140,10 @@ func TestFCMMessage(t *testing.T) {
 
 	// the message must specify at least one registration ID
 	req = PushNotification{
-		Message: "Test",
-		Tokens:  []string{},
+		PushNotification: structs.PushNotification{
+			Message: "Test",
+			Tokens:  []string{},
+		},
 	}
 
 	err = CheckMessage(req)
@@ -138,8 +151,10 @@ func TestFCMMessage(t *testing.T) {
 
 	// the token must not be empty
 	req = PushNotification{
-		Message: "Test",
-		Tokens:  []string{""},
+		PushNotification: structs.PushNotification{
+			Message: "Test",
+			Tokens:  []string{""},
+		},
 	}
 
 	err = CheckMessage(req)
@@ -147,9 +162,11 @@ func TestFCMMessage(t *testing.T) {
 
 	// ignore check token length if send topic message
 	req = PushNotification{
-		Message:  "Test",
-		Platform: PlatFormAndroid,
-		To:       "/topics/foo-bar",
+		PushNotification: structs.PushNotification{
+			Message:  "Test",
+			Platform: consts.PlatFormAndroid,
+			To:       "/topics/foo-bar",
+		},
 	}
 
 	err = CheckMessage(req)
@@ -157,9 +174,11 @@ func TestFCMMessage(t *testing.T) {
 
 	// "condition": "'dogs' in topics || 'cats' in topics",
 	req = PushNotification{
-		Message:   "Test",
-		Platform:  PlatFormAndroid,
-		Condition: "'dogs' in topics || 'cats' in topics",
+		PushNotification: structs.PushNotification{
+			Message:   "Test",
+			Platform:  consts.PlatFormAndroid,
+			Condition: "'dogs' in topics || 'cats' in topics",
+		},
 	}
 
 	err = CheckMessage(req)
@@ -167,9 +186,11 @@ func TestFCMMessage(t *testing.T) {
 
 	// the message may specify at most 1000 registration IDs
 	req = PushNotification{
-		Message:  "Test",
-		Platform: PlatFormAndroid,
-		Tokens:   make([]string, 1001),
+		PushNotification: structs.PushNotification{
+			Message:  "Test",
+			Platform: consts.PlatFormAndroid,
+			Tokens:   make([]string, 1001),
+		},
 	}
 
 	err = CheckMessage(req)
@@ -179,10 +200,12 @@ func TestFCMMessage(t *testing.T) {
 	// between 0 and 2419200 (4 weeks)
 	timeToLive := uint(2419201)
 	req = PushNotification{
-		Message:    "Test",
-		Platform:   PlatFormAndroid,
-		Tokens:     []string{"XXXXXXXXX"},
-		TimeToLive: &timeToLive,
+		PushNotification: structs.PushNotification{
+			Message:    "Test",
+			Platform:   consts.PlatFormAndroid,
+			Tokens:     []string{"XXXXXXXXX"},
+			TimeToLive: &timeToLive,
+		},
 	}
 
 	err = CheckMessage(req)
@@ -191,10 +214,12 @@ func TestFCMMessage(t *testing.T) {
 	// Pass
 	timeToLive = uint(86400)
 	req = PushNotification{
-		Message:    "Test",
-		Platform:   PlatFormAndroid,
-		Tokens:     []string{"XXXXXXXXX"},
-		TimeToLive: &timeToLive,
+		PushNotification: structs.PushNotification{
+			Message:    "Test",
+			Platform:   consts.PlatFormAndroid,
+			Tokens:     []string{"XXXXXXXXX"},
+			TimeToLive: &timeToLive,
+		},
 	}
 
 	err = CheckMessage(req)
@@ -209,10 +234,12 @@ func TestCheckAndroidMessage(t *testing.T) {
 
 	timeToLive := uint(2419201)
 	req := PushNotification{
-		Tokens:     []string{"aaaaaa", "bbbbb"},
-		Platform:   PlatFormAndroid,
-		Message:    "Welcome",
-		TimeToLive: &timeToLive,
+		PushNotification: structs.PushNotification{
+			Tokens:     []string{"aaaaaa", "bbbbb"},
+			Platform:   consts.PlatFormAndroid,
+			Message:    "Welcome",
+			TimeToLive: &timeToLive,
+		},
 	}
 
 	err := PushToAndroid(req)
@@ -220,30 +247,31 @@ func TestCheckAndroidMessage(t *testing.T) {
 }
 
 func TestAndroidNotificationStructure(t *testing.T) {
-
 	test := "test"
 	timeToLive := uint(100)
 	req := PushNotification{
-		Tokens:                []string{"a", "b"},
-		Message:               "Welcome",
-		To:                    test,
-		Priority:              "high",
-		CollapseKey:           "1",
-		ContentAvailable:      true,
-		DelayWhileIdle:        true,
-		TimeToLive:            &timeToLive,
-		RestrictedPackageName: test,
-		DryRun:                true,
-		Title:                 test,
-		Sound:                 test,
-		Data: D{
-			"a": "1",
-			"b": 2,
-		},
-		Notification: &fcm.Notification{
-			Color: test,
-			Tag:   test,
-			Body:  "",
+		PushNotification: structs.PushNotification{
+			Tokens:                []string{"a", "b"},
+			Message:               "Welcome",
+			To:                    test,
+			Priority:              consts.PriorityHigh,
+			CollapseKey:           "1",
+			ContentAvailable:      true,
+			DelayWhileIdle:        true,
+			TimeToLive:            &timeToLive,
+			RestrictedPackageName: test,
+			DryRun:                true,
+			Title:                 test,
+			Sound:                 test,
+			Data: structs.D{
+				"a": "1",
+				"b": 2,
+			},
+			Notification: &fcm.Notification{
+				Color: test,
+				Tag:   test,
+				Body:  "",
+			},
 		},
 	}
 
@@ -267,10 +295,12 @@ func TestAndroidNotificationStructure(t *testing.T) {
 
 	// test empty body
 	req = PushNotification{
-		Tokens: []string{"a", "b"},
-		To:     test,
-		Notification: &fcm.Notification{
-			Body: "",
+		PushNotification: structs.PushNotification{
+			Tokens: []string{"a", "b"},
+			To:     test,
+			Notification: &fcm.Notification{
+				Body: "",
+			},
 		},
 	}
 	notification = GetAndroidNotification(req)

@@ -4,6 +4,8 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"github.com/appleboy/gorush/gorush/consts"
+	"github.com/appleboy/gorush/gorush/structs"
 	"log"
 	"net"
 	"net/http"
@@ -172,9 +174,11 @@ func main() {
 	if opts.Android.Enabled {
 		gorush.PushConf.Android.Enabled = opts.Android.Enabled
 		req := gorush.PushNotification{
-			Platform: gorush.PlatFormAndroid,
-			Message:  message,
-			Title:    title,
+			PushNotification: structs.PushNotification{
+				Platform: consts.PlatFormAndroid,
+				Message:  message,
+				Title:    title,
+			},
 		}
 
 		// send message to single device
@@ -210,9 +214,11 @@ func main() {
 
 		gorush.PushConf.Ios.Enabled = opts.Ios.Enabled
 		req := gorush.PushNotification{
-			Platform: gorush.PlatFormIos,
-			Message:  message,
-			Title:    title,
+			PushNotification: structs.PushNotification{
+				Platform: consts.PlatFormIos,
+				Message:  message,
+				Title:    title,
+			},
 		}
 
 		// send message to single device
