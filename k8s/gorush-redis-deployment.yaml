@@ -1,9 +1,14 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: redis
   namespace: gorush
 spec:
+  selector:
+    matchLabels:
+      app: redis
+      role: master
+      tier: backend
   replicas: 1
   template:
     metadata:
