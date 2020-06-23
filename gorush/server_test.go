@@ -353,12 +353,23 @@ func TestMetricsHandler(t *testing.T) {
 		})
 }
 
-func TestHeartbeatHandler(t *testing.T) {
+func TestGETHeartbeatHandler(t *testing.T) {
 	initTest()
 
 	r := gofight.New()
 
 	r.GET("/healthz").
+		Run(routerEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+			assert.Equal(t, http.StatusOK, r.Code)
+		})
+}
+
+func TestHEADHeartbeatHandler(t *testing.T) {
+	initTest()
+
+	r := gofight.New()
+
+	r.HEAD("/healthz").
 		Run(routerEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
