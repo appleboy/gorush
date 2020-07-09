@@ -68,6 +68,10 @@ func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*prot
 		notification.Badge = &badge
 	}
 
+	if in.Topic != "" && in.Platform == gorush.PlatFormAndroid {
+		notification.To = in.Topic
+	}
+
 	if in.Alert != nil {
 		notification.Alert = gorush.Alert{
 			Title:        in.Alert.Title,
