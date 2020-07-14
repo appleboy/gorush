@@ -101,7 +101,7 @@ func GetAndroidNotification(req PushNotification) *fcm.Message {
 }
 
 // PushToAndroid provide send notification to Android server.
-func PushToAndroid(req PushNotification) bool {
+func PushToAndroid(req PushNotification) {
 	LogAccess.Debug("Start push notification for Android")
 
 	var (
@@ -119,12 +119,10 @@ func PushToAndroid(req PushNotification) bool {
 
 	if err != nil {
 		LogError.Error("request error: " + err.Error())
-		return false
+		return
 	}
 
 Retry:
-	var isError = false
-
 	notification := GetAndroidNotification(req)
 
 	if req.APIKey != "" {
@@ -136,14 +134,14 @@ Retry:
 	if err != nil {
 		// FCM server error
 		LogError.Error("FCM server error: " + err.Error())
-		return false
+		return
 	}
 
 	res, err := client.Send(notification)
 	if err != nil {
 		// Send Message error
 		LogError.Error("FCM server send message error: " + err.Error())
-		return false
+		return
 	}
 
 	if !req.IsTopic() {
@@ -169,7 +167,6 @@ Retry:
 			if !result.Unregistered() {
 				newTokens = append(newTokens, to)
 			}
-			isError = true
 
 			LogPush(FailedPush, to, req, result.Error)
 			if PushConf.Core.Sync {
@@ -201,7 +198,6 @@ Retry:
 		if res.MessageID != 0 {
 			LogPush(SucceededPush, to, req, nil)
 		} else {
-			isError = true
 			// failure
 			LogPush(FailedPush, to, req, res.Error)
 			if PushConf.Core.Sync {
@@ -212,7 +208,6 @@ Retry:
 
 	// Device Group HTTP Response
 	if len(res.FailedRegistrationIDs) > 0 {
-		isError = true
 		newTokens = append(newTokens, res.FailedRegistrationIDs...)
 
 		LogPush(FailedPush, notification.To, req, errors.New("device group: partial success or all fails"))
@@ -221,13 +216,11 @@ Retry:
 		}
 	}
 
-	if isError && retryCount < maxRetry {
+	if len(newTokens) > 0 && retryCount < maxRetry {
 		retryCount++
 
 		// resend fail token
 		req.Tokens = newTokens
 		goto Retry
 	}
-
-	return isError
 }
