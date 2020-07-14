@@ -421,7 +421,7 @@ Retry:
 				isError = true
 			}
 
-			if res.Sent() && !isError {
+			if res != nil && res.Sent() && !isError {
 				LogPush(SucceededPush, token, req, nil)
 				StatStorage.AddIosSuccess(1)
 			}
