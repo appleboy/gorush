@@ -392,7 +392,7 @@ Retry:
 			// send ios notification
 			res, err := client.Push(notification)
 
-			if err != nil || res.StatusCode != 200 {
+			if err != nil || (res != nil && res.StatusCode != http.StatusOK) {
 				if err == nil {
 					// error message:
 					// ref: https://github.com/sideshow/apns2/blob/master/response.go#L14-L65
@@ -415,13 +415,13 @@ Retry:
 				StatStorage.AddIosError(1)
 				// We should retry only "retryable" statuses. More info about response:
 				// https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/handling_notification_responses_from_apns
-				if res.StatusCode >= http.StatusInternalServerError {
+				if res != nil && res.StatusCode >= http.StatusInternalServerError {
 					newTokens = append(newTokens, token)
 				}
 				isError = true
 			}
 
-			if res.Sent() && !isError {
+			if res != nil && res.Sent() && !isError {
 				LogPush(SucceededPush, token, req, nil)
 				StatStorage.AddIosSuccess(1)
 			}
