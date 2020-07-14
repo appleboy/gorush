@@ -60,8 +60,7 @@ func TestPushToAndroidWrongToken(t *testing.T) {
 	}
 
 	// Android Success count: 0, Failure count: 2
-	isError := PushToAndroid(req)
-	assert.True(t, isError)
+	PushToAndroid(req)
 }
 
 func TestPushToAndroidRightTokenForJSONLog(t *testing.T) {
@@ -80,8 +79,7 @@ func TestPushToAndroidRightTokenForJSONLog(t *testing.T) {
 		Message:  "Welcome",
 	}
 
-	isError := PushToAndroid(req)
-	assert.False(t, isError)
+	PushToAndroid(req)
 }
 
 func TestPushToAndroidRightTokenForStringLog(t *testing.T) {
@@ -98,8 +96,7 @@ func TestPushToAndroidRightTokenForStringLog(t *testing.T) {
 		Message:  "Welcome",
 	}
 
-	isError := PushToAndroid(req)
-	assert.False(t, isError)
+	PushToAndroid(req)
 }
 
 func TestOverwriteAndroidAPIKey(t *testing.T) {
@@ -119,8 +116,7 @@ func TestOverwriteAndroidAPIKey(t *testing.T) {
 	}
 
 	// FCM server error: 401 error: 401 Unauthorized (Wrong API Key)
-	err := PushToAndroid(req)
-	assert.False(t, err)
+	PushToAndroid(req)
 }
 
 func TestFCMMessage(t *testing.T) {
@@ -215,8 +211,7 @@ func TestCheckAndroidMessage(t *testing.T) {
 		TimeToLive: &timeToLive,
 	}
 
-	err := PushToAndroid(req)
-	assert.False(t, err)
+	PushToAndroid(req)
 }
 
 func TestAndroidNotificationStructure(t *testing.T) {

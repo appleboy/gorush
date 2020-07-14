@@ -360,7 +360,7 @@ func getApnsClient(req PushNotification) (client *apns2.Client) {
 }
 
 // PushToIOS provide send notification to APNs server.
-func PushToIOS(req PushNotification) bool {
+func PushToIOS(req PushNotification) {
 	LogAccess.Debug("Start push notification for iOS")
 
 	var (
@@ -374,7 +374,6 @@ func PushToIOS(req PushNotification) bool {
 
 Retry:
 	var (
-		isError   = false
 		newTokens []string
 	)
 
@@ -386,12 +385,11 @@ Retry:
 		// occupy push slot
 		MaxConcurrentIOSPushes <- struct{}{}
 		wg.Add(1)
-		go func(token string) {
+		go func(notification apns2.Notification, token string) {
 			notification.DeviceToken = token
 
 			// send ios notification
-			res, err := client.Push(notification)
-
+			res, err := client.Push(&notification)
 			if err != nil || (res != nil && res.StatusCode != http.StatusOK) {
 				if err == nil {
 					// error message:
@@ -418,27 +416,24 @@ Retry:
 				if res != nil && res.StatusCode >= http.StatusInternalServerError {
 					newTokens = append(newTokens, token)
 				}
-				isError = true
 			}
 
-			if res != nil && res.Sent() && !isError {
+			if res != nil && res.Sent() {
 				LogPush(SucceededPush, token, req, nil)
 				StatStorage.AddIosSuccess(1)
 			}
 			// free push slot
 			<-MaxConcurrentIOSPushes
 			wg.Done()
-		}(token)
+		}(*notification, token)
 	}
 	wg.Wait()
 
-	if isError && retryCount < maxRetry {
+	if len(newTokens) > 0 && retryCount < maxRetry {
 		retryCount++
 
 		// resend fail token
 		req.Tokens = newTokens
 		goto Retry
 	}
-
-	return isError
 }
