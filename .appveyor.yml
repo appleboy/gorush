@@ -15,7 +15,6 @@ environment:
 branches:
   only:
     - master
-    - windows
 
 install:
   - ps: |
