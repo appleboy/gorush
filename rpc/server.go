@@ -3,6 +3,7 @@ package rpc
 import (
 	"context"
 	"net"
+	"strings"
 	"sync"
 
 	"github.com/appleboy/gorush/gorush"
@@ -62,6 +63,7 @@ func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*prot
 		ThreadID:         in.ThreadID,
 		MutableContent:   in.MutableContent,
 		Image:            in.Image,
+		Priority: strings.ToLower(in.GetPriority().String()),
 	}
 
 	if badge > 0 {
