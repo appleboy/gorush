@@ -159,6 +159,7 @@ func routerEngine() *gin.Engine {
 	r.POST(PushConf.API.PushURI, pushHandler)
 	r.GET(PushConf.API.MetricURI, metricsHandler)
 	r.GET(PushConf.API.HealthURI, heartbeatHandler)
+	r.HEAD(PushConf.API.HealthURI, heartbeatHandler)
 	r.GET("/version", versionHandler)
 	r.GET("/", rootHandler)
 

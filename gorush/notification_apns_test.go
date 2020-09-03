@@ -707,14 +707,13 @@ func TestPushToIOS(t *testing.T) {
 	assert.Nil(t, err)
 
 	req := PushNotification{
-		Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
+		Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7", "11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef1"},
 		Platform: 1,
 		Message:  "Welcome",
 	}
 
 	// send fail
-	isError := PushToIOS(req)
-	assert.True(t, isError)
+	PushToIOS(req)
 }
 
 func TestApnsHostFromRequest(t *testing.T) {

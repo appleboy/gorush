@@ -1,10 +1,14 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: gorush
   namespace: gorush
 spec:
   replicas: 3
+  selector:
+    matchLabels:
+      app: gorush
+      tier: frontend
   template:
     metadata:
       labels:
