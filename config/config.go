@@ -56,6 +56,12 @@ android:
   apikey: "YOUR_API_KEY"
   max_retry: 0 # resend fail notification, default value zero is disabled
 
+huawei:
+  enabled: true
+  apikey: "YOUR_API_KEY"
+  appid: "YOUR_APP_ID"
+  max_retry: 0 # resend fail notification, default value zero is disabled
+
 ios:
   enabled: false
   key_path: ""
@@ -98,6 +104,7 @@ type ConfYaml struct {
 	Core    SectionCore    `yaml:"core"`
 	API     SectionAPI     `yaml:"api"`
 	Android SectionAndroid `yaml:"android"`
+	Huawei  SectionHuawei  `yaml:"huawei"`
 	Ios     SectionIos     `yaml:"ios"`
 	Log     SectionLog     `yaml:"log"`
 	Stat    SectionStat    `yaml:"stat"`
@@ -149,6 +156,14 @@ type SectionAPI struct {
 type SectionAndroid struct {
 	Enabled  bool   `yaml:"enabled"`
 	APIKey   string `yaml:"apikey"`
+	MaxRetry int    `yaml:"max_retry"`
+}
+
+// SectionHuawei is sub section of config.
+type SectionHuawei struct {
+	Enabled  bool   `yaml:"enabled"`
+	APIKey   string `yaml:"apikey"`
+	APPId    string `yaml:"appid"`
 	MaxRetry int    `yaml:"max_retry"`
 }
 
@@ -302,6 +317,12 @@ func LoadConf(confPath string) (ConfYaml, error) {
 	conf.Android.Enabled = viper.GetBool("android.enabled")
 	conf.Android.APIKey = viper.GetString("android.apikey")
 	conf.Android.MaxRetry = viper.GetInt("android.max_retry")
+
+	// Huawei
+	conf.Huawei.Enabled = viper.GetBool("huawei.enabled")
+	conf.Huawei.APIKey = viper.GetString("huawei.apikey")
+	conf.Huawei.APPId = viper.GetString("huawei.appid")
+	conf.Huawei.MaxRetry = viper.GetInt("huawei.max_retry")
 
 	// iOS
 	conf.Ios.Enabled = viper.GetBool("ios.enabled")

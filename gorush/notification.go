@@ -9,6 +9,7 @@ import (
 	"sync"
 
 	"github.com/appleboy/go-fcm"
+	"github.com/msalihkarakasli/go-hms-push/push/model"
 )
 
 // D provide string array
@@ -79,6 +80,15 @@ type PushNotification struct {
 	Condition             string            `json:"condition,omitempty"`
 	Notification          *fcm.Notification `json:"notification,omitempty"`
 
+	// Huawei
+	APPId              string                     `json:"app_id,omitempty"`
+	HuaweiNotification *model.AndroidNotification `json:"huawei_notification,omitempty"`
+	HuaweiData         string                     `json:"huawei_data,omitempty"`
+	HuaweiCollapseKey  int                        `json:"huawei_collapse_key,omitempty"`
+	HuaweiTTL          string                     `json:"huawei_ttl,omitempty"`
+	BiTag              string                     `json:"bi_tag,omitempty"`
+	FastAppTarget      int                        `json:"fast_app_target,omitempty"`
+
 	// iOS
 	Expiration  *int64   `json:"expiration,omitempty"`
 	ApnsID      string   `json:"apns_id,omitempty"`
@@ -121,8 +131,16 @@ func (p *PushNotification) AddLog(log LogPushEntry) {
 // IsTopic check if message format is topic for FCM
 // ref: https://firebase.google.com/docs/cloud-messaging/send-message#topic-http-post-request
 func (p *PushNotification) IsTopic() bool {
-	return (p.Platform == PlatFormAndroid && p.To != "" && strings.HasPrefix(p.To, "/topics/")) ||
-		p.Condition != ""
+
+	if p.Platform == PlatFormAndroid {
+		return p.To != "" && strings.HasPrefix(p.To, "/topics/") || p.Condition != ""
+	}
+
+	if p.Platform == PlatFormHuawei {
+		return p.Topic != "" || p.Condition != ""
+	}
+
+	return false
 }
 
 // CheckMessage for check request message
@@ -144,6 +162,12 @@ func CheckMessage(req PushNotification) error {
 
 	if req.Platform == PlatFormAndroid && len(req.Tokens) > 1000 {
 		msg = "the message may specify at most 1000 registration IDs"
+		LogAccess.Debug(msg)
+		return errors.New(msg)
+	}
+
+	if req.Platform == PlatFormHuawei && len(req.Tokens) > 500 {
+		msg = "the message may specify at most 500 registration IDs for Huawei"
 		LogAccess.Debug(msg)
 		return errors.New(msg)
 	}
@@ -176,8 +200,8 @@ func SetProxy(proxy string) error {
 
 // CheckPushConf provide check your yml config.
 func CheckPushConf() error {
-	if !PushConf.Ios.Enabled && !PushConf.Android.Enabled {
-		return errors.New("Please enable iOS or Android config in yml config")
+	if !PushConf.Ios.Enabled && !PushConf.Android.Enabled && !PushConf.Huawei.Enabled {
+		return errors.New("Please enable iOS, Android or Huawei config in yml config")
 	}
 
 	if PushConf.Ios.Enabled {
@@ -196,6 +220,16 @@ func CheckPushConf() error {
 	if PushConf.Android.Enabled {
 		if PushConf.Android.APIKey == "" {
 			return errors.New("Missing Android API Key")
+		}
+	}
+
+	if PushConf.Huawei.Enabled {
+		if PushConf.Huawei.APIKey == "" {
+			return errors.New("Missing Huawei API Key")
+		}
+
+		if PushConf.Huawei.APPId == "" {
+			return errors.New("Missing Huawei APP Id")
 		}
 	}
 

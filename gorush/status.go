@@ -26,6 +26,7 @@ type StatusApp struct {
 	TotalCount int64         `json:"total_count"`
 	Ios        IosStatus     `json:"ios"`
 	Android    AndroidStatus `json:"android"`
+	Huawei     HuaweiStatus  `json:"huawei"`
 }
 
 // AndroidStatus is android structure
@@ -36,6 +37,12 @@ type AndroidStatus struct {
 
 // IosStatus is iOS structure
 type IosStatus struct {
+	PushSuccess int64 `json:"push_success"`
+	PushError   int64 `json:"push_error"`
+}
+
+// HuaweiStatus is huawei structure
+type HuaweiStatus struct {
 	PushSuccess int64 `json:"push_success"`
 	PushError   int64 `json:"push_error"`
 }
@@ -81,6 +88,8 @@ func appStatusHandler(c *gin.Context) {
 	result.Ios.PushError = StatStorage.GetIosError()
 	result.Android.PushSuccess = StatStorage.GetAndroidSuccess()
 	result.Android.PushError = StatStorage.GetAndroidError()
+	result.Huawei.PushSuccess = StatStorage.GetHuaweiSuccess()
+	result.Huawei.PushError = StatStorage.GetHuaweiError()
 
 	c.JSON(http.StatusOK, result)
 }

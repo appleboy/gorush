@@ -47,6 +47,8 @@ func (s *Storage) Reset() {
 	s.setBuntDB(storage.IosErrorKey, 0)
 	s.setBuntDB(storage.AndroidSuccessKey, 0)
 	s.setBuntDB(storage.AndroidErrorKey, 0)
+	s.setBuntDB(storage.HuaweiSuccessKey, 0)
+	s.setBuntDB(storage.HuaweiErrorKey, 0)
 }
 
 func (s *Storage) setBuntDB(key string, count int64) {
@@ -104,6 +106,18 @@ func (s *Storage) AddAndroidError(count int64) {
 	s.setBuntDB(storage.AndroidErrorKey, total)
 }
 
+// AddHuaweiSuccess record counts of success Huawei push notification.
+func (s *Storage) AddHuaweiSuccess(count int64) {
+	total := s.GetHuaweiSuccess() + count
+	s.setBuntDB(storage.HuaweiSuccessKey, total)
+}
+
+// AddHuaweiError record counts of error Huawei push notification.
+func (s *Storage) AddHuaweiError(count int64) {
+	total := s.GetHuaweiError() + count
+	s.setBuntDB(storage.HuaweiErrorKey, total)
+}
+
 // GetTotalCount show counts of all notification.
 func (s *Storage) GetTotalCount() int64 {
 	var count int64
@@ -140,6 +154,22 @@ func (s *Storage) GetAndroidSuccess() int64 {
 func (s *Storage) GetAndroidError() int64 {
 	var count int64
 	s.getBuntDB(storage.AndroidErrorKey, &count)
+
+	return count
+}
+
+// GetHuaweiSuccess show success counts of Huawei notification.
+func (s *Storage) GetHuaweiSuccess() int64 {
+	var count int64
+	s.getBuntDB(storage.HuaweiSuccessKey, &count)
+
+	return count
+}
+
+// GetHuaweiError show error counts of Huawei notification.
+func (s *Storage) GetHuaweiError() int64 {
+	var count int64
+	s.getBuntDB(storage.HuaweiErrorKey, &count)
 
 	return count
 }
