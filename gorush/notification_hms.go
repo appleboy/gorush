@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"sync"
 
 	"github.com/msalihkarakasli/go-hms-push/push/config"
@@ -23,7 +22,6 @@ func GetPushClient(conf *config.Config) (*core.HMSClient, error) {
 	once.Do(func() {
 		client, err := core.NewHttpClient(conf)
 		if err != nil {
-			fmt.Printf("Failed to new common client! Error is %s\n", err.Error())
 			panic(err)
 		}
 		pushClient = client
@@ -107,9 +105,7 @@ func GetHuaweiNotification(req PushNotification) (*model.MessageRequest, error) 
 		msgRequest.Message.Android.BiTag = req.BiTag
 	}
 
-	//if req.FastAppTarget != nil {
 	msgRequest.Message.Android.FastAppTarget = req.FastAppTarget
-	//}
 
 	//Add data fields
 	if len(req.HuaweiData) > 0 {
@@ -157,17 +153,13 @@ func GetHuaweiNotification(req PushNotification) (*model.MessageRequest, error) 
 		}
 	}
 
-	// if len(req.Apns) > 0 {
-	// 	notification.Apns = req.Apns
-	// }
-
 	b, err := json.Marshal(msgRequest)
 	if err != nil {
-		fmt.Printf("Failed to marshal the default message! Error is %s\n", err.Error())
+		LogError.Error("Failed to marshal the default message! Error is " + err.Error())
 		return nil, err
 	}
 
-	fmt.Printf("Default message is %s\n", string(b))
+	LogAccess.Debug("Default message is %s", string(b))
 	return msgRequest, nil
 }
 
@@ -213,18 +205,14 @@ Retry:
 		return false
 	}
 
-	fmt.Println(res.Code)
-	fmt.Println(res.Msg)
-	fmt.Println(res.RequestId)
-
 	// Huawei Push Send API does not support exact results for each token
 	if res.Code == "80000000" {
 		StatStorage.AddHuaweiSuccess(int64(1))
-		LogAccess.Debug(fmt.Sprintf("Huwaei Send Notification is completed successfully!"))
+		LogAccess.Debug("Huwaei Send Notification is completed successfully!")
 	} else {
 		isError = true
 		StatStorage.AddHuaweiError(int64(1))
-		LogAccess.Debug(fmt.Sprintf("Huwaei Send Notification is failed!"))
+		LogAccess.Debug("Huwaei Send Notification is failed!")
 	}
 
 	if isError && retryCount < maxRetry {
