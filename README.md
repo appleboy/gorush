@@ -13,6 +13,7 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 [![microbadger](https://images.microbadger.com/badges/image/appleboy/gorush.svg)](https://microbadger.com/images/appleboy/gorush "Get your own image badge on microbadger.com")
 [![Release](https://github-release-version.herokuapp.com/github/appleboy/gorush/release.svg?style=flat)](https://github.com/appleboy/gorush/releases/latest)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/8ab14c9f-44fd-4d9a-8bba-f73f76d253b1/deploy-status)](https://app.netlify.com/sites/gorush/deploys)
+[![Financial Contributors on Open Collective](https://opencollective.com/gorush/all/badge.svg?label=financial+contributors)](https://opencollective.com/gorush)
 
 ## Contents
 
@@ -28,6 +29,7 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
       - [Fetch from GitHub](#fetch-from-github)
     - [Command Usage](#command-usage)
     - [Send Android notification](#send-android-notification)
+    - [Send Huawei (HMS) notification](#send-huawei-hms-notification)
     - [Send iOS notification](#send-ios-notification)
     - [Send Android or iOS notifications using Firebase](#send-android-or-ios-notifications-using-firebase)
   - [Run gorush web server](#run-gorush-web-server)
@@ -41,8 +43,10 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
     - [iOS alert payload](#ios-alert-payload)
     - [iOS sound payload](#ios-sound-payload)
     - [Android notification payload](#android-notification-payload)
+    - [Huawei notification](#huawei-notification)
     - [iOS Example](#ios-example)
     - [Android Example](#android-example)
+    - [Huawei Example](#huawei-example)
     - [Response body](#response-body)
   - [Run gRPC service](#run-grpc-service)
   - [Run gorush in Docker](#run-gorush-in-docker)
