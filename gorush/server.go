@@ -79,16 +79,18 @@ func pushHandler(c *gin.Context) {
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
-	notifier := c.Writer.CloseNotify()
 	go func(closer <-chan bool) {
-		<-closer
+		// Deprecated: the CloseNotifier interface predates Go's context package.
+		// New code should use Request.Context instead.
+		// Change to context package
+		<-c.Request.Context().Done()
 		// Don't send notification after client timeout or disconnected.
 		// See the following issue for detail information.
 		// https://github.com/appleboy/gorush/issues/422
 		if PushConf.Core.Sync {
 			cancel()
 		}
-	}(notifier)
+	}()
 
 	counts, logs := queueNotification(ctx, form)
 
