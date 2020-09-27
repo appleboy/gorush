@@ -1038,6 +1038,7 @@ func main() {
 		Badge:    1,
 		Category: "test",
 		Sound:    "test",
+		Priority: proto.Priority_High,
 		Alert: &proto.Alert{
 			Title:    "Test Title",
 			Body:     "Test Alert Body",
@@ -1139,6 +1140,7 @@ func main() {
 		Badge:    1,
 		Category: "test",
 		Sound:    "test",
+		Priority: proto.Priority_High,
 		Alert: &proto.Alert{
 			Title:    "Test Title",
 			Body:     "Test Alert Body",
