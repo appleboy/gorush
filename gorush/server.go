@@ -79,7 +79,7 @@ func pushHandler(c *gin.Context) {
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
-	go func(closer <-chan bool) {
+	go func() {
 		// Deprecated: the CloseNotifier interface predates Go's context package.
 		// New code should use Request.Context instead.
 		// Change to context package
