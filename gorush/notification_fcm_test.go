@@ -102,6 +102,7 @@ func TestPushToAndroidRightTokenForStringLog(t *testing.T) {
 func TestOverwriteAndroidAPIKey(t *testing.T) {
 	PushConf, _ = config.LoadConf("")
 
+	PushConf.Core.Sync = true
 	PushConf.Android.Enabled = true
 	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
 
@@ -113,10 +114,14 @@ func TestOverwriteAndroidAPIKey(t *testing.T) {
 		Message:  "Welcome",
 		// overwrite android api key
 		APIKey: "1234",
+
+		log: &[]LogPushEntry{},
 	}
 
 	// FCM server error: 401 error: 401 Unauthorized (Wrong API Key)
 	PushToAndroid(req)
+
+	assert.Len(t, *req.log, 2)
 }
 
 func TestFCMMessage(t *testing.T) {

@@ -141,6 +141,34 @@ Retry:
 	if err != nil {
 		// Send Message error
 		LogError.Error("FCM server send message error: " + err.Error())
+
+		if req.IsTopic() {
+			if PushConf.Core.Sync {
+				req.AddLog(getLogPushEntry(FailedPush, req.To, req, err))
+			} else if PushConf.Core.FeedbackURL != "" {
+				go func(logger *logrus.Logger, log LogPushEntry, url string, timeout int64) {
+					err := DispatchFeedback(log, url, timeout)
+					if err != nil {
+						logger.Error(err)
+					}
+				}(LogError, getLogPushEntry(FailedPush, req.To, req, err), PushConf.Core.FeedbackURL, PushConf.Core.FeedbackTimeout)
+			}
+			StatStorage.AddAndroidError(1)
+		} else {
+			for _, token := range req.Tokens {
+				if PushConf.Core.Sync {
+					req.AddLog(getLogPushEntry(FailedPush, token, req, err))
+				} else if PushConf.Core.FeedbackURL != "" {
+					go func(logger *logrus.Logger, log LogPushEntry, url string, timeout int64) {
+						err := DispatchFeedback(log, url, timeout)
+						if err != nil {
+							logger.Error(err)
+						}
+					}(LogError, getLogPushEntry(FailedPush, token, req, err), PushConf.Core.FeedbackURL, PushConf.Core.FeedbackTimeout)
+				}
+			}
+			StatStorage.AddAndroidError(int64(len(req.Tokens)))
+		}
 		return
 	}
 
