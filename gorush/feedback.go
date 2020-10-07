@@ -22,7 +22,11 @@ func DispatchFeedback(log LogPushEntry, url string, timeout int64) error {
 		return err
 	}
 
-	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(payload))
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(payload))
+	if err != nil {
+		return err
+	}
+
 	req.Header.Set("Content-Type", "application/json; charset=utf-8")
 
 	var transport = &http.Transport{
