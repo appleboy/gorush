@@ -173,7 +173,7 @@ func CheckMessage(req PushNotification) error {
 	}
 
 	// ref: https://firebase.google.com/docs/cloud-messaging/http-server-ref
-	if req.Platform == PlatFormAndroid && req.TimeToLive != nil && (*req.TimeToLive < uint(0) || uint(2419200) < *req.TimeToLive) {
+	if req.Platform == PlatFormAndroid && req.TimeToLive != nil && *req.TimeToLive > uint(2419200) {
 		msg = "the message's TimeToLive field must be an integer " +
 			"between 0 and 2419200 (4 weeks)"
 		LogAccess.Debug(msg)
