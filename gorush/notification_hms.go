@@ -188,7 +188,7 @@ func PushToHuawei(req PushNotification) bool {
 Retry:
 	var isError = false
 
-	notification, err := GetHuaweiNotification(req)
+	notification, _ := GetHuaweiNotification(req)
 
 	client, err = InitHMSClient(PushConf.Huawei.APIKey, PushConf.Huawei.APPId)
 
