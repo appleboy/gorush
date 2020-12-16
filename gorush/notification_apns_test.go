@@ -461,7 +461,7 @@ func TestMessageAndTitle(t *testing.T) {
 		Topic:            test,
 		Priority:         "normal",
 		Message:          message,
-		Title: 						title,
+		Title:            title,
 		ContentAvailable: true,
 	}
 
