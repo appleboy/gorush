@@ -450,6 +450,62 @@ func TestAlertStringExample3ForIos(t *testing.T) {
 	assert.Equal(t, test, dat["aps"].(map[string]interface{})["alert"])
 }
 
+func TestMessageAndTitle(t *testing.T) {
+	var dat map[string]interface{}
+
+	test := "test"
+	message := "Welcome notification Server"
+	title := "Welcome notification Server title"
+	req := PushNotification{
+		ApnsID:           test,
+		Topic:            test,
+		Priority:         "normal",
+		Message:          message,
+		Title: 						title,
+		ContentAvailable: true,
+	}
+
+	notification := GetIOSNotification(req)
+
+	dump, _ := json.Marshal(notification.Payload)
+	data := []byte(string(dump))
+
+	if err := json.Unmarshal(data, &dat); err != nil {
+		log.Println(err)
+		panic(err)
+	}
+
+	alert, _ := jsonparser.GetString(data, "aps", "alert")
+	alert_body, _ := jsonparser.GetString(data, "aps", "alert", "body")
+	alert_title, _ := jsonparser.GetString(data, "aps", "alert", "title")
+
+	assert.Equal(t, test, notification.ApnsID)
+	assert.Equal(t, ApnsPriorityLow, notification.Priority)
+	assert.Equal(t, message, alert_body)
+	assert.Equal(t, title, alert_title)
+	assert.NotEqual(t, message, alert)
+
+	// Add alert body
+	message_override := "Welcome notification Server overridden"
+	req.Alert.Body = message_override
+
+	notification = GetIOSNotification(req)
+
+	dump, _ = json.Marshal(notification.Payload)
+	data = []byte(string(dump))
+
+	if err := json.Unmarshal(data, &dat); err != nil {
+		log.Println(err)
+		panic(err)
+	}
+
+	alert_body_overridden, _ := jsonparser.GetString(data, "aps", "alert", "body")
+	alert_title, _ = jsonparser.GetString(data, "aps", "alert", "title")
+	assert.Equal(t, message_override, alert_body_overridden)
+	assert.NotEqual(t, message, alert_body_overridden)
+	assert.Equal(t, title, alert_title)
+}
+
 func TestIOSAlertNotificationStructure(t *testing.T) {
 	var dat map[string]interface{}
 

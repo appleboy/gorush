@@ -201,6 +201,10 @@ func iosAlertDictionary(payload *payload.Payload, req PushNotification) *payload
 		payload.AlertTitle(req.Title)
 	}
 
+	if len(req.Message) > 0 && len(req.Title) > 0 {
+		payload.AlertBody(req.Message)
+	}
+
 	if len(req.Alert.Title) > 0 {
 		payload.AlertTitle(req.Alert.Title)
 	}
@@ -286,8 +290,8 @@ func GetIOSNotification(req PushNotification) *apns2.Notification {
 
 	payload := payload.NewPayload()
 
-	// add alert object if message length > 0
-	if len(req.Message) > 0 {
+	// add alert object if message length > 0 and title length == 0
+	if len(req.Message) > 0 && len(req.Title) == 0 {
 		payload.Alert(req.Message)
 	}
 
