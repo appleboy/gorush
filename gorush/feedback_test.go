@@ -43,14 +43,12 @@ func TestHTTPErrorInFeedbackCall(t *testing.T) {
 }
 
 func TestSuccessfulFeedbackCall(t *testing.T) {
-
 	// Mock http server
 	httpMock := httptest.NewServer(
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if r.URL.Path == "/dispatch" {
 				w.Header().Add("Content-Type", "application/json")
 				_, err := w.Write([]byte(`{}`))
-
 				if err != nil {
 					log.Println(err)
 					panic(err)

@@ -377,9 +377,7 @@ func PushToIOS(req PushNotification) {
 	}
 
 Retry:
-	var (
-		newTokens []string
-	)
+	var newTokens []string
 
 	notification := GetIOSNotification(req)
 	client := getApnsClient(req)

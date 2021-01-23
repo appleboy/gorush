@@ -49,7 +49,7 @@ func (s *Server) Check(ctx context.Context, in *proto.HealthCheckRequest) (*prot
 
 // Send implements helloworld.GreeterServer
 func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*proto.NotificationReply, error) {
-	var badge = int(in.Badge)
+	badge := int(in.Badge)
 	notification := gorush.PushNotification{
 		Platform:         int(in.Platform),
 		Tokens:           in.Tokens,

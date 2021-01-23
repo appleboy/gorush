@@ -52,9 +52,10 @@ func TestMissingIOSCertificate(t *testing.T) {
 	assert.Error(t, err)
 	assert.Equal(t, "certificate file does not exist", err.Error())
 }
+
 func TestIOSNotificationStructure(t *testing.T) {
 	var dat map[string]interface{}
-	var unix = time.Now().Unix()
+	unix := time.Now().Unix()
 
 	test := "test"
 	expectBadge := 0
@@ -579,7 +580,7 @@ func TestDisabledIosNotifications(t *testing.T) {
 
 	req := RequestPush{
 		Notifications: []PushNotification{
-			//ios
+			// ios
 			{
 				Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
 				Platform: PlatFormIos,
@@ -667,7 +668,7 @@ func TestAPNSClientInvaildToken(t *testing.T) {
 	err = InitAPNSClient()
 	assert.Error(t, err)
 
-	//empty key-id or team-id
+	// empty key-id or team-id
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.KeyPath = "../certificate/authkey-valid.p8"
 	err = InitAPNSClient()

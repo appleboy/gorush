@@ -39,7 +39,7 @@ func TestSenMultipleNotifications(t *testing.T) {
 
 	req := RequestPush{
 		Notifications: []PushNotification{
-			//ios
+			// ios
 			{
 				Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
 				Platform: PlatFormIos,
@@ -75,7 +75,7 @@ func TestDisabledAndroidNotifications(t *testing.T) {
 
 	req := RequestPush{
 		Notifications: []PushNotification{
-			//ios
+			// ios
 			{
 				Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
 				Platform: PlatFormIos,
@@ -114,7 +114,7 @@ func TestSyncModeForNotifications(t *testing.T) {
 
 	req := RequestPush{
 		Notifications: []PushNotification{
-			//ios
+			// ios
 			{
 				Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
 				Platform: PlatFormIos,
@@ -205,7 +205,6 @@ func TestSyncModeForDeviceGroupNotification(t *testing.T) {
 }
 
 func TestSetProxyURL(t *testing.T) {
-
 	err := SetProxy("87.236.233.92:8080")
 	assert.Error(t, err)
 	assert.Equal(t, "parse \"87.236.233.92:8080\": invalid URI for request", err.Error())

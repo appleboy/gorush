@@ -39,6 +39,7 @@ func TestMissingAndroidAPIKey(t *testing.T) {
 	assert.Error(t, err)
 	assert.Equal(t, "Missing Android API Key", err.Error())
 }
+
 func TestMissingKeyForInitFCMClient(t *testing.T) {
 	client, err := InitFCMClient("")
 
@@ -220,7 +221,6 @@ func TestCheckAndroidMessage(t *testing.T) {
 }
 
 func TestAndroidNotificationStructure(t *testing.T) {
-
 	test := "test"
 	timeToLive := uint(100)
 	req := PushNotification{

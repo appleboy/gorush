@@ -68,7 +68,6 @@ func (s *Storage) setBadger(key string, count int64) {
 		value := convert.ToString(count).(string)
 		return txn.Set([]byte(key), []byte(value))
 	})
-
 	if err != nil {
 		log.Println(s.name, "update error:", err.Error())
 	}
@@ -95,7 +94,6 @@ func (s *Storage) getBadger(key string, count *int64) {
 
 		return nil
 	})
-
 	if err != nil {
 		log.Println(s.name, "get error:", err.Error())
 	}

@@ -253,7 +253,6 @@ func LoadConf(confPath string) (ConfYaml, error) {
 
 	if confPath != "" {
 		content, err := ioutil.ReadFile(confPath)
-
 		if err != nil {
 			return conf, err
 		}

@@ -201,7 +201,6 @@ func main() {
 		}
 
 		err := gorush.CheckMessage(req)
-
 		if err != nil {
 			gorush.LogError.Fatal(err)
 		}
@@ -235,7 +234,6 @@ func main() {
 		}
 
 		err := gorush.CheckMessage(req)
-
 		if err != nil {
 			gorush.LogError.Fatal(err)
 		}
@@ -273,7 +271,6 @@ func main() {
 		}
 
 		err := gorush.CheckMessage(req)
-
 		if err != nil {
 			gorush.LogError.Fatal(err)
 		}
@@ -415,13 +412,13 @@ func usage() {
 // handles pinging the endpoint and returns an error if the
 // agent is in an unhealthy state.
 func pinger() error {
-	var transport = &http.Transport{
+	transport := &http.Transport{
 		Dial: (&net.Dialer{
 			Timeout: 5 * time.Second,
 		}).Dial,
 		TLSHandshakeTimeout: 5 * time.Second,
 	}
-	var client = &http.Client{
+	client := &http.Client{
 		Timeout:   time.Second * 10,
 		Transport: transport,
 	}

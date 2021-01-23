@@ -131,7 +131,6 @@ func (p *PushNotification) AddLog(log LogPushEntry) {
 // IsTopic check if message format is topic for FCM
 // ref: https://firebase.google.com/docs/cloud-messaging/send-message#topic-http-post-request
 func (p *PushNotification) IsTopic() bool {
-
 	if p.Platform == PlatFormAndroid {
 		return p.To != "" && strings.HasPrefix(p.To, "/topics/") || p.Condition != ""
 	}
@@ -185,9 +184,7 @@ func CheckMessage(req PushNotification) error {
 
 // SetProxy only working for FCM server.
 func SetProxy(proxy string) error {
-
 	proxyURL, err := url.ParseRequestURI(proxy)
-
 	if err != nil {
 		return err
 	}

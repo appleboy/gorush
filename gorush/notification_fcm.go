@@ -116,7 +116,6 @@ func PushToAndroid(req PushNotification) {
 
 	// check message
 	err := CheckMessage(req)
-
 	if err != nil {
 		LogError.Error("request error: " + err.Error())
 		return

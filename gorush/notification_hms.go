@@ -33,7 +33,6 @@ func GetPushClient(conf *config.Config) (*core.HMSClient, error) {
 
 // InitHMSClient use for initialize HMS Client.
 func InitHMSClient(apiKey string, appID string) (*core.HMSClient, error) {
-
 	if apiKey == "" {
 		return nil, errors.New("Missing Huawei API Key")
 	}
@@ -42,7 +41,7 @@ func InitHMSClient(apiKey string, appID string) (*core.HMSClient, error) {
 		return nil, errors.New("Missing Huawei APP Id")
 	}
 
-	var conf = &config.Config{
+	conf := &config.Config{
 		AppId:     appID,
 		AppSecret: apiKey,
 		AuthUrl:   "https://login.cloud.huawei.com/oauth2/v2/token",
@@ -64,7 +63,6 @@ func InitHMSClient(apiKey string, appID string) (*core.HMSClient, error) {
 // HTTP Connection Server Reference for HMS
 // https://developer.huawei.com/consumer/en/doc/development/HMS-References/push-sendapi
 func GetHuaweiNotification(req PushNotification) (*model.MessageRequest, error) {
-
 	msgRequest := model.NewNotificationMsgRequest()
 
 	msgRequest.Message.Android = model.GetDefaultAndroid()
@@ -89,7 +87,7 @@ func GetHuaweiNotification(req PushNotification) (*model.MessageRequest, error) 
 		msgRequest.Message.Android.Urgency = "HIGH"
 	}
 
-	//if req.HuaweiCollapseKey != nil {
+	// if req.HuaweiCollapseKey != nil {
 	msgRequest.Message.Android.CollapseKey = req.HuaweiCollapseKey
 	//}
 
@@ -107,11 +105,11 @@ func GetHuaweiNotification(req PushNotification) (*model.MessageRequest, error) 
 
 	msgRequest.Message.Android.FastAppTarget = req.FastAppTarget
 
-	//Add data fields
+	// Add data fields
 	if len(req.HuaweiData) > 0 {
 		msgRequest.Message.Data = req.HuaweiData
 	} else {
-		//Notification Message
+		// Notification Message
 		msgRequest.Message.Android.Notification = model.GetDefaultAndroidNotification()
 
 		n := msgRequest.Message.Android.Notification
@@ -179,14 +177,13 @@ func PushToHuawei(req PushNotification) bool {
 
 	// check message
 	err := CheckMessage(req)
-
 	if err != nil {
 		LogError.Error("request error: " + err.Error())
 		return false
 	}
 
 Retry:
-	var isError = false
+	isError := false
 
 	notification, _ := GetHuaweiNotification(req)
 

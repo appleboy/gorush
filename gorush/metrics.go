@@ -21,7 +21,6 @@ type Metrics struct {
 
 // NewMetrics returns a new Metrics with all prometheus.Desc initialized
 func NewMetrics() Metrics {
-
 	return Metrics{
 		TotalPushCount: prometheus.NewDesc(
 			namespace+"total_push_count",

@@ -58,7 +58,6 @@ func (s *Storage) setBuntDB(key string, count int64) {
 		}
 		return nil
 	})
-
 	if err != nil {
 		log.Println("BuntDB update error:", err.Error())
 	}
@@ -70,7 +69,6 @@ func (s *Storage) getBuntDB(key string, count *int64) {
 		*count, _ = strconv.ParseInt(val, 10, 64)
 		return nil
 	})
-
 	if err != nil {
 		log.Println("BuntDB get error:", err.Error())
 	}

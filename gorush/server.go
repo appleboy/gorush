@@ -19,9 +19,7 @@ import (
 	"golang.org/x/crypto/acme/autocert"
 )
 
-var (
-	rxURL = regexp.MustCompile(`^/healthz$`)
-)
+var rxURL = regexp.MustCompile(`^/healthz$`)
 
 func init() {
 	// Support metrics

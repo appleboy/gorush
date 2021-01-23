@@ -8,6 +8,9 @@ package proto
 
 import (
 	context "context"
+	reflect "reflect"
+	sync "sync"
+
 	proto "github.com/golang/protobuf/proto"
 	_struct "github.com/golang/protobuf/ptypes/struct"
 	grpc "google.golang.org/grpc"
@@ -15,8 +18,6 @@ import (
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -659,18 +660,21 @@ func file_gorush_proto_rawDescGZIP() []byte {
 	return file_gorush_proto_rawDescData
 }
 
-var file_gorush_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_gorush_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
-var file_gorush_proto_goTypes = []interface{}{
-	(Priority)(0),                          // 0: proto.Priority
-	(HealthCheckResponse_ServingStatus)(0), // 1: proto.HealthCheckResponse.ServingStatus
-	(*Alert)(nil),                          // 2: proto.Alert
-	(*NotificationRequest)(nil),            // 3: proto.NotificationRequest
-	(*NotificationReply)(nil),              // 4: proto.NotificationReply
-	(*HealthCheckRequest)(nil),             // 5: proto.HealthCheckRequest
-	(*HealthCheckResponse)(nil),            // 6: proto.HealthCheckResponse
-	(*_struct.Struct)(nil),                 // 7: google.protobuf.Struct
-}
+var (
+	file_gorush_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+	file_gorush_proto_msgTypes  = make([]protoimpl.MessageInfo, 5)
+	file_gorush_proto_goTypes   = []interface{}{
+		(Priority)(0),                          // 0: proto.Priority
+		(HealthCheckResponse_ServingStatus)(0), // 1: proto.HealthCheckResponse.ServingStatus
+		(*Alert)(nil),                          // 2: proto.Alert
+		(*NotificationRequest)(nil),            // 3: proto.NotificationRequest
+		(*NotificationReply)(nil),              // 4: proto.NotificationReply
+		(*HealthCheckRequest)(nil),             // 5: proto.HealthCheckRequest
+		(*HealthCheckResponse)(nil),            // 6: proto.HealthCheckResponse
+		(*_struct.Struct)(nil),                 // 7: google.protobuf.Struct
+	}
+)
+
 var file_gorush_proto_depIdxs = []int32{
 	2, // 0: proto.NotificationRequest.alert:type_name -> proto.Alert
 	7, // 1: proto.NotificationRequest.data:type_name -> google.protobuf.Struct
@@ -776,8 +780,10 @@ func file_gorush_proto_init() {
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
+var (
+	_ context.Context
+	_ grpc.ClientConnInterface
+)
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
@@ -813,8 +819,7 @@ type GorushServer interface {
 }
 
 // UnimplementedGorushServer can be embedded to have forward compatible implementations.
-type UnimplementedGorushServer struct {
-}
+type UnimplementedGorushServer struct{}
 
 func (*UnimplementedGorushServer) Send(context.Context, *NotificationRequest) (*NotificationReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Send not implemented")
@@ -885,8 +890,7 @@ type HealthServer interface {
 }
 
 // UnimplementedHealthServer can be embedded to have forward compatible implementations.
-type UnimplementedHealthServer struct {
-}
+type UnimplementedHealthServer struct{}
 
 func (*UnimplementedHealthServer) Check(context.Context, *HealthCheckRequest) (*HealthCheckResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Check not implemented")
