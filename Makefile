@@ -4,7 +4,7 @@ EXECUTABLE := gorush
 GO ?= go
 DEPLOY_ACCOUNT := appleboy
 DEPLOY_IMAGE := $(EXECUTABLE)
-GOFMT ?= gofmt "-s"
+GOFMT ?= gofumpt -l -s
 
 TARGETS ?= linux darwin windows openbsd
 ARCHS ?= amd64 386
@@ -41,10 +41,16 @@ endif
 
 .PHONY: fmt
 fmt:
+	@hash gofumpt > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
+		$(GO) get -u mvdan.cc/gofumpt; \
+	fi
 	$(GOFMT) -w $(GOFILES)
 
 .PHONY: fmt-check
 fmt-check:
+	@hash gofumpt > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
+		$(GO) get -u mvdan.cc/gofumpt; \
+	fi
 	@diff=$$($(GOFMT) -d $(GOFILES)); \
 	if [ -n "$$diff" ]; then \
 		echo "Please run 'make fmt' and commit the result:"; \
