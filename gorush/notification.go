@@ -147,13 +147,13 @@ func CheckMessage(req PushNotification) error {
 	var msg string
 
 	// ignore send topic mesaage from FCM
-	if !req.IsTopic() && len(req.Tokens) == 0 && len(req.To) == 0 {
+	if !req.IsTopic() && len(req.Tokens) == 0 && req.To == "" {
 		msg = "the message must specify at least one registration ID"
 		LogAccess.Debug(msg)
 		return errors.New(msg)
 	}
 
-	if len(req.Tokens) == PlatFormIos && len(req.Tokens[0]) == 0 {
+	if len(req.Tokens) == PlatFormIos && req.Tokens[0] == "" {
 		msg = "the token must not be empty"
 		LogAccess.Debug(msg)
 		return errors.New(msg)

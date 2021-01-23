@@ -140,7 +140,7 @@ func typeForPlatForm(platform int) string {
 }
 
 func hideToken(token string, markLen int) string {
-	if len(token) == 0 {
+	if token == "" {
 		return ""
 	}
 

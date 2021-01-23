@@ -290,8 +290,8 @@ func GetIOSNotification(req PushNotification) *apns2.Notification {
 
 	payload := payload.NewPayload()
 
-	// add alert object if message length > 0 and title length == 0
-	if len(req.Message) > 0 && len(req.Title) == 0 {
+	// add alert object if message length > 0 and title is empty
+	if len(req.Message) > 0 && req.Title == "" {
 		payload.Alert(req.Message)
 	}
 
