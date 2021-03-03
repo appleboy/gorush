@@ -43,6 +43,12 @@ android:
   apikey: "YOUR_API_KEY"
   max_retry: 0 # resend fail notification, default value zero is disabled
 
+huawei:
+  enabled: true
+  apikey: "YOUR_API_KEY"
+  appid: "YOUR_APP_ID"
+  max_retry: 0 # resend fail notification, default value zero is disabled
+
 ios:
   enabled: false
   key_path: "key.pem"

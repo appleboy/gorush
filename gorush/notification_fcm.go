@@ -48,8 +48,8 @@ func GetAndroidNotification(req PushNotification) *fcm.Message {
 		notification.RegistrationIDs = req.Tokens
 	}
 
-	if len(req.Priority) > 0 && req.Priority == "high" {
-		notification.Priority = "high"
+	if req.Priority == "high" || req.Priority == "normal" {
+		notification.Priority = req.Priority
 	}
 
 	// Add another field
@@ -101,7 +101,7 @@ func GetAndroidNotification(req PushNotification) *fcm.Message {
 }
 
 // PushToAndroid provide send notification to Android server.
-func PushToAndroid(req PushNotification) bool {
+func PushToAndroid(req PushNotification) {
 	LogAccess.Debug("Start push notification for Android")
 
 	var (
@@ -116,15 +116,12 @@ func PushToAndroid(req PushNotification) bool {
 
 	// check message
 	err := CheckMessage(req)
-
 	if err != nil {
 		LogError.Error("request error: " + err.Error())
-		return false
+		return
 	}
 
 Retry:
-	var isError = false
-
 	notification := GetAndroidNotification(req)
 
 	if req.APIKey != "" {
@@ -136,14 +133,42 @@ Retry:
 	if err != nil {
 		// FCM server error
 		LogError.Error("FCM server error: " + err.Error())
-		return false
+		return
 	}
 
 	res, err := client.Send(notification)
 	if err != nil {
 		// Send Message error
 		LogError.Error("FCM server send message error: " + err.Error())
-		return false
+
+		if req.IsTopic() {
+			if PushConf.Core.Sync {
+				req.AddLog(getLogPushEntry(FailedPush, req.To, req, err))
+			} else if PushConf.Core.FeedbackURL != "" {
+				go func(logger *logrus.Logger, log LogPushEntry, url string, timeout int64) {
+					err := DispatchFeedback(log, url, timeout)
+					if err != nil {
+						logger.Error(err)
+					}
+				}(LogError, getLogPushEntry(FailedPush, req.To, req, err), PushConf.Core.FeedbackURL, PushConf.Core.FeedbackTimeout)
+			}
+			StatStorage.AddAndroidError(1)
+		} else {
+			for _, token := range req.Tokens {
+				if PushConf.Core.Sync {
+					req.AddLog(getLogPushEntry(FailedPush, token, req, err))
+				} else if PushConf.Core.FeedbackURL != "" {
+					go func(logger *logrus.Logger, log LogPushEntry, url string, timeout int64) {
+						err := DispatchFeedback(log, url, timeout)
+						if err != nil {
+							logger.Error(err)
+						}
+					}(LogError, getLogPushEntry(FailedPush, token, req, err), PushConf.Core.FeedbackURL, PushConf.Core.FeedbackTimeout)
+				}
+			}
+			StatStorage.AddAndroidError(int64(len(req.Tokens)))
+		}
+		return
 	}
 
 	if !req.IsTopic() {
@@ -169,7 +194,6 @@ Retry:
 			if !result.Unregistered() {
 				newTokens = append(newTokens, to)
 			}
-			isError = true
 
 			LogPush(FailedPush, to, req, result.Error)
 			if PushConf.Core.Sync {
@@ -201,7 +225,6 @@ Retry:
 		if res.MessageID != 0 {
 			LogPush(SucceededPush, to, req, nil)
 		} else {
-			isError = true
 			// failure
 			LogPush(FailedPush, to, req, res.Error)
 			if PushConf.Core.Sync {
@@ -212,7 +235,6 @@ Retry:
 
 	// Device Group HTTP Response
 	if len(res.FailedRegistrationIDs) > 0 {
-		isError = true
 		newTokens = append(newTokens, res.FailedRegistrationIDs...)
 
 		LogPush(FailedPush, notification.To, req, errors.New("device group: partial success or all fails"))
@@ -221,13 +243,11 @@ Retry:
 		}
 	}
 
-	if isError && retryCount < maxRetry {
+	if len(newTokens) > 0 && retryCount < maxRetry {
 		retryCount++
 
 		// resend fail token
 		req.Tokens = newTokens
 		goto Retry
 	}
-
-	return isError
 }

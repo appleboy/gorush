@@ -9,6 +9,7 @@ import (
 	"sync"
 
 	"github.com/appleboy/go-fcm"
+	"github.com/msalihkarakasli/go-hms-push/push/model"
 )
 
 // D provide string array
@@ -79,6 +80,15 @@ type PushNotification struct {
 	Condition             string            `json:"condition,omitempty"`
 	Notification          *fcm.Notification `json:"notification,omitempty"`
 
+	// Huawei
+	APPId              string                     `json:"app_id,omitempty"`
+	HuaweiNotification *model.AndroidNotification `json:"huawei_notification,omitempty"`
+	HuaweiData         string                     `json:"huawei_data,omitempty"`
+	HuaweiCollapseKey  int                        `json:"huawei_collapse_key,omitempty"`
+	HuaweiTTL          string                     `json:"huawei_ttl,omitempty"`
+	BiTag              string                     `json:"bi_tag,omitempty"`
+	FastAppTarget      int                        `json:"fast_app_target,omitempty"`
+
 	// iOS
 	Expiration  *int64   `json:"expiration,omitempty"`
 	ApnsID      string   `json:"apns_id,omitempty"`
@@ -121,8 +131,15 @@ func (p *PushNotification) AddLog(log LogPushEntry) {
 // IsTopic check if message format is topic for FCM
 // ref: https://firebase.google.com/docs/cloud-messaging/send-message#topic-http-post-request
 func (p *PushNotification) IsTopic() bool {
-	return (p.Platform == PlatFormAndroid && p.To != "" && strings.HasPrefix(p.To, "/topics/")) ||
-		p.Condition != ""
+	if p.Platform == PlatFormAndroid {
+		return p.To != "" && strings.HasPrefix(p.To, "/topics/") || p.Condition != ""
+	}
+
+	if p.Platform == PlatFormHuawei {
+		return p.Topic != "" || p.Condition != ""
+	}
+
+	return false
 }
 
 // CheckMessage for check request message
@@ -130,13 +147,13 @@ func CheckMessage(req PushNotification) error {
 	var msg string
 
 	// ignore send topic mesaage from FCM
-	if !req.IsTopic() && len(req.Tokens) == 0 && len(req.To) == 0 {
+	if !req.IsTopic() && len(req.Tokens) == 0 && req.To == "" {
 		msg = "the message must specify at least one registration ID"
 		LogAccess.Debug(msg)
 		return errors.New(msg)
 	}
 
-	if len(req.Tokens) == PlatFormIos && len(req.Tokens[0]) == 0 {
+	if len(req.Tokens) == PlatFormIos && req.Tokens[0] == "" {
 		msg = "the token must not be empty"
 		LogAccess.Debug(msg)
 		return errors.New(msg)
@@ -148,8 +165,14 @@ func CheckMessage(req PushNotification) error {
 		return errors.New(msg)
 	}
 
+	if req.Platform == PlatFormHuawei && len(req.Tokens) > 500 {
+		msg = "the message may specify at most 500 registration IDs for Huawei"
+		LogAccess.Debug(msg)
+		return errors.New(msg)
+	}
+
 	// ref: https://firebase.google.com/docs/cloud-messaging/http-server-ref
-	if req.Platform == PlatFormAndroid && req.TimeToLive != nil && (*req.TimeToLive < uint(0) || uint(2419200) < *req.TimeToLive) {
+	if req.Platform == PlatFormAndroid && req.TimeToLive != nil && *req.TimeToLive > uint(2419200) {
 		msg = "the message's TimeToLive field must be an integer " +
 			"between 0 and 2419200 (4 weeks)"
 		LogAccess.Debug(msg)
@@ -161,9 +184,7 @@ func CheckMessage(req PushNotification) error {
 
 // SetProxy only working for FCM server.
 func SetProxy(proxy string) error {
-
 	proxyURL, err := url.ParseRequestURI(proxy)
-
 	if err != nil {
 		return err
 	}
@@ -176,8 +197,8 @@ func SetProxy(proxy string) error {
 
 // CheckPushConf provide check your yml config.
 func CheckPushConf() error {
-	if !PushConf.Ios.Enabled && !PushConf.Android.Enabled {
-		return errors.New("Please enable iOS or Android config in yml config")
+	if !PushConf.Ios.Enabled && !PushConf.Android.Enabled && !PushConf.Huawei.Enabled {
+		return errors.New("Please enable iOS, Android or Huawei config in yml config")
 	}
 
 	if PushConf.Ios.Enabled {
@@ -196,6 +217,16 @@ func CheckPushConf() error {
 	if PushConf.Android.Enabled {
 		if PushConf.Android.APIKey == "" {
 			return errors.New("Missing Android API Key")
+		}
+	}
+
+	if PushConf.Huawei.Enabled {
+		if PushConf.Huawei.APIKey == "" {
+			return errors.New("Missing Huawei API Key")
+		}
+
+		if PushConf.Huawei.APPId == "" {
+			return errors.New("Missing Huawei APP Id")
 		}
 	}
 

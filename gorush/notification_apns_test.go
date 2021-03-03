@@ -27,11 +27,12 @@ const authkeyValidP8 = `LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JR0hBZ0VBTUJNR0J5
 func TestDisabledAndroidIosConf(t *testing.T) {
 	PushConf, _ = config.LoadConf("")
 	PushConf.Android.Enabled = false
+	PushConf.Huawei.Enabled = false
 
 	err := CheckPushConf()
 
 	assert.Error(t, err)
-	assert.Equal(t, "Please enable iOS or Android config in yml config", err.Error())
+	assert.Equal(t, "Please enable iOS, Android or Huawei config in yml config", err.Error())
 }
 
 func TestMissingIOSCertificate(t *testing.T) {
@@ -51,9 +52,10 @@ func TestMissingIOSCertificate(t *testing.T) {
 	assert.Error(t, err)
 	assert.Equal(t, "certificate file does not exist", err.Error())
 }
+
 func TestIOSNotificationStructure(t *testing.T) {
 	var dat map[string]interface{}
-	var unix = time.Now().Unix()
+	unix := time.Now().Unix()
 
 	test := "test"
 	expectBadge := 0
@@ -449,6 +451,62 @@ func TestAlertStringExample3ForIos(t *testing.T) {
 	assert.Equal(t, test, dat["aps"].(map[string]interface{})["alert"])
 }
 
+func TestMessageAndTitle(t *testing.T) {
+	var dat map[string]interface{}
+
+	test := "test"
+	message := "Welcome notification Server"
+	title := "Welcome notification Server title"
+	req := PushNotification{
+		ApnsID:           test,
+		Topic:            test,
+		Priority:         "normal",
+		Message:          message,
+		Title:            title,
+		ContentAvailable: true,
+	}
+
+	notification := GetIOSNotification(req)
+
+	dump, _ := json.Marshal(notification.Payload)
+	data := []byte(string(dump))
+
+	if err := json.Unmarshal(data, &dat); err != nil {
+		log.Println(err)
+		panic(err)
+	}
+
+	alert, _ := jsonparser.GetString(data, "aps", "alert")
+	alertBody, _ := jsonparser.GetString(data, "aps", "alert", "body")
+	alertTitle, _ := jsonparser.GetString(data, "aps", "alert", "title")
+
+	assert.Equal(t, test, notification.ApnsID)
+	assert.Equal(t, ApnsPriorityLow, notification.Priority)
+	assert.Equal(t, message, alertBody)
+	assert.Equal(t, title, alertTitle)
+	assert.NotEqual(t, message, alert)
+
+	// Add alert body
+	messageOverride := "Welcome notification Server overridden"
+	req.Alert.Body = messageOverride
+
+	notification = GetIOSNotification(req)
+
+	dump, _ = json.Marshal(notification.Payload)
+	data = []byte(string(dump))
+
+	if err := json.Unmarshal(data, &dat); err != nil {
+		log.Println(err)
+		panic(err)
+	}
+
+	alertBodyOverridden, _ := jsonparser.GetString(data, "aps", "alert", "body")
+	alertTitle, _ = jsonparser.GetString(data, "aps", "alert", "title")
+	assert.Equal(t, messageOverride, alertBodyOverridden)
+	assert.NotEqual(t, message, alertBodyOverridden)
+	assert.Equal(t, title, alertTitle)
+}
+
 func TestIOSAlertNotificationStructure(t *testing.T) {
 	var dat map[string]interface{}
 
@@ -522,7 +580,7 @@ func TestDisabledIosNotifications(t *testing.T) {
 
 	req := RequestPush{
 		Notifications: []PushNotification{
-			//ios
+			// ios
 			{
 				Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
 				Platform: PlatFormIos,
@@ -610,7 +668,7 @@ func TestAPNSClientInvaildToken(t *testing.T) {
 	err = InitAPNSClient()
 	assert.Error(t, err)
 
-	//empty key-id or team-id
+	// empty key-id or team-id
 	PushConf.Ios.Enabled = true
 	PushConf.Ios.KeyPath = "../certificate/authkey-valid.p8"
 	err = InitAPNSClient()
@@ -706,14 +764,13 @@ func TestPushToIOS(t *testing.T) {
 	assert.Nil(t, err)
 
 	req := PushNotification{
-		Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
+		Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7", "11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef1"},
 		Platform: 1,
 		Message:  "Welcome",
 	}
 
 	// send fail
-	isError := PushToIOS(req)
-	assert.True(t, isError)
+	PushToIOS(req)
 }
 
 func TestApnsHostFromRequest(t *testing.T) {

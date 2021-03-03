@@ -14,12 +14,13 @@ type Metrics struct {
 	IosError       *prometheus.Desc
 	AndroidSuccess *prometheus.Desc
 	AndroidError   *prometheus.Desc
+	HuaweiSuccess  *prometheus.Desc
+	HuaweiError    *prometheus.Desc
 	QueueUsage     *prometheus.Desc
 }
 
 // NewMetrics returns a new Metrics with all prometheus.Desc initialized
 func NewMetrics() Metrics {
-
 	return Metrics{
 		TotalPushCount: prometheus.NewDesc(
 			namespace+"total_push_count",
@@ -46,6 +47,16 @@ func NewMetrics() Metrics {
 			"Number of android fail count",
 			nil, nil,
 		),
+		HuaweiSuccess: prometheus.NewDesc(
+			namespace+"huawei_success",
+			"Number of huawei success count",
+			nil, nil,
+		),
+		HuaweiError: prometheus.NewDesc(
+			namespace+"huawei_fail",
+			"Number of huawei fail count",
+			nil, nil,
+		),
 		QueueUsage: prometheus.NewDesc(
 			namespace+"queue_usage",
 			"Length of internal queue",
@@ -61,6 +72,8 @@ func (c Metrics) Describe(ch chan<- *prometheus.Desc) {
 	ch <- c.IosError
 	ch <- c.AndroidSuccess
 	ch <- c.AndroidError
+	ch <- c.HuaweiSuccess
+	ch <- c.HuaweiError
 	ch <- c.QueueUsage
 }
 
@@ -90,6 +103,16 @@ func (c Metrics) Collect(ch chan<- prometheus.Metric) {
 		c.AndroidError,
 		prometheus.GaugeValue,
 		float64(StatStorage.GetAndroidError()),
+	)
+	ch <- prometheus.MustNewConstMetric(
+		c.HuaweiSuccess,
+		prometheus.GaugeValue,
+		float64(StatStorage.GetHuaweiSuccess()),
+	)
+	ch <- prometheus.MustNewConstMetric(
+		c.HuaweiError,
+		prometheus.GaugeValue,
+		float64(StatStorage.GetHuaweiError()),
 	)
 	ch <- prometheus.MustNewConstMetric(
 		c.QueueUsage,

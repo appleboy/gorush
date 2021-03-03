@@ -5,6 +5,7 @@ platform: x64
 max_jobs: 1
 
 environment:
+  CGO_ENABLED: 0
   GOPATH: c:\go
   docker_username:
     secure: em/TNLUXxG19O/HvbvfJuQ==

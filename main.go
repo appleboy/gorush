@@ -66,6 +66,10 @@ func main() {
 	flag.StringVar(&opts.Ios.Password, "password", "", "iOS certificate password for gorush")
 	flag.StringVar(&opts.Android.APIKey, "k", "", "Android api key configuration for gorush")
 	flag.StringVar(&opts.Android.APIKey, "apikey", "", "Android api key configuration for gorush")
+	flag.StringVar(&opts.Huawei.APIKey, "hk", "", "Huawei api key configuration for gorush")
+	flag.StringVar(&opts.Huawei.APIKey, "hmskey", "", "Huawei api key configuration for gorush")
+	flag.StringVar(&opts.Huawei.APPId, "hid", "", "HMS app id configuration for gorush")
+	flag.StringVar(&opts.Huawei.APPId, "hmsid", "", "HMS app id configuration for gorush")
 	flag.StringVar(&opts.Core.Address, "A", "", "address to bind")
 	flag.StringVar(&opts.Core.Address, "address", "", "address to bind")
 	flag.StringVar(&opts.Core.Port, "p", "", "port number for gorush")
@@ -79,6 +83,7 @@ func main() {
 	flag.StringVar(&message, "message", "", "notification message")
 	flag.StringVar(&title, "title", "", "notification title")
 	flag.BoolVar(&opts.Android.Enabled, "android", false, "send android notification")
+	flag.BoolVar(&opts.Huawei.Enabled, "huawei", false, "send huawei notification")
 	flag.BoolVar(&opts.Ios.Enabled, "ios", false, "send ios notification")
 	flag.BoolVar(&opts.Ios.Production, "production", false, "production mode in iOS")
 	flag.StringVar(&topic, "topic", "", "apns topic in iOS")
@@ -127,6 +132,14 @@ func main() {
 
 	if opts.Android.APIKey != "" {
 		gorush.PushConf.Android.APIKey = opts.Android.APIKey
+	}
+
+	if opts.Huawei.APIKey != "" {
+		gorush.PushConf.Huawei.APIKey = opts.Huawei.APIKey
+	}
+
+	if opts.Huawei.APPId != "" {
+		gorush.PushConf.Huawei.APPId = opts.Huawei.APPId
 	}
 
 	if opts.Stat.Engine != "" {
@@ -188,7 +201,6 @@ func main() {
 		}
 
 		err := gorush.CheckMessage(req)
-
 		if err != nil {
 			gorush.LogError.Fatal(err)
 		}
@@ -198,6 +210,39 @@ func main() {
 		}
 
 		gorush.PushToAndroid(req)
+
+		return
+	}
+
+	// send huawei notification
+	if opts.Huawei.Enabled {
+		gorush.PushConf.Huawei.Enabled = opts.Huawei.Enabled
+		req := gorush.PushNotification{
+			Platform: gorush.PlatFormHuawei,
+			Message:  message,
+			Title:    title,
+		}
+
+		// send message to single device
+		if token != "" {
+			req.Tokens = []string{token}
+		}
+
+		// send topic message
+		if topic != "" {
+			req.To = topic
+		}
+
+		err := gorush.CheckMessage(req)
+		if err != nil {
+			gorush.LogError.Fatal(err)
+		}
+
+		if err := gorush.InitAppStatus(); err != nil {
+			return
+		}
+
+		gorush.PushToHuawei(req)
 
 		return
 	}
@@ -226,7 +271,6 @@ func main() {
 		}
 
 		err := gorush.CheckMessage(req)
-
 		if err != nil {
 			gorush.LogError.Fatal(err)
 		}
@@ -284,6 +328,10 @@ func main() {
 	}
 
 	if _, err = gorush.InitFCMClient(gorush.PushConf.Android.APIKey); err != nil {
+		gorush.LogError.Fatal(err)
+	}
+
+	if _, err = gorush.InitHMSClient(gorush.PushConf.Huawei.APIKey, gorush.PushConf.Huawei.APPId); err != nil {
 		gorush.LogError.Fatal(err)
 	}
 
@@ -345,8 +393,12 @@ iOS Options:
 Android Options:
     -k, --apikey <api_key>           Android API Key
     --android                        enabled android (default: false)
+Huawei Options:
+    -hk, --hmskey <hms_key>          HMS API Key
+    -hid, --hmsid <hms_id>			 HMS APP Id
+    --huawei                         enabled huawei (default: false)
 Common Options:
-    --topic <topic>                  iOS or Android topic message
+    --topic <topic>                  iOS, Android or Huawei topic message
     -h, --help                       Show this message
     -v, --version                    Show version
 `
@@ -360,13 +412,13 @@ func usage() {
 // handles pinging the endpoint and returns an error if the
 // agent is in an unhealthy state.
 func pinger() error {
-	var transport = &http.Transport{
+	transport := &http.Transport{
 		Dial: (&net.Dialer{
 			Timeout: 5 * time.Second,
 		}).Dial,
 		TLSHandshakeTimeout: 5 * time.Second,
 	}
-	var client = &http.Client{
+	client := &http.Client{
 		Timeout:   time.Second * 10,
 		Transport: transport,
 	}

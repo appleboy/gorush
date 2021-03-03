@@ -13,6 +13,7 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 [![microbadger](https://images.microbadger.com/badges/image/appleboy/gorush.svg)](https://microbadger.com/images/appleboy/gorush "Get your own image badge on microbadger.com")
 [![Release](https://github-release-version.herokuapp.com/github/appleboy/gorush/release.svg?style=flat)](https://github.com/appleboy/gorush/releases/latest)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/8ab14c9f-44fd-4d9a-8bba-f73f76d253b1/deploy-status)](https://app.netlify.com/sites/gorush/deploys)
+[![Financial Contributors on Open Collective](https://opencollective.com/gorush/all/badge.svg?label=financial+contributors)](https://opencollective.com/gorush)
 
 ## Contents
 
@@ -28,6 +29,7 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
       - [Fetch from GitHub](#fetch-from-github)
     - [Command Usage](#command-usage)
     - [Send Android notification](#send-android-notification)
+    - [Send Huawei (HMS) notification](#send-huawei-hms-notification)
     - [Send iOS notification](#send-ios-notification)
     - [Send Android or iOS notifications using Firebase](#send-android-or-ios-notifications-using-firebase)
   - [Run gorush web server](#run-gorush-web-server)
@@ -41,8 +43,10 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
     - [iOS alert payload](#ios-alert-payload)
     - [iOS sound payload](#ios-sound-payload)
     - [Android notification payload](#android-notification-payload)
+    - [Huawei notification](#huawei-notification)
     - [iOS Example](#ios-example)
     - [Android Example](#android-example)
+    - [Huawei Example](#huawei-example)
     - [Response body](#response-body)
   - [Run gRPC service](#run-grpc-service)
   - [Run gorush in Docker](#run-gorush-in-docker)
@@ -64,6 +68,7 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 
 - [APNS](https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/APNSOverview.html)
 - [FCM](https://firebase.google.com/)
+- [HMS](https://developer.huawei.com/consumer/en/hms/)
 
 [A live demo on Netlify](https://gorush.netlify.com/).
 
@@ -71,6 +76,7 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 
 - Support [Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging) using [go-fcm](https://github.com/appleboy/go-fcm) library for Android.
 - Support [HTTP/2](https://http2.github.io/) Apple Push Notification Service using [apns2](https://github.com/sideshow/apns2) library.
+- Support [HMS Push Service](https://developer.huawei.com/consumer/en/hms/huawei-pushkit) using [go-hms-push](https://github.com/msalihkarakasli/go-hms-push) library for Huawei Devices.
 - Support [YAML](https://github.com/go-yaml/yaml) configuration.
 - Support command line to send single Android or iOS notification.
 - Support Web API to send push notification.
@@ -136,6 +142,12 @@ api:
 android:
   enabled: true
   apikey: "YOUR_API_KEY"
+  max_retry: 0 # resend fail notification, default value zero is disabled
+
+huawei:
+  enabled: true
+  apikey: "YOUR_API_KEY"
+  appid: "YOUR_APP_ID"
   max_retry: 0 # resend fail notification, default value zero is disabled
 
 ios:
@@ -204,19 +216,19 @@ go get -u -v github.com/appleboy/gorush
 On linux
 
 ```sh
-wget https://github.com/appleboy/gorush/releases/download/v1.12.0/gorush-v1.12.0-linux-amd64 -O gorush
+wget https://github.com/appleboy/gorush/releases/download/v1.13.0/gorush-v1.13.0-linux-amd64 -O gorush
 ```
 
 On OS X
 
 ```sh
-wget https://github.com/appleboy/gorush/releases/download/v1.12.0/gorush-v1.12.0-darwin-amd64 -O gorush
+wget https://github.com/appleboy/gorush/releases/download/v1.13.0/gorush-v1.13.0-darwin-amd64 -O gorush
 ```
 
 On Windows
 
 ```sh
-wget https://github.com/appleboy/gorush/releases/download/v1.12.0/gorush-v1.12.0-windows-amd64.exe -O gorush.exe
+wget https://github.com/appleboy/gorush/releases/download/v1.13.0/gorush-v1.13.0-windows-amd64.exe -O gorush.exe
 ```
 
 On macOS, use Homebrew.
@@ -275,6 +287,10 @@ iOS Options:
 Android Options:
     -k, --apikey <api_key>           Android API Key
     --android                        enabled android (default: false)
+Huawei Options:
+    -hk, --hmskey <hms_key>          HMS API Key
+    -hid, --hmsid <hms_id>           HMS APP Id
+    --huawei                         enabled huawei (default: false)
 Common Options:
     --topic <topic>                  iOS or Android topic message
     -h, --help                       Show this message
@@ -299,6 +315,31 @@ gorush --android --topic "/topics/foo-bar" \
 
 - `-m`: Notification message.
 - `-k`: [Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging) api key
+- `-t`: Device token.
+- `--title`: Notification title.
+- `--topic`: Send messages to topics. note: don't add device token.
+- `--proxy`: Set `http`, `https` or `socks5` proxy url.
+
+### Send Huawei (HMS) notification
+
+Send single notification with the following command.
+
+```bash
+gorush -huawei -title "Gorush with HMS" -m "your message" -hk "API Key" -hid "APP Id" -t "Device token"
+```
+
+Send messages to topics.
+
+```bash
+gorush --huawei --topic "foo-bar" \
+  -title "Gorush with HMS" \
+  -m "This is a Huawei Mobile Services Topic Message" \
+  -hk "API Key" \
+  -hid "APP Id"
+```
+
+- `-m`: Notification message.
+- `-hk`: [Huawei Mobile Services](https://developer.huawei.com/consumer/en/doc/development/HMS-Guides/Preparations) api secret key
 - `-t`: Device token.
 - `--title`: Notification title.
 - `--topic`: Send messages to topics. note: don't add device token.
@@ -360,7 +401,7 @@ Gorush support the following API.
 - **GET**  `/api/stat/go` Golang cpu, memory, gc, etc information. Thanks for [golang-stats-api-handler](https://github.com/fukata/golang-stats-api-handler).
 - **GET**  `/api/stat/app` show notification success and failure counts.
 - **GET**  `/api/config` show server yml config file.
-- **POST** `/api/push` push ios and android notifications.
+- **POST** `/api/push` push ios, android or huawei notifications.
 
 ### GET /api/stat/go
 
@@ -418,6 +459,10 @@ Show success or failure counts information of notification.
   "android": {
     "push_success": 10,
     "push_error": 10
+  },
+  "huawei": {
+    "push_success": 3,
+    "push_error": 1
   }
 }
 ```
@@ -482,6 +527,21 @@ Simple send Android notification example, the `platform` value is `2`:
 }
 ```
 
+Simple send Huawei notification example, the `platform` value is `3`:
+
+```json
+{
+  "notifications": [
+    {
+      "tokens": ["token_a", "token_b"],
+      "platform": 3,
+      "title": "Gorush with HMS",
+      "message": "Hello World Huawei!"
+    }
+  ]
+}
+```
+
 Simple send notification on Android and iOS devices using Firebase, the `platform` value is `2`:
 
 ```json
@@ -513,15 +573,16 @@ Send multiple notifications as below:
     },
     {
       "tokens": ["token_a", "token_b"],
-      "platform": 2,
-      "message": "Hello World!"
+      "platform": 3,
+      "message": "Hello World Huawei!",
+      "title": "Gorush with HMS"
     },
     .....
   ]
 }
 ```
 
-See more example about [iOS](#ios-example) or [Android](#android-example).
+See more example about [iOS](#ios-example), [Android](#android-example) or [Huawei](#huawei-example)
 
 ### Request body
 
@@ -531,24 +592,31 @@ The Request body must have a notifications array. The following is a parameter t
 |-------------------------|--------------|---------------------------------------------------------------------------------------------------|----------|---------------------------------------------------------------|
 | notif_id                | string       | A unique string that identifies the notification for async feedback                               | -        |                                                               |
 | tokens                  | string array | device tokens                                                                                     | o        |                                                               |
-| platform                | int          | platform(iOS,Android)                                                                             | o        | 1=iOS, 2=Android (Firebase)                                   |
+| platform                | int          | platform(iOS,Android)                                                                             | o        | 1=iOS, 2=Android (Firebase), 3=Huawei (HMS)                   |
 | message                 | string       | message for notification                                                                          | -        |                                                               |
 | title                   | string       | notification title                                                                                | -        |                                                               |
 | priority                | string       | Sets the priority of the message.                                                                 | -        | `normal` or `high`                                            |
 | content_available       | bool         | data messages wake the app by default.                                                            | -        |                                                               |
 | sound                   | interface{}  | sound type                                                                                        | -        |                                                               |
-| data                    | string array | extensible partition                                                                              | -        |                                                               |
+| data                    | string array | extensible partition                                                                              | -        | only Android and IOS                                          |
+| huawei_data             | string       | JSON object as string to extensible partition partition                                           | -        | only Huawei. See the [detail](#huawei-notification)           |
 | retry                   | int          | retry send notification if fail response from server. Value must be small than `max_retry` field. | -        |                                                               |
 | topic                   | string       | send messages to topics                                                                           |          |                                                               |
-| image                   | string       | image url to show in notification                                                                 | -        | only Android                                                  |
+| image                   | string       | image url to show in notification                                                                 | -        | only Android and Huawei                                       |
 | api_key                 | string       | api key for firebase cloud message                                                                | -        | only Android                                                  |
 | to                      | string       | The value must be a registration token, notification key, or topic.                               | -        | only Android                                                  |
 | collapse_key            | string       | a key for collapsing notifications                                                                | -        | only Android                                                  |
+| huawei_collapse_key     | int          | a key integer for collapsing notifications                                                        | -        | only Huawei  See the [detail](#huawei-notification)           |
 | delay_while_idle        | bool         | a flag for device idling                                                                          | -        | only Android                                                  |
 | time_to_live            | uint         | expiration of message kept on FCM storage                                                         | -        | only Android                                                  |
+| huawei_ttl              | string       | expiration of message kept on HMS storage                                                         | -        | only Huawei See the [detail](#huawei-notification)            |
 | restricted_package_name | string       | the package name of the application                                                               | -        | only Android                                                  |
 | dry_run                 | bool         | allows developers to test a request without actually sending a message                            | -        | only Android                                                  |
 | notification            | string array | payload of a FCM message                                                                          | -        | only Android. See the [detail](#android-notification-payload) |
+| huawei_notification     | string array | payload of a HMS message                                                                          | -        | only Huawei. See the [detail](#huawei-notification)           |
+| app_id                  | string       | hms app id                                                                                        | -        | only Huawei. See the [detail](#huawei-notification)           |
+| bi_tag                  | string       | Tag of a message in a batch delivery task                                                         | -        | only Huawei. See the [detail](#huawei-notification)           |
+| fast_app_target         | int          | State of a mini program when a quick app sends a data message.                                    | -        | only Huawei. See the [detail](#huawei-notification)           |
 | expiration              | int          | expiration for notification                                                                       | -        | only iOS                                                      |
 | apns_id                 | string       | A canonical UUID that identifies the notification                                                 | -        | only iOS                                                      |
 | collapse_id             | string       | An identifier you use to coalesce multiple notifications into a single notification for the user  | -        | only iOS                                                      |
@@ -611,6 +679,18 @@ request format:
 | title_loc_args | string | Indicates the string value to replace format specifiers in title string for localization.                 | -        |      |
 
 See more detail about [Firebase Cloud Messaging HTTP Protocol reference](https://firebase.google.com/docs/cloud-messaging/http-server-ref#send-downstream).
+
+### Huawei notification
+
+* app_id: app id from huawei developer console
+* huawei_data: mapped to data
+* huawei_notification: mapped to notification
+* huawei_ttl: mapped to ttl
+* huawei_collapse_key: mapped to collapse_key
+* bi_tag: 
+* fast_app_target: 
+
+See more detail about [Huawei Mobulse Services Push API reference](https://developer.huawei.com/consumer/en/doc/development/HMS-References/push-sendapi).
 
 ### iOS Example
 
@@ -776,6 +856,71 @@ Send messages to topics
 }
 ```
 
+### Huawei Example
+
+Send normal notification.
+
+```json
+{
+  "notifications": [
+    {
+      "tokens": ["token_a", "token_b"],
+      "platform": 3,
+      "message": "Hello World Huawei!",
+      "title": "You got message"
+    }
+  ]
+}
+```
+
+Add `notification` payload.
+
+```json
+{
+  "notifications": [
+    {
+      "tokens": ["token_a", "token_b"],
+      "platform": 3,
+      "message": "Hello World Huawei!",
+      "title": "You got message",
+      "huawei_notification" : {
+        "icon": "myicon",
+        "color": "#112244"
+      }
+    }
+  ]
+}
+```
+
+Add other fields which user defined via `huawei_data` field.
+
+```json
+{
+  "notifications": [
+    {
+      "tokens": ["token_a", "token_b"],
+      "platform": 3,
+      "huawei_data": "{'title' : 'Mario','message' : 'great match!', 'Room' : 'PortugalVSDenmark'}"
+    }
+  ]
+}
+```
+
+Send messages to topics
+
+```json
+{
+  "notifications": [
+    {
+      "topic": "foo-bar",
+      "platform": 3,
+      "message": "This is a Huawei Mobile Services Topic Message",
+      "title": "You got message"
+    }
+  ]
+}
+```
+
 ### Response body
 
 Error response message table:
@@ -897,6 +1042,7 @@ func main() {
 		Badge:    1,
 		Category: "test",
 		Sound:    "test",
+		Priority: proto.Priority_High,
 		Alert: &proto.Alert{
 			Title:    "Test Title",
 			Body:     "Test Alert Body",
@@ -998,6 +1144,7 @@ func main() {
 		Badge:    1,
 		Category: "test",
 		Sound:    "test",
+		Priority: proto.Priority_High,
 		Alert: &proto.Alert{
 			Title:    "Test Title",
 			Body:     "Test Alert Body",

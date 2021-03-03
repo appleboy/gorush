@@ -40,7 +40,6 @@ func init() {
 
 // InitLog use for initial log module
 func InitLog() error {
-
 	var err error
 
 	// init logger
@@ -90,8 +89,7 @@ func SetLogOut(log *logrus.Logger, outString string) error {
 	case "stderr":
 		log.Out = os.Stderr
 	default:
-		f, err := os.OpenFile(outString, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
-
+		f, err := os.OpenFile(outString, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0o600)
 		if err != nil {
 			return err
 		}
@@ -106,7 +104,6 @@ func SetLogOut(log *logrus.Logger, outString string) error {
 // log level: panic, fatal, error, warn, info and debug
 func SetLogLevel(log *logrus.Logger, levelString string) error {
 	level, err := logrus.ParseLevel(levelString)
-
 	if err != nil {
 		return err
 	}
@@ -122,6 +119,8 @@ func colorForPlatForm(platform int) string {
 		return blue
 	case PlatFormAndroid:
 		return yellow
+	case PlatFormHuawei:
+		return green
 	default:
 		return reset
 	}
@@ -133,13 +132,15 @@ func typeForPlatForm(platform int) string {
 		return "ios"
 	case PlatFormAndroid:
 		return "android"
+	case PlatFormHuawei:
+		return "huawei"
 	default:
 		return ""
 	}
 }
 
 func hideToken(token string, markLen int) string {
-	if len(token) == 0 {
+	if token == "" {
 		return ""
 	}
 

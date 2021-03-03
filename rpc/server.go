@@ -3,6 +3,7 @@ package rpc
 import (
 	"context"
 	"net"
+	"strings"
 	"sync"
 
 	"github.com/appleboy/gorush/gorush"
@@ -48,7 +49,7 @@ func (s *Server) Check(ctx context.Context, in *proto.HealthCheckRequest) (*prot
 
 // Send implements helloworld.GreeterServer
 func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*proto.NotificationReply, error) {
-	var badge = int(in.Badge)
+	badge := int(in.Badge)
 	notification := gorush.PushNotification{
 		Platform:         int(in.Platform),
 		Tokens:           in.Tokens,
@@ -62,10 +63,15 @@ func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*prot
 		ThreadID:         in.ThreadID,
 		MutableContent:   in.MutableContent,
 		Image:            in.Image,
+		Priority:         strings.ToLower(in.GetPriority().String()),
 	}
 
 	if badge > 0 {
 		notification.Badge = &badge
+	}
+
+	if in.Topic != "" && in.Platform == gorush.PlatFormAndroid {
+		notification.To = in.Topic
 	}
 
 	if in.Alert != nil {
