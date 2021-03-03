@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-config
+  namespace: {{ .Chart.Name }}
+data:
+  # stat
+  stat.engine: {{ .Values.stats.engine }}
+  stat.redis.host: {{ .Values.redis.host }}:{{ .Values.redis.port }}
