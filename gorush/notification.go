@@ -81,7 +81,8 @@ type PushNotification struct {
 	Notification          *fcm.Notification `json:"notification,omitempty"`
 
 	// Huawei
-	APPId              string                     `json:"app_id,omitempty"`
+	AppId              string                     `json:"app_id,omitempty"`
+	AppSecret          string                     `json:"app_secret,omitempty"`
 	HuaweiNotification *model.AndroidNotification `json:"huawei_notification,omitempty"`
 	HuaweiData         string                     `json:"huawei_data,omitempty"`
 	HuaweiCollapseKey  int                        `json:"huawei_collapse_key,omitempty"`
@@ -221,12 +222,12 @@ func CheckPushConf() error {
 	}
 
 	if PushConf.Huawei.Enabled {
-		if PushConf.Huawei.APIKey == "" {
-			return errors.New("Missing Huawei API Key")
+		if PushConf.Huawei.AppSecret == "" {
+			return errors.New("Missing Huawei App Secret")
 		}
 
-		if PushConf.Huawei.APPId == "" {
-			return errors.New("Missing Huawei APP Id")
+		if PushConf.Huawei.AppId == "" {
+			return errors.New("Missing Huawei App Id")
 		}
 	}
 

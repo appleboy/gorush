@@ -146,7 +146,7 @@ android:
 
 huawei:
   enabled: true
-  apikey: "YOUR_API_KEY"
+  appsecret: "YOUR_APP_SECRET"
   appid: "YOUR_APP_ID"
   max_retry: 0 # resend fail notification, default value zero is disabled
 
@@ -288,7 +288,7 @@ Android Options:
     -k, --apikey <api_key>           Android API Key
     --android                        enabled android (default: false)
 Huawei Options:
-    -hk, --hmskey <hms_key>          HMS API Key
+    -hk, --hmskey <hms_key>          HMS App Secret
     -hid, --hmsid <hms_id>           HMS APP Id
     --huawei                         enabled huawei (default: false)
 Common Options:
