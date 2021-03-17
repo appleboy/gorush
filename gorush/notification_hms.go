@@ -209,7 +209,7 @@ Retry:
 	} else {
 		isError = true
 		StatStorage.AddHuaweiError(int64(1))
-		LogAccess.Debug("Huwaei Send Notification is failed! Code: " + res.Code)
+		LogAccess.Debug("Huawei Send Notification is failed! Code: " + res.Code)
 	}
 
 	if isError && retryCount < maxRetry {
