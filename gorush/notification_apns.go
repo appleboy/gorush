@@ -4,6 +4,7 @@ import (
 	"crypto/ecdsa"
 	"crypto/tls"
 	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"net"
 	"net/http"
@@ -265,7 +266,7 @@ func iosAlertDictionary(payload *payload.Payload, req PushNotification) *payload
 // GetIOSNotification use for define iOS notification.
 // The iOS Notification Payload
 // ref: https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/PayloadKeyReference.html#//apple_ref/doc/uid/TP40008194-CH17-SW1
-func GetIOSNotification(req PushNotification) *apns2.Notification {
+func GetIOSNotification(req PushNotification) (*apns2.Notification, error) {
 	notification := &apns2.Notification{
 		ApnsID:     req.ApnsID,
 		Topic:      req.Topic,
@@ -345,7 +346,15 @@ func GetIOSNotification(req PushNotification) *apns2.Notification {
 
 	notification.Payload = payload
 
-	return notification
+	jsonMarshall, err := json.Marshal(notification)
+	if err != nil {
+		LogError.Error("Failed to marshal the default message! Error is " + err.Error())
+		return nil, err
+	}
+
+	LogAccess.Debugf("Default message is %s", string(jsonMarshall))
+
+	return notification, nil
 }
 
 func getApnsClient(req PushNotification) (client *apns2.Client) {
@@ -379,7 +388,7 @@ func PushToIOS(req PushNotification) {
 Retry:
 	var newTokens []string
 
-	notification := GetIOSNotification(req)
+	notification, _ := GetIOSNotification(req)
 	client := getApnsClient(req)
 
 	var wg sync.WaitGroup
