@@ -28,8 +28,8 @@ func TestEmptyFeedbackURL(t *testing.T) {
 }
 
 func TestHTTPErrorInFeedbackCall(t *testing.T) {
-	config, _ := config.LoadConf("")
-	config.Core.FeedbackURL = "http://test.example.com/api/"
+	defaultConfig, _ := config.LoadConf("")
+	defaultConfig.Core.FeedbackURL = "http://test.example.com/api/"
 	logEntry := LogPushEntry{
 		TenantId: "",
 		ID:       "",
@@ -40,7 +40,7 @@ func TestHTTPErrorInFeedbackCall(t *testing.T) {
 		Error:    "",
 	}
 
-	err := DispatchFeedback(logEntry, config.Core.FeedbackURL, config.Core.FeedbackTimeout)
+	err := DispatchFeedback(logEntry, defaultConfig.Core.FeedbackURL, defaultConfig.Core.FeedbackTimeout)
 	assert.NotNil(t, err)
 }
 
@@ -60,8 +60,8 @@ func TestSuccessfulFeedbackCall(t *testing.T) {
 	)
 	defer httpMock.Close()
 
-	config, _ := config.LoadConf("")
-	config.Core.FeedbackURL = httpMock.URL
+	defaultConfig, _ := config.LoadConf("")
+	defaultConfig.Core.FeedbackURL = httpMock.URL
 	logEntry := LogPushEntry{
 		TenantId: "",
 		ID:       "",
@@ -72,6 +72,6 @@ func TestSuccessfulFeedbackCall(t *testing.T) {
 		Error:    "",
 	}
 
-	err := DispatchFeedback(logEntry, config.Core.FeedbackURL, config.Core.FeedbackTimeout)
+	err := DispatchFeedback(logEntry, defaultConfig.Core.FeedbackURL, defaultConfig.Core.FeedbackTimeout)
 	assert.Nil(t, err)
 }

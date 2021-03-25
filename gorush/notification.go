@@ -147,7 +147,7 @@ func (p *PushNotification) IsTopic() bool {
 func CheckMessage(req PushNotification) error {
 	var msg string
 
-	if req.TenantId == "" || len(req.TenantId) == 0 {
+	if req.TenantId == "" {
 		msg = "the message must specify a tenant ID"
 		LogAccess.Debug(msg)
 		return errors.New(msg)

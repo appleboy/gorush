@@ -60,7 +60,7 @@ func pushHandler(c *gin.Context) {
 	tenantId := filepath.Base(fullPath)
 	pathSegments := strings.Split(fullPath, "/")
 
-	if len(pathSegments) < 4 || len(pathSegments[3]) == 0 || len(tenantId) == 0 {
+	if len(pathSegments) < 4 || pathSegments[3] == "" || tenantId == "" {
 		msg = "'/:tenant_id' path is missing or incorrect format. should be `/api/push/:tenant_id`"
 		LogAccess.Error(msg)
 		abortWithError(c, http.StatusBadRequest, msg)

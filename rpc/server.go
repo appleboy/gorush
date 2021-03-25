@@ -39,9 +39,9 @@ func (s *Server) Check(ctx context.Context, in *proto.HealthCheckRequest) (*prot
 			Status: proto.HealthCheckResponse_SERVING,
 		}, nil
 	}
-	if status, ok := s.statusMap[in.Service]; ok {
+	if serverStatus, ok := s.statusMap[in.Service]; ok {
 		return &proto.HealthCheckResponse{
-			Status: status,
+			Status: serverStatus,
 		}, nil
 	}
 	return nil, status.Error(codes.NotFound, "unknown service")
