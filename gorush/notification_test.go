@@ -2,38 +2,45 @@ package gorush
 
 import (
 	"context"
-	"os"
-	"testing"
-
 	"github.com/appleboy/gorush/config"
 	"github.com/stretchr/testify/assert"
+	"os"
+	"testing"
 )
 
 func TestCorrectConf(t *testing.T) {
 	PushConf, _ = config.LoadConf("")
+	tenantId := "tenant_id1"
 
-	PushConf.Android.Enabled = true
-	PushConf.Android.APIKey = "xxxxx"
+	tenant := PushConf.Tenants[tenantId]
+	tenant.Android.Enabled = true
+	tenant.Android.APIKey = "xxxxx"
 
-	PushConf.Ios.Enabled = true
-	PushConf.Ios.KeyPath = "../certificate/certificate-valid.pem"
+	tenant.Ios.Enabled = true
+	tenant.Ios.KeyPath = "../certificate/certificate-valid.pem"
+
+	tenant.Huawei.Enabled = false
 
 	err := CheckPushConf()
 
 	assert.NoError(t, err)
 }
 
-func TestSenMultipleNotifications(t *testing.T) {
+func TestSendMultipleNotifications(t *testing.T) {
 	ctx := context.Background()
 	PushConf, _ = config.LoadConf("")
 
-	PushConf.Ios.Enabled = true
-	PushConf.Ios.KeyPath = "../certificate/certificate-valid.pem"
-	err := InitAPNSClient()
+	tenantId := "tenant_id1"
+	tenant := PushConf.Tenants[tenantId]
+
+	tenant.Ios.Enabled = true
+	tenant.Ios.KeyPath = "../certificate/certificate-valid.pem"
+
+	err := InitAPNSClient(tenantId, *tenant)
 	assert.Nil(t, err)
 
-	PushConf.Android.Enabled = true
-	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+	tenant.Android.Enabled = true
+	tenant.Android.APIKey = os.Getenv("ANDROID_API_KEY")
 
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
@@ -42,19 +49,19 @@ func TestSenMultipleNotifications(t *testing.T) {
 			// ios
 			{
 				Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
-				Platform: PlatFormIos,
+				Platform: PlatformIos,
 				Message:  "Welcome",
 			},
 			// android
 			{
 				Tokens:   []string{androidToken, "bbbbb"},
-				Platform: PlatFormAndroid,
+				Platform: PlatformAndroid,
 				Message:  "Welcome",
 			},
 		},
 	}
 
-	count, logs := queueNotification(ctx, req)
+	count, logs := queueNotification(ctx, req, tenantId)
 	assert.Equal(t, 3, count)
 	assert.Equal(t, 0, len(logs))
 }
@@ -62,14 +69,17 @@ func TestSenMultipleNotifications(t *testing.T) {
 func TestDisabledAndroidNotifications(t *testing.T) {
 	ctx := context.Background()
 	PushConf, _ = config.LoadConf("")
+	tenantId := "tenant_id1"
 
-	PushConf.Ios.Enabled = true
-	PushConf.Ios.KeyPath = "../certificate/certificate-valid.pem"
-	err := InitAPNSClient()
+	tenant := PushConf.Tenants[tenantId]
+
+	tenant.Ios.Enabled = true
+	tenant.Ios.KeyPath = "../certificate/certificate-valid.pem"
+	err := InitAPNSClient(tenantId, *tenant)
 	assert.Nil(t, err)
 
-	PushConf.Android.Enabled = false
-	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+	tenant.Android.Enabled = false
+	tenant.Android.APIKey = os.Getenv("ANDROID_API_KEY")
 
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
@@ -78,19 +88,19 @@ func TestDisabledAndroidNotifications(t *testing.T) {
 			// ios
 			{
 				Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
-				Platform: PlatFormIos,
+				Platform: PlatformIos,
 				Message:  "Welcome",
 			},
 			// android
 			{
 				Tokens:   []string{androidToken, "bbbbb"},
-				Platform: PlatFormAndroid,
+				Platform: PlatformAndroid,
 				Message:  "Welcome",
 			},
 		},
 	}
 
-	count, logs := queueNotification(ctx, req)
+	count, logs := queueNotification(ctx, req, tenantId)
 	assert.Equal(t, 1, count)
 	assert.Equal(t, 0, len(logs))
 }
@@ -98,14 +108,17 @@ func TestDisabledAndroidNotifications(t *testing.T) {
 func TestSyncModeForNotifications(t *testing.T) {
 	ctx := context.Background()
 	PushConf, _ = config.LoadConf("")
+	tenantId := "tenant_id1"
 
-	PushConf.Ios.Enabled = true
-	PushConf.Ios.KeyPath = "../certificate/certificate-valid.pem"
-	err := InitAPNSClient()
+	tenant := PushConf.Tenants[tenantId]
+
+	tenant.Ios.Enabled = true
+	tenant.Ios.KeyPath = "../certificate/certificate-valid.pem"
+	err := InitAPNSClient(tenantId, *tenant)
 	assert.Nil(t, err)
 
-	PushConf.Android.Enabled = true
-	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+	tenant.Android.Enabled = true
+	tenant.Android.APIKey = os.Getenv("ANDROID_API_KEY")
 
 	// enable sync mode
 	PushConf.Core.Sync = true
@@ -117,19 +130,20 @@ func TestSyncModeForNotifications(t *testing.T) {
 			// ios
 			{
 				Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
-				Platform: PlatFormIos,
+				Platform: PlatformIos,
 				Message:  "Welcome",
 			},
 			// android
 			{
 				Tokens:   []string{androidToken, "bbbbb"},
-				Platform: PlatFormAndroid,
+				Platform: PlatformAndroid,
 				Message:  "Welcome",
 			},
 		},
 	}
 
-	count, logs := queueNotification(ctx, req)
+	count, logs := queueNotification(ctx, req, tenantId)
+
 	assert.Equal(t, 3, count)
 	assert.Equal(t, 2, len(logs))
 }
@@ -137,9 +151,12 @@ func TestSyncModeForNotifications(t *testing.T) {
 func TestSyncModeForTopicNotification(t *testing.T) {
 	ctx := context.Background()
 	PushConf, _ = config.LoadConf("")
+	tenantId := "tenant_id1"
 
-	PushConf.Android.Enabled = true
-	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+	tenant := PushConf.Tenants[tenantId]
+
+	tenant.Android.Enabled = true
+	tenant.Android.APIKey = os.Getenv("ANDROID_API_KEY")
 	PushConf.Log.HideToken = false
 
 	// enable sync mode
@@ -152,27 +169,27 @@ func TestSyncModeForTopicNotification(t *testing.T) {
 				// error:InvalidParameters
 				// Check that the provided parameters have the right name and type.
 				To:       "/topics/foo-bar@@@##",
-				Platform: PlatFormAndroid,
+				Platform: PlatformAndroid,
 				Message:  "This is a Firebase Cloud Messaging Topic Message!",
 			},
 			// android
 			{
 				// success
 				To:       "/topics/foo-bar",
-				Platform: PlatFormAndroid,
+				Platform: PlatformAndroid,
 				Message:  "This is a Firebase Cloud Messaging Topic Message!",
 			},
 			// android
 			{
 				// success
 				Condition: "'dogs' in topics || 'cats' in topics",
-				Platform:  PlatFormAndroid,
+				Platform:  PlatformAndroid,
 				Message:   "This is a Firebase Cloud Messaging Topic Message!",
 			},
 		},
 	}
 
-	count, logs := queueNotification(ctx, req)
+	count, logs := queueNotification(ctx, req, tenantId)
 	assert.Equal(t, 2, count)
 	assert.Equal(t, 1, len(logs))
 }
@@ -180,9 +197,12 @@ func TestSyncModeForTopicNotification(t *testing.T) {
 func TestSyncModeForDeviceGroupNotification(t *testing.T) {
 	ctx := context.Background()
 	PushConf, _ = config.LoadConf("")
+	tenantId := "tenant_id1"
 
-	PushConf.Android.Enabled = true
-	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+	tenant := PushConf.Tenants[tenantId]
+
+	tenant.Android.Enabled = true
+	tenant.Android.APIKey = os.Getenv("ANDROID_API_KEY")
 	PushConf.Log.HideToken = false
 
 	// enable sync mode
@@ -193,13 +213,13 @@ func TestSyncModeForDeviceGroupNotification(t *testing.T) {
 			// android
 			{
 				To:       "aUniqueKey",
-				Platform: PlatFormAndroid,
+				Platform: PlatformAndroid,
 				Message:  "This is a Firebase Cloud Messaging Device Group Message!",
 			},
 		},
 	}
 
-	count, logs := queueNotification(ctx, req)
+	count, logs := queueNotification(ctx, req, tenantId)
 	assert.Equal(t, 1, count)
 	assert.Equal(t, 1, len(logs))
 }
