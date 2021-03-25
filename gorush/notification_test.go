@@ -2,10 +2,11 @@ package gorush
 
 import (
 	"context"
-	"github.com/appleboy/gorush/config"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
+
+	"github.com/appleboy/gorush/config"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestCorrectConf(t *testing.T) {

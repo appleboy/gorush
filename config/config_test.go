@@ -77,7 +77,7 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 	assert.Equal(suite.T(), "YOUR_API_KEY", tenant.Android.APIKey)
 	assert.Equal(suite.T(), 0, tenant.Android.MaxRetry)
 
-	//iOS
+	// iOS
 	assert.Equal(suite.T(), false, tenant.Ios.Enabled)
 	assert.Equal(suite.T(), "", tenant.Ios.KeyPath)
 	assert.Equal(suite.T(), "", tenant.Ios.KeyBase64)
