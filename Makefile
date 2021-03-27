@@ -42,14 +42,14 @@ endif
 .PHONY: fmt
 fmt:
 	@hash gofumpt > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		$(GO) get -u mvdan.cc/gofumpt; \
+		$(GO) install mvdan.cc/gofumpt@v0.1.1; \
 	fi
 	$(GOFMT) -w $(GOFILES)
 
 .PHONY: fmt-check
 fmt-check:
 	@hash gofumpt > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		$(GO) get -u mvdan.cc/gofumpt; \
+		$(GO) install mvdan.cc/gofumpt@v0.1.1; \
 	fi
 	@diff=$$($(GOFMT) -d $(GOFILES)); \
 	if [ -n "$$diff" ]; then \
@@ -63,13 +63,13 @@ vet:
 
 embedmd:
 	@hash embedmd > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		$(GO) get -u github.com/campoy/embedmd; \
+		$(GO) install github.com/campoy/embedmd; \
 	fi
 	embedmd -d *.md
 
 lint:
 	@hash revive > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		$(GO) get -u github.com/mgechev/revive; \
+		$(GO) install github.com/mgechev/revive; \
 	fi
 	revive -config .revive.toml ./... || exit 1
 
@@ -88,14 +88,14 @@ $(EXECUTABLE): $(GOFILES)
 .PHONY: misspell-check
 misspell-check:
 	@hash misspell > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		$(GO) get -u github.com/client9/misspell/cmd/misspell; \
+		$(GO) install github.com/client9/misspell/cmd/misspell; \
 	fi
 	misspell -error $(GOFILES)
 
 .PHONY: misspell
 misspell:
 	@hash misspell > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		$(GO) get -u github.com/client9/misspell/cmd/misspell; \
+		$(GO) install github.com/client9/misspell/cmd/misspell; \
 	fi
 	misspell -w $(GOFILES)
 
@@ -110,14 +110,14 @@ release-dirs:
 
 release-build:
 	@hash gox > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		$(GO) get -u github.com/mitchellh/gox; \
+		$(GO) install github.com/mitchellh/gox; \
 	fi
 	gox -os="$(TARGETS)" -arch="$(ARCHS)" -tags="$(TAGS)" -ldflags="$(EXTLDFLAGS)-s -w $(LDFLAGS)" -output="$(DIST)/binaries/$(EXECUTABLE)-$(VERSION)-{{.OS}}-{{.Arch}}"
 
 .PHONY: release-compress
 release-compress:
 	@hash gxz > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		$(GO) get -u github.com/ulikunitz/xz/cmd/gxz; \
+		$(GO) install github.com/ulikunitz/xz/cmd/gxz; \
 	fi
 	cd $(DIST)/release/; for file in `find . -type f -name "*"`; do echo "compressing $${file}" && gxz -k -9 $${file}; done;
 
