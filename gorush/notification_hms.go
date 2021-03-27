@@ -32,7 +32,7 @@ func GetPushClient(conf *config.Config) (*core.HMSClient, error) {
 }
 
 // InitHMSClient use for initialize HMS Client.
-func InitHMSClient(appSecret string, appId string) (*core.HMSClient, error) {
+func InitHMSClient(appSecret, appId string) (*core.HMSClient, error) {
 	if appSecret == "" {
 		return nil, errors.New("Missing Huawei App Secret")
 	}
@@ -209,7 +209,7 @@ Retry:
 	} else {
 		isError = true
 		StatStorage.AddHuaweiError(int64(1))
-		LogAccess.Debug("Huwaei Send Notification is failed!")
+		LogAccess.Debug("Huawei Send Notification is failed! Code: " + res.Code)
 	}
 
 	if isError && retryCount < maxRetry {
