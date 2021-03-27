@@ -63,7 +63,7 @@ vet:
 
 embedmd:
 	@hash embedmd > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		$(GO) install github.com/campoy/embedmd; \
+		$(GO) install github.com/campoy/embedmd@v2.0.0; \
 	fi
 	embedmd -d *.md
 
