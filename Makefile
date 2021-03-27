@@ -4,7 +4,7 @@ EXECUTABLE := gorush
 GO ?= go
 DEPLOY_ACCOUNT := appleboy
 DEPLOY_IMAGE := $(EXECUTABLE)
-GOFMT ?= gofumpt -l -s
+GOFMT ?= gofumpt -l -s -extra
 
 TARGETS ?= linux darwin windows openbsd
 ARCHS ?= amd64 386

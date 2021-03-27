@@ -7,7 +7,7 @@ import (
 )
 
 // InitWorkers for initialize all workers.
-func InitWorkers(ctx context.Context, wg *sync.WaitGroup, workerNum int64, queueNum int64) {
+func InitWorkers(ctx context.Context, wg *sync.WaitGroup, workerNum, queueNum int64) {
 	LogAccess.Info("worker number is ", workerNum, ", queue number is ", queueNum)
 	QueueNotification = make(chan PushNotification, queueNum)
 	for i := int64(0); i < workerNum; i++ {

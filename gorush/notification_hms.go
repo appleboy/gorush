@@ -32,7 +32,7 @@ func GetPushClient(conf *config.Config) (*core.HMSClient, error) {
 }
 
 // InitHMSClient use for initialize HMS Client.
-func InitHMSClient(apiKey string, appID string) (*core.HMSClient, error) {
+func InitHMSClient(apiKey, appID string) (*core.HMSClient, error) {
 	if apiKey == "" {
 		return nil, errors.New("Missing Huawei API Key")
 	}
