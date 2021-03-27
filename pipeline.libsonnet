@@ -72,7 +72,6 @@
           'hadolint docker/Dockerfile.linux.amd64',
           'hadolint docker/Dockerfile.linux.arm64',
           'hadolint docker/Dockerfile.linux.arm',
-          'hadolint docker/Dockerfile.windows.amd64',
         ],
         volumes: [
           {
