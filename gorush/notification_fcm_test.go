@@ -247,7 +247,7 @@ func TestAndroidNotificationStructure(t *testing.T) {
 		},
 	}
 
-	notification := GetAndroidNotification(req)
+	notification, _ := GetAndroidNotification(req)
 
 	assert.Equal(t, test, notification.To)
 	assert.Equal(t, "high", notification.Priority)
@@ -273,7 +273,7 @@ func TestAndroidNotificationStructure(t *testing.T) {
 			Body: "",
 		},
 	}
-	notification = GetAndroidNotification(req)
+	notification, _ = GetAndroidNotification(req)
 
 	assert.Equal(t, test, notification.To)
 	assert.Equal(t, "", notification.Notification.Body)
