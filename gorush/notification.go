@@ -81,7 +81,7 @@ type PushNotification struct {
 	Notification          *fcm.Notification `json:"notification,omitempty"`
 
 	// Huawei
-	AppId              string                     `json:"app_id,omitempty"`
+	AppID              string                     `json:"app_id,omitempty"`
 	AppSecret          string                     `json:"app_secret,omitempty"`
 	HuaweiNotification *model.AndroidNotification `json:"huawei_notification,omitempty"`
 	HuaweiData         string                     `json:"huawei_data,omitempty"`
@@ -226,8 +226,8 @@ func CheckPushConf() error {
 			return errors.New("Missing Huawei App Secret")
 		}
 
-		if PushConf.Huawei.AppId == "" {
-			return errors.New("Missing Huawei App Id")
+		if PushConf.Huawei.AppID == "" {
+			return errors.New("Missing Huawei App ID")
 		}
 	}
 

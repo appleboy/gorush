@@ -289,7 +289,7 @@ Android Options:
     --android                        enabled android (default: false)
 Huawei Options:
     -hk, --hmskey <hms_key>          HMS App Secret
-    -hid, --hmsid <hms_id>           HMS APP Id
+    -hid, --hmsid <hms_id>           HMS App ID
     --huawei                         enabled huawei (default: false)
 Common Options:
     --topic <topic>                  iOS or Android topic message
@@ -325,7 +325,7 @@ gorush --android --topic "/topics/foo-bar" \
 Send single notification with the following command.
 
 ```bash
-gorush -huawei -title "Gorush with HMS" -m "your message" -hk "API Key" -hid "APP Id" -t "Device token"
+gorush -huawei -title "Gorush with HMS" -m "your message" -hk "API Key" -hid "App ID" -t "Device token"
 ```
 
 Send messages to topics.
@@ -335,7 +335,7 @@ gorush --huawei --topic "foo-bar" \
   -title "Gorush with HMS" \
   -m "This is a Huawei Mobile Services Topic Message" \
   -hk "API Key" \
-  -hid "APP Id"
+  -hid "App ID"
 ```
 
 - `-m`: Notification message.

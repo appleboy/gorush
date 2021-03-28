@@ -68,8 +68,8 @@ func main() {
 	flag.StringVar(&opts.Android.APIKey, "apikey", "", "Android api key configuration for gorush")
 	flag.StringVar(&opts.Huawei.AppSecret, "hk", "", "Huawei api key configuration for gorush")
 	flag.StringVar(&opts.Huawei.AppSecret, "hmskey", "", "Huawei api key configuration for gorush")
-	flag.StringVar(&opts.Huawei.AppId, "hid", "", "HMS app id configuration for gorush")
-	flag.StringVar(&opts.Huawei.AppId, "hmsid", "", "HMS app id configuration for gorush")
+	flag.StringVar(&opts.Huawei.AppID, "hid", "", "HMS app id configuration for gorush")
+	flag.StringVar(&opts.Huawei.AppID, "hmsid", "", "HMS app id configuration for gorush")
 	flag.StringVar(&opts.Core.Address, "A", "", "address to bind")
 	flag.StringVar(&opts.Core.Address, "address", "", "address to bind")
 	flag.StringVar(&opts.Core.Port, "p", "", "port number for gorush")
@@ -138,8 +138,8 @@ func main() {
 		gorush.PushConf.Huawei.AppSecret = opts.Huawei.AppSecret
 	}
 
-	if opts.Huawei.AppId != "" {
-		gorush.PushConf.Huawei.AppId = opts.Huawei.AppId
+	if opts.Huawei.AppID != "" {
+		gorush.PushConf.Huawei.AppID = opts.Huawei.AppID
 	}
 
 	if opts.Stat.Engine != "" {
@@ -331,7 +331,7 @@ func main() {
 		gorush.LogError.Fatal(err)
 	}
 
-	if _, err = gorush.InitHMSClient(gorush.PushConf.Huawei.AppSecret, gorush.PushConf.Huawei.AppId); err != nil {
+	if _, err = gorush.InitHMSClient(gorush.PushConf.Huawei.AppSecret, gorush.PushConf.Huawei.AppID); err != nil {
 		gorush.LogError.Fatal(err)
 	}
 
@@ -395,7 +395,7 @@ Android Options:
     --android                        enabled android (default: false)
 Huawei Options:
     -hk, --hmskey <hms_key>          HMS App Secret
-    -hid, --hmsid <hms_id>			 HMS APP Id
+    -hid, --hmsid <hms_id>			 HMS App ID
     --huawei                         enabled huawei (default: false)
 Common Options:
     --topic <topic>                  iOS, Android or Huawei topic message

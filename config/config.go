@@ -163,7 +163,7 @@ type SectionAndroid struct {
 type SectionHuawei struct {
 	Enabled   bool   `yaml:"enabled"`
 	AppSecret string `yaml:"appsecret"`
-	AppId     string `yaml:"appid"`
+	AppID     string `yaml:"appid"`
 	MaxRetry  int    `yaml:"max_retry"`
 }
 
@@ -318,7 +318,7 @@ func LoadConf(confPath string) (ConfYaml, error) {
 	// Huawei
 	conf.Huawei.Enabled = viper.GetBool("huawei.enabled")
 	conf.Huawei.AppSecret = viper.GetString("huawei.appsecret")
-	conf.Huawei.AppId = viper.GetString("huawei.appid")
+	conf.Huawei.AppID = viper.GetString("huawei.appid")
 	conf.Huawei.MaxRetry = viper.GetInt("huawei.max_retry")
 
 	// iOS

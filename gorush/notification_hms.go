@@ -32,23 +32,23 @@ func GetPushClient(conf *config.Config) (*core.HMSClient, error) {
 }
 
 // InitHMSClient use for initialize HMS Client.
-func InitHMSClient(appSecret, appId string) (*core.HMSClient, error) {
+func InitHMSClient(appSecret, appID string) (*core.HMSClient, error) {
 	if appSecret == "" {
 		return nil, errors.New("Missing Huawei App Secret")
 	}
 
-	if appId == "" {
-		return nil, errors.New("Missing Huawei App Id")
+	if appID == "" {
+		return nil, errors.New("Missing Huawei App ID")
 	}
 
 	conf := &config.Config{
-		AppId:     appId,
+		AppId:     appID,
 		AppSecret: appSecret,
 		AuthUrl:   "https://oauth-login.cloud.huawei.com/oauth2/v3/token",
 		PushUrl:   "https://push-api.cloud.huawei.com",
 	}
 
-	if appSecret != PushConf.Huawei.AppSecret || appId != PushConf.Huawei.AppId {
+	if appSecret != PushConf.Huawei.AppSecret || appID != PushConf.Huawei.AppID {
 		return GetPushClient(conf)
 	}
 
@@ -187,7 +187,7 @@ Retry:
 
 	notification, _ := GetHuaweiNotification(req)
 
-	client, err = InitHMSClient(PushConf.Huawei.AppSecret, PushConf.Huawei.AppId)
+	client, err = InitHMSClient(PushConf.Huawei.AppSecret, PushConf.Huawei.AppID)
 
 	if err != nil {
 		// HMS server error

@@ -38,16 +38,16 @@ func TestMissingHuaweiAppSecret(t *testing.T) {
 	assert.Equal(t, "Missing Huawei App Secret", err.Error())
 }
 
-func TestMissingHuaweiAppId(t *testing.T) {
+func TestMissingHuaweiAppID(t *testing.T) {
 	PushConf, _ = config.LoadConf("")
 
 	PushConf.Huawei.Enabled = true
-	PushConf.Huawei.AppId = ""
+	PushConf.Huawei.AppID = ""
 
 	err := CheckPushConf()
 
 	assert.Error(t, err)
-	assert.Equal(t, "Missing Huawei APP Id", err.Error())
+	assert.Equal(t, "Missing Huawei App ID", err.Error())
 }
 
 func TestMissingAppSecretForInitHMSClient(t *testing.T) {
@@ -58,10 +58,10 @@ func TestMissingAppSecretForInitHMSClient(t *testing.T) {
 	assert.Equal(t, "Missing Huawei App Secret", err.Error())
 }
 
-func TestMissingAppIdForInitHMSClient(t *testing.T) {
+func TestMissingAppIDForInitHMSClient(t *testing.T) {
 	client, err := InitHMSClient("APP_ID", "")
 
 	assert.Nil(t, client)
 	assert.Error(t, err)
-	assert.Equal(t, "Missing Huawei App Id", err.Error())
+	assert.Equal(t, "Missing Huawei App ID", err.Error())
 }
