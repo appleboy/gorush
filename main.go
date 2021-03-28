@@ -66,10 +66,10 @@ func main() {
 	flag.StringVar(&opts.Ios.Password, "password", "", "iOS certificate password for gorush")
 	flag.StringVar(&opts.Android.APIKey, "k", "", "Android api key configuration for gorush")
 	flag.StringVar(&opts.Android.APIKey, "apikey", "", "Android api key configuration for gorush")
-	flag.StringVar(&opts.Huawei.APIKey, "hk", "", "Huawei api key configuration for gorush")
-	flag.StringVar(&opts.Huawei.APIKey, "hmskey", "", "Huawei api key configuration for gorush")
-	flag.StringVar(&opts.Huawei.APPId, "hid", "", "HMS app id configuration for gorush")
-	flag.StringVar(&opts.Huawei.APPId, "hmsid", "", "HMS app id configuration for gorush")
+	flag.StringVar(&opts.Huawei.AppSecret, "hk", "", "Huawei api key configuration for gorush")
+	flag.StringVar(&opts.Huawei.AppSecret, "hmskey", "", "Huawei api key configuration for gorush")
+	flag.StringVar(&opts.Huawei.AppID, "hid", "", "HMS app id configuration for gorush")
+	flag.StringVar(&opts.Huawei.AppID, "hmsid", "", "HMS app id configuration for gorush")
 	flag.StringVar(&opts.Core.Address, "A", "", "address to bind")
 	flag.StringVar(&opts.Core.Address, "address", "", "address to bind")
 	flag.StringVar(&opts.Core.Port, "p", "", "port number for gorush")
@@ -134,12 +134,12 @@ func main() {
 		gorush.PushConf.Android.APIKey = opts.Android.APIKey
 	}
 
-	if opts.Huawei.APIKey != "" {
-		gorush.PushConf.Huawei.APIKey = opts.Huawei.APIKey
+	if opts.Huawei.AppSecret != "" {
+		gorush.PushConf.Huawei.AppSecret = opts.Huawei.AppSecret
 	}
 
-	if opts.Huawei.APPId != "" {
-		gorush.PushConf.Huawei.APPId = opts.Huawei.APPId
+	if opts.Huawei.AppID != "" {
+		gorush.PushConf.Huawei.AppID = opts.Huawei.AppID
 	}
 
 	if opts.Stat.Engine != "" {
@@ -331,7 +331,7 @@ func main() {
 		gorush.LogError.Fatal(err)
 	}
 
-	if _, err = gorush.InitHMSClient(gorush.PushConf.Huawei.APIKey, gorush.PushConf.Huawei.APPId); err != nil {
+	if _, err = gorush.InitHMSClient(gorush.PushConf.Huawei.AppSecret, gorush.PushConf.Huawei.AppID); err != nil {
 		gorush.LogError.Fatal(err)
 	}
 
@@ -394,8 +394,8 @@ Android Options:
     -k, --apikey <api_key>           Android API Key
     --android                        enabled android (default: false)
 Huawei Options:
-    -hk, --hmskey <hms_key>          HMS API Key
-    -hid, --hmsid <hms_id>			 HMS APP Id
+    -hk, --hmskey <hms_key>          HMS App Secret
+    -hid, --hmsid <hms_id>			 HMS App ID
     --huawei                         enabled huawei (default: false)
 Common Options:
     --topic <topic>                  iOS, Android or Huawei topic message
