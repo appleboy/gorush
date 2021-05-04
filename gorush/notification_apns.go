@@ -118,7 +118,7 @@ func InitAPNSClient() error {
 		}
 
 		if h2Transport, ok := ApnsClient.HTTPClient.Transport.(*http2.Transport); ok {
-			configureHttp2ConnHealthCheck(h2Transport)
+			configureHTTP2ConnHealthCheck(h2Transport)
 		}
 
 		if err != nil {
@@ -162,7 +162,7 @@ func newApnsClient(certificate tls.Certificate) (*apns2.Client, error) {
 	if h2Transport, err := http2.ConfigureTransports(transport); err != nil {
 		return nil, err
 	} else {
-		configureHttp2ConnHealthCheck(h2Transport)
+		configureHTTP2ConnHealthCheck(h2Transport)
 	}
 	client.HTTPClient.Transport = transport
 
@@ -191,7 +191,7 @@ func newApnsTokenClient(token *token.Token) (*apns2.Client, error) {
 	if h2Transport, err := http2.ConfigureTransports(transport); err != nil {
 		return nil, err
 	} else {
-		configureHttp2ConnHealthCheck(h2Transport)
+		configureHTTP2ConnHealthCheck(h2Transport)
 	}
 
 	client.HTTPClient.Transport = transport
@@ -199,7 +199,7 @@ func newApnsTokenClient(token *token.Token) (*apns2.Client, error) {
 	return client, nil
 }
 
-func configureHttp2ConnHealthCheck(h2Transport *http2.Transport) {
+func configureHTTP2ConnHealthCheck(h2Transport *http2.Transport) {
 	h2Transport.ReadIdleTimeout = 1 * time.Second
 	h2Transport.PingTimeout = 1 * time.Second
 }
