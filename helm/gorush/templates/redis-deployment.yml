@@ -1,3 +1,4 @@
+{{- if .Values.stats.engine eq "redis" }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -24,3 +25,4 @@ spec:
           image: redis
           ports:
             - containerPort: {{ .Values.redis.port }}
+{{- end }}
