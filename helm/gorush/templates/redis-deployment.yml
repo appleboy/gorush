@@ -1,4 +1,4 @@
-{{- if .Values.stats.engine eq "redis" }}
+{{- if .Values.redis.fromChart }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:

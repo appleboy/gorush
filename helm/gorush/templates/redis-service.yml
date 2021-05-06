@@ -1,4 +1,4 @@
-{{- if .Values.stats.engine eq "redis" }}
+{{- if .Values.redis.fromChart }}
 apiVersion: v1
 kind: Service
 metadata:

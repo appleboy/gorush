@@ -44,6 +44,7 @@ stats:
   engine: redis
 
 redis:
+  fromChart: true
   host: redis
   port: 6379
 
