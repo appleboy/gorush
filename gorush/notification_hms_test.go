@@ -26,42 +26,42 @@ func init() {
 	}
 }
 
-func TestMissingHuaweiAPIKey(t *testing.T) {
+func TestMissingHuaweiAppSecret(t *testing.T) {
 	PushConf, _ = config.LoadConf("")
 
 	PushConf.Huawei.Enabled = true
-	PushConf.Huawei.APIKey = ""
+	PushConf.Huawei.AppSecret = ""
 
 	err := CheckPushConf()
 
 	assert.Error(t, err)
-	assert.Equal(t, "Missing Huawei API Key", err.Error())
+	assert.Equal(t, "Missing Huawei App Secret", err.Error())
 }
 
-func TestMissingHuaweiAPPId(t *testing.T) {
+func TestMissingHuaweiAppID(t *testing.T) {
 	PushConf, _ = config.LoadConf("")
 
 	PushConf.Huawei.Enabled = true
-	PushConf.Huawei.APPId = ""
+	PushConf.Huawei.AppID = ""
 
 	err := CheckPushConf()
 
 	assert.Error(t, err)
-	assert.Equal(t, "Missing Huawei APP Id", err.Error())
+	assert.Equal(t, "Missing Huawei App ID", err.Error())
 }
 
-func TestMissingKeyForInitHMSClient(t *testing.T) {
-	client, err := InitHMSClient("", "APP_ID")
+func TestMissingAppSecretForInitHMSClient(t *testing.T) {
+	client, err := InitHMSClient("", "APP_SECRET")
 
 	assert.Nil(t, client)
 	assert.Error(t, err)
-	assert.Equal(t, "Missing Huawei API Key", err.Error())
+	assert.Equal(t, "Missing Huawei App Secret", err.Error())
 }
 
 func TestMissingAppIDForInitHMSClient(t *testing.T) {
-	client, err := InitHMSClient("APP_KEY", "")
+	client, err := InitHMSClient("APP_ID", "")
 
 	assert.Nil(t, client)
 	assert.Error(t, err)
-	assert.Equal(t, "Missing Huawei APP Id", err.Error())
+	assert.Equal(t, "Missing Huawei App ID", err.Error())
 }

@@ -32,23 +32,23 @@ func GetPushClient(conf *config.Config) (*core.HMSClient, error) {
 }
 
 // InitHMSClient use for initialize HMS Client.
-func InitHMSClient(apiKey string, appID string) (*core.HMSClient, error) {
-	if apiKey == "" {
-		return nil, errors.New("Missing Huawei API Key")
+func InitHMSClient(appSecret, appID string) (*core.HMSClient, error) {
+	if appSecret == "" {
+		return nil, errors.New("Missing Huawei App Secret")
 	}
 
 	if appID == "" {
-		return nil, errors.New("Missing Huawei APP Id")
+		return nil, errors.New("Missing Huawei App ID")
 	}
 
 	conf := &config.Config{
 		AppId:     appID,
-		AppSecret: apiKey,
-		AuthUrl:   "https://login.cloud.huawei.com/oauth2/v2/token",
-		PushUrl:   "https://api.push.hicloud.com",
+		AppSecret: appSecret,
+		AuthUrl:   "https://oauth-login.cloud.huawei.com/oauth2/v3/token",
+		PushUrl:   "https://push-api.cloud.huawei.com",
 	}
 
-	if apiKey != PushConf.Huawei.APIKey || appID != PushConf.Huawei.APPId {
+	if appSecret != PushConf.Huawei.AppSecret || appID != PushConf.Huawei.AppID {
 		return GetPushClient(conf)
 	}
 
@@ -187,7 +187,7 @@ Retry:
 
 	notification, _ := GetHuaweiNotification(req)
 
-	client, err = InitHMSClient(PushConf.Huawei.APIKey, PushConf.Huawei.APPId)
+	client, err = InitHMSClient(PushConf.Huawei.AppSecret, PushConf.Huawei.AppID)
 
 	if err != nil {
 		// HMS server error
@@ -209,7 +209,7 @@ Retry:
 	} else {
 		isError = true
 		StatStorage.AddHuaweiError(int64(1))
-		LogAccess.Debug("Huwaei Send Notification is failed!")
+		LogAccess.Debug("Huawei Send Notification is failed! Code: " + res.Code)
 	}
 
 	if isError && retryCount < maxRetry {
