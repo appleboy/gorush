@@ -116,7 +116,7 @@ func (c Metrics) Collect(ch chan<- prometheus.Metric) {
 	)
 	ch <- prometheus.MustNewConstMetric(
 		c.QueueUsage,
-		prometheus.CounterValue,
+		prometheus.GaugeValue,
 		float64(len(QueueNotification)),
 	)
 }
