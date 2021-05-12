@@ -146,7 +146,7 @@ android:
 
 huawei:
   enabled: true
-  appsecret: "YOUR_APP_SECRET"
+  appsecret: "YOUR_APP_SECRET" # use 'apikey' instead if you use v1.13.0 or below
   appid: "YOUR_APP_ID"
   max_retry: 0 # resend fail notification, default value zero is disabled
 
