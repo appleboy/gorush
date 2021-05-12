@@ -40,19 +40,21 @@ spec:
             httpGet:
               path: /healthz
               port: http
-            initialDelaySeconds: 3
-            periodSeconds: 3
+            initialDelaySeconds: 15
+            periodSeconds: 15
           env:
           - name: GORUSH_STAT_ENGINE
             valueFrom:
               configMapKeyRef:
                 name: {{ .Chart.Name }}-config
                 key: stat.engine
+          {{- if .Values.redis.enabled }} 
           - name: GORUSH_STAT_REDIS_ADDR
             valueFrom:
               configMapKeyRef:
                 name: {{ .Chart.Name }}-config
                 key: stat.redis.host
+          {{- end }}
           readinessProbe:
             httpGet:
               path: /

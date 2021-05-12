@@ -41,15 +41,15 @@ service:
   port: 8088
 
 stats:
-  engine: redis
+  engine: memory
 
 redis:
-  subchart: true
+  enabled: false
   host: redis
   port: 6379
 
 ingress:
-  enabled: true
+  enabled: false
   annotations: {}
   hosts:
     - host: gorush.example.com

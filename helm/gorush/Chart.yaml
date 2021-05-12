@@ -8,4 +8,4 @@ dependencies:
   - name: redis
     version: ~14.1
     repository: https://charts.bitnami.com/bitnami
-    condition: redis.subchart
+    condition: redis.enabled
