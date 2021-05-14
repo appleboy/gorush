@@ -159,11 +159,13 @@ func newApnsClient(certificate tls.Certificate) (*apns2.Client, error) {
 		IdleConnTimeout: idleConnTimeout,
 	}
 
-	if h2Transport, err := http2.ConfigureTransports(transport); err != nil {
+	h2Transport, err := http2.ConfigureTransports(transport)
+	if err != nil {
 		return nil, err
-	} else {
-		configureHTTP2ConnHealthCheck(h2Transport)
 	}
+
+	configureHTTP2ConnHealthCheck(h2Transport)
+
 	client.HTTPClient.Transport = transport
 
 	return client, nil
@@ -188,11 +190,12 @@ func newApnsTokenClient(token *token.Token) (*apns2.Client, error) {
 		IdleConnTimeout: idleConnTimeout,
 	}
 
-	if h2Transport, err := http2.ConfigureTransports(transport); err != nil {
+	h2Transport, err := http2.ConfigureTransports(transport)
+	if err != nil {
 		return nil, err
-	} else {
-		configureHTTP2ConnHealthCheck(h2Transport)
 	}
+
+	configureHTTP2ConnHealthCheck(h2Transport)
 
 	client.HTTPClient.Transport = transport
 
