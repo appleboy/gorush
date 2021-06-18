@@ -81,37 +81,37 @@ func (c Metrics) Describe(ch chan<- *prometheus.Desc) {
 func (c Metrics) Collect(ch chan<- prometheus.Metric) {
 	ch <- prometheus.MustNewConstMetric(
 		c.TotalPushCount,
-		prometheus.GaugeValue,
+		prometheus.CounterValue,
 		float64(StatStorage.GetTotalCount()),
 	)
 	ch <- prometheus.MustNewConstMetric(
 		c.IosSuccess,
-		prometheus.GaugeValue,
+		prometheus.CounterValue,
 		float64(StatStorage.GetIosSuccess()),
 	)
 	ch <- prometheus.MustNewConstMetric(
 		c.IosError,
-		prometheus.GaugeValue,
+		prometheus.CounterValue,
 		float64(StatStorage.GetIosError()),
 	)
 	ch <- prometheus.MustNewConstMetric(
 		c.AndroidSuccess,
-		prometheus.GaugeValue,
+		prometheus.CounterValue,
 		float64(StatStorage.GetAndroidSuccess()),
 	)
 	ch <- prometheus.MustNewConstMetric(
 		c.AndroidError,
-		prometheus.GaugeValue,
+		prometheus.CounterValue,
 		float64(StatStorage.GetAndroidError()),
 	)
 	ch <- prometheus.MustNewConstMetric(
 		c.HuaweiSuccess,
-		prometheus.GaugeValue,
+		prometheus.CounterValue,
 		float64(StatStorage.GetHuaweiSuccess()),
 	)
 	ch <- prometheus.MustNewConstMetric(
 		c.HuaweiError,
-		prometheus.GaugeValue,
+		prometheus.CounterValue,
 		float64(StatStorage.GetHuaweiError()),
 	)
 	ch <- prometheus.MustNewConstMetric(

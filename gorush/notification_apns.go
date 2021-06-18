@@ -117,6 +117,10 @@ func InitAPNSClient() error {
 			ApnsClient, err = newApnsClient(certificateKey)
 		}
 
+		if h2Transport, ok := ApnsClient.HTTPClient.Transport.(*http2.Transport); ok {
+			configureHTTP2ConnHealthCheck(h2Transport)
+		}
+
 		if err != nil {
 			LogError.Error("Transport Error:", err.Error())
 
@@ -155,10 +159,12 @@ func newApnsClient(certificate tls.Certificate) (*apns2.Client, error) {
 		IdleConnTimeout: idleConnTimeout,
 	}
 
-	transportErr := http2.ConfigureTransport(transport)
-	if transportErr != nil {
-		return nil, transportErr
+	h2Transport, err := http2.ConfigureTransports(transport)
+	if err != nil {
+		return nil, err
 	}
+
+	configureHTTP2ConnHealthCheck(h2Transport)
 
 	client.HTTPClient.Transport = transport
 
@@ -184,14 +190,21 @@ func newApnsTokenClient(token *token.Token) (*apns2.Client, error) {
 		IdleConnTimeout: idleConnTimeout,
 	}
 
-	transportErr := http2.ConfigureTransport(transport)
-	if transportErr != nil {
-		return nil, transportErr
+	h2Transport, err := http2.ConfigureTransports(transport)
+	if err != nil {
+		return nil, err
 	}
+
+	configureHTTP2ConnHealthCheck(h2Transport)
 
 	client.HTTPClient.Transport = transport
 
 	return client, nil
+}
+
+func configureHTTP2ConnHealthCheck(h2Transport *http2.Transport) {
+	h2Transport.ReadIdleTimeout = 1 * time.Second
+	h2Transport.PingTimeout = 1 * time.Second
 }
 
 func iosAlertDictionary(payload *payload.Payload, req PushNotification) *payload.Payload {
