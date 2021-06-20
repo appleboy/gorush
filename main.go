@@ -323,16 +323,22 @@ func main() {
 
 	gorush.InitWorkers(ctx, wg, gorush.PushConf.Core.WorkerNum, gorush.PushConf.Core.QueueNum)
 
-	if err = gorush.InitAPNSClient(); err != nil {
-		gorush.LogError.Fatal(err)
+	if gorush.PushConf.Ios.Enabled {
+		if err = gorush.InitAPNSClient(); err != nil {
+			gorush.LogError.Fatal(err)
+		}
 	}
 
-	if _, err = gorush.InitFCMClient(gorush.PushConf.Android.APIKey); err != nil {
-		gorush.LogError.Fatal(err)
+	if gorush.PushConf.Android.Enabled {
+		if _, err = gorush.InitFCMClient(gorush.PushConf.Android.APIKey); err != nil {
+			gorush.LogError.Fatal(err)
+		}
 	}
 
-	if _, err = gorush.InitHMSClient(gorush.PushConf.Huawei.AppSecret, gorush.PushConf.Huawei.AppID); err != nil {
-		gorush.LogError.Fatal(err)
+	if gorush.PushConf.Huawei.Enabled {
+		if _, err = gorush.InitHMSClient(gorush.PushConf.Huawei.AppSecret, gorush.PushConf.Huawei.AppID); err != nil {
+			gorush.LogError.Fatal(err)
+		}
 	}
 
 	var g errgroup.Group
