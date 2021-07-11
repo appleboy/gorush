@@ -63,8 +63,14 @@ func TestRunNormalServer(t *testing.T) {
 
 	gin.SetMode(gin.TestMode)
 
+	ctx, cancel := context.WithCancel(context.Background())
 	go func() {
-		assert.NoError(t, RunHTTPServer(context.Background()))
+		assert.NoError(t, RunHTTPServer(ctx))
+	}()
+
+	defer func() {
+		// close the server
+		cancel()
 	}()
 	// have to wait for the goroutine to start and run the server
 	// otherwise the main thread will complete
@@ -81,8 +87,14 @@ func TestRunTLSServer(t *testing.T) {
 	PushConf.Core.CertPath = "../certificate/localhost.cert"
 	PushConf.Core.KeyPath = "../certificate/localhost.key"
 
+	ctx, cancel := context.WithCancel(context.Background())
 	go func() {
-		assert.NoError(t, RunHTTPServer(context.Background()))
+		assert.NoError(t, RunHTTPServer(ctx))
+	}()
+
+	defer func() {
+		// close the server
+		cancel()
 	}()
 	// have to wait for the goroutine to start and run the server
 	// otherwise the main thread will complete
@@ -103,8 +115,14 @@ func TestRunTLSBase64Server(t *testing.T) {
 	PushConf.Core.CertBase64 = cert
 	PushConf.Core.KeyBase64 = key
 
+	ctx, cancel := context.WithCancel(context.Background())
 	go func() {
-		assert.NoError(t, RunHTTPServer(context.Background()))
+		assert.NoError(t, RunHTTPServer(ctx))
+	}()
+
+	defer func() {
+		// close the server
+		cancel()
 	}()
 	// have to wait for the goroutine to start and run the server
 	// otherwise the main thread will complete
@@ -116,8 +134,14 @@ func TestRunTLSBase64Server(t *testing.T) {
 func TestRunAutoTLSServer(t *testing.T) {
 	initTest()
 	PushConf.Core.AutoTLS.Enabled = true
+	ctx, cancel := context.WithCancel(context.Background())
 	go func() {
-		assert.NoError(t, RunHTTPServer(context.Background()))
+		assert.NoError(t, RunHTTPServer(ctx))
+	}()
+
+	defer func() {
+		// close the server
+		cancel()
 	}()
 	// have to wait for the goroutine to start and run the server
 	// otherwise the main thread will complete
