@@ -294,7 +294,7 @@ Huawei Options:
 Common Options:
     --topic <topic>                  iOS or Android topic message
     -h, --help                       Show this message
-    -v, --version                    Show version
+    -V, --version                    Show version
 ```
 
 ### Send Android notification
