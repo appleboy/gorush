@@ -5,10 +5,8 @@ import (
 	"log"
 	"sync"
 	"testing"
-	"time"
 
 	"github.com/appleboy/gorush/config"
-	"go.uber.org/goleak"
 )
 
 func TestMain(m *testing.M) {
@@ -30,9 +28,6 @@ func TestMain(m *testing.M) {
 		close(QueueNotification)
 		cancel()
 		wg.Wait()
-		Stats.Close()
-		time.Sleep(1 * time.Second)
-		goleak.VerifyTestMain(m)
 	}()
 
 	m.Run()
