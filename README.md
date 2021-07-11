@@ -8,10 +8,7 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 [![codecov](https://codecov.io/gh/appleboy/gorush/branch/master/graph/badge.svg)](https://codecov.io/gh/appleboy/gorush)
 [![Go Report Card](https://goreportcard.com/badge/github.com/appleboy/gorush)](https://goreportcard.com/report/github.com/appleboy/gorush)
 [![codebeat badge](https://codebeat.co/badges/0a4eff2d-c9ac-46ed-8fd7-b59942983390)](https://codebeat.co/projects/github-com-appleboy-gorush)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/c82e0ed283474c5686d705ce64d004f7)](https://www.codacy.com/app/appleboy/gorush?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=appleboy/gorush&amp;utm_campaign=Badge_Grade)
 [![Docker Pulls](https://img.shields.io/docker/pulls/appleboy/gorush.svg)](https://hub.docker.com/r/appleboy/gorush/)
-[![microbadger](https://images.microbadger.com/badges/image/appleboy/gorush.svg)](https://microbadger.com/images/appleboy/gorush "Get your own image badge on microbadger.com")
-[![Release](https://github-release-version.herokuapp.com/github/appleboy/gorush/release.svg?style=flat)](https://github.com/appleboy/gorush/releases/latest)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/8ab14c9f-44fd-4d9a-8bba-f73f76d253b1/deploy-status)](https://app.netlify.com/sites/gorush/deploys)
 [![Financial Contributors on Open Collective](https://opencollective.com/gorush/all/badge.svg?label=financial+contributors)](https://opencollective.com/gorush)
 
