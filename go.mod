@@ -10,7 +10,7 @@ require (
 	github.com/asdine/storm/v3 v3.2.1
 	github.com/buger/jsonparser v1.1.1
 	github.com/dgraph-io/badger/v3 v3.2103.1
-	github.com/gin-contrib/logger v0.0.2
+	github.com/gin-contrib/logger v0.2.0
 	github.com/gin-gonic/gin v1.7.2
 	github.com/go-redis/redis/v7 v7.4.0
 	github.com/golang/protobuf v1.5.1
@@ -18,7 +18,7 @@ require (
 	github.com/mitchellh/mapstructure v1.4.1
 	github.com/msalihkarakasli/go-hms-push v0.0.0-20200616114002-91cd23dfeed4
 	github.com/prometheus/client_golang v1.10.0
-	github.com/rs/zerolog v1.21.0
+	github.com/rs/zerolog v1.23.0
 	github.com/sideshow/apns2 v0.20.0
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/viper v1.7.1

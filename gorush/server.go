@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"regexp"
 
 	api "github.com/appleboy/gin-status-api"
 	"github.com/gin-contrib/logger"
@@ -18,8 +17,6 @@ import (
 	"github.com/rs/zerolog/log"
 	"golang.org/x/crypto/acme/autocert"
 )
-
-var rxURL = regexp.MustCompile(`^/healthz$`)
 
 func init() {
 	// Support metrics
@@ -144,10 +141,13 @@ func routerEngine() *gin.Engine {
 	r := gin.New()
 
 	// Global middleware
-	r.Use(logger.SetLogger(logger.Config{
-		UTC:            true,
-		SkipPathRegexp: rxURL,
-	}))
+	r.Use(logger.SetLogger(
+		logger.WithUTC(true),
+		logger.WithSkipPath([]string{
+			PushConf.API.HealthURI,
+			PushConf.API.MetricURI,
+		}),
+	))
 	r.Use(gin.Recovery())
 	r.Use(VersionMiddleware())
 	r.Use(StatMiddleware())
