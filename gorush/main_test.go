@@ -3,6 +3,7 @@ package gorush
 import (
 	"context"
 	"log"
+	"os"
 	"sync"
 	"testing"
 	"time"
@@ -34,4 +35,6 @@ func TestMain(m *testing.M) {
 		time.Sleep(1 * time.Second)
 		goleak.VerifyTestMain(m)
 	}()
+
+	os.Exit(m.Run())
 }
