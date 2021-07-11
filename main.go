@@ -54,7 +54,7 @@ func main() {
 	)
 
 	flag.BoolVar(&showVersion, "version", false, "Print version information.")
-	flag.BoolVar(&showVersion, "v", false, "Print version information.")
+	flag.BoolVar(&showVersion, "V", false, "Print version information.")
 	flag.StringVar(&configFile, "c", "", "Configuration file path.")
 	flag.StringVar(&configFile, "config", "", "Configuration file path.")
 	flag.StringVar(&opts.Core.PID.Path, "pid", "", "PID file path.")
@@ -406,7 +406,7 @@ Huawei Options:
 Common Options:
     --topic <topic>                  iOS, Android or Huawei topic message
     -h, --help                       Show this message
-    -v, --version                    Show version
+    -V, --version                    Show version
 `
 
 // usage will print out the flag options for the server.
