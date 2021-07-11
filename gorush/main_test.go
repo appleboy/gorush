@@ -27,7 +27,6 @@ func TestMain(m *testing.M) {
 	defer func() {
 		close(QueueNotification)
 		cancel()
-		wg.Wait()
 	}()
 
 	m.Run()
