@@ -19,8 +19,6 @@ import (
 	"golang.org/x/crypto/acme/autocert"
 )
 
-var rxURL = regexp.MustCompile(`^/healthz$`)
-
 func init() {
 	// Support metrics
 	m := NewMetrics()
@@ -143,11 +141,13 @@ func routerEngine() *gin.Engine {
 
 	r := gin.New()
 
+	rxURL := regexp.MustCompile(`^/(` + PushConf.API.HealthURI + `|` + PushConf.API.MetricURI + `)$`)
+
 	// Global middleware
-	r.Use(logger.SetLogger(logger.Config{
-		UTC:            true,
-		SkipPathRegexp: rxURL,
-	}))
+	r.Use(logger.SetLogger(
+		logger.WithUTC(true),
+		logger.WithSkipPathRegexp(rxURL),
+	))
 	r.Use(gin.Recovery())
 	r.Use(VersionMiddleware())
 	r.Use(StatMiddleware())
