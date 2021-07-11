@@ -3,7 +3,6 @@ package gorush
 import (
 	"context"
 	"log"
-	"os"
 	"sync"
 	"testing"
 	"time"
@@ -36,5 +35,5 @@ func TestMain(m *testing.M) {
 		goleak.VerifyTestMain(m)
 	}()
 
-	os.Exit(m.Run())
+	m.Run()
 }
