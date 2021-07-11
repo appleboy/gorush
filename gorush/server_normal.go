@@ -14,15 +14,21 @@ import (
 )
 
 // RunHTTPServer provide run http or https protocol.
-func RunHTTPServer(ctx context.Context) (err error) {
+func RunHTTPServer(ctx context.Context, s ...*http.Server) (err error) {
+	var server *http.Server
+
 	if !PushConf.Core.Enabled {
 		LogAccess.Info("httpd server is disabled.")
 		return nil
 	}
 
-	server := &http.Server{
-		Addr:    PushConf.Core.Address + ":" + PushConf.Core.Port,
-		Handler: routerEngine(),
+	if len(s) == 0 {
+		server = &http.Server{
+			Addr:    PushConf.Core.Address + ":" + PushConf.Core.Port,
+			Handler: routerEngine(),
+		}
+	} else {
+		server = s[0]
 	}
 
 	LogAccess.Info("HTTPD server is running on " + PushConf.Core.Port + " port.")

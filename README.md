@@ -146,7 +146,7 @@ android:
 
 huawei:
   enabled: true
-  appsecret: "YOUR_APP_SECRET" # change appsecret to apikey if your version use v1.13.0 or below.
+  appsecret: "YOUR_APP_SECRET"
   appid: "YOUR_APP_ID"
   max_retry: 0 # resend fail notification, default value zero is disabled
 
@@ -294,7 +294,7 @@ Huawei Options:
 Common Options:
     --topic <topic>                  iOS or Android topic message
     -h, --help                       Show this message
-    -v, --version                    Show version
+    -V, --version                    Show version
 ```
 
 ### Send Android notification

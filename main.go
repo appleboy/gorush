@@ -54,7 +54,7 @@ func main() {
 	)
 
 	flag.BoolVar(&showVersion, "version", false, "Print version information.")
-	flag.BoolVar(&showVersion, "v", false, "Print version information.")
+	flag.BoolVar(&showVersion, "V", false, "Print version information.")
 	flag.StringVar(&configFile, "c", "", "Configuration file path.")
 	flag.StringVar(&configFile, "config", "", "Configuration file path.")
 	flag.StringVar(&opts.Core.PID.Path, "pid", "", "PID file path.")
@@ -323,16 +323,22 @@ func main() {
 
 	gorush.InitWorkers(ctx, wg, gorush.PushConf.Core.WorkerNum, gorush.PushConf.Core.QueueNum)
 
-	if err = gorush.InitAPNSClient(); err != nil {
-		gorush.LogError.Fatal(err)
+	if gorush.PushConf.Ios.Enabled {
+		if err = gorush.InitAPNSClient(); err != nil {
+			gorush.LogError.Fatal(err)
+		}
 	}
 
-	if _, err = gorush.InitFCMClient(gorush.PushConf.Android.APIKey); err != nil {
-		gorush.LogError.Fatal(err)
+	if gorush.PushConf.Android.Enabled {
+		if _, err = gorush.InitFCMClient(gorush.PushConf.Android.APIKey); err != nil {
+			gorush.LogError.Fatal(err)
+		}
 	}
 
-	if _, err = gorush.InitHMSClient(gorush.PushConf.Huawei.AppSecret, gorush.PushConf.Huawei.AppID); err != nil {
-		gorush.LogError.Fatal(err)
+	if gorush.PushConf.Huawei.Enabled {
+		if _, err = gorush.InitHMSClient(gorush.PushConf.Huawei.AppSecret, gorush.PushConf.Huawei.AppID); err != nil {
+			gorush.LogError.Fatal(err)
+		}
 	}
 
 	var g errgroup.Group
@@ -400,7 +406,7 @@ Huawei Options:
 Common Options:
     --topic <topic>                  iOS, Android or Huawei topic message
     -h, --help                       Show this message
-    -v, --version                    Show version
+    -V, --version                    Show version
 `
 
 // usage will print out the flag options for the server.
