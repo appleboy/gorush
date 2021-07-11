@@ -1,32 +1,13 @@
 package gorush
 
 import (
-	"context"
-	"log"
 	"os"
-	"sync"
 	"testing"
 
 	"github.com/appleboy/go-fcm"
 	"github.com/appleboy/gorush/config"
 	"github.com/stretchr/testify/assert"
 )
-
-func init() {
-	PushConf, _ = config.LoadConf("")
-	if err := InitLog(); err != nil {
-		log.Fatal(err)
-	}
-
-	ctx := context.Background()
-	wg := &sync.WaitGroup{}
-	wg.Add(int(PushConf.Core.WorkerNum))
-	InitWorkers(ctx, wg, PushConf.Core.WorkerNum, PushConf.Core.QueueNum)
-
-	if err := InitAppStatus(); err != nil {
-		log.Fatal(err)
-	}
-}
 
 func TestMissingAndroidAPIKey(t *testing.T) {
 	PushConf, _ = config.LoadConf("")
