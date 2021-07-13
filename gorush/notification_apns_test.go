@@ -11,6 +11,8 @@ import (
 	"time"
 
 	"github.com/appleboy/gorush/config"
+	"github.com/appleboy/gorush/core"
+	"github.com/appleboy/gorush/status"
 	"github.com/buger/jsonparser"
 	"github.com/sideshow/apns2"
 	"github.com/stretchr/testify/assert"
@@ -583,19 +585,19 @@ func TestDisabledIosNotifications(t *testing.T) {
 			// ios
 			{
 				Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
-				Platform: PlatFormIos,
+				Platform: core.PlatFormIos,
 				Message:  "Welcome",
 			},
 			// android
 			{
 				Tokens:   []string{androidToken, androidToken + "_"},
-				Platform: PlatFormAndroid,
+				Platform: core.PlatFormAndroid,
 				Message:  "Welcome",
 			},
 		},
 	}
 
-	count, logs := queueNotification(ctx, req)
+	count, logs := HandleNotification(ctx, req)
 	assert.Equal(t, 2, count)
 	assert.Equal(t, 0, len(logs))
 }
@@ -760,7 +762,7 @@ func TestPushToIOS(t *testing.T) {
 	PushConf.Ios.KeyPath = "../certificate/certificate-valid.pem"
 	err := InitAPNSClient()
 	assert.Nil(t, err)
-	err = InitAppStatus()
+	err = status.InitAppStatus(PushConf)
 	assert.Nil(t, err)
 
 	req := PushNotification{
@@ -780,7 +782,7 @@ func TestApnsHostFromRequest(t *testing.T) {
 	PushConf.Ios.KeyPath = "../certificate/certificate-valid.pem"
 	err := InitAPNSClient()
 	assert.Nil(t, err)
-	err = InitAppStatus()
+	err = status.InitAppStatus(PushConf)
 	assert.Nil(t, err)
 
 	req := PushNotification{

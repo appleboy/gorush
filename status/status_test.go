@@ -1,15 +1,34 @@
-package gorush
+package status
 
 import (
+	"log"
 	"testing"
 	"time"
+
+	"github.com/appleboy/gorush/config"
+	"github.com/appleboy/gorush/logx"
 
 	"github.com/stretchr/testify/assert"
 )
 
+func TestMain(m *testing.M) {
+	PushConf, _ := config.LoadConf("")
+	if err := logx.InitLog(
+		PushConf.Log.AccessLevel,
+		PushConf.Log.AccessLog,
+		PushConf.Log.ErrorLevel,
+		PushConf.Log.ErrorLog,
+	); err != nil {
+		log.Fatal(err)
+	}
+
+	m.Run()
+}
+
 func TestStorageDriverExist(t *testing.T) {
+	PushConf, _ := config.LoadConf("")
 	PushConf.Stat.Engine = "Test"
-	err := InitAppStatus()
+	err := InitAppStatus(PushConf)
 	assert.Error(t, err)
 }
 
@@ -18,8 +37,9 @@ func TestStatForMemoryEngine(t *testing.T) {
 	time.Sleep(5 * time.Second)
 
 	var val int64
+	PushConf, _ := config.LoadConf("")
 	PushConf.Stat.Engine = "memory"
-	err := InitAppStatus()
+	err := InitAppStatus(PushConf)
 	assert.Nil(t, err)
 
 	StatStorage.AddTotalCount(100)
@@ -41,28 +61,31 @@ func TestStatForMemoryEngine(t *testing.T) {
 }
 
 func TestRedisServerSuccess(t *testing.T) {
+	PushConf, _ := config.LoadConf("")
 	PushConf.Stat.Engine = "redis"
 	PushConf.Stat.Redis.Addr = "redis:6379"
 
-	err := InitAppStatus()
+	err := InitAppStatus(PushConf)
 
 	assert.NoError(t, err)
 }
 
 func TestRedisServerError(t *testing.T) {
+	PushConf, _ := config.LoadConf("")
 	PushConf.Stat.Engine = "redis"
 	PushConf.Stat.Redis.Addr = "redis:6370"
 
-	err := InitAppStatus()
+	err := InitAppStatus(PushConf)
 
 	assert.Error(t, err)
 }
 
 func TestStatForRedisEngine(t *testing.T) {
 	var val int64
+	PushConf, _ := config.LoadConf("")
 	PushConf.Stat.Engine = "redis"
 	PushConf.Stat.Redis.Addr = "redis:6379"
-	err := InitAppStatus()
+	err := InitAppStatus(PushConf)
 	assert.Nil(t, err)
 
 	StatStorage.Init()
@@ -89,7 +112,8 @@ func TestStatForRedisEngine(t *testing.T) {
 func TestDefaultEngine(t *testing.T) {
 	var val int64
 	// defaul engine as memory
-	err := InitAppStatus()
+	PushConf, _ := config.LoadConf("")
+	err := InitAppStatus(PushConf)
 	assert.Nil(t, err)
 
 	StatStorage.Reset()
@@ -114,8 +138,10 @@ func TestDefaultEngine(t *testing.T) {
 
 func TestStatForBoltDBEngine(t *testing.T) {
 	var val int64
+	PushConf, _ := config.LoadConf("")
 	PushConf.Stat.Engine = "boltdb"
-	InitAppStatus()
+	err := InitAppStatus(PushConf)
+	assert.Nil(t, err)
 
 	StatStorage.Reset()
 

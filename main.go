@@ -16,8 +16,12 @@ import (
 	"time"
 
 	"github.com/appleboy/gorush/config"
+	"github.com/appleboy/gorush/core"
 	"github.com/appleboy/gorush/gorush"
+	"github.com/appleboy/gorush/logx"
+	"github.com/appleboy/gorush/router"
 	"github.com/appleboy/gorush/rpc"
+	"github.com/appleboy/gorush/status"
 
 	"golang.org/x/sync/errgroup"
 )
@@ -54,7 +58,7 @@ func main() {
 	)
 
 	flag.BoolVar(&showVersion, "version", false, "Print version information.")
-	flag.BoolVar(&showVersion, "v", false, "Print version information.")
+	flag.BoolVar(&showVersion, "V", false, "Print version information.")
 	flag.StringVar(&configFile, "c", "", "Configuration file path.")
 	flag.StringVar(&configFile, "config", "", "Configuration file path.")
 	flag.StringVar(&opts.Core.PID.Path, "pid", "", "PID file path.")
@@ -93,11 +97,11 @@ func main() {
 	flag.Usage = usage
 	flag.Parse()
 
-	gorush.SetVersion(Version)
+	router.SetVersion(Version)
 
 	// Show version and exit
 	if showVersion {
-		gorush.PrintGoRushVersion()
+		router.PrintGoRushVersion()
 		os.Exit(0)
 	}
 
@@ -158,7 +162,12 @@ func main() {
 		gorush.PushConf.Core.Address = opts.Core.Address
 	}
 
-	if err = gorush.InitLog(); err != nil {
+	if err = logx.InitLog(
+		gorush.PushConf.Log.AccessLevel,
+		gorush.PushConf.Log.AccessLog,
+		gorush.PushConf.Log.ErrorLevel,
+		gorush.PushConf.Log.ErrorLog,
+	); err != nil {
 		log.Fatalf("Can't load log module, error: %v", err)
 	}
 
@@ -170,13 +179,13 @@ func main() {
 		err = gorush.SetProxy(gorush.PushConf.Core.HTTPProxy)
 
 		if err != nil {
-			gorush.LogError.Fatalf("Set Proxy error: %v", err)
+			logx.LogError.Fatalf("Set Proxy error: %v", err)
 		}
 	}
 
 	if ping {
 		if err := pinger(); err != nil {
-			gorush.LogError.Warnf("ping server error: %v", err)
+			logx.LogError.Warnf("ping server error: %v", err)
 		}
 		return
 	}
@@ -185,7 +194,7 @@ func main() {
 	if opts.Android.Enabled {
 		gorush.PushConf.Android.Enabled = opts.Android.Enabled
 		req := gorush.PushNotification{
-			Platform: gorush.PlatFormAndroid,
+			Platform: core.PlatFormAndroid,
 			Message:  message,
 			Title:    title,
 		}
@@ -202,10 +211,10 @@ func main() {
 
 		err := gorush.CheckMessage(req)
 		if err != nil {
-			gorush.LogError.Fatal(err)
+			logx.LogError.Fatal(err)
 		}
 
-		if err := gorush.InitAppStatus(); err != nil {
+		if err := status.InitAppStatus(gorush.PushConf); err != nil {
 			return
 		}
 
@@ -218,7 +227,7 @@ func main() {
 	if opts.Huawei.Enabled {
 		gorush.PushConf.Huawei.Enabled = opts.Huawei.Enabled
 		req := gorush.PushNotification{
-			Platform: gorush.PlatFormHuawei,
+			Platform: core.PlatFormHuawei,
 			Message:  message,
 			Title:    title,
 		}
@@ -235,10 +244,10 @@ func main() {
 
 		err := gorush.CheckMessage(req)
 		if err != nil {
-			gorush.LogError.Fatal(err)
+			logx.LogError.Fatal(err)
 		}
 
-		if err := gorush.InitAppStatus(); err != nil {
+		if err := status.InitAppStatus(gorush.PushConf); err != nil {
 			return
 		}
 
@@ -255,7 +264,7 @@ func main() {
 
 		gorush.PushConf.Ios.Enabled = opts.Ios.Enabled
 		req := gorush.PushNotification{
-			Platform: gorush.PlatFormIos,
+			Platform: core.PlatFormIos,
 			Message:  message,
 			Title:    title,
 		}
@@ -272,10 +281,10 @@ func main() {
 
 		err := gorush.CheckMessage(req)
 		if err != nil {
-			gorush.LogError.Fatal(err)
+			logx.LogError.Fatal(err)
 		}
 
-		if err := gorush.InitAppStatus(); err != nil {
+		if err := status.InitAppStatus(gorush.PushConf); err != nil {
 			return
 		}
 
@@ -288,7 +297,7 @@ func main() {
 	}
 
 	if err = gorush.CheckPushConf(); err != nil {
-		gorush.LogError.Fatal(err)
+		logx.LogError.Fatal(err)
 	}
 
 	if opts.Core.PID.Path != "" {
@@ -298,48 +307,54 @@ func main() {
 	}
 
 	if err = createPIDFile(); err != nil {
-		gorush.LogError.Fatal(err)
+		logx.LogError.Fatal(err)
 	}
 
-	if err = gorush.InitAppStatus(); err != nil {
-		gorush.LogError.Fatal(err)
+	if err = status.InitAppStatus(gorush.PushConf); err != nil {
+		logx.LogError.Fatal(err)
 	}
 
 	finished := make(chan struct{})
 	wg := &sync.WaitGroup{}
 	wg.Add(int(gorush.PushConf.Core.WorkerNum))
 	ctx := withContextFunc(context.Background(), func() {
-		gorush.LogAccess.Info("close the notification queue channel, current queue len: ", len(gorush.QueueNotification))
+		logx.LogAccess.Info("close the notification queue channel, current queue len: ", len(gorush.QueueNotification))
 		close(gorush.QueueNotification)
 		wg.Wait()
-		gorush.LogAccess.Info("the notification queue has been clear")
+		logx.LogAccess.Info("the notification queue has been clear")
 		close(finished)
 		// close the connection with storage
-		gorush.LogAccess.Info("close the storage connection: ", gorush.PushConf.Stat.Engine)
-		if err := gorush.StatStorage.Close(); err != nil {
-			gorush.LogError.Fatal("can't close the storage connection: ", err.Error())
+		logx.LogAccess.Info("close the storage connection: ", gorush.PushConf.Stat.Engine)
+		if err := status.StatStorage.Close(); err != nil {
+			logx.LogError.Fatal("can't close the storage connection: ", err.Error())
 		}
 	})
 
 	gorush.InitWorkers(ctx, wg, gorush.PushConf.Core.WorkerNum, gorush.PushConf.Core.QueueNum)
 
-	if err = gorush.InitAPNSClient(); err != nil {
-		gorush.LogError.Fatal(err)
+	if gorush.PushConf.Ios.Enabled {
+		if err = gorush.InitAPNSClient(); err != nil {
+			logx.LogError.Fatal(err)
+		}
 	}
 
-	if _, err = gorush.InitFCMClient(gorush.PushConf.Android.APIKey); err != nil {
-		gorush.LogError.Fatal(err)
+	if gorush.PushConf.Android.Enabled {
+		if _, err = gorush.InitFCMClient(gorush.PushConf.Android.APIKey); err != nil {
+			logx.LogError.Fatal(err)
+		}
 	}
 
-	if _, err = gorush.InitHMSClient(gorush.PushConf.Huawei.AppSecret, gorush.PushConf.Huawei.AppID); err != nil {
-		gorush.LogError.Fatal(err)
+	if gorush.PushConf.Huawei.Enabled {
+		if _, err = gorush.InitHMSClient(gorush.PushConf.Huawei.AppSecret, gorush.PushConf.Huawei.AppID); err != nil {
+			logx.LogError.Fatal(err)
+		}
 	}
 
 	var g errgroup.Group
 
 	// Run httpd server
 	g.Go(func() error {
-		return gorush.RunHTTPServer(ctx)
+		return router.RunHTTPServer(ctx, gorush.PushConf)
 	})
 
 	// Run gRPC internal server
@@ -356,7 +371,7 @@ func main() {
 	})
 
 	if err = g.Wait(); err != nil {
-		gorush.LogError.Fatal(err)
+		logx.LogError.Fatal(err)
 	}
 }
 
@@ -400,7 +415,7 @@ Huawei Options:
 Common Options:
     --topic <topic>                  iOS, Android or Huawei topic message
     -h, --help                       Show this message
-    -v, --version                    Show version
+    -V, --version                    Show version
 `
 
 // usage will print out the flag options for the server.

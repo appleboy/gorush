@@ -7,10 +7,12 @@ import (
 	"net"
 	"net/http"
 	"time"
+
+	"github.com/appleboy/gorush/logx"
 )
 
 // DispatchFeedback sends a feedback to the configured gateway.
-func DispatchFeedback(log LogPushEntry, url string, timeout int64) error {
+func DispatchFeedback(log logx.LogPushEntry, url string, timeout int64) error {
 	if url == "" {
 		return errors.New("The url can't be empty")
 	}

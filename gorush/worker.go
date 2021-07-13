@@ -4,11 +4,15 @@ import (
 	"context"
 	"errors"
 	"sync"
+
+	"github.com/appleboy/gorush/core"
+	"github.com/appleboy/gorush/logx"
+	"github.com/appleboy/gorush/status"
 )
 
 // InitWorkers for initialize all workers.
 func InitWorkers(ctx context.Context, wg *sync.WaitGroup, workerNum, queueNum int64) {
-	LogAccess.Info("worker number is ", workerNum, ", queue number is ", queueNum)
+	logx.LogAccess.Info("worker number is ", workerNum, ", queue number is ", queueNum)
 	QueueNotification = make(chan PushNotification, queueNum)
 	for i := int64(0); i < workerNum; i++ {
 		go startWorker(ctx, wg, i)
@@ -22,11 +26,11 @@ func SendNotification(ctx context.Context, req PushNotification) {
 	}
 
 	switch req.Platform {
-	case PlatFormIos:
+	case core.PlatFormIos:
 		PushToIOS(req)
-	case PlatFormAndroid:
+	case core.PlatFormAndroid:
 		PushToAndroid(req)
-	case PlatFormHuawei:
+	case core.PlatFormHuawei:
 		PushToHuawei(req)
 	}
 }
@@ -36,35 +40,44 @@ func startWorker(ctx context.Context, wg *sync.WaitGroup, num int64) {
 	for notification := range QueueNotification {
 		SendNotification(ctx, notification)
 	}
-	LogAccess.Info("closed the worker num ", num)
+	logx.LogAccess.Info("closed the worker num ", num)
 }
 
 // markFailedNotification adds failure logs for all tokens in push notification
 func markFailedNotification(notification *PushNotification, reason string) {
-	LogError.Error(reason)
+	logx.LogError.Error(reason)
 	for _, token := range notification.Tokens {
-		notification.AddLog(getLogPushEntry(FailedPush, token, *notification, errors.New(reason)))
+		notification.AddLog(logx.GetLogPushEntry(&logx.InputLog{
+			ID:        notification.ID,
+			Status:    core.FailedPush,
+			Token:     token,
+			Message:   notification.Message,
+			Platform:  notification.Platform,
+			Error:     errors.New(reason),
+			HideToken: PushConf.Log.HideToken,
+			Format:    PushConf.Log.Format,
+		}))
 	}
 	notification.WaitDone()
 }
 
-// queueNotification add notification to queue list.
-func queueNotification(ctx context.Context, req RequestPush) (int, []LogPushEntry) {
+// HandleNotification add notification to queue list.
+func HandleNotification(ctx context.Context, req RequestPush) (int, []logx.LogPushEntry) {
 	var count int
 	wg := sync.WaitGroup{}
 	newNotification := []*PushNotification{}
 	for i := range req.Notifications {
 		notification := &req.Notifications[i]
 		switch notification.Platform {
-		case PlatFormIos:
+		case core.PlatFormIos:
 			if !PushConf.Ios.Enabled {
 				continue
 			}
-		case PlatFormAndroid:
+		case core.PlatFormAndroid:
 			if !PushConf.Android.Enabled {
 				continue
 			}
-		case PlatFormHuawei:
+		case core.PlatFormHuawei:
 			if !PushConf.Huawei.Enabled {
 				continue
 			}
@@ -72,7 +85,7 @@ func queueNotification(ctx context.Context, req RequestPush) (int, []LogPushEntr
 		newNotification = append(newNotification, notification)
 	}
 
-	log := make([]LogPushEntry, 0, count)
+	log := make([]logx.LogPushEntry, 0, count)
 	for _, notification := range newNotification {
 		if PushConf.Core.Sync {
 			notification.wg = &wg
@@ -93,7 +106,7 @@ func queueNotification(ctx context.Context, req RequestPush) (int, []LogPushEntr
 		wg.Wait()
 	}
 
-	StatStorage.AddTotalCount(int64(count))
+	status.StatStorage.AddTotalCount(int64(count))
 
 	return count, log
 }

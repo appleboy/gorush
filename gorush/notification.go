@@ -9,6 +9,8 @@ import (
 	"sync"
 
 	"github.com/appleboy/go-fcm"
+	"github.com/appleboy/gorush/core"
+	"github.com/appleboy/gorush/logx"
 	"github.com/msalihkarakasli/go-hms-push/push/model"
 )
 
@@ -53,7 +55,7 @@ type RequestPush struct {
 // PushNotification is single notification request
 type PushNotification struct {
 	wg  *sync.WaitGroup
-	log *[]LogPushEntry
+	log *[]logx.LogPushEntry
 
 	// Common
 	ID               string      `json:"notif_id,omitempty"`
@@ -123,7 +125,7 @@ func (p *PushNotification) AddWaitCount() {
 }
 
 // AddLog record fail log of notification
-func (p *PushNotification) AddLog(log LogPushEntry) {
+func (p *PushNotification) AddLog(log logx.LogPushEntry) {
 	if p.log != nil {
 		*p.log = append(*p.log, log)
 	}
@@ -132,11 +134,11 @@ func (p *PushNotification) AddLog(log LogPushEntry) {
 // IsTopic check if message format is topic for FCM
 // ref: https://firebase.google.com/docs/cloud-messaging/send-message#topic-http-post-request
 func (p *PushNotification) IsTopic() bool {
-	if p.Platform == PlatFormAndroid {
+	if p.Platform == core.PlatFormAndroid {
 		return p.To != "" && strings.HasPrefix(p.To, "/topics/") || p.Condition != ""
 	}
 
-	if p.Platform == PlatFormHuawei {
+	if p.Platform == core.PlatFormHuawei {
 		return p.Topic != "" || p.Condition != ""
 	}
 
@@ -150,33 +152,33 @@ func CheckMessage(req PushNotification) error {
 	// ignore send topic mesaage from FCM
 	if !req.IsTopic() && len(req.Tokens) == 0 && req.To == "" {
 		msg = "the message must specify at least one registration ID"
-		LogAccess.Debug(msg)
+		logx.LogAccess.Debug(msg)
 		return errors.New(msg)
 	}
 
-	if len(req.Tokens) == PlatFormIos && req.Tokens[0] == "" {
+	if len(req.Tokens) == core.PlatFormIos && req.Tokens[0] == "" {
 		msg = "the token must not be empty"
-		LogAccess.Debug(msg)
+		logx.LogAccess.Debug(msg)
 		return errors.New(msg)
 	}
 
-	if req.Platform == PlatFormAndroid && len(req.Tokens) > 1000 {
+	if req.Platform == core.PlatFormAndroid && len(req.Tokens) > 1000 {
 		msg = "the message may specify at most 1000 registration IDs"
-		LogAccess.Debug(msg)
+		logx.LogAccess.Debug(msg)
 		return errors.New(msg)
 	}
 
-	if req.Platform == PlatFormHuawei && len(req.Tokens) > 500 {
+	if req.Platform == core.PlatFormHuawei && len(req.Tokens) > 500 {
 		msg = "the message may specify at most 500 registration IDs for Huawei"
-		LogAccess.Debug(msg)
+		logx.LogAccess.Debug(msg)
 		return errors.New(msg)
 	}
 
 	// ref: https://firebase.google.com/docs/cloud-messaging/http-server-ref
-	if req.Platform == PlatFormAndroid && req.TimeToLive != nil && *req.TimeToLive > uint(2419200) {
+	if req.Platform == core.PlatFormAndroid && req.TimeToLive != nil && *req.TimeToLive > uint(2419200) {
 		msg = "the message's TimeToLive field must be an integer " +
 			"between 0 and 2419200 (4 weeks)"
-		LogAccess.Debug(msg)
+		logx.LogAccess.Debug(msg)
 		return errors.New(msg)
 	}
 
@@ -191,7 +193,7 @@ func SetProxy(proxy string) error {
 	}
 
 	http.DefaultTransport = &http.Transport{Proxy: http.ProxyURL(proxyURL)}
-	LogAccess.Debug("Set http proxy as " + proxy)
+	logx.LogAccess.Debug("Set http proxy as " + proxy)
 
 	return nil
 }
