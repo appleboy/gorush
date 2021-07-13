@@ -1,4 +1,4 @@
-package gorush
+package router
 
 import (
 	"context"
@@ -7,11 +7,13 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/appleboy/gorush/config"
+	"github.com/appleboy/gorush/gorush"
+	"github.com/appleboy/gorush/logx"
 	"github.com/appleboy/gorush/metric"
 	"github.com/appleboy/gorush/status"
 
 	api "github.com/appleboy/gin-status-api"
-	"github.com/appleboy/gorush/logx"
 	"github.com/gin-contrib/logger"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -29,7 +31,7 @@ var isTerm bool
 func init() {
 	// Support metrics
 	m := metric.NewMetrics(func() int {
-		return len(QueueNotification)
+		return len(gorush.QueueNotification)
 	})
 	prometheus.MustRegister(m)
 	isTerm = isatty.IsTerminal(os.Stdout.Fd())
@@ -59,56 +61,60 @@ func versionHandler(c *gin.Context) {
 	})
 }
 
-func pushHandler(c *gin.Context) {
-	var form RequestPush
-	var msg string
+func pushHandler(cfg config.ConfYaml) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var form gorush.RequestPush
+		var msg string
 
-	if err := c.ShouldBindWith(&form, binding.JSON); err != nil {
-		msg = "Missing notifications field."
-		logx.LogAccess.Debug(err)
-		abortWithError(c, http.StatusBadRequest, msg)
-		return
-	}
-
-	if len(form.Notifications) == 0 {
-		msg = "Notifications field is empty."
-		logx.LogAccess.Debug(msg)
-		abortWithError(c, http.StatusBadRequest, msg)
-		return
-	}
-
-	if int64(len(form.Notifications)) > PushConf.Core.MaxNotification {
-		msg = fmt.Sprintf("Number of notifications(%d) over limit(%d)", len(form.Notifications), PushConf.Core.MaxNotification)
-		logx.LogAccess.Debug(msg)
-		abortWithError(c, http.StatusBadRequest, msg)
-		return
-	}
-
-	ctx, cancel := context.WithCancel(context.Background())
-	go func() {
-		// Deprecated: the CloseNotifier interface predates Go's context package.
-		// New code should use Request.Context instead.
-		// Change to context package
-		<-c.Request.Context().Done()
-		// Don't send notification after client timeout or disconnected.
-		// See the following issue for detail information.
-		// https://github.com/appleboy/gorush/issues/422
-		if PushConf.Core.Sync {
-			cancel()
+		if err := c.ShouldBindWith(&form, binding.JSON); err != nil {
+			msg = "Missing notifications field."
+			logx.LogAccess.Debug(err)
+			abortWithError(c, http.StatusBadRequest, msg)
+			return
 		}
-	}()
 
-	counts, logs := queueNotification(ctx, form)
+		if len(form.Notifications) == 0 {
+			msg = "Notifications field is empty."
+			logx.LogAccess.Debug(msg)
+			abortWithError(c, http.StatusBadRequest, msg)
+			return
+		}
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": "ok",
-		"counts":  counts,
-		"logs":    logs,
-	})
+		if int64(len(form.Notifications)) > cfg.Core.MaxNotification {
+			msg = fmt.Sprintf("Number of notifications(%d) over limit(%d)", len(form.Notifications), cfg.Core.MaxNotification)
+			logx.LogAccess.Debug(msg)
+			abortWithError(c, http.StatusBadRequest, msg)
+			return
+		}
+
+		ctx, cancel := context.WithCancel(context.Background())
+		go func() {
+			// Deprecated: the CloseNotifier interface predates Go's context package.
+			// New code should use Request.Context instead.
+			// Change to context package
+			<-c.Request.Context().Done()
+			// Don't send notification after client timeout or disconnected.
+			// See the following issue for detail information.
+			// https://github.com/appleboy/gorush/issues/422
+			if cfg.Core.Sync {
+				cancel()
+			}
+		}()
+
+		counts, logs := gorush.HandleNotification(ctx, form)
+
+		c.JSON(http.StatusOK, gin.H{
+			"success": "ok",
+			"counts":  counts,
+			"logs":    logs,
+		})
+	}
 }
 
-func configHandler(c *gin.Context) {
-	c.YAML(http.StatusCreated, PushConf)
+func configHandler(cfg config.ConfYaml) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.YAML(http.StatusCreated, cfg)
+	}
 }
 
 func metricsHandler(c *gin.Context) {
@@ -119,8 +125,8 @@ func appStatusHandler(c *gin.Context) {
 	result := status.App{}
 
 	result.Version = GetVersion()
-	result.QueueMax = cap(QueueNotification)
-	result.QueueUsage = len(QueueNotification)
+	result.QueueMax = cap(gorush.QueueNotification)
+	result.QueueUsage = len(gorush.QueueNotification)
 	result.TotalCount = status.StatStorage.GetTotalCount()
 	result.Ios.PushSuccess = status.StatStorage.GetIosSuccess()
 	result.Ios.PushError = status.StatStorage.GetIosError()
@@ -132,8 +138,10 @@ func appStatusHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
-func sysStatsHandler(c *gin.Context) {
-	c.JSON(http.StatusOK, status.Stats.Data())
+func sysStatsHandler() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.JSON(http.StatusOK, status.Stats.Data())
+	}
 }
 
 // StatMiddleware response time, status code count, etc.
@@ -145,23 +153,23 @@ func StatMiddleware() gin.HandlerFunc {
 	}
 }
 
-func autoTLSServer() *http.Server {
+func autoTLSServer(cfg config.ConfYaml) *http.Server {
 	m := autocert.Manager{
 		Prompt:     autocert.AcceptTOS,
-		HostPolicy: autocert.HostWhitelist(PushConf.Core.AutoTLS.Host),
-		Cache:      autocert.DirCache(PushConf.Core.AutoTLS.Folder),
+		HostPolicy: autocert.HostWhitelist(cfg.Core.AutoTLS.Host),
+		Cache:      autocert.DirCache(cfg.Core.AutoTLS.Folder),
 	}
 
 	return &http.Server{
 		Addr:      ":https",
 		TLSConfig: &tls.Config{GetCertificate: m.GetCertificate},
-		Handler:   routerEngine(),
+		Handler:   routerEngine(cfg),
 	}
 }
 
-func routerEngine() *gin.Engine {
+func routerEngine(cfg config.ConfYaml) *gin.Engine {
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
-	if PushConf.Core.Mode == "debug" {
+	if cfg.Core.Mode == "debug" {
 		zerolog.SetGlobalLevel(zerolog.DebugLevel)
 	}
 
@@ -177,7 +185,7 @@ func routerEngine() *gin.Engine {
 	}
 
 	// set server mode
-	gin.SetMode(PushConf.Core.Mode)
+	gin.SetMode(cfg.Core.Mode)
 
 	r := gin.New()
 
@@ -185,22 +193,22 @@ func routerEngine() *gin.Engine {
 	r.Use(logger.SetLogger(
 		logger.WithUTC(true),
 		logger.WithSkipPath([]string{
-			PushConf.API.HealthURI,
-			PushConf.API.MetricURI,
+			cfg.API.HealthURI,
+			cfg.API.MetricURI,
 		}),
 	))
 	r.Use(gin.Recovery())
 	r.Use(VersionMiddleware())
 	r.Use(StatMiddleware())
 
-	r.GET(PushConf.API.StatGoURI, api.GinHandler)
-	r.GET(PushConf.API.StatAppURI, appStatusHandler)
-	r.GET(PushConf.API.ConfigURI, configHandler)
-	r.GET(PushConf.API.SysStatURI, sysStatsHandler)
-	r.POST(PushConf.API.PushURI, pushHandler)
-	r.GET(PushConf.API.MetricURI, metricsHandler)
-	r.GET(PushConf.API.HealthURI, heartbeatHandler)
-	r.HEAD(PushConf.API.HealthURI, heartbeatHandler)
+	r.GET(cfg.API.StatGoURI, api.GinHandler)
+	r.GET(cfg.API.StatAppURI, appStatusHandler)
+	r.GET(cfg.API.ConfigURI, configHandler(cfg))
+	r.GET(cfg.API.SysStatURI, sysStatsHandler())
+	r.POST(cfg.API.PushURI, pushHandler(cfg))
+	r.GET(cfg.API.MetricURI, metricsHandler)
+	r.GET(cfg.API.HealthURI, heartbeatHandler)
+	r.HEAD(cfg.API.HealthURI, heartbeatHandler)
 	r.GET("/version", versionHandler)
 	r.GET("/", rootHandler)
 

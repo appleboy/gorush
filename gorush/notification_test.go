@@ -55,7 +55,7 @@ func TestSenMultipleNotifications(t *testing.T) {
 		},
 	}
 
-	count, logs := queueNotification(ctx, req)
+	count, logs := HandleNotification(ctx, req)
 	assert.Equal(t, 3, count)
 	assert.Equal(t, 0, len(logs))
 }
@@ -91,7 +91,7 @@ func TestDisabledAndroidNotifications(t *testing.T) {
 		},
 	}
 
-	count, logs := queueNotification(ctx, req)
+	count, logs := HandleNotification(ctx, req)
 	assert.Equal(t, 1, count)
 	assert.Equal(t, 0, len(logs))
 }
@@ -130,7 +130,7 @@ func TestSyncModeForNotifications(t *testing.T) {
 		},
 	}
 
-	count, logs := queueNotification(ctx, req)
+	count, logs := HandleNotification(ctx, req)
 	assert.Equal(t, 3, count)
 	assert.Equal(t, 2, len(logs))
 }
@@ -173,7 +173,7 @@ func TestSyncModeForTopicNotification(t *testing.T) {
 		},
 	}
 
-	count, logs := queueNotification(ctx, req)
+	count, logs := HandleNotification(ctx, req)
 	assert.Equal(t, 2, count)
 	assert.Equal(t, 1, len(logs))
 }
@@ -200,7 +200,7 @@ func TestSyncModeForDeviceGroupNotification(t *testing.T) {
 		},
 	}
 
-	count, logs := queueNotification(ctx, req)
+	count, logs := HandleNotification(ctx, req)
 	assert.Equal(t, 1, count)
 	assert.Equal(t, 1, len(logs))
 }
