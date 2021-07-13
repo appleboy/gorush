@@ -206,7 +206,7 @@ func routerEngine(cfg config.ConfYaml) *gin.Engine {
 	r.GET(cfg.API.StatAppURI, appStatusHandler)
 	r.GET(cfg.API.ConfigURI, configHandler(cfg))
 	r.GET(cfg.API.SysStatURI, sysStatsHandler())
-	// r.POST(cfg.API.PushURI, pushHandler(cfg))
+	r.POST(cfg.API.PushURI, pushHandler(cfg))
 	r.GET(cfg.API.MetricURI, metricsHandler)
 	r.GET(cfg.API.HealthURI, heartbeatHandler)
 	r.HEAD(cfg.API.HealthURI, heartbeatHandler)
