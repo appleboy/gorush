@@ -176,8 +176,8 @@ func TestLoadTLSCertError(t *testing.T) {
 
 	cfg.Core.SSL = true
 	cfg.Core.Port = "8087"
-	cfg.Core.CertPath = "../cfgig/cfgig.yml"
-	cfg.Core.KeyPath = "../cfgig/cfgig.yml"
+	cfg.Core.CertPath = "../config/config.yml"
+	cfg.Core.KeyPath = "../config/config.yml"
 
 	assert.Error(t, RunHTTPServer(context.Background(), cfg))
 }
@@ -194,7 +194,7 @@ func TestMissingTLSCertcfgg(t *testing.T) {
 
 	err := RunHTTPServer(context.Background(), cfg)
 	assert.Error(t, RunHTTPServer(context.Background(), cfg))
-	assert.Equal(t, "missing https cert cfgig", err.Error())
+	assert.Equal(t, "missing https cert config", err.Error())
 }
 
 func TestRootHandler(t *testing.T) {
@@ -252,12 +252,12 @@ func TestAPIStatusAppHandler(t *testing.T) {
 		})
 }
 
-func TestAPIcfgigHandler(t *testing.T) {
+func TestAPIConfigHandler(t *testing.T) {
 	cfg := initTest()
 
 	r := gofight.New()
 
-	r.GET("/api/cfgig").
+	r.GET("/api/config").
 		Run(routerEngine(cfg), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 			assert.Equal(t, http.StatusCreated, r.Code)
 		})
