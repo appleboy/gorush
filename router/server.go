@@ -126,8 +126,8 @@ func appStatusHandler(c *gin.Context) {
 	result := status.App{}
 
 	result.Version = GetVersion()
-	// result.QueueMax = cap(QueueNotification)
-	// result.QueueUsage = len(QueueNotification)
+	result.QueueMax = cap(gorush.QueueNotification)
+	result.QueueUsage = len(gorush.QueueNotification)
 	result.TotalCount = status.StatStorage.GetTotalCount()
 	result.Ios.PushSuccess = status.StatStorage.GetIosSuccess()
 	result.Ios.PushError = status.StatStorage.GetIosError()
