@@ -22,8 +22,8 @@ var Stats = stats.New()
 // StatStorage implements the storage interface
 var StatStorage storage.Storage
 
-// StatusApp is app status structure
-type StatusApp struct {
+// App is status structure
+type App struct {
 	Version    string        `json:"version"`
 	QueueMax   int           `json:"queue_max"`
 	QueueUsage int           `json:"queue_usage"`

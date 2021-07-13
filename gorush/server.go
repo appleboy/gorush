@@ -116,7 +116,7 @@ func metricsHandler(c *gin.Context) {
 }
 
 func appStatusHandler(c *gin.Context) {
-	result := status.StatusApp{}
+	result := status.App{}
 
 	result.Version = GetVersion()
 	result.QueueMax = cap(QueueNotification)
