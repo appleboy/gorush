@@ -1,6 +1,8 @@
-package gorush
+package metric
 
 import (
+	"github.com/appleboy/gorush/status"
+
 	"github.com/prometheus/client_golang/prometheus"
 )
 
@@ -17,11 +19,14 @@ type Metrics struct {
 	HuaweiSuccess  *prometheus.Desc
 	HuaweiError    *prometheus.Desc
 	QueueUsage     *prometheus.Desc
+	GetQueueUsage  func() int
 }
 
+var getGetQueueUsage = func() int { return 0 }
+
 // NewMetrics returns a new Metrics with all prometheus.Desc initialized
-func NewMetrics() Metrics {
-	return Metrics{
+func NewMetrics(c ...func() int) Metrics {
+	m := Metrics{
 		TotalPushCount: prometheus.NewDesc(
 			namespace+"total_push_count",
 			"Number of push count",
@@ -62,7 +67,14 @@ func NewMetrics() Metrics {
 			"Length of internal queue",
 			nil, nil,
 		),
+		GetQueueUsage: getGetQueueUsage,
 	}
+
+	if len(c) > 0 {
+		m.GetQueueUsage = c[0]
+	}
+
+	return m
 }
 
 // Describe returns all possible prometheus.Desc
@@ -82,41 +94,41 @@ func (c Metrics) Collect(ch chan<- prometheus.Metric) {
 	ch <- prometheus.MustNewConstMetric(
 		c.TotalPushCount,
 		prometheus.CounterValue,
-		float64(StatStorage.GetTotalCount()),
+		float64(status.StatStorage.GetTotalCount()),
 	)
 	ch <- prometheus.MustNewConstMetric(
 		c.IosSuccess,
 		prometheus.CounterValue,
-		float64(StatStorage.GetIosSuccess()),
+		float64(status.StatStorage.GetIosSuccess()),
 	)
 	ch <- prometheus.MustNewConstMetric(
 		c.IosError,
 		prometheus.CounterValue,
-		float64(StatStorage.GetIosError()),
+		float64(status.StatStorage.GetIosError()),
 	)
 	ch <- prometheus.MustNewConstMetric(
 		c.AndroidSuccess,
 		prometheus.CounterValue,
-		float64(StatStorage.GetAndroidSuccess()),
+		float64(status.StatStorage.GetAndroidSuccess()),
 	)
 	ch <- prometheus.MustNewConstMetric(
 		c.AndroidError,
 		prometheus.CounterValue,
-		float64(StatStorage.GetAndroidError()),
+		float64(status.StatStorage.GetAndroidError()),
 	)
 	ch <- prometheus.MustNewConstMetric(
 		c.HuaweiSuccess,
 		prometheus.CounterValue,
-		float64(StatStorage.GetHuaweiSuccess()),
+		float64(status.StatStorage.GetHuaweiSuccess()),
 	)
 	ch <- prometheus.MustNewConstMetric(
 		c.HuaweiError,
 		prometheus.CounterValue,
-		float64(StatStorage.GetHuaweiError()),
+		float64(status.StatStorage.GetHuaweiError()),
 	)
 	ch <- prometheus.MustNewConstMetric(
 		c.QueueUsage,
 		prometheus.GaugeValue,
-		float64(len(QueueNotification)),
+		float64(c.GetQueueUsage()),
 	)
 }
