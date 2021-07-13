@@ -191,6 +191,7 @@ func GetLogPushEntry(input *InputLog) LogPushEntry {
 	}
 }
 
+// InputLog log request
 type InputLog struct {
 	ID        string
 	Status    string
