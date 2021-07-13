@@ -20,6 +20,7 @@ import (
 	"github.com/appleboy/gorush/gorush"
 	"github.com/appleboy/gorush/logx"
 	"github.com/appleboy/gorush/rpc"
+	"github.com/appleboy/gorush/status"
 
 	"golang.org/x/sync/errgroup"
 )
@@ -212,7 +213,7 @@ func main() {
 			logx.LogError.Fatal(err)
 		}
 
-		if err := gorush.InitAppStatus(); err != nil {
+		if err := status.InitAppStatus(gorush.PushConf); err != nil {
 			return
 		}
 
@@ -245,7 +246,7 @@ func main() {
 			logx.LogError.Fatal(err)
 		}
 
-		if err := gorush.InitAppStatus(); err != nil {
+		if err := status.InitAppStatus(gorush.PushConf); err != nil {
 			return
 		}
 
@@ -282,7 +283,7 @@ func main() {
 			logx.LogError.Fatal(err)
 		}
 
-		if err := gorush.InitAppStatus(); err != nil {
+		if err := status.InitAppStatus(gorush.PushConf); err != nil {
 			return
 		}
 
@@ -308,7 +309,7 @@ func main() {
 		logx.LogError.Fatal(err)
 	}
 
-	if err = gorush.InitAppStatus(); err != nil {
+	if err = status.InitAppStatus(gorush.PushConf); err != nil {
 		logx.LogError.Fatal(err)
 	}
 
@@ -323,7 +324,7 @@ func main() {
 		close(finished)
 		// close the connection with storage
 		logx.LogAccess.Info("close the storage connection: ", gorush.PushConf.Stat.Engine)
-		if err := gorush.StatStorage.Close(); err != nil {
+		if err := status.StatStorage.Close(); err != nil {
 			logx.LogError.Fatal("can't close the storage connection: ", err.Error())
 		}
 	})

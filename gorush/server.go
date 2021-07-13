@@ -7,6 +7,9 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/appleboy/gorush/metric"
+	"github.com/appleboy/gorush/status"
+
 	api "github.com/appleboy/gin-status-api"
 	"github.com/appleboy/gorush/logx"
 	"github.com/gin-contrib/logger"
@@ -17,6 +20,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"github.com/thoas/stats"
 	"golang.org/x/crypto/acme/autocert"
 )
 
@@ -24,7 +28,9 @@ var isTerm bool
 
 func init() {
 	// Support metrics
-	m := NewMetrics()
+	m := metric.NewMetrics(func() int {
+		return len(QueueNotification)
+	})
 	prometheus.MustRegister(m)
 	isTerm = isatty.IsTerminal(os.Stdout.Fd())
 }
@@ -107,6 +113,36 @@ func configHandler(c *gin.Context) {
 
 func metricsHandler(c *gin.Context) {
 	promhttp.Handler().ServeHTTP(c.Writer, c.Request)
+}
+
+func appStatusHandler(c *gin.Context) {
+	result := status.App{}
+
+	result.Version = GetVersion()
+	result.QueueMax = cap(QueueNotification)
+	result.QueueUsage = len(QueueNotification)
+	result.TotalCount = status.StatStorage.GetTotalCount()
+	result.Ios.PushSuccess = status.StatStorage.GetIosSuccess()
+	result.Ios.PushError = status.StatStorage.GetIosError()
+	result.Android.PushSuccess = status.StatStorage.GetAndroidSuccess()
+	result.Android.PushError = status.StatStorage.GetAndroidError()
+	result.Huawei.PushSuccess = status.StatStorage.GetHuaweiSuccess()
+	result.Huawei.PushError = status.StatStorage.GetHuaweiError()
+
+	c.JSON(http.StatusOK, result)
+}
+
+func sysStatsHandler(c *gin.Context) {
+	c.JSON(http.StatusOK, status.Stats.Data())
+}
+
+// StatMiddleware response time, status code count, etc.
+func StatMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		beginning, recorder := status.Stats.Begin(c.Writer)
+		c.Next()
+		status.Stats.End(beginning, stats.WithRecorder(recorder))
+	}
 }
 
 func autoTLSServer() *http.Server {

@@ -7,6 +7,7 @@ import (
 	"github.com/appleboy/go-fcm"
 	"github.com/appleboy/gorush/core"
 	"github.com/appleboy/gorush/logx"
+	"github.com/appleboy/gorush/status"
 	"github.com/sirupsen/logrus"
 )
 
@@ -154,7 +155,7 @@ Retry:
 					}
 				}(logx.LogError, createLogPushEntry(core.FailedPush, req.To, req, err), PushConf.Core.FeedbackURL, PushConf.Core.FeedbackTimeout)
 			}
-			StatStorage.AddAndroidError(1)
+			status.StatStorage.AddAndroidError(1)
 		} else {
 			for _, token := range req.Tokens {
 				if PushConf.Core.Sync {
@@ -168,7 +169,7 @@ Retry:
 					}(logx.LogError, createLogPushEntry(core.FailedPush, token, req, err), PushConf.Core.FeedbackURL, PushConf.Core.FeedbackTimeout)
 				}
 			}
-			StatStorage.AddAndroidError(int64(len(req.Tokens)))
+			status.StatStorage.AddAndroidError(int64(len(req.Tokens)))
 		}
 		return
 	}
@@ -177,8 +178,8 @@ Retry:
 		logx.LogAccess.Debug(fmt.Sprintf("Android Success count: %d, Failure count: %d", res.Success, res.Failure))
 	}
 
-	StatStorage.AddAndroidSuccess(int64(res.Success))
-	StatStorage.AddAndroidError(int64(res.Failure))
+	status.StatStorage.AddAndroidSuccess(int64(res.Success))
+	status.StatStorage.AddAndroidError(int64(res.Failure))
 
 	var newTokens []string
 	// result from Send messages to specific devices

@@ -1,10 +1,11 @@
-package gorush
+package status
 
 import (
 	"errors"
-	"net/http"
 
+	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/logx"
+	"github.com/appleboy/gorush/storage"
 	"github.com/appleboy/gorush/storage/badger"
 	"github.com/appleboy/gorush/storage/boltdb"
 	"github.com/appleboy/gorush/storage/buntdb"
@@ -12,15 +13,17 @@ import (
 	"github.com/appleboy/gorush/storage/memory"
 	"github.com/appleboy/gorush/storage/redis"
 
-	"github.com/gin-gonic/gin"
 	"github.com/thoas/stats"
 )
 
 // Stats provide response time, status code count, etc.
 var Stats = stats.New()
 
-// StatusApp is app status structure
-type StatusApp struct {
+// StatStorage implements the storage interface
+var StatStorage storage.Storage
+
+// App is status structure
+type App struct {
 	Version    string        `json:"version"`
 	QueueMax   int           `json:"queue_max"`
 	QueueUsage int           `json:"queue_usage"`
@@ -49,21 +52,21 @@ type HuaweiStatus struct {
 }
 
 // InitAppStatus for initialize app status
-func InitAppStatus() error {
-	logx.LogAccess.Info("Init App Status Engine as ", PushConf.Stat.Engine)
-	switch PushConf.Stat.Engine {
+func InitAppStatus(conf config.ConfYaml) error {
+	logx.LogAccess.Info("Init App Status Engine as ", conf.Stat.Engine)
+	switch conf.Stat.Engine {
 	case "memory":
 		StatStorage = memory.New()
 	case "redis":
-		StatStorage = redis.New(PushConf)
+		StatStorage = redis.New(conf)
 	case "boltdb":
-		StatStorage = boltdb.New(PushConf)
+		StatStorage = boltdb.New(conf)
 	case "buntdb":
-		StatStorage = buntdb.New(PushConf)
+		StatStorage = buntdb.New(conf)
 	case "leveldb":
-		StatStorage = leveldb.New(PushConf)
+		StatStorage = leveldb.New(conf)
 	case "badger":
-		StatStorage = badger.New(PushConf)
+		StatStorage = badger.New(conf)
 	default:
 		logx.LogError.Error("storage error: can't find storage driver")
 		return errors.New("can't find storage driver")
@@ -76,34 +79,4 @@ func InitAppStatus() error {
 	}
 
 	return nil
-}
-
-func appStatusHandler(c *gin.Context) {
-	result := StatusApp{}
-
-	result.Version = GetVersion()
-	result.QueueMax = cap(QueueNotification)
-	result.QueueUsage = len(QueueNotification)
-	result.TotalCount = StatStorage.GetTotalCount()
-	result.Ios.PushSuccess = StatStorage.GetIosSuccess()
-	result.Ios.PushError = StatStorage.GetIosError()
-	result.Android.PushSuccess = StatStorage.GetAndroidSuccess()
-	result.Android.PushError = StatStorage.GetAndroidError()
-	result.Huawei.PushSuccess = StatStorage.GetHuaweiSuccess()
-	result.Huawei.PushError = StatStorage.GetHuaweiError()
-
-	c.JSON(http.StatusOK, result)
-}
-
-func sysStatsHandler(c *gin.Context) {
-	c.JSON(http.StatusOK, Stats.Data())
-}
-
-// StatMiddleware response time, status code count, etc.
-func StatMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		beginning, recorder := Stats.Begin(c.Writer)
-		c.Next()
-		Stats.End(beginning, stats.WithRecorder(recorder))
-	}
 }

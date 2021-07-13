@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"github.com/appleboy/gorush/logx"
+	"github.com/appleboy/gorush/status"
 
 	"github.com/msalihkarakasli/go-hms-push/push/config"
 	"github.com/msalihkarakasli/go-hms-push/push/core"
@@ -206,11 +207,11 @@ Retry:
 
 	// Huawei Push Send API does not support exact results for each token
 	if res.Code == "80000000" {
-		StatStorage.AddHuaweiSuccess(int64(1))
+		status.StatStorage.AddHuaweiSuccess(int64(1))
 		logx.LogAccess.Debug("Huwaei Send Notification is completed successfully!")
 	} else {
 		isError = true
-		StatStorage.AddHuaweiError(int64(1))
+		status.StatStorage.AddHuaweiError(int64(1))
 		logx.LogAccess.Debug("Huawei Send Notification is failed! Code: " + res.Code)
 	}
 

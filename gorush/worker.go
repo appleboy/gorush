@@ -7,6 +7,7 @@ import (
 
 	"github.com/appleboy/gorush/core"
 	"github.com/appleboy/gorush/logx"
+	"github.com/appleboy/gorush/status"
 )
 
 // InitWorkers for initialize all workers.
@@ -105,7 +106,7 @@ func queueNotification(ctx context.Context, req RequestPush) (int, []logx.LogPus
 		wg.Wait()
 	}
 
-	StatStorage.AddTotalCount(int64(count))
+	status.StatStorage.AddTotalCount(int64(count))
 
 	return count, log
 }

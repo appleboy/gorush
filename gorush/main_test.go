@@ -8,6 +8,7 @@ import (
 
 	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/logx"
+	"github.com/appleboy/gorush/status"
 )
 
 func TestMain(m *testing.M) {
@@ -21,12 +22,16 @@ func TestMain(m *testing.M) {
 		log.Fatal(err)
 	}
 
+	if err := status.InitAppStatus(PushConf); err != nil {
+		log.Fatal(err)
+	}
+
 	ctx, cancel := context.WithCancel(context.Background())
 	wg := &sync.WaitGroup{}
 	wg.Add(int(PushConf.Core.WorkerNum))
 	InitWorkers(ctx, wg, PushConf.Core.WorkerNum, PushConf.Core.QueueNum)
 
-	if err := InitAppStatus(); err != nil {
+	if err := status.InitAppStatus(PushConf); err != nil {
 		log.Fatal(err)
 	}
 

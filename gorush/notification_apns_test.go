@@ -12,6 +12,7 @@ import (
 
 	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/core"
+	"github.com/appleboy/gorush/status"
 	"github.com/buger/jsonparser"
 	"github.com/sideshow/apns2"
 	"github.com/stretchr/testify/assert"
@@ -761,7 +762,7 @@ func TestPushToIOS(t *testing.T) {
 	PushConf.Ios.KeyPath = "../certificate/certificate-valid.pem"
 	err := InitAPNSClient()
 	assert.Nil(t, err)
-	err = InitAppStatus()
+	err = status.InitAppStatus(PushConf)
 	assert.Nil(t, err)
 
 	req := PushNotification{
@@ -781,7 +782,7 @@ func TestApnsHostFromRequest(t *testing.T) {
 	PushConf.Ios.KeyPath = "../certificate/certificate-valid.pem"
 	err := InitAPNSClient()
 	assert.Nil(t, err)
-	err = InitAppStatus()
+	err = status.InitAppStatus(PushConf)
 	assert.Nil(t, err)
 
 	req := PushNotification{
