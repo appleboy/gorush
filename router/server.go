@@ -33,7 +33,6 @@ func init() {
 	m := metric.NewMetrics(func() int {
 		return len(gorush.QueueNotification)
 	})
-	// m := metric.NewMetrics()
 	prometheus.MustRegister(m)
 	isTerm = isatty.IsTerminal(os.Stdout.Fd())
 }
