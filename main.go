@@ -19,6 +19,7 @@ import (
 	"github.com/appleboy/gorush/core"
 	"github.com/appleboy/gorush/gorush"
 	"github.com/appleboy/gorush/logx"
+	"github.com/appleboy/gorush/router"
 	"github.com/appleboy/gorush/rpc"
 	"github.com/appleboy/gorush/status"
 
@@ -96,11 +97,11 @@ func main() {
 	flag.Usage = usage
 	flag.Parse()
 
-	gorush.SetVersion(Version)
+	router.SetVersion(Version)
 
 	// Show version and exit
 	if showVersion {
-		gorush.PrintGoRushVersion()
+		router.PrintGoRushVersion()
 		os.Exit(0)
 	}
 
@@ -353,7 +354,7 @@ func main() {
 
 	// Run httpd server
 	g.Go(func() error {
-		return gorush.RunHTTPServer(ctx)
+		return router.RunHTTPServer(ctx, gorush.PushConf)
 	})
 
 	// Run gRPC internal server

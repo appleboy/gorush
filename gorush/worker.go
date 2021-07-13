@@ -61,8 +61,8 @@ func markFailedNotification(notification *PushNotification, reason string) {
 	notification.WaitDone()
 }
 
-// queueNotification add notification to queue list.
-func queueNotification(ctx context.Context, req RequestPush) (int, []logx.LogPushEntry) {
+// HandleNotification add notification to queue list.
+func HandleNotification(ctx context.Context, req RequestPush) (int, []logx.LogPushEntry) {
 	var count int
 	wg := sync.WaitGroup{}
 	newNotification := []*PushNotification{}

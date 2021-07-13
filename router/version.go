@@ -1,4 +1,4 @@
-package gorush
+package router
 
 import (
 	"fmt"
