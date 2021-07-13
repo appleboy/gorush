@@ -2,7 +2,6 @@ package gorush
 
 import (
 	"github.com/appleboy/gorush/config"
-	"github.com/appleboy/gorush/storage"
 
 	"github.com/appleboy/go-fcm"
 	"github.com/msalihkarakasli/go-hms-push/push/core"
@@ -20,8 +19,6 @@ var (
 	FCMClient *fcm.Client
 	// HMSClient is Huawei push client
 	HMSClient *core.HMSClient
-	// StatStorage implements the storage interface
-	StatStorage storage.Storage
 	// MaxConcurrentIOSPushes pool to limit the number of concurrent iOS pushes
 	MaxConcurrentIOSPushes chan struct{}
 )

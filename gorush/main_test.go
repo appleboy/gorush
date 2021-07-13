@@ -22,6 +22,10 @@ func TestMain(m *testing.M) {
 		log.Fatal(err)
 	}
 
+	if err := status.InitAppStatus(PushConf); err != nil {
+		log.Fatal(err)
+	}
+
 	ctx, cancel := context.WithCancel(context.Background())
 	wg := &sync.WaitGroup{}
 	wg.Add(int(PushConf.Core.WorkerNum))

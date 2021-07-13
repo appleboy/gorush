@@ -324,7 +324,7 @@ func main() {
 		close(finished)
 		// close the connection with storage
 		logx.LogAccess.Info("close the storage connection: ", gorush.PushConf.Stat.Engine)
-		if err := gorush.StatStorage.Close(); err != nil {
+		if err := status.StatStorage.Close(); err != nil {
 			logx.LogError.Fatal("can't close the storage connection: ", err.Error())
 		}
 	})

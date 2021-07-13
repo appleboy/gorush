@@ -13,6 +13,7 @@ import (
 
 	"github.com/appleboy/gorush/core"
 	"github.com/appleboy/gorush/logx"
+	"github.com/appleboy/gorush/status"
 
 	"github.com/mitchellh/mapstructure"
 	"github.com/sideshow/apns2"
@@ -428,7 +429,7 @@ Retry:
 					}(logx.LogError, createLogPushEntry(core.FailedPush, token, req, err), PushConf.Core.FeedbackURL, PushConf.Core.FeedbackTimeout)
 				}
 
-				StatStorage.AddIosError(1)
+				status.StatStorage.AddIosError(1)
 				// We should retry only "retryable" statuses. More info about response:
 				// https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/handling_notification_responses_from_apns
 				if res != nil && res.StatusCode >= http.StatusInternalServerError {
@@ -438,7 +439,7 @@ Retry:
 
 			if res != nil && res.Sent() {
 				logPush(core.SucceededPush, token, req, nil)
-				StatStorage.AddIosSuccess(1)
+				status.StatStorage.AddIosSuccess(1)
 			}
 			// free push slot
 			<-MaxConcurrentIOSPushes
