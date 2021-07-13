@@ -8,9 +8,11 @@ import (
 	"os"
 
 	api "github.com/appleboy/gin-status-api"
+	"github.com/appleboy/gorush/logx"
 	"github.com/gin-contrib/logger"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"github.com/mattn/go-isatty"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/rs/zerolog"
@@ -18,10 +20,13 @@ import (
 	"golang.org/x/crypto/acme/autocert"
 )
 
+var isTerm bool
+
 func init() {
 	// Support metrics
 	m := NewMetrics()
 	prometheus.MustRegister(m)
+	isTerm = isatty.IsTerminal(os.Stdout.Fd())
 }
 
 func abortWithError(c *gin.Context, code int, message string) {
@@ -54,21 +59,21 @@ func pushHandler(c *gin.Context) {
 
 	if err := c.ShouldBindWith(&form, binding.JSON); err != nil {
 		msg = "Missing notifications field."
-		LogAccess.Debug(err)
+		logx.LogAccess.Debug(err)
 		abortWithError(c, http.StatusBadRequest, msg)
 		return
 	}
 
 	if len(form.Notifications) == 0 {
 		msg = "Notifications field is empty."
-		LogAccess.Debug(msg)
+		logx.LogAccess.Debug(msg)
 		abortWithError(c, http.StatusBadRequest, msg)
 		return
 	}
 
 	if int64(len(form.Notifications)) > PushConf.Core.MaxNotification {
 		msg = fmt.Sprintf("Number of notifications(%d) over limit(%d)", len(form.Notifications), PushConf.Core.MaxNotification)
-		LogAccess.Debug(msg)
+		logx.LogAccess.Debug(msg)
 		abortWithError(c, http.StatusBadRequest, msg)
 		return
 	}

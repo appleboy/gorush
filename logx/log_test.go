@@ -1,9 +1,11 @@
-package gorush
+package logx
 
 import (
 	"testing"
 
 	"github.com/appleboy/gorush/config"
+	"github.com/appleboy/gorush/core"
+
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 )
@@ -36,57 +38,87 @@ func TestSetLogOut(t *testing.T) {
 }
 
 func TestInitDefaultLog(t *testing.T) {
-	PushConf, _ = config.LoadConf("")
+	PushConf, _ := config.LoadConf("")
 
 	// no errors on default config
-	assert.Nil(t, InitLog())
+	assert.Nil(t, InitLog(
+		PushConf.Log.AccessLevel,
+		PushConf.Log.AccessLog,
+		PushConf.Log.ErrorLevel,
+		PushConf.Log.ErrorLog,
+	))
 
 	PushConf.Log.AccessLevel = "invalid"
 
-	assert.NotNil(t, InitLog())
+	assert.NotNil(t, InitLog(
+		PushConf.Log.AccessLevel,
+		PushConf.Log.AccessLog,
+		PushConf.Log.ErrorLevel,
+		PushConf.Log.ErrorLog,
+	))
 }
 
 func TestAccessLevel(t *testing.T) {
-	PushConf, _ = config.LoadConf("")
+	PushConf, _ := config.LoadConf("")
 
 	PushConf.Log.AccessLevel = "invalid"
 
-	assert.NotNil(t, InitLog())
+	assert.NotNil(t, InitLog(
+		PushConf.Log.AccessLevel,
+		PushConf.Log.AccessLog,
+		PushConf.Log.ErrorLevel,
+		PushConf.Log.ErrorLog,
+	))
 }
 
 func TestErrorLevel(t *testing.T) {
-	PushConf, _ = config.LoadConf("")
+	PushConf, _ := config.LoadConf("")
 
 	PushConf.Log.ErrorLevel = "invalid"
 
-	assert.NotNil(t, InitLog())
+	assert.NotNil(t, InitLog(
+		PushConf.Log.AccessLevel,
+		PushConf.Log.AccessLog,
+		PushConf.Log.ErrorLevel,
+		PushConf.Log.ErrorLog,
+	))
 }
 
 func TestAccessLogPath(t *testing.T) {
-	PushConf, _ = config.LoadConf("")
+	PushConf, _ := config.LoadConf("")
 
 	PushConf.Log.AccessLog = "logs/access.log"
 
-	assert.NotNil(t, InitLog())
+	assert.NotNil(t, InitLog(
+		PushConf.Log.AccessLevel,
+		PushConf.Log.AccessLog,
+		PushConf.Log.ErrorLevel,
+		PushConf.Log.ErrorLog,
+	))
 }
 
 func TestErrorLogPath(t *testing.T) {
-	PushConf, _ = config.LoadConf("")
+	PushConf, _ := config.LoadConf("")
 
 	PushConf.Log.ErrorLog = "logs/error.log"
 
-	assert.NotNil(t, InitLog())
+	assert.NotNil(t, InitLog(
+		PushConf.Log.AccessLevel,
+		PushConf.Log.AccessLog,
+		PushConf.Log.ErrorLevel,
+		PushConf.Log.ErrorLog,
+	))
 }
 
 func TestPlatFormType(t *testing.T) {
-	assert.Equal(t, "ios", typeForPlatForm(PlatFormIos))
-	assert.Equal(t, "android", typeForPlatForm(PlatFormAndroid))
+	assert.Equal(t, "ios", typeForPlatForm(core.PlatFormIos))
+	assert.Equal(t, "android", typeForPlatForm(core.PlatFormAndroid))
 	assert.Equal(t, "", typeForPlatForm(10000))
 }
 
 func TestPlatFormColor(t *testing.T) {
-	assert.Equal(t, blue, colorForPlatForm(PlatFormIos))
-	assert.Equal(t, yellow, colorForPlatForm(PlatFormAndroid))
+	assert.Equal(t, blue, colorForPlatForm(core.PlatFormIos))
+	assert.Equal(t, yellow, colorForPlatForm(core.PlatFormAndroid))
 	assert.Equal(t, reset, colorForPlatForm(1000000))
 }
 

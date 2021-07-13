@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/appleboy/go-fcm"
+	"github.com/appleboy/gorush/core"
+	"github.com/appleboy/gorush/logx"
 	"github.com/sirupsen/logrus"
 )
 
@@ -102,7 +104,7 @@ func GetAndroidNotification(req PushNotification) *fcm.Message {
 
 // PushToAndroid provide send notification to Android server.
 func PushToAndroid(req PushNotification) {
-	LogAccess.Debug("Start push notification for Android")
+	logx.LogAccess.Debug("Start push notification for Android")
 
 	var (
 		client     *fcm.Client
@@ -117,7 +119,7 @@ func PushToAndroid(req PushNotification) {
 	// check message
 	err := CheckMessage(req)
 	if err != nil {
-		LogError.Error("request error: " + err.Error())
+		logx.LogError.Error("request error: " + err.Error())
 		return
 	}
 
@@ -132,38 +134,38 @@ Retry:
 
 	if err != nil {
 		// FCM server error
-		LogError.Error("FCM server error: " + err.Error())
+		logx.LogError.Error("FCM server error: " + err.Error())
 		return
 	}
 
 	res, err := client.Send(notification)
 	if err != nil {
 		// Send Message error
-		LogError.Error("FCM server send message error: " + err.Error())
+		logx.LogError.Error("FCM server send message error: " + err.Error())
 
 		if req.IsTopic() {
 			if PushConf.Core.Sync {
-				req.AddLog(getLogPushEntry(FailedPush, req.To, req, err))
+				req.AddLog(createLogPushEntry(core.FailedPush, req.To, req, err))
 			} else if PushConf.Core.FeedbackURL != "" {
-				go func(logger *logrus.Logger, log LogPushEntry, url string, timeout int64) {
+				go func(logger *logrus.Logger, log logx.LogPushEntry, url string, timeout int64) {
 					err := DispatchFeedback(log, url, timeout)
 					if err != nil {
 						logger.Error(err)
 					}
-				}(LogError, getLogPushEntry(FailedPush, req.To, req, err), PushConf.Core.FeedbackURL, PushConf.Core.FeedbackTimeout)
+				}(logx.LogError, createLogPushEntry(core.FailedPush, req.To, req, err), PushConf.Core.FeedbackURL, PushConf.Core.FeedbackTimeout)
 			}
 			StatStorage.AddAndroidError(1)
 		} else {
 			for _, token := range req.Tokens {
 				if PushConf.Core.Sync {
-					req.AddLog(getLogPushEntry(FailedPush, token, req, err))
+					req.AddLog(createLogPushEntry(core.FailedPush, token, req, err))
 				} else if PushConf.Core.FeedbackURL != "" {
-					go func(logger *logrus.Logger, log LogPushEntry, url string, timeout int64) {
+					go func(logger *logrus.Logger, log logx.LogPushEntry, url string, timeout int64) {
 						err := DispatchFeedback(log, url, timeout)
 						if err != nil {
 							logger.Error(err)
 						}
-					}(LogError, getLogPushEntry(FailedPush, token, req, err), PushConf.Core.FeedbackURL, PushConf.Core.FeedbackTimeout)
+					}(logx.LogError, createLogPushEntry(core.FailedPush, token, req, err), PushConf.Core.FeedbackURL, PushConf.Core.FeedbackTimeout)
 				}
 			}
 			StatStorage.AddAndroidError(int64(len(req.Tokens)))
@@ -172,7 +174,7 @@ Retry:
 	}
 
 	if !req.IsTopic() {
-		LogAccess.Debug(fmt.Sprintf("Android Success count: %d, Failure count: %d", res.Success, res.Failure))
+		logx.LogAccess.Debug(fmt.Sprintf("Android Success count: %d, Failure count: %d", res.Success, res.Failure))
 	}
 
 	StatStorage.AddAndroidSuccess(int64(res.Success))
@@ -195,21 +197,21 @@ Retry:
 				newTokens = append(newTokens, to)
 			}
 
-			LogPush(FailedPush, to, req, result.Error)
+			logPush(core.FailedPush, to, req, result.Error)
 			if PushConf.Core.Sync {
-				req.AddLog(getLogPushEntry(FailedPush, to, req, result.Error))
+				req.AddLog(createLogPushEntry(core.FailedPush, to, req, result.Error))
 			} else if PushConf.Core.FeedbackURL != "" {
-				go func(logger *logrus.Logger, log LogPushEntry, url string, timeout int64) {
+				go func(logger *logrus.Logger, log logx.LogPushEntry, url string, timeout int64) {
 					err := DispatchFeedback(log, url, timeout)
 					if err != nil {
 						logger.Error(err)
 					}
-				}(LogError, getLogPushEntry(FailedPush, to, req, result.Error), PushConf.Core.FeedbackURL, PushConf.Core.FeedbackTimeout)
+				}(logx.LogError, createLogPushEntry(core.FailedPush, to, req, result.Error), PushConf.Core.FeedbackURL, PushConf.Core.FeedbackTimeout)
 			}
 			continue
 		}
 
-		LogPush(SucceededPush, to, req, nil)
+		logPush(core.SucceededPush, to, req, nil)
 	}
 
 	// result from Send messages to topics
@@ -220,15 +222,15 @@ Retry:
 		} else {
 			to = req.Condition
 		}
-		LogAccess.Debug("Send Topic Message: ", to)
+		logx.LogAccess.Debug("Send Topic Message: ", to)
 		// Success
 		if res.MessageID != 0 {
-			LogPush(SucceededPush, to, req, nil)
+			logPush(core.SucceededPush, to, req, nil)
 		} else {
 			// failure
-			LogPush(FailedPush, to, req, res.Error)
+			logPush(core.FailedPush, to, req, res.Error)
 			if PushConf.Core.Sync {
-				req.AddLog(getLogPushEntry(FailedPush, to, req, res.Error))
+				req.AddLog(createLogPushEntry(core.FailedPush, to, req, res.Error))
 			}
 		}
 	}
@@ -237,9 +239,9 @@ Retry:
 	if len(res.FailedRegistrationIDs) > 0 {
 		newTokens = append(newTokens, res.FailedRegistrationIDs...)
 
-		LogPush(FailedPush, notification.To, req, errors.New("device group: partial success or all fails"))
+		logPush(core.FailedPush, notification.To, req, errors.New("device group: partial success or all fails"))
 		if PushConf.Core.Sync {
-			req.AddLog(getLogPushEntry(FailedPush, notification.To, req, errors.New("device group: partial success or all fails")))
+			req.AddLog(createLogPushEntry(core.FailedPush, notification.To, req, errors.New("device group: partial success or all fails")))
 		}
 	}
 
@@ -250,4 +252,30 @@ Retry:
 		req.Tokens = newTokens
 		goto Retry
 	}
+}
+
+func createLogPushEntry(status, token string, req PushNotification, err error) logx.LogPushEntry {
+	return logx.GetLogPushEntry(&logx.InputLog{
+		ID:        req.ID,
+		Status:    status,
+		Token:     token,
+		Message:   req.Message,
+		Platform:  req.Platform,
+		Error:     err,
+		HideToken: PushConf.Log.HideToken,
+		Format:    PushConf.Log.Format,
+	})
+}
+
+func logPush(status, token string, req PushNotification, err error) {
+	logx.LogPush(&logx.InputLog{
+		ID:        req.ID,
+		Status:    status,
+		Token:     token,
+		Message:   req.Message,
+		Platform:  req.Platform,
+		Error:     err,
+		HideToken: PushConf.Log.HideToken,
+		Format:    PushConf.Log.Format,
+	})
 }

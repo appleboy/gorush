@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/appleboy/gorush/gorush"
+	"github.com/appleboy/gorush/logx"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
@@ -14,7 +15,12 @@ const gRPCAddr = "localhost:9000"
 
 func TestGracefulShutDownGRPCServer(t *testing.T) {
 	// server configs
-	gorush.InitLog()
+	logx.InitLog(
+		gorush.PushConf.Log.AccessLevel,
+		gorush.PushConf.Log.AccessLog,
+		gorush.PushConf.Log.ErrorLevel,
+		gorush.PushConf.Log.ErrorLog,
+	)
 	gorush.PushConf.GRPC.Enabled = true
 	gorush.PushConf.GRPC.Port = "9000"
 	gorush.PushConf.Log.Format = "json"

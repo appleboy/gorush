@@ -10,6 +10,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/appleboy/gorush/logx"
+
 	"golang.org/x/sync/errgroup"
 )
 
@@ -18,7 +20,7 @@ func RunHTTPServer(ctx context.Context, s ...*http.Server) (err error) {
 	var server *http.Server
 
 	if !PushConf.Core.Enabled {
-		LogAccess.Info("httpd server is disabled.")
+		logx.LogAccess.Info("httpd server is disabled.")
 		return nil
 	}
 
@@ -31,7 +33,7 @@ func RunHTTPServer(ctx context.Context, s ...*http.Server) (err error) {
 		server = s[0]
 	}
 
-	LogAccess.Info("HTTPD server is running on " + PushConf.Core.Port + " port.")
+	logx.LogAccess.Info("HTTPD server is running on " + PushConf.Core.Port + " port.")
 	if PushConf.Core.AutoTLS.Enabled {
 		return startServer(ctx, autoTLSServer())
 	} else if PushConf.Core.SSL {
@@ -47,22 +49,22 @@ func RunHTTPServer(ctx context.Context, s ...*http.Server) (err error) {
 		if PushConf.Core.CertPath != "" && PushConf.Core.KeyPath != "" {
 			config.Certificates[0], err = tls.LoadX509KeyPair(PushConf.Core.CertPath, PushConf.Core.KeyPath)
 			if err != nil {
-				LogError.Error("Failed to load https cert file: ", err)
+				logx.LogError.Error("Failed to load https cert file: ", err)
 				return err
 			}
 		} else if PushConf.Core.CertBase64 != "" && PushConf.Core.KeyBase64 != "" {
 			cert, err := base64.StdEncoding.DecodeString(PushConf.Core.CertBase64)
 			if err != nil {
-				LogError.Error("base64 decode error:", err.Error())
+				logx.LogError.Error("base64 decode error:", err.Error())
 				return err
 			}
 			key, err := base64.StdEncoding.DecodeString(PushConf.Core.KeyBase64)
 			if err != nil {
-				LogError.Error("base64 decode error:", err.Error())
+				logx.LogError.Error("base64 decode error:", err.Error())
 				return err
 			}
 			if config.Certificates[0], err = tls.X509KeyPair(cert, key); err != nil {
-				LogError.Error("tls key pair error:", err.Error())
+				logx.LogError.Error("tls key pair error:", err.Error())
 				return err
 			}
 		} else {

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/appleboy/gorush/logx"
 	"github.com/appleboy/gorush/storage/badger"
 	"github.com/appleboy/gorush/storage/boltdb"
 	"github.com/appleboy/gorush/storage/buntdb"
@@ -49,7 +50,7 @@ type HuaweiStatus struct {
 
 // InitAppStatus for initialize app status
 func InitAppStatus() error {
-	LogAccess.Info("Init App Status Engine as ", PushConf.Stat.Engine)
+	logx.LogAccess.Info("Init App Status Engine as ", PushConf.Stat.Engine)
 	switch PushConf.Stat.Engine {
 	case "memory":
 		StatStorage = memory.New()
@@ -64,12 +65,12 @@ func InitAppStatus() error {
 	case "badger":
 		StatStorage = badger.New(PushConf)
 	default:
-		LogError.Error("storage error: can't find storage driver")
+		logx.LogError.Error("storage error: can't find storage driver")
 		return errors.New("can't find storage driver")
 	}
 
 	if err := StatStorage.Init(); err != nil {
-		LogError.Error("storage error: " + err.Error())
+		logx.LogError.Error("storage error: " + err.Error())
 
 		return err
 	}
