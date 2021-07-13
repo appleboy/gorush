@@ -6,6 +6,8 @@ import (
 	"errors"
 	"sync"
 
+	"github.com/appleboy/gorush/logx"
+
 	"github.com/msalihkarakasli/go-hms-push/push/config"
 	"github.com/msalihkarakasli/go-hms-push/push/core"
 	"github.com/msalihkarakasli/go-hms-push/push/model"
@@ -153,17 +155,17 @@ func GetHuaweiNotification(req PushNotification) (*model.MessageRequest, error) 
 
 	b, err := json.Marshal(msgRequest)
 	if err != nil {
-		LogError.Error("Failed to marshal the default message! Error is " + err.Error())
+		logx.LogError.Error("Failed to marshal the default message! Error is " + err.Error())
 		return nil, err
 	}
 
-	LogAccess.Debugf("Default message is %s", string(b))
+	logx.LogAccess.Debugf("Default message is %s", string(b))
 	return msgRequest, nil
 }
 
 // PushToHuawei provide send notification to Android server.
 func PushToHuawei(req PushNotification) bool {
-	LogAccess.Debug("Start push notification for Huawei")
+	logx.LogAccess.Debug("Start push notification for Huawei")
 
 	var (
 		client     *core.HMSClient
@@ -178,7 +180,7 @@ func PushToHuawei(req PushNotification) bool {
 	// check message
 	err := CheckMessage(req)
 	if err != nil {
-		LogError.Error("request error: " + err.Error())
+		logx.LogError.Error("request error: " + err.Error())
 		return false
 	}
 
@@ -191,25 +193,25 @@ Retry:
 
 	if err != nil {
 		// HMS server error
-		LogError.Error("HMS server error: " + err.Error())
+		logx.LogError.Error("HMS server error: " + err.Error())
 		return false
 	}
 
 	res, err := client.SendMessage(context.Background(), notification)
 	if err != nil {
 		// Send Message error
-		LogError.Error("HMS server send message error: " + err.Error())
+		logx.LogError.Error("HMS server send message error: " + err.Error())
 		return false
 	}
 
 	// Huawei Push Send API does not support exact results for each token
 	if res.Code == "80000000" {
 		StatStorage.AddHuaweiSuccess(int64(1))
-		LogAccess.Debug("Huwaei Send Notification is completed successfully!")
+		logx.LogAccess.Debug("Huwaei Send Notification is completed successfully!")
 	} else {
 		isError = true
 		StatStorage.AddHuaweiError(int64(1))
-		LogAccess.Debug("Huawei Send Notification is failed! Code: " + res.Code)
+		logx.LogAccess.Debug("Huawei Send Notification is failed! Code: " + res.Code)
 	}
 
 	if isError && retryCount < maxRetry {

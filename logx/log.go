@@ -1,4 +1,4 @@
-package gorush
+package logx
 
 import (
 	"encoding/json"
@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/appleboy/gorush/core"
 
 	"github.com/mattn/go-isatty"
 	"github.com/sirupsen/logrus"
@@ -38,8 +40,15 @@ func init() {
 	isTerm = isatty.IsTerminal(os.Stdout.Fd())
 }
 
+var (
+	// LogAccess is log server request log
+	LogAccess *logrus.Logger
+	// LogError is log server error log
+	LogError *logrus.Logger
+)
+
 // InitLog use for initial log module
-func InitLog() error {
+func InitLog(accessLevel, accessLog, errorLevel, errorLog string) error {
 	var err error
 
 	// init logger
@@ -62,19 +71,19 @@ func InitLog() error {
 	}
 
 	// set logger
-	if err = SetLogLevel(LogAccess, PushConf.Log.AccessLevel); err != nil {
+	if err = SetLogLevel(LogAccess, accessLevel); err != nil {
 		return errors.New("Set access log level error: " + err.Error())
 	}
 
-	if err = SetLogLevel(LogError, PushConf.Log.ErrorLevel); err != nil {
+	if err = SetLogLevel(LogError, errorLevel); err != nil {
 		return errors.New("Set error log level error: " + err.Error())
 	}
 
-	if err = SetLogOut(LogAccess, PushConf.Log.AccessLog); err != nil {
+	if err = SetLogOut(LogAccess, accessLog); err != nil {
 		return errors.New("Set access log path error: " + err.Error())
 	}
 
-	if err = SetLogOut(LogError, PushConf.Log.ErrorLog); err != nil {
+	if err = SetLogOut(LogError, errorLog); err != nil {
 		return errors.New("Set error log path error: " + err.Error())
 	}
 
@@ -115,11 +124,11 @@ func SetLogLevel(log *logrus.Logger, levelString string) error {
 
 func colorForPlatForm(platform int) string {
 	switch platform {
-	case PlatFormIos:
+	case core.PlatFormIos:
 		return blue
-	case PlatFormAndroid:
+	case core.PlatFormAndroid:
 		return yellow
-	case PlatFormHuawei:
+	case core.PlatFormHuawei:
 		return green
 	default:
 		return reset
@@ -128,11 +137,11 @@ func colorForPlatForm(platform int) string {
 
 func typeForPlatForm(platform int) string {
 	switch platform {
-	case PlatFormIos:
+	case core.PlatFormIos:
 		return "ios"
-	case PlatFormAndroid:
+	case core.PlatFormAndroid:
 		return "android"
-	case PlatFormHuawei:
+	case core.PlatFormHuawei:
 		return "huawei"
 	default:
 		return ""
@@ -157,48 +166,61 @@ func hideToken(token string, markLen int) string {
 	return result
 }
 
-func getLogPushEntry(status, token string, req PushNotification, errPush error) LogPushEntry {
+// GetLogPushEntry get push data into log structure
+func GetLogPushEntry(input *InputLog) LogPushEntry {
 	var errMsg string
+	var token string
 
-	plat := typeForPlatForm(req.Platform)
+	plat := typeForPlatForm(input.Platform)
 
-	if errPush != nil {
-		errMsg = errPush.Error()
+	if input.Error != nil {
+		errMsg = input.Error.Error()
 	}
 
-	if PushConf.Log.HideToken {
-		token = hideToken(token, 10)
+	if input.HideToken {
+		token = hideToken(input.Token, 10)
 	}
 
 	return LogPushEntry{
-		ID:       req.ID,
-		Type:     status,
+		ID:       input.ID,
+		Type:     input.Status,
 		Platform: plat,
 		Token:    token,
-		Message:  req.Message,
+		Message:  input.Message,
 		Error:    errMsg,
 	}
 }
 
+type InputLog struct {
+	ID        string
+	Status    string
+	Token     string
+	Message   string
+	Platform  int
+	Error     error
+	HideToken bool
+	Format    string
+}
+
 // LogPush record user push request and server response.
-func LogPush(status, token string, req PushNotification, errPush error) {
+func LogPush(input *InputLog) {
 	var platColor, resetColor, output string
 
 	if isTerm {
-		platColor = colorForPlatForm(req.Platform)
+		platColor = colorForPlatForm(input.Platform)
 		resetColor = reset
 	}
 
-	log := getLogPushEntry(status, token, req, errPush)
+	log := GetLogPushEntry(input)
 
-	if PushConf.Log.Format == "json" {
+	if input.Format == "json" {
 		logJSON, _ := json.Marshal(log)
 
 		output = string(logJSON)
 	} else {
 		var typeColor string
-		switch status {
-		case SucceededPush:
+		switch input.Status {
+		case core.SucceededPush:
 			if isTerm {
 				typeColor = green
 			}
@@ -209,7 +231,7 @@ func LogPush(status, token string, req PushNotification, errPush error) {
 				log.Token,
 				log.Message,
 			)
-		case FailedPush:
+		case core.FailedPush:
 			if isTerm {
 				typeColor = red
 			}
@@ -224,10 +246,10 @@ func LogPush(status, token string, req PushNotification, errPush error) {
 		}
 	}
 
-	switch status {
-	case SucceededPush:
+	switch input.Status {
+	case core.SucceededPush:
 		LogAccess.Info(output)
-	case FailedPush:
+	case core.FailedPush:
 		LogError.Error(output)
 	}
 }

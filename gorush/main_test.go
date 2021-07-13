@@ -7,11 +7,17 @@ import (
 	"testing"
 
 	"github.com/appleboy/gorush/config"
+	"github.com/appleboy/gorush/logx"
 )
 
 func TestMain(m *testing.M) {
 	PushConf, _ = config.LoadConf("")
-	if err := InitLog(); err != nil {
+	if err := logx.InitLog(
+		PushConf.Log.AccessLevel,
+		PushConf.Log.AccessLog,
+		PushConf.Log.ErrorLevel,
+		PushConf.Log.ErrorLog,
+	); err != nil {
 		log.Fatal(err)
 	}
 

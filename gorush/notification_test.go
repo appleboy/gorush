@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/appleboy/gorush/config"
+	"github.com/appleboy/gorush/core"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -42,13 +43,13 @@ func TestSenMultipleNotifications(t *testing.T) {
 			// ios
 			{
 				Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
-				Platform: PlatFormIos,
+				Platform: core.PlatFormIos,
 				Message:  "Welcome",
 			},
 			// android
 			{
 				Tokens:   []string{androidToken, "bbbbb"},
-				Platform: PlatFormAndroid,
+				Platform: core.PlatFormAndroid,
 				Message:  "Welcome",
 			},
 		},
@@ -78,13 +79,13 @@ func TestDisabledAndroidNotifications(t *testing.T) {
 			// ios
 			{
 				Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
-				Platform: PlatFormIos,
+				Platform: core.PlatFormIos,
 				Message:  "Welcome",
 			},
 			// android
 			{
 				Tokens:   []string{androidToken, "bbbbb"},
-				Platform: PlatFormAndroid,
+				Platform: core.PlatFormAndroid,
 				Message:  "Welcome",
 			},
 		},
@@ -117,13 +118,13 @@ func TestSyncModeForNotifications(t *testing.T) {
 			// ios
 			{
 				Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
-				Platform: PlatFormIos,
+				Platform: core.PlatFormIos,
 				Message:  "Welcome",
 			},
 			// android
 			{
 				Tokens:   []string{androidToken, "bbbbb"},
-				Platform: PlatFormAndroid,
+				Platform: core.PlatFormAndroid,
 				Message:  "Welcome",
 			},
 		},
@@ -152,21 +153,21 @@ func TestSyncModeForTopicNotification(t *testing.T) {
 				// error:InvalidParameters
 				// Check that the provided parameters have the right name and type.
 				To:       "/topics/foo-bar@@@##",
-				Platform: PlatFormAndroid,
+				Platform: core.PlatFormAndroid,
 				Message:  "This is a Firebase Cloud Messaging Topic Message!",
 			},
 			// android
 			{
 				// success
 				To:       "/topics/foo-bar",
-				Platform: PlatFormAndroid,
+				Platform: core.PlatFormAndroid,
 				Message:  "This is a Firebase Cloud Messaging Topic Message!",
 			},
 			// android
 			{
 				// success
 				Condition: "'dogs' in topics || 'cats' in topics",
-				Platform:  PlatFormAndroid,
+				Platform:  core.PlatFormAndroid,
 				Message:   "This is a Firebase Cloud Messaging Topic Message!",
 			},
 		},
@@ -193,7 +194,7 @@ func TestSyncModeForDeviceGroupNotification(t *testing.T) {
 			// android
 			{
 				To:       "aUniqueKey",
-				Platform: PlatFormAndroid,
+				Platform: core.PlatFormAndroid,
 				Message:  "This is a Firebase Cloud Messaging Device Group Message!",
 			},
 		},

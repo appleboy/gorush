@@ -11,6 +11,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/appleboy/gorush/core"
+	"github.com/appleboy/gorush/logx"
+
 	"github.com/mitchellh/mapstructure"
 	"github.com/sideshow/apns2"
 	"github.com/sideshow/apns2/certificate"
@@ -68,7 +71,7 @@ func InitAPNSClient() error {
 			}
 
 			if err != nil {
-				LogError.Error("Cert Error:", err.Error())
+				logx.LogError.Error("Cert Error:", err.Error())
 
 				return err
 			}
@@ -76,7 +79,7 @@ func InitAPNSClient() error {
 			ext = "." + PushConf.Ios.KeyType
 			key, err := base64.StdEncoding.DecodeString(PushConf.Ios.KeyBase64)
 			if err != nil {
-				LogError.Error("base64 decode error:", err.Error())
+				logx.LogError.Error("base64 decode error:", err.Error())
 
 				return err
 			}
@@ -92,7 +95,7 @@ func InitAPNSClient() error {
 			}
 
 			if err != nil {
-				LogError.Error("Cert Error:", err.Error())
+				logx.LogError.Error("Cert Error:", err.Error())
 
 				return err
 			}
@@ -101,7 +104,7 @@ func InitAPNSClient() error {
 		if ext == ".p8" {
 			if PushConf.Ios.KeyID == "" || PushConf.Ios.TeamID == "" {
 				msg := "You should provide ios.KeyID and ios.TeamID for P8 token"
-				LogError.Error(msg)
+				logx.LogError.Error(msg)
 				return errors.New(msg)
 			}
 			token := &token.Token{
@@ -122,7 +125,7 @@ func InitAPNSClient() error {
 		}
 
 		if err != nil {
-			LogError.Error("Transport Error:", err.Error())
+			logx.LogError.Error("Transport Error:", err.Error())
 
 			return err
 		}
@@ -378,7 +381,7 @@ func getApnsClient(req PushNotification) (client *apns2.Client) {
 
 // PushToIOS provide send notification to APNs server.
 func PushToIOS(req PushNotification) {
-	LogAccess.Debug("Start push notification for iOS")
+	logx.LogAccess.Debug("Start push notification for iOS")
 
 	var (
 		retryCount = 0
@@ -412,17 +415,17 @@ Retry:
 					err = errors.New(res.Reason)
 				}
 				// apns server error
-				LogPush(FailedPush, token, req, err)
+				logPush(core.FailedPush, token, req, err)
 
 				if PushConf.Core.Sync {
-					req.AddLog(getLogPushEntry(FailedPush, token, req, err))
+					req.AddLog(createLogPushEntry(core.FailedPush, token, req, err))
 				} else if PushConf.Core.FeedbackURL != "" {
-					go func(logger *logrus.Logger, log LogPushEntry, url string, timeout int64) {
+					go func(logger *logrus.Logger, log logx.LogPushEntry, url string, timeout int64) {
 						err := DispatchFeedback(log, url, timeout)
 						if err != nil {
 							logger.Error(err)
 						}
-					}(LogError, getLogPushEntry(FailedPush, token, req, err), PushConf.Core.FeedbackURL, PushConf.Core.FeedbackTimeout)
+					}(logx.LogError, createLogPushEntry(core.FailedPush, token, req, err), PushConf.Core.FeedbackURL, PushConf.Core.FeedbackTimeout)
 				}
 
 				StatStorage.AddIosError(1)
@@ -434,7 +437,7 @@ Retry:
 			}
 
 			if res != nil && res.Sent() {
-				LogPush(SucceededPush, token, req, nil)
+				logPush(core.SucceededPush, token, req, nil)
 				StatStorage.AddIosSuccess(1)
 			}
 			// free push slot

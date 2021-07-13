@@ -4,8 +4,11 @@ import (
 	"os"
 	"testing"
 
-	"github.com/appleboy/go-fcm"
 	"github.com/appleboy/gorush/config"
+	"github.com/appleboy/gorush/core"
+	"github.com/appleboy/gorush/logx"
+
+	"github.com/appleboy/go-fcm"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -37,7 +40,7 @@ func TestPushToAndroidWrongToken(t *testing.T) {
 
 	req := PushNotification{
 		Tokens:   []string{"aaaaaa", "bbbbb"},
-		Platform: PlatFormAndroid,
+		Platform: core.PlatFormAndroid,
 		Message:  "Welcome",
 	}
 
@@ -57,7 +60,7 @@ func TestPushToAndroidRightTokenForJSONLog(t *testing.T) {
 
 	req := PushNotification{
 		Tokens:   []string{androidToken},
-		Platform: PlatFormAndroid,
+		Platform: core.PlatFormAndroid,
 		Message:  "Welcome",
 	}
 
@@ -74,7 +77,7 @@ func TestPushToAndroidRightTokenForStringLog(t *testing.T) {
 
 	req := PushNotification{
 		Tokens:   []string{androidToken},
-		Platform: PlatFormAndroid,
+		Platform: core.PlatFormAndroid,
 		Message:  "Welcome",
 	}
 
@@ -92,12 +95,12 @@ func TestOverwriteAndroidAPIKey(t *testing.T) {
 
 	req := PushNotification{
 		Tokens:   []string{androidToken, "bbbbb"},
-		Platform: PlatFormAndroid,
+		Platform: core.PlatFormAndroid,
 		Message:  "Welcome",
 		// overwrite android api key
 		APIKey: "1234",
 
-		log: &[]LogPushEntry{},
+		log: &[]logx.LogPushEntry{},
 	}
 
 	// FCM server error: 401 error: 401 Unauthorized (Wrong API Key)
@@ -131,7 +134,7 @@ func TestFCMMessage(t *testing.T) {
 	// ignore check token length if send topic message
 	req = PushNotification{
 		Message:  "Test",
-		Platform: PlatFormAndroid,
+		Platform: core.PlatFormAndroid,
 		To:       "/topics/foo-bar",
 	}
 
@@ -141,7 +144,7 @@ func TestFCMMessage(t *testing.T) {
 	// "condition": "'dogs' in topics || 'cats' in topics",
 	req = PushNotification{
 		Message:   "Test",
-		Platform:  PlatFormAndroid,
+		Platform:  core.PlatFormAndroid,
 		Condition: "'dogs' in topics || 'cats' in topics",
 	}
 
@@ -151,7 +154,7 @@ func TestFCMMessage(t *testing.T) {
 	// the message may specify at most 1000 registration IDs
 	req = PushNotification{
 		Message:  "Test",
-		Platform: PlatFormAndroid,
+		Platform: core.PlatFormAndroid,
 		Tokens:   make([]string, 1001),
 	}
 
@@ -163,7 +166,7 @@ func TestFCMMessage(t *testing.T) {
 	timeToLive := uint(2419201)
 	req = PushNotification{
 		Message:    "Test",
-		Platform:   PlatFormAndroid,
+		Platform:   core.PlatFormAndroid,
 		Tokens:     []string{"XXXXXXXXX"},
 		TimeToLive: &timeToLive,
 	}
@@ -175,7 +178,7 @@ func TestFCMMessage(t *testing.T) {
 	timeToLive = uint(86400)
 	req = PushNotification{
 		Message:    "Test",
-		Platform:   PlatFormAndroid,
+		Platform:   core.PlatFormAndroid,
 		Tokens:     []string{"XXXXXXXXX"},
 		TimeToLive: &timeToLive,
 	}
@@ -193,7 +196,7 @@ func TestCheckAndroidMessage(t *testing.T) {
 	timeToLive := uint(2419201)
 	req := PushNotification{
 		Tokens:     []string{"aaaaaa", "bbbbb"},
-		Platform:   PlatFormAndroid,
+		Platform:   core.PlatFormAndroid,
 		Message:    "Welcome",
 		TimeToLive: &timeToLive,
 	}

@@ -7,13 +7,14 @@ import (
 	"testing"
 
 	"github.com/appleboy/gorush/config"
+	"github.com/appleboy/gorush/logx"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestEmptyFeedbackURL(t *testing.T) {
 	// PushConf, _ = config.LoadConf("")
-	logEntry := LogPushEntry{
+	logEntry := logx.LogPushEntry{
 		ID:       "",
 		Type:     "",
 		Platform: "",
@@ -29,7 +30,7 @@ func TestEmptyFeedbackURL(t *testing.T) {
 func TestHTTPErrorInFeedbackCall(t *testing.T) {
 	config, _ := config.LoadConf("")
 	config.Core.FeedbackURL = "http://test.example.com/api/"
-	logEntry := LogPushEntry{
+	logEntry := logx.LogPushEntry{
 		ID:       "",
 		Type:     "",
 		Platform: "",
@@ -60,7 +61,7 @@ func TestSuccessfulFeedbackCall(t *testing.T) {
 
 	config, _ := config.LoadConf("")
 	config.Core.FeedbackURL = httpMock.URL
-	logEntry := LogPushEntry{
+	logEntry := logx.LogPushEntry{
 		ID:       "",
 		Type:     "",
 		Platform: "",

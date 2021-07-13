@@ -6,7 +6,9 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/appleboy/gorush/core"
 	"github.com/appleboy/gorush/gorush"
+	"github.com/appleboy/gorush/logx"
 	"github.com/appleboy/gorush/rpc/proto"
 
 	"google.golang.org/grpc"
@@ -70,7 +72,7 @@ func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*prot
 		notification.Badge = &badge
 	}
 
-	if in.Topic != "" && in.Platform == gorush.PlatFormAndroid {
+	if in.Topic != "" && in.Platform == core.PlatFormAndroid {
 		notification.To = in.Topic
 	}
 
@@ -107,7 +109,7 @@ func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*prot
 // RunGRPCServer run gorush grpc server
 func RunGRPCServer(ctx context.Context) error {
 	if !gorush.PushConf.GRPC.Enabled {
-		gorush.LogAccess.Info("gRPC server is disabled.")
+		logx.LogAccess.Info("gRPC server is disabled.")
 		return nil
 	}
 
@@ -121,19 +123,19 @@ func RunGRPCServer(ctx context.Context) error {
 
 	lis, err := net.Listen("tcp", ":"+gorush.PushConf.GRPC.Port)
 	if err != nil {
-		gorush.LogError.Fatalln(err)
+		logx.LogError.Fatalln(err)
 		return err
 	}
-	gorush.LogAccess.Info("gRPC server is running on " + gorush.PushConf.GRPC.Port + " port.")
+	logx.LogAccess.Info("gRPC server is running on " + gorush.PushConf.GRPC.Port + " port.")
 	go func() {
 		select {
 		case <-ctx.Done():
 			s.GracefulStop() // graceful shutdown
-			gorush.LogAccess.Info("shutdown the gRPC server")
+			logx.LogAccess.Info("shutdown the gRPC server")
 		}
 	}()
 	if err = s.Serve(lis); err != nil {
-		gorush.LogError.Fatalln(err)
+		logx.LogError.Fatalln(err)
 	}
 	return err
 }
