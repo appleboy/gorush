@@ -28,7 +28,7 @@ func TestGracefulShutDownGRPCServer(t *testing.T) {
 	// Run gRPC server
 	ctx, gRPCContextCancel := context.WithCancel(context.Background())
 	go func() {
-		if err := RunGRPCServer(ctx); err != nil {
+		if err := RunGRPCServer(ctx, gorush.PushConf); err != nil {
 			panic(err)
 		}
 	}()

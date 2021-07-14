@@ -100,13 +100,13 @@ func TestOverwriteAndroidAPIKey(t *testing.T) {
 		// overwrite android api key
 		APIKey: "1234",
 
-		log: &[]logx.LogPushEntry{},
+		Log: &[]logx.LogPushEntry{},
 	}
 
 	// FCM server error: 401 error: 401 Unauthorized (Wrong API Key)
 	PushToAndroid(req)
 
-	assert.Len(t, *req.log, 2)
+	assert.Len(t, *req.Log, 2)
 }
 
 func TestFCMMessage(t *testing.T) {

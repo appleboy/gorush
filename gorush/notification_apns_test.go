@@ -1,17 +1,14 @@
 package gorush
 
 import (
-	"context"
 	"encoding/json"
 	"log"
 	"net/http"
 	"net/url"
-	"os"
 	"testing"
 	"time"
 
 	"github.com/appleboy/gorush/config"
-	"github.com/appleboy/gorush/core"
 	"github.com/appleboy/gorush/status"
 	"github.com/buger/jsonparser"
 	"github.com/sideshow/apns2"
@@ -564,42 +561,6 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 	assert.Contains(t, titleLocArgs, "b")
 	assert.Contains(t, locArgs, "a")
 	assert.Contains(t, locArgs, "b")
-}
-
-func TestDisabledIosNotifications(t *testing.T) {
-	ctx := context.Background()
-	PushConf, _ = config.LoadConf("")
-
-	PushConf.Ios.Enabled = false
-	PushConf.Ios.KeyPath = "../certificate/certificate-valid.pem"
-	err := InitAPNSClient()
-	assert.Nil(t, err)
-
-	PushConf.Android.Enabled = true
-	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
-
-	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
-
-	req := RequestPush{
-		Notifications: []PushNotification{
-			// ios
-			{
-				Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
-				Platform: core.PlatFormIos,
-				Message:  "Welcome",
-			},
-			// android
-			{
-				Tokens:   []string{androidToken, androidToken + "_"},
-				Platform: core.PlatFormAndroid,
-				Message:  "Welcome",
-			},
-		},
-	}
-
-	count, logs := HandleNotification(ctx, req)
-	assert.Equal(t, 2, count)
-	assert.Equal(t, 0, len(logs))
 }
 
 func TestWrongIosCertificateExt(t *testing.T) {

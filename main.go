@@ -11,7 +11,6 @@ import (
 	"os/signal"
 	"path/filepath"
 	"strconv"
-	"sync"
 	"syscall"
 	"time"
 
@@ -19,6 +18,7 @@ import (
 	"github.com/appleboy/gorush/core"
 	"github.com/appleboy/gorush/gorush"
 	"github.com/appleboy/gorush/logx"
+	"github.com/appleboy/gorush/queue"
 	"github.com/appleboy/gorush/router"
 	"github.com/appleboy/gorush/rpc"
 	"github.com/appleboy/gorush/status"
@@ -314,13 +314,18 @@ func main() {
 		logx.LogError.Fatal(err)
 	}
 
+	q := queue.NewQueue(int(gorush.PushConf.Core.WorkerNum), int(gorush.PushConf.Core.QueueNum))
+	q.Start()
+
 	finished := make(chan struct{})
-	wg := &sync.WaitGroup{}
-	wg.Add(int(gorush.PushConf.Core.WorkerNum))
+	// wg := &sync.WaitGroup{}
+	// wg.Add(int(gorush.PushConf.Core.WorkerNum))
 	ctx := withContextFunc(context.Background(), func() {
-		logx.LogAccess.Info("close the notification queue channel, current queue len: ", len(gorush.QueueNotification))
-		close(gorush.QueueNotification)
-		wg.Wait()
+		logx.LogAccess.Info("close the notification queue channel, current queue len: ", q.Usage())
+		// close(gorush.QueueNotification)
+		// wg.Wait()
+		q.Stop()
+		q.Wait()
 		logx.LogAccess.Info("the notification queue has been clear")
 		close(finished)
 		// close the connection with storage
@@ -330,7 +335,8 @@ func main() {
 		}
 	})
 
-	gorush.InitWorkers(ctx, wg, gorush.PushConf.Core.WorkerNum, gorush.PushConf.Core.QueueNum)
+	// gorush.InitQueue(gorush.PushConf.Core.WorkerNum, gorush.PushConf.Core.QueueNum)
+	// gorush.InitWorkers(ctx, wg, gorush.PushConf.Core.WorkerNum, gorush.PushConf.Core.QueueNum)
 
 	if gorush.PushConf.Ios.Enabled {
 		if err = gorush.InitAPNSClient(); err != nil {
@@ -354,12 +360,12 @@ func main() {
 
 	// Run httpd server
 	g.Go(func() error {
-		return router.RunHTTPServer(ctx, gorush.PushConf)
+		return router.RunHTTPServer(ctx, gorush.PushConf, q)
 	})
 
 	// Run gRPC internal server
 	g.Go(func() error {
-		return rpc.RunGRPCServer(ctx)
+		return rpc.RunGRPCServer(ctx, gorush.PushConf)
 	})
 
 	// check job completely

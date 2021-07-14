@@ -54,8 +54,8 @@ type RequestPush struct {
 
 // PushNotification is single notification request
 type PushNotification struct {
-	wg  *sync.WaitGroup
-	log *[]logx.LogPushEntry
+	Wg  *sync.WaitGroup
+	Log *[]logx.LogPushEntry
 
 	// Common
 	ID               string      `json:"notif_id,omitempty"`
@@ -112,22 +112,22 @@ type PushNotification struct {
 
 // WaitDone decrements the WaitGroup counter.
 func (p *PushNotification) WaitDone() {
-	if p.wg != nil {
-		p.wg.Done()
+	if p.Wg != nil {
+		p.Wg.Done()
 	}
 }
 
 // AddWaitCount increments the WaitGroup counter.
 func (p *PushNotification) AddWaitCount() {
-	if p.wg != nil {
-		p.wg.Add(1)
+	if p.Wg != nil {
+		p.Wg.Add(1)
 	}
 }
 
 // AddLog record fail log of notification
 func (p *PushNotification) AddLog(log logx.LogPushEntry) {
-	if p.log != nil {
-		*p.log = append(*p.log, log)
+	if p.Log != nil {
+		*p.Log = append(*p.Log, log)
 	}
 }
 
@@ -234,4 +234,20 @@ func CheckPushConf() error {
 	}
 
 	return nil
+}
+
+// SendNotification send notification
+func SendNotification(req PushNotification) {
+	if PushConf.Core.Sync {
+		defer req.WaitDone()
+	}
+
+	switch req.Platform {
+	case core.PlatFormIos:
+		PushToIOS(req)
+	case core.PlatFormAndroid:
+		PushToAndroid(req)
+	case core.PlatFormHuawei:
+		PushToHuawei(req)
+	}
 }

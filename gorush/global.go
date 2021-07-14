@@ -11,8 +11,6 @@ import (
 var (
 	// PushConf is gorush config
 	PushConf config.ConfYaml
-	// QueueNotification is chan type
-	QueueNotification chan PushNotification
 	// ApnsClient is apns client
 	ApnsClient *apns2.Client
 	// FCMClient is apns client
