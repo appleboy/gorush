@@ -25,7 +25,8 @@ func TestMissingAndroidAPIKey(t *testing.T) {
 }
 
 func TestMissingKeyForInitFCMClient(t *testing.T) {
-	cfg, _ := config.LoadConf("")
+	cfg, _ := config.LoadConf()
+	cfg.Android.APIKey = ""
 	client, err := InitFCMClient(cfg, "")
 
 	assert.Nil(t, client)
