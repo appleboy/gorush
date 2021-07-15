@@ -45,6 +45,10 @@ func (s *Worker) Enqueue(job interface{}) error {
 	}
 }
 
+func (s *Worker) Config(cfg config.ConfYaml) {
+	s.cfg = cfg
+}
+
 // NewWorker for struct
 func NewWorker(cfg config.ConfYaml) *Worker {
 	return &Worker{

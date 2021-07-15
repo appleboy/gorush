@@ -49,6 +49,10 @@ func (q *Queue) Usage() int {
 	return q.worker.Usage()
 }
 
+func (q *Queue) Config(cfg config.ConfYaml) {
+	q.worker.Config(cfg)
+}
+
 // Start to enable all worker
 func (q *Queue) Start() {
 	q.startWorker()
