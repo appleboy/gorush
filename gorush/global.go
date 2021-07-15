@@ -7,8 +7,6 @@ import (
 )
 
 var (
-	// PushConf is gorush config
-	// PushConf config.ConfYaml
 	// ApnsClient is apns client
 	ApnsClient *apns2.Client
 	// FCMClient is apns client
