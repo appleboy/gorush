@@ -45,6 +45,7 @@ func (s *Worker) Enqueue(job interface{}) error {
 	}
 }
 
+// Config update current config
 func (s *Worker) Config(cfg config.ConfYaml) {
 	s.cfg = cfg
 }

@@ -49,6 +49,7 @@ func (q *Queue) Usage() int {
 	return q.worker.Usage()
 }
 
+// Config update current config
 func (q *Queue) Config(cfg config.ConfYaml) {
 	q.worker.Config(cfg)
 }
