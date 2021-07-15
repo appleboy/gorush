@@ -11,6 +11,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/core"
 	"github.com/appleboy/gorush/logx"
 	"github.com/appleboy/gorush/status"
@@ -50,23 +51,23 @@ type Sound struct {
 }
 
 // InitAPNSClient use for initialize APNs Client.
-func InitAPNSClient() error {
-	if PushConf.Ios.Enabled {
+func InitAPNSClient(cfg config.ConfYaml) error {
+	if cfg.Ios.Enabled {
 		var err error
 		var authKey *ecdsa.PrivateKey
 		var certificateKey tls.Certificate
 		var ext string
 
-		if PushConf.Ios.KeyPath != "" {
-			ext = filepath.Ext(PushConf.Ios.KeyPath)
+		if cfg.Ios.KeyPath != "" {
+			ext = filepath.Ext(cfg.Ios.KeyPath)
 
 			switch ext {
 			case ".p12":
-				certificateKey, err = certificate.FromP12File(PushConf.Ios.KeyPath, PushConf.Ios.Password)
+				certificateKey, err = certificate.FromP12File(cfg.Ios.KeyPath, cfg.Ios.Password)
 			case ".pem":
-				certificateKey, err = certificate.FromPemFile(PushConf.Ios.KeyPath, PushConf.Ios.Password)
+				certificateKey, err = certificate.FromPemFile(cfg.Ios.KeyPath, cfg.Ios.Password)
 			case ".p8":
-				authKey, err = token.AuthKeyFromFile(PushConf.Ios.KeyPath)
+				authKey, err = token.AuthKeyFromFile(cfg.Ios.KeyPath)
 			default:
 				err = errors.New("wrong certificate key extension")
 			}
@@ -76,9 +77,9 @@ func InitAPNSClient() error {
 
 				return err
 			}
-		} else if PushConf.Ios.KeyBase64 != "" {
-			ext = "." + PushConf.Ios.KeyType
-			key, err := base64.StdEncoding.DecodeString(PushConf.Ios.KeyBase64)
+		} else if cfg.Ios.KeyBase64 != "" {
+			ext = "." + cfg.Ios.KeyType
+			key, err := base64.StdEncoding.DecodeString(cfg.Ios.KeyBase64)
 			if err != nil {
 				logx.LogError.Error("base64 decode error:", err.Error())
 
@@ -86,9 +87,9 @@ func InitAPNSClient() error {
 			}
 			switch ext {
 			case ".p12":
-				certificateKey, err = certificate.FromP12Bytes(key, PushConf.Ios.Password)
+				certificateKey, err = certificate.FromP12Bytes(key, cfg.Ios.Password)
 			case ".pem":
-				certificateKey, err = certificate.FromPemBytes(key, PushConf.Ios.Password)
+				certificateKey, err = certificate.FromPemBytes(key, cfg.Ios.Password)
 			case ".p8":
 				authKey, err = token.AuthKeyFromBytes(key)
 			default:
@@ -103,7 +104,7 @@ func InitAPNSClient() error {
 		}
 
 		if ext == ".p8" {
-			if PushConf.Ios.KeyID == "" || PushConf.Ios.TeamID == "" {
+			if cfg.Ios.KeyID == "" || cfg.Ios.TeamID == "" {
 				msg := "You should provide ios.KeyID and ios.TeamID for P8 token"
 				logx.LogError.Error(msg)
 				return errors.New(msg)
@@ -111,14 +112,14 @@ func InitAPNSClient() error {
 			token := &token.Token{
 				AuthKey: authKey,
 				// KeyID from developer account (Certificates, Identifiers & Profiles -> Keys)
-				KeyID: PushConf.Ios.KeyID,
+				KeyID: cfg.Ios.KeyID,
 				// TeamID from developer account (View Account -> Membership)
-				TeamID: PushConf.Ios.TeamID,
+				TeamID: cfg.Ios.TeamID,
 			}
 
-			ApnsClient, err = newApnsTokenClient(token)
+			ApnsClient, err = newApnsTokenClient(cfg, token)
 		} else {
-			ApnsClient, err = newApnsClient(certificateKey)
+			ApnsClient, err = newApnsClient(cfg, certificateKey)
 		}
 
 		if h2Transport, ok := ApnsClient.HTTPClient.Transport.(*http2.Transport); ok {
@@ -135,16 +136,16 @@ func InitAPNSClient() error {
 	return nil
 }
 
-func newApnsClient(certificate tls.Certificate) (*apns2.Client, error) {
+func newApnsClient(cfg config.ConfYaml, certificate tls.Certificate) (*apns2.Client, error) {
 	var client *apns2.Client
 
-	if PushConf.Ios.Production {
+	if cfg.Ios.Production {
 		client = apns2.NewClient(certificate).Production()
 	} else {
 		client = apns2.NewClient(certificate).Development()
 	}
 
-	if PushConf.Core.HTTPProxy == "" {
+	if cfg.Core.HTTPProxy == "" {
 		return client, nil
 	}
 
@@ -175,16 +176,16 @@ func newApnsClient(certificate tls.Certificate) (*apns2.Client, error) {
 	return client, nil
 }
 
-func newApnsTokenClient(token *token.Token) (*apns2.Client, error) {
+func newApnsTokenClient(cfg config.ConfYaml, token *token.Token) (*apns2.Client, error) {
 	var client *apns2.Client
 
-	if PushConf.Ios.Production {
+	if cfg.Ios.Production {
 		client = apns2.NewTokenClient(token).Production()
 	} else {
 		client = apns2.NewTokenClient(token).Development()
 	}
 
-	if PushConf.Core.HTTPProxy == "" {
+	if cfg.Core.HTTPProxy == "" {
 		return client, nil
 	}
 
@@ -365,13 +366,13 @@ func GetIOSNotification(req PushNotification) *apns2.Notification {
 	return notification
 }
 
-func getApnsClient(req PushNotification) (client *apns2.Client) {
+func getApnsClient(cfg config.ConfYaml, req PushNotification) (client *apns2.Client) {
 	if req.Production {
 		client = ApnsClient.Production()
 	} else if req.Development {
 		client = ApnsClient.Development()
 	} else {
-		if PushConf.Ios.Production {
+		if cfg.Ios.Production {
 			client = ApnsClient.Production()
 		} else {
 			client = ApnsClient.Development()
@@ -381,12 +382,12 @@ func getApnsClient(req PushNotification) (client *apns2.Client) {
 }
 
 // PushToIOS provide send notification to APNs server.
-func PushToIOS(req PushNotification) {
+func PushToIOS(cfg config.ConfYaml, req PushNotification) {
 	logx.LogAccess.Debug("Start push notification for iOS")
 
 	var (
 		retryCount = 0
-		maxRetry   = PushConf.Ios.MaxRetry
+		maxRetry   = cfg.Ios.MaxRetry
 	)
 
 	if req.Retry > 0 && req.Retry < maxRetry {
@@ -397,7 +398,7 @@ Retry:
 	var newTokens []string
 
 	notification := GetIOSNotification(req)
-	client := getApnsClient(req)
+	client := getApnsClient(cfg, req)
 
 	var wg sync.WaitGroup
 	for _, token := range req.Tokens {
@@ -416,17 +417,17 @@ Retry:
 					err = errors.New(res.Reason)
 				}
 				// apns server error
-				logPush(core.FailedPush, token, req, err)
+				logPush(cfg, core.FailedPush, token, req, err)
 
-				if PushConf.Core.Sync {
-					req.AddLog(createLogPushEntry(core.FailedPush, token, req, err))
-				} else if PushConf.Core.FeedbackURL != "" {
+				if cfg.Core.Sync {
+					req.AddLog(createLogPushEntry(cfg, core.FailedPush, token, req, err))
+				} else if cfg.Core.FeedbackURL != "" {
 					go func(logger *logrus.Logger, log logx.LogPushEntry, url string, timeout int64) {
 						err := DispatchFeedback(log, url, timeout)
 						if err != nil {
 							logger.Error(err)
 						}
-					}(logx.LogError, createLogPushEntry(core.FailedPush, token, req, err), PushConf.Core.FeedbackURL, PushConf.Core.FeedbackTimeout)
+					}(logx.LogError, createLogPushEntry(cfg, core.FailedPush, token, req, err), cfg.Core.FeedbackURL, cfg.Core.FeedbackTimeout)
 				}
 
 				status.StatStorage.AddIosError(1)
@@ -438,7 +439,7 @@ Retry:
 			}
 
 			if res != nil && res.Sent() {
-				logPush(core.SucceededPush, token, req, nil)
+				logPush(cfg, core.SucceededPush, token, req, nil)
 				status.StatStorage.AddIosSuccess(1)
 			}
 			// free push slot

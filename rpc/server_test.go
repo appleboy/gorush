@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/appleboy/gorush/gorush"
+	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/logx"
 
 	"google.golang.org/grpc"
@@ -13,22 +13,29 @@ import (
 
 const gRPCAddr = "localhost:9000"
 
+func initTest() config.ConfYaml {
+	cfg, _ := config.LoadConf()
+	cfg.Core.Mode = "test"
+	return cfg
+}
+
 func TestGracefulShutDownGRPCServer(t *testing.T) {
+	cfg := initTest()
 	// server configs
 	logx.InitLog(
-		gorush.PushConf.Log.AccessLevel,
-		gorush.PushConf.Log.AccessLog,
-		gorush.PushConf.Log.ErrorLevel,
-		gorush.PushConf.Log.ErrorLog,
+		cfg.Log.AccessLevel,
+		cfg.Log.AccessLog,
+		cfg.Log.ErrorLevel,
+		cfg.Log.ErrorLog,
 	)
-	gorush.PushConf.GRPC.Enabled = true
-	gorush.PushConf.GRPC.Port = "9000"
-	gorush.PushConf.Log.Format = "json"
+	cfg.GRPC.Enabled = true
+	cfg.GRPC.Port = "9000"
+	cfg.Log.Format = "json"
 
 	// Run gRPC server
 	ctx, gRPCContextCancel := context.WithCancel(context.Background())
 	go func() {
-		if err := RunGRPCServer(ctx, gorush.PushConf); err != nil {
+		if err := RunGRPCServer(ctx, cfg); err != nil {
 			panic(err)
 		}
 	}()

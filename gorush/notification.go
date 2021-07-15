@@ -9,6 +9,7 @@ import (
 	"sync"
 
 	"github.com/appleboy/go-fcm"
+	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/core"
 	"github.com/appleboy/gorush/logx"
 	"github.com/msalihkarakasli/go-hms-push/push/model"
@@ -199,36 +200,36 @@ func SetProxy(proxy string) error {
 }
 
 // CheckPushConf provide check your yml config.
-func CheckPushConf() error {
-	if !PushConf.Ios.Enabled && !PushConf.Android.Enabled && !PushConf.Huawei.Enabled {
+func CheckPushConf(cfg config.ConfYaml) error {
+	if !cfg.Ios.Enabled && !cfg.Android.Enabled && !cfg.Huawei.Enabled {
 		return errors.New("Please enable iOS, Android or Huawei config in yml config")
 	}
 
-	if PushConf.Ios.Enabled {
-		if PushConf.Ios.KeyPath == "" && PushConf.Ios.KeyBase64 == "" {
+	if cfg.Ios.Enabled {
+		if cfg.Ios.KeyPath == "" && cfg.Ios.KeyBase64 == "" {
 			return errors.New("Missing iOS certificate key")
 		}
 
 		// check certificate file exist
-		if PushConf.Ios.KeyPath != "" {
-			if _, err := os.Stat(PushConf.Ios.KeyPath); os.IsNotExist(err) {
+		if cfg.Ios.KeyPath != "" {
+			if _, err := os.Stat(cfg.Ios.KeyPath); os.IsNotExist(err) {
 				return errors.New("certificate file does not exist")
 			}
 		}
 	}
 
-	if PushConf.Android.Enabled {
-		if PushConf.Android.APIKey == "" {
+	if cfg.Android.Enabled {
+		if cfg.Android.APIKey == "" {
 			return errors.New("Missing Android API Key")
 		}
 	}
 
-	if PushConf.Huawei.Enabled {
-		if PushConf.Huawei.AppSecret == "" {
+	if cfg.Huawei.Enabled {
+		if cfg.Huawei.AppSecret == "" {
 			return errors.New("Missing Huawei App Secret")
 		}
 
-		if PushConf.Huawei.AppID == "" {
+		if cfg.Huawei.AppID == "" {
 			return errors.New("Missing Huawei App ID")
 		}
 	}
@@ -237,17 +238,17 @@ func CheckPushConf() error {
 }
 
 // SendNotification send notification
-func SendNotification(req PushNotification) {
-	if PushConf.Core.Sync {
+func SendNotification(cfg config.ConfYaml, req PushNotification) {
+	if cfg.Core.Sync {
 		defer req.WaitDone()
 	}
 
 	switch req.Platform {
 	case core.PlatFormIos:
-		PushToIOS(req)
+		PushToIOS(cfg, req)
 	case core.PlatFormAndroid:
-		PushToAndroid(req)
+		PushToAndroid(cfg, req)
 	case core.PlatFormHuawei:
-		PushToHuawei(req)
+		PushToHuawei(cfg, req)
 	}
 }

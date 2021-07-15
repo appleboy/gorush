@@ -13,7 +13,7 @@ import (
 )
 
 func TestEmptyFeedbackURL(t *testing.T) {
-	// PushConf, _ = config.LoadConf("")
+	cfg, _ := config.LoadConf()
 	logEntry := logx.LogPushEntry{
 		ID:       "",
 		Type:     "",
@@ -23,7 +23,7 @@ func TestEmptyFeedbackURL(t *testing.T) {
 		Error:    "",
 	}
 
-	err := DispatchFeedback(logEntry, PushConf.Core.FeedbackURL, PushConf.Core.FeedbackTimeout)
+	err := DispatchFeedback(logEntry, cfg.Core.FeedbackURL, cfg.Core.FeedbackTimeout)
 	assert.NotNil(t, err)
 }
 

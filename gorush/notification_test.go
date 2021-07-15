@@ -8,15 +8,15 @@ import (
 )
 
 func TestCorrectConf(t *testing.T) {
-	PushConf, _ = config.LoadConf("")
+	cfg, _ := config.LoadConf()
 
-	PushConf.Android.Enabled = true
-	PushConf.Android.APIKey = "xxxxx"
+	cfg.Android.Enabled = true
+	cfg.Android.APIKey = "xxxxx"
 
-	PushConf.Ios.Enabled = true
-	PushConf.Ios.KeyPath = "../certificate/certificate-valid.pem"
+	cfg.Ios.Enabled = true
+	cfg.Ios.KeyPath = "../certificate/certificate-valid.pem"
 
-	err := CheckPushConf()
+	err := CheckPushConf(cfg)
 
 	assert.NoError(t, err)
 }

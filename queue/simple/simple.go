@@ -3,18 +3,20 @@ package simple
 import (
 	"errors"
 
+	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/gorush"
 )
 
 // Worker for simple queue using channel
 type Worker struct {
+	cfg               config.ConfYaml
 	queueNotification chan gorush.PushNotification
 }
 
 // Run start the worker
 func (s *Worker) Run(_ chan struct{}) {
 	for notification := range s.queueNotification {
-		gorush.SendNotification(notification)
+		gorush.SendNotification(s.cfg, notification)
 	}
 }
 
@@ -44,8 +46,9 @@ func (s *Worker) Enqueue(job interface{}) error {
 }
 
 // NewWorker for struct
-func NewWorker(num int) *Worker {
+func NewWorker(cfg config.ConfYaml) *Worker {
 	return &Worker{
-		queueNotification: make(chan gorush.PushNotification, num),
+		cfg:               cfg,
+		queueNotification: make(chan gorush.PushNotification, cfg.Core.QueueNum),
 	}
 }

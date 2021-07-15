@@ -44,7 +44,7 @@ func TestMain(m *testing.M) {
 		log.Fatal(err)
 	}
 
-	q = queue.NewQueue(int(cfg.Core.WorkerNum), int(cfg.Core.QueueNum))
+	q = queue.NewQueue(cfg)
 	q.Start()
 
 	m.Run()
@@ -457,7 +457,7 @@ func TestSenMultipleNotifications(t *testing.T) {
 
 	cfg.Ios.Enabled = true
 	cfg.Ios.KeyPath = "../certificate/certificate-valid.pem"
-	err := gorush.InitAPNSClient()
+	err := gorush.InitAPNSClient(cfg)
 	assert.Nil(t, err)
 
 	cfg.Android.Enabled = true
@@ -493,7 +493,7 @@ func TestDisabledAndroidNotifications(t *testing.T) {
 
 	cfg.Ios.Enabled = true
 	cfg.Ios.KeyPath = "../certificate/certificate-valid.pem"
-	err := gorush.InitAPNSClient()
+	err := gorush.InitAPNSClient(cfg)
 	assert.Nil(t, err)
 
 	cfg.Android.Enabled = false
@@ -529,7 +529,7 @@ func TestSyncModeForNotifications(t *testing.T) {
 
 	cfg.Ios.Enabled = true
 	cfg.Ios.KeyPath = "../certificate/certificate-valid.pem"
-	err := gorush.InitAPNSClient()
+	err := gorush.InitAPNSClient(cfg)
 	assert.Nil(t, err)
 
 	cfg.Android.Enabled = true
@@ -638,7 +638,7 @@ func TestDisabledIosNotifications(t *testing.T) {
 
 	cfg.Ios.Enabled = false
 	cfg.Ios.KeyPath = "../certificate/certificate-valid.pem"
-	err := gorush.InitAPNSClient()
+	err := gorush.InitAPNSClient(cfg)
 	assert.Nil(t, err)
 
 	cfg.Android.Enabled = true

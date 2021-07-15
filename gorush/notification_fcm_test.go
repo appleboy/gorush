@@ -13,19 +13,20 @@ import (
 )
 
 func TestMissingAndroidAPIKey(t *testing.T) {
-	PushConf, _ = config.LoadConf("")
+	cfg, _ := config.LoadConf()
 
-	PushConf.Android.Enabled = true
-	PushConf.Android.APIKey = ""
+	cfg.Android.Enabled = true
+	cfg.Android.APIKey = ""
 
-	err := CheckPushConf()
+	err := CheckPushConf(cfg)
 
 	assert.Error(t, err)
 	assert.Equal(t, "Missing Android API Key", err.Error())
 }
 
 func TestMissingKeyForInitFCMClient(t *testing.T) {
-	client, err := InitFCMClient("")
+	cfg, _ := config.LoadConf("")
+	client, err := InitFCMClient(cfg, "")
 
 	assert.Nil(t, client)
 	assert.Error(t, err)
@@ -33,10 +34,10 @@ func TestMissingKeyForInitFCMClient(t *testing.T) {
 }
 
 func TestPushToAndroidWrongToken(t *testing.T) {
-	PushConf, _ = config.LoadConf("")
+	cfg, _ := config.LoadConf()
 
-	PushConf.Android.Enabled = true
-	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+	cfg.Android.Enabled = true
+	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
 
 	req := PushNotification{
 		Tokens:   []string{"aaaaaa", "bbbbb"},
@@ -45,16 +46,16 @@ func TestPushToAndroidWrongToken(t *testing.T) {
 	}
 
 	// Android Success count: 0, Failure count: 2
-	PushToAndroid(req)
+	PushToAndroid(cfg, req)
 }
 
 func TestPushToAndroidRightTokenForJSONLog(t *testing.T) {
-	PushConf, _ = config.LoadConf("")
+	cfg, _ := config.LoadConf()
 
-	PushConf.Android.Enabled = true
-	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+	cfg.Android.Enabled = true
+	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
 	// log for json
-	PushConf.Log.Format = "json"
+	cfg.Log.Format = "json"
 
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
@@ -64,14 +65,14 @@ func TestPushToAndroidRightTokenForJSONLog(t *testing.T) {
 		Message:  "Welcome",
 	}
 
-	PushToAndroid(req)
+	PushToAndroid(cfg, req)
 }
 
 func TestPushToAndroidRightTokenForStringLog(t *testing.T) {
-	PushConf, _ = config.LoadConf("")
+	cfg, _ := config.LoadConf()
 
-	PushConf.Android.Enabled = true
-	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+	cfg.Android.Enabled = true
+	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
 
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
@@ -81,15 +82,15 @@ func TestPushToAndroidRightTokenForStringLog(t *testing.T) {
 		Message:  "Welcome",
 	}
 
-	PushToAndroid(req)
+	PushToAndroid(cfg, req)
 }
 
 func TestOverwriteAndroidAPIKey(t *testing.T) {
-	PushConf, _ = config.LoadConf("")
+	cfg, _ := config.LoadConf()
 
-	PushConf.Core.Sync = true
-	PushConf.Android.Enabled = true
-	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+	cfg.Core.Sync = true
+	cfg.Android.Enabled = true
+	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
 
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
@@ -104,7 +105,7 @@ func TestOverwriteAndroidAPIKey(t *testing.T) {
 	}
 
 	// FCM server error: 401 error: 401 Unauthorized (Wrong API Key)
-	PushToAndroid(req)
+	PushToAndroid(cfg, req)
 
 	assert.Len(t, *req.Log, 2)
 }
@@ -188,10 +189,10 @@ func TestFCMMessage(t *testing.T) {
 }
 
 func TestCheckAndroidMessage(t *testing.T) {
-	PushConf, _ = config.LoadConf("")
+	cfg, _ := config.LoadConf()
 
-	PushConf.Android.Enabled = true
-	PushConf.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+	cfg.Android.Enabled = true
+	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
 
 	timeToLive := uint(2419201)
 	req := PushNotification{
@@ -201,7 +202,7 @@ func TestCheckAndroidMessage(t *testing.T) {
 		TimeToLive: &timeToLive,
 	}
 
-	PushToAndroid(req)
+	PushToAndroid(cfg, req)
 }
 
 func TestAndroidNotificationStructure(t *testing.T) {

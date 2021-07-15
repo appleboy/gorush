@@ -34,10 +34,10 @@ var isTerm bool
 
 func init() {
 	// Support metrics
-	// m := metric.NewMetrics(func() int {
-	// 	return len(gorush.QueueNotification)
-	// })
-	m := metric.NewMetrics()
+	m := metric.NewMetrics(func() int {
+		return 1
+	})
+	// m := metric.NewMetrics()
 	prometheus.MustRegister(m)
 	isTerm = isatty.IsTerminal(os.Stdout.Fd())
 }

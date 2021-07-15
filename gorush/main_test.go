@@ -10,17 +10,17 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	PushConf, _ = config.LoadConf("")
+	cfg, _ := config.LoadConf()
 	if err := logx.InitLog(
-		PushConf.Log.AccessLevel,
-		PushConf.Log.AccessLog,
-		PushConf.Log.ErrorLevel,
-		PushConf.Log.ErrorLog,
+		cfg.Log.AccessLevel,
+		cfg.Log.AccessLog,
+		cfg.Log.ErrorLevel,
+		cfg.Log.ErrorLog,
 	); err != nil {
 		log.Fatal(err)
 	}
 
-	if err := status.InitAppStatus(PushConf); err != nil {
+	if err := status.InitAppStatus(cfg); err != nil {
 		log.Fatal(err)
 	}
 

@@ -3,6 +3,7 @@ package queue
 import (
 	"runtime"
 
+	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/logx"
 	"github.com/appleboy/gorush/queue/simple"
 )
@@ -19,21 +20,21 @@ type (
 )
 
 // NewQueue returns a Queue.
-func NewQueue(workerCount, queueCount int) *Queue {
+func NewQueue(cfg config.ConfYaml) *Queue {
 	q := &Queue{
-		workerCount:  runtime.NumCPU(),
-		queueCount:   runtime.NumCPU() << 1,
+		workerCount:  int(cfg.Core.WorkerNum),
+		queueCount:   int(cfg.Core.QueueNum),
 		routineGroup: newRoutineGroup(),
 		quit:         make(chan struct{}),
-		worker:       simple.NewWorker(queueCount),
+		worker:       simple.NewWorker(cfg),
 	}
 
-	if workerCount != 0 {
-		q.workerCount = workerCount
+	if q.workerCount != 0 {
+		q.workerCount = runtime.NumCPU()
 	}
 
-	if queueCount != 0 {
-		q.queueCount = queueCount
+	if q.queueCount == 0 {
+		q.queueCount = runtime.NumCPU() << 1
 	}
 
 	return q
