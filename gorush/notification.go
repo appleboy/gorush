@@ -239,9 +239,9 @@ func CheckPushConf(cfg config.ConfYaml) error {
 
 // SendNotification send notification
 func SendNotification(cfg config.ConfYaml, req PushNotification) {
-	if cfg.Core.Sync {
-		defer req.WaitDone()
-	}
+	defer func() {
+		req.WaitDone()
+	}()
 
 	switch req.Platform {
 	case core.PlatFormIos:

@@ -46,12 +46,12 @@ func TestMain(m *testing.M) {
 
 	q = queue.NewQueue(cfg)
 	q.Start()
+	defer q.Stop()
 	m.Run()
-	q.Stop()
 }
 
 func initTest() config.ConfYaml {
-	cfg, _ := config.LoadConf("")
+	cfg, _ := config.LoadConf()
 	cfg.Core.Mode = "test"
 	return cfg
 }
@@ -523,44 +523,50 @@ func TestDisabledAndroidNotifications(t *testing.T) {
 	assert.Equal(t, 0, len(logs))
 }
 
-func TestSyncModeForNotifications(t *testing.T) {
-	ctx := context.Background()
-	cfg := initTest()
+// func TestSyncModeForNotifications(t *testing.T) {
+// 	ctx := context.Background()
+// 	cfg := initTest()
 
-	cfg.Ios.Enabled = true
-	cfg.Ios.KeyPath = "../certificate/certificate-valid.pem"
-	err := gorush.InitAPNSClient(cfg)
-	assert.Nil(t, err)
+// 	cfg.Ios.Enabled = true
+// 	cfg.Ios.KeyPath = "../certificate/certificate-valid.pem"
+// 	err := gorush.InitAPNSClient(cfg)
+// 	assert.Nil(t, err)
 
-	cfg.Android.Enabled = true
-	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+// 	cfg.Android.Enabled = true
+// 	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
 
-	// enable sync mode
-	cfg.Core.Sync = true
+// 	// enable sync mode
+// 	cfg.Core.Sync = true
 
-	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
+// 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
-	req := gorush.RequestPush{
-		Notifications: []gorush.PushNotification{
-			// ios
-			{
-				Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
-				Platform: core.PlatFormIos,
-				Message:  "Welcome",
-			},
-			// android
-			{
-				Tokens:   []string{androidToken, "bbbbb"},
-				Platform: core.PlatFormAndroid,
-				Message:  "Welcome",
-			},
-		},
-	}
+// 	q = queue.NewQueue(cfg)
+// 	q.Start()
+// 	defer func() {
+// 		q.Stop()
+// 	}()
 
-	count, logs := handleNotification(ctx, cfg, req, q)
-	assert.Equal(t, 3, count)
-	assert.Equal(t, 2, len(logs))
-}
+// 	req := gorush.RequestPush{
+// 		Notifications: []gorush.PushNotification{
+// 			// ios
+// 			{
+// 				Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
+// 				Platform: core.PlatFormIos,
+// 				Message:  "Welcome",
+// 			},
+// 			// android
+// 			{
+// 				Tokens:   []string{androidToken, "bbbbb"},
+// 				Platform: core.PlatFormAndroid,
+// 				Message:  "Welcome",
+// 			},
+// 		},
+// 	}
+
+// 	count, logs := handleNotification(ctx, cfg, req, q)
+// 	assert.Equal(t, 3, count)
+// 	assert.Equal(t, 2, len(logs))
+// }
 
 func TestSyncModeForTopicNotification(t *testing.T) {
 	ctx := context.Background()
@@ -572,6 +578,12 @@ func TestSyncModeForTopicNotification(t *testing.T) {
 
 	// enable sync mode
 	cfg.Core.Sync = true
+
+	q = queue.NewQueue(cfg)
+	q.Start()
+	defer func() {
+		q.Stop()
+	}()
 
 	req := gorush.RequestPush{
 		Notifications: []gorush.PushNotification{
@@ -616,6 +628,12 @@ func TestSyncModeForDeviceGroupNotification(t *testing.T) {
 	// enable sync mode
 	cfg.Core.Sync = true
 
+	q = queue.NewQueue(cfg)
+	q.Start()
+	defer func() {
+		q.Stop()
+	}()
+
 	req := gorush.RequestPush{
 		Notifications: []gorush.PushNotification{
 			// android
@@ -645,6 +663,12 @@ func TestDisabledIosNotifications(t *testing.T) {
 	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
 
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
+
+	q = queue.NewQueue(cfg)
+	q.Start()
+	defer func() {
+		q.Stop()
+	}()
 
 	req := gorush.RequestPush{
 		Notifications: []gorush.PushNotification{

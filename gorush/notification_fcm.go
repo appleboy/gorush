@@ -20,12 +20,12 @@ func InitFCMClient(cfg config.ConfYaml, key string) (*fcm.Client, error) {
 		return nil, errors.New("Missing Android API Key")
 	}
 
-	if key != cfg.Android.APIKey {
+	if key != "" && key != cfg.Android.APIKey {
 		return fcm.NewClient(key)
 	}
 
 	if FCMClient == nil {
-		FCMClient, err = fcm.NewClient(key)
+		FCMClient, err = fcm.NewClient(cfg.Android.APIKey)
 		return FCMClient, err
 	}
 

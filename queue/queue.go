@@ -4,7 +4,6 @@ import (
 	"runtime"
 
 	"github.com/appleboy/gorush/config"
-	"github.com/appleboy/gorush/logx"
 	"github.com/appleboy/gorush/queue/simple"
 )
 
@@ -75,9 +74,9 @@ func (q *Queue) startWorker() {
 	for i := 0; i < q.workerCount; i++ {
 		go func(num int) {
 			q.routineGroup.Run(func() {
-				logx.LogAccess.Info("started the worker num ", num)
+				// logx.LogAccess.Info("started the worker num ", num)
 				q.worker.Run(q.quit)
-				logx.LogAccess.Info("closed the worker num ", num)
+				// logx.LogAccess.Info("closed the worker num ", num)
 			})
 		}(i)
 	}
