@@ -21,10 +21,12 @@ func InitFCMClient(cfg config.ConfYaml, key string) (*fcm.Client, error) {
 	}
 
 	if key != "" && key != cfg.Android.APIKey {
+		logx.LogAccess.Info("a")
 		return fcm.NewClient(key)
 	}
 
 	if FCMClient == nil {
+		logx.LogAccess.Info("b")
 		FCMClient, err = fcm.NewClient(cfg.Android.APIKey)
 		return FCMClient, err
 	}

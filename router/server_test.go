@@ -575,6 +575,8 @@ func TestSyncModeForTopicNotification(t *testing.T) {
 	cfg.Android.Enabled = true
 	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
 	cfg.Log.HideToken = false
+	logx.LogAccess.Info(cfg.Android)
+	logx.LogAccess.Info(os.Getenv("ANDROID_TEST_TOKEN"))
 
 	// enable sync mode
 	cfg.Core.Sync = true

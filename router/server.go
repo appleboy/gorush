@@ -270,7 +270,6 @@ func handleNotification(ctx context.Context, cfg config.ConfYaml, req gorush.Req
 			notification.Wg = &wg
 			notification.Log = &log
 			notification.AddWaitCount()
-			logx.LogAccess.Debug("+1")
 		}
 
 		if err := q.Enqueue(*notification); err != nil {
