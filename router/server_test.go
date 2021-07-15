@@ -46,8 +46,8 @@ func TestMain(m *testing.M) {
 
 	q = queue.NewQueue(cfg)
 	q.Start()
-
 	m.Run()
+	q.Stop()
 }
 
 func initTest() config.ConfYaml {
