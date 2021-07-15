@@ -131,6 +131,8 @@ func InitAPNSClient(cfg config.ConfYaml) error {
 
 			return err
 		}
+
+		MaxConcurrentIOSPushes = make(chan struct{}, cfg.Ios.MaxConcurrentPushes)
 	}
 
 	return nil

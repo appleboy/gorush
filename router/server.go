@@ -30,15 +30,12 @@ import (
 	"golang.org/x/crypto/acme/autocert"
 )
 
-var isTerm bool
+var (
+	isTerm bool
+	doOnce sync.Once
+)
 
 func init() {
-	// Support metrics
-	m := metric.NewMetrics(func() int {
-		return 1
-	})
-	// m := metric.NewMetrics()
-	prometheus.MustRegister(m)
 	isTerm = isatty.IsTerminal(os.Stdout.Fd())
 }
 
@@ -190,6 +187,14 @@ func routerEngine(cfg config.ConfYaml, q *queue.Queue) *gin.Engine {
 			},
 		)
 	}
+
+	// Support metrics
+	doOnce.Do(func() {
+		m := metric.NewMetrics(func() int {
+			return q.Usage()
+		})
+		prometheus.MustRegister(m)
+	})
 
 	// set server mode
 	gin.SetMode(cfg.Core.Mode)
