@@ -47,10 +47,10 @@ func TestMain(m *testing.M) {
 	}
 
 	w = simple.NewWorker(int(cfg.Core.QueueNum))
-	q = queue.NewQueue(w)
+	q = queue.NewQueue(w, 4)
 	q.Start()
 	defer func() {
-		q.Stop()
+		q.Shutdown()
 		q.Wait()
 	}()
 
