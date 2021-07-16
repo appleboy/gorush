@@ -317,14 +317,14 @@ func main() {
 	}
 
 	w := simple.NewWorker(int(cfg.Core.QueueNum))
-	q := queue.NewQueue(w)
+	q := queue.NewQueue(w, int(cfg.Core.WorkerNum))
 	q.Start()
 
 	finished := make(chan struct{})
 	ctx := withContextFunc(context.Background(), func() {
 		logx.LogAccess.Info("close the queue system, current queue usage: ", q.Usage())
 		// stop queue system
-		q.Stop()
+		q.Shutdown()
 		// wait job completed
 		q.Wait()
 		close(finished)

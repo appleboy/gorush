@@ -10,7 +10,6 @@ type (
 	// A Queue is a message queue.
 	Queue struct {
 		workerCount  int
-		queueCount   int
 		routineGroup *routineGroup
 		quit         chan struct{}
 		worker       Worker
@@ -18,13 +17,16 @@ type (
 )
 
 // NewQueue returns a Queue.
-func NewQueue(w Worker) *Queue {
+func NewQueue(w Worker, workerNum int) *Queue {
 	q := &Queue{
 		workerCount:  runtime.NumCPU(),
-		queueCount:   runtime.NumCPU() << 1,
 		routineGroup: newRoutineGroup(),
 		quit:         make(chan struct{}),
 		worker:       w,
+	}
+
+	if workerNum > 0 {
+		q.workerCount = workerNum
 	}
 
 	return q
@@ -45,9 +47,9 @@ func (q *Queue) Start() {
 	q.startWorker()
 }
 
-// Stop stops q.
-func (q *Queue) Stop() {
-	q.worker.Stop()
+// Shutdown stops all queues.
+func (q *Queue) Shutdown() {
+	q.worker.Shutdown()
 	close(q.quit)
 }
 
@@ -56,9 +58,9 @@ func (q *Queue) Wait() {
 	q.routineGroup.Wait()
 }
 
-// Enqueue queue all job
-func (q *Queue) Enqueue(job interface{}) error {
-	return q.worker.Enqueue(job)
+// Queue to queue all job
+func (q *Queue) Queue(job interface{}) error {
+	return q.worker.Queue(job)
 }
 
 func (q *Queue) startWorker() {

@@ -4,7 +4,10 @@ import (
 	"errors"
 
 	"github.com/appleboy/gorush/gorush"
+	"github.com/appleboy/gorush/queue"
 )
+
+var _ queue.Worker = (*Worker)(nil)
 
 // Worker for simple queue using channel
 type Worker struct {
@@ -12,15 +15,18 @@ type Worker struct {
 }
 
 // Run start the worker
-func (s *Worker) Run(_ chan struct{}) {
+func (s *Worker) Run(_ chan struct{}) error {
 	for notification := range s.queueNotification {
 		gorush.SendNotification(notification)
 	}
+
+	return nil
 }
 
-// Stop worker
-func (s *Worker) Stop() {
+// Shutdown worker
+func (s *Worker) Shutdown() error {
 	close(s.queueNotification)
+	return nil
 }
 
 // Capacity for channel
@@ -33,8 +39,8 @@ func (s *Worker) Usage() int {
 	return len(s.queueNotification)
 }
 
-// Enqueue send notification to queue
-func (s *Worker) Enqueue(job interface{}) error {
+// Queue send notification to queue
+func (s *Worker) Queue(job interface{}) error {
 	select {
 	case s.queueNotification <- job.(gorush.PushNotification):
 		return nil

@@ -278,7 +278,7 @@ func handleNotification(ctx context.Context, cfg config.ConfYaml, req gorush.Req
 			notification.AddWaitCount()
 		}
 
-		if err := q.Enqueue(*notification); err != nil {
+		if err := q.Queue(*notification); err != nil {
 			markFailedNotification(cfg, notification, "max capacity reached")
 		}
 
