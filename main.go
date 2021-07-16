@@ -19,6 +19,7 @@ import (
 	"github.com/appleboy/gorush/gorush"
 	"github.com/appleboy/gorush/logx"
 	"github.com/appleboy/gorush/queue"
+	"github.com/appleboy/gorush/queue/simple"
 	"github.com/appleboy/gorush/router"
 	"github.com/appleboy/gorush/rpc"
 	"github.com/appleboy/gorush/status"
@@ -192,6 +193,7 @@ func main() {
 	if opts.Android.Enabled {
 		cfg.Android.Enabled = opts.Android.Enabled
 		req := gorush.PushNotification{
+			Cfg:      cfg,
 			Platform: core.PlatFormAndroid,
 			Message:  message,
 			Title:    title,
@@ -216,7 +218,7 @@ func main() {
 			return
 		}
 
-		gorush.PushToAndroid(cfg, req)
+		gorush.PushToAndroid(req)
 
 		return
 	}
@@ -225,6 +227,7 @@ func main() {
 	if opts.Huawei.Enabled {
 		cfg.Huawei.Enabled = opts.Huawei.Enabled
 		req := gorush.PushNotification{
+			Cfg:      cfg,
 			Platform: core.PlatFormHuawei,
 			Message:  message,
 			Title:    title,
@@ -249,7 +252,7 @@ func main() {
 			return
 		}
 
-		gorush.PushToHuawei(cfg, req)
+		gorush.PushToHuawei(req)
 
 		return
 	}
@@ -262,6 +265,7 @@ func main() {
 
 		cfg.Ios.Enabled = opts.Ios.Enabled
 		req := gorush.PushNotification{
+			Cfg:      cfg,
 			Platform: core.PlatFormIos,
 			Message:  message,
 			Title:    title,
@@ -289,7 +293,7 @@ func main() {
 		if err := gorush.InitAPNSClient(cfg); err != nil {
 			return
 		}
-		gorush.PushToIOS(cfg, req)
+		gorush.PushToIOS(req)
 
 		return
 	}
@@ -312,7 +316,8 @@ func main() {
 		logx.LogError.Fatal(err)
 	}
 
-	q := queue.NewQueue(cfg)
+	w := simple.NewWorker(int(cfg.Core.QueueNum))
+	q := queue.NewQueue(w)
 	q.Start()
 
 	finished := make(chan struct{})

@@ -31,6 +31,8 @@ var (
 	tcpKeepAlive    = 60 * time.Second
 )
 
+var doOnce sync.Once
+
 // DialTLS is the default dial function for creating TLS connections for
 // non-proxied HTTPS requests.
 var DialTLS = func(cfg *tls.Config) func(network, addr string) (net.Conn, error) {
@@ -132,7 +134,9 @@ func InitAPNSClient(cfg config.ConfYaml) error {
 			return err
 		}
 
-		MaxConcurrentIOSPushes = make(chan struct{}, cfg.Ios.MaxConcurrentPushes)
+		doOnce.Do(func() {
+			MaxConcurrentIOSPushes = make(chan struct{}, cfg.Ios.MaxConcurrentPushes)
+		})
 	}
 
 	return nil
@@ -384,12 +388,12 @@ func getApnsClient(cfg config.ConfYaml, req PushNotification) (client *apns2.Cli
 }
 
 // PushToIOS provide send notification to APNs server.
-func PushToIOS(cfg config.ConfYaml, req PushNotification) {
+func PushToIOS(req PushNotification) {
 	logx.LogAccess.Debug("Start push notification for iOS")
 
 	var (
 		retryCount = 0
-		maxRetry   = cfg.Ios.MaxRetry
+		maxRetry   = req.Cfg.Ios.MaxRetry
 	)
 
 	if req.Retry > 0 && req.Retry < maxRetry {
@@ -400,7 +404,7 @@ Retry:
 	var newTokens []string
 
 	notification := GetIOSNotification(req)
-	client := getApnsClient(cfg, req)
+	client := getApnsClient(req.Cfg, req)
 
 	var wg sync.WaitGroup
 	for _, token := range req.Tokens {
@@ -419,17 +423,17 @@ Retry:
 					err = errors.New(res.Reason)
 				}
 				// apns server error
-				logPush(cfg, core.FailedPush, token, req, err)
+				logPush(req.Cfg, core.FailedPush, token, req, err)
 
-				if cfg.Core.Sync {
-					req.AddLog(createLogPushEntry(cfg, core.FailedPush, token, req, err))
-				} else if cfg.Core.FeedbackURL != "" {
+				if req.Cfg.Core.Sync {
+					req.AddLog(createLogPushEntry(req.Cfg, core.FailedPush, token, req, err))
+				} else if req.Cfg.Core.FeedbackURL != "" {
 					go func(logger *logrus.Logger, log logx.LogPushEntry, url string, timeout int64) {
 						err := DispatchFeedback(log, url, timeout)
 						if err != nil {
 							logger.Error(err)
 						}
-					}(logx.LogError, createLogPushEntry(cfg, core.FailedPush, token, req, err), cfg.Core.FeedbackURL, cfg.Core.FeedbackTimeout)
+					}(logx.LogError, createLogPushEntry(req.Cfg, core.FailedPush, token, req, err), req.Cfg.Core.FeedbackURL, req.Cfg.Core.FeedbackTimeout)
 				}
 
 				status.StatStorage.AddIosError(1)
@@ -441,14 +445,16 @@ Retry:
 			}
 
 			if res != nil && res.Sent() {
-				logPush(cfg, core.SucceededPush, token, req, nil)
+				logPush(req.Cfg, core.SucceededPush, token, req, nil)
 				status.StatStorage.AddIosSuccess(1)
 			}
+
 			// free push slot
 			<-MaxConcurrentIOSPushes
 			wg.Done()
 		}(*notification, token)
 	}
+
 	wg.Wait()
 
 	if len(newTokens) > 0 && retryCount < maxRetry {
