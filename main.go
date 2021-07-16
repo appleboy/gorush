@@ -19,6 +19,7 @@ import (
 	"github.com/appleboy/gorush/gorush"
 	"github.com/appleboy/gorush/logx"
 	"github.com/appleboy/gorush/queue"
+	"github.com/appleboy/gorush/queue/simple"
 	"github.com/appleboy/gorush/router"
 	"github.com/appleboy/gorush/rpc"
 	"github.com/appleboy/gorush/status"
@@ -312,7 +313,8 @@ func main() {
 		logx.LogError.Fatal(err)
 	}
 
-	q := queue.NewQueue(cfg)
+	w := simple.NewWorker(cfg)
+	q := queue.NewQueue(w)
 	q.Start()
 
 	finished := make(chan struct{})

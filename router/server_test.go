@@ -16,6 +16,7 @@ import (
 	"github.com/appleboy/gorush/gorush"
 	"github.com/appleboy/gorush/logx"
 	"github.com/appleboy/gorush/queue"
+	"github.com/appleboy/gorush/queue/simple"
 	"github.com/appleboy/gorush/status"
 
 	"github.com/appleboy/gofight/v2"
@@ -27,6 +28,7 @@ import (
 var (
 	goVersion = runtime.Version()
 	q         *queue.Queue
+	w         queue.Worker
 )
 
 func TestMain(m *testing.M) {
@@ -44,7 +46,8 @@ func TestMain(m *testing.M) {
 		log.Fatal(err)
 	}
 
-	q = queue.NewQueue(cfg)
+	w = simple.NewWorker(cfg)
+	q = queue.NewQueue(w)
 	q.Start()
 	defer q.Stop()
 	m.Run()
@@ -462,7 +465,7 @@ func TestSenMultipleNotifications(t *testing.T) {
 
 	cfg.Android.Enabled = true
 	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
-	q.Config(cfg)
+	w.Config(cfg)
 
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
@@ -499,7 +502,7 @@ func TestDisabledAndroidNotifications(t *testing.T) {
 
 	cfg.Android.Enabled = false
 	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
-	q.Config(cfg)
+	w.Config(cfg)
 
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
@@ -539,7 +542,7 @@ func TestSyncModeForNotifications(t *testing.T) {
 
 	// enable sync mode
 	cfg.Core.Sync = true
-	q.Config(cfg)
+	w.Config(cfg)
 
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
@@ -547,7 +550,7 @@ func TestSyncModeForNotifications(t *testing.T) {
 		Notifications: []gorush.PushNotification{
 			// ios
 			{
-				Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
+				Tokens:   []string{"11aa01229f15f0f0c12029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
 				Platform: core.PlatFormIos,
 				Message:  "Welcome",
 			},
@@ -575,7 +578,7 @@ func TestSyncModeForTopicNotification(t *testing.T) {
 
 	// enable sync mode
 	cfg.Core.Sync = true
-	q.Config(cfg)
+	w.Config(cfg)
 
 	req := gorush.RequestPush{
 		Notifications: []gorush.PushNotification{
@@ -619,7 +622,7 @@ func TestSyncModeForDeviceGroupNotification(t *testing.T) {
 
 	// enable sync mode
 	cfg.Core.Sync = true
-	q.Config(cfg)
+	w.Config(cfg)
 
 	req := gorush.RequestPush{
 		Notifications: []gorush.PushNotification{
@@ -648,7 +651,7 @@ func TestDisabledIosNotifications(t *testing.T) {
 
 	cfg.Android.Enabled = true
 	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
-	q.Config(cfg)
+	w.Config(cfg)
 
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
