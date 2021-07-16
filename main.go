@@ -316,15 +316,12 @@ func main() {
 	q.Start()
 
 	finished := make(chan struct{})
-	// wg := &sync.WaitGroup{}
-	// wg.Add(int(cfg.Core.WorkerNum))
 	ctx := withContextFunc(context.Background(), func() {
-		logx.LogAccess.Info("close the notification queue channel, current queue len: ", q.Usage())
-		// close(gorush.QueueNotification)
-		// wg.Wait()
+		logx.LogAccess.Info("close the queue system, current queue usage: ", q.Usage())
+		// stop queue system
 		q.Stop()
+		// wait job completed
 		q.Wait()
-		logx.LogAccess.Info("the notification queue has been clear")
 		close(finished)
 		// close the connection with storage
 		logx.LogAccess.Info("close the storage connection: ", cfg.Stat.Engine)
