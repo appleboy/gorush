@@ -2,12 +2,16 @@ package simple
 
 import (
 	"errors"
+	"runtime"
 
 	"github.com/appleboy/gorush/gorush"
 	"github.com/appleboy/gorush/queue"
 )
 
 var _ queue.Worker = (*Worker)(nil)
+
+// Option for queue system
+type Option func(*Worker)
 
 // Worker for simple queue using channel
 type Worker struct {
@@ -49,9 +53,24 @@ func (s *Worker) Queue(job interface{}) error {
 	}
 }
 
-// NewWorker for struct
-func NewWorker(num int) *Worker {
-	return &Worker{
-		queueNotification: make(chan gorush.PushNotification, num),
+// WithQueueNum setup the capcity of queue
+func WithQueueNum(num int) Option {
+	return func(w *Worker) {
+		w.queueNotification = make(chan gorush.PushNotification, num)
 	}
+}
+
+// NewWorker for struc
+func NewWorker(opts ...Option) *Worker {
+	w := &Worker{
+		queueNotification: make(chan gorush.PushNotification, runtime.NumCPU()<<1),
+	}
+
+	// Loop through each option
+	for _, opt := range opts {
+		// Call the option giving the instantiated
+		opt(w)
+	}
+
+	return w
 }

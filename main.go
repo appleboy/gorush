@@ -316,7 +316,7 @@ func main() {
 		logx.LogError.Fatal(err)
 	}
 
-	w := simple.NewWorker(int(cfg.Core.QueueNum))
+	w := simple.NewWorker(simple.WithQueueNum(int(cfg.Core.QueueNum)))
 	q := queue.NewQueue(w, int(cfg.Core.WorkerNum))
 	q.Start()
 

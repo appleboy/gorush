@@ -46,7 +46,7 @@ func TestMain(m *testing.M) {
 		log.Fatal(err)
 	}
 
-	w = simple.NewWorker(int(cfg.Core.QueueNum))
+	w = simple.NewWorker()
 	q = queue.NewQueue(w, 4)
 	q.Start()
 	defer func() {
