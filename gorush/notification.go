@@ -9,6 +9,7 @@ import (
 	"sync"
 
 	"github.com/appleboy/go-fcm"
+	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/core"
 	"github.com/appleboy/gorush/logx"
 	"github.com/msalihkarakasli/go-hms-push/push/model"
@@ -54,8 +55,8 @@ type RequestPush struct {
 
 // PushNotification is single notification request
 type PushNotification struct {
-	wg  *sync.WaitGroup
-	log *[]logx.LogPushEntry
+	Wg  *sync.WaitGroup
+	Log *[]logx.LogPushEntry
 
 	// Common
 	ID               string      `json:"notif_id,omitempty"`
@@ -112,22 +113,22 @@ type PushNotification struct {
 
 // WaitDone decrements the WaitGroup counter.
 func (p *PushNotification) WaitDone() {
-	if p.wg != nil {
-		p.wg.Done()
+	if p.Wg != nil {
+		p.Wg.Done()
 	}
 }
 
 // AddWaitCount increments the WaitGroup counter.
 func (p *PushNotification) AddWaitCount() {
-	if p.wg != nil {
-		p.wg.Add(1)
+	if p.Wg != nil {
+		p.Wg.Add(1)
 	}
 }
 
 // AddLog record fail log of notification
 func (p *PushNotification) AddLog(log logx.LogPushEntry) {
-	if p.log != nil {
-		*p.log = append(*p.log, log)
+	if p.Log != nil {
+		*p.Log = append(*p.Log, log)
 	}
 }
 
@@ -199,39 +200,55 @@ func SetProxy(proxy string) error {
 }
 
 // CheckPushConf provide check your yml config.
-func CheckPushConf() error {
-	if !PushConf.Ios.Enabled && !PushConf.Android.Enabled && !PushConf.Huawei.Enabled {
+func CheckPushConf(cfg config.ConfYaml) error {
+	if !cfg.Ios.Enabled && !cfg.Android.Enabled && !cfg.Huawei.Enabled {
 		return errors.New("Please enable iOS, Android or Huawei config in yml config")
 	}
 
-	if PushConf.Ios.Enabled {
-		if PushConf.Ios.KeyPath == "" && PushConf.Ios.KeyBase64 == "" {
+	if cfg.Ios.Enabled {
+		if cfg.Ios.KeyPath == "" && cfg.Ios.KeyBase64 == "" {
 			return errors.New("Missing iOS certificate key")
 		}
 
 		// check certificate file exist
-		if PushConf.Ios.KeyPath != "" {
-			if _, err := os.Stat(PushConf.Ios.KeyPath); os.IsNotExist(err) {
+		if cfg.Ios.KeyPath != "" {
+			if _, err := os.Stat(cfg.Ios.KeyPath); os.IsNotExist(err) {
 				return errors.New("certificate file does not exist")
 			}
 		}
 	}
 
-	if PushConf.Android.Enabled {
-		if PushConf.Android.APIKey == "" {
+	if cfg.Android.Enabled {
+		if cfg.Android.APIKey == "" {
 			return errors.New("Missing Android API Key")
 		}
 	}
 
-	if PushConf.Huawei.Enabled {
-		if PushConf.Huawei.AppSecret == "" {
+	if cfg.Huawei.Enabled {
+		if cfg.Huawei.AppSecret == "" {
 			return errors.New("Missing Huawei App Secret")
 		}
 
-		if PushConf.Huawei.AppID == "" {
+		if cfg.Huawei.AppID == "" {
 			return errors.New("Missing Huawei App ID")
 		}
 	}
 
 	return nil
+}
+
+// SendNotification send notification
+func SendNotification(cfg config.ConfYaml, req PushNotification) {
+	defer func() {
+		req.WaitDone()
+	}()
+
+	switch req.Platform {
+	case core.PlatFormIos:
+		PushToIOS(cfg, req)
+	case core.PlatFormAndroid:
+		PushToAndroid(cfg, req)
+	case core.PlatFormHuawei:
+		PushToHuawei(cfg, req)
+	}
 }

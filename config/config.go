@@ -243,7 +243,7 @@ type SectionGRPC struct {
 }
 
 // LoadConf load config from file and read in environment variables that match
-func LoadConf(confPath string) (ConfYaml, error) {
+func LoadConf(confPath ...string) (ConfYaml, error) {
 	var conf ConfYaml
 
 	viper.SetConfigType("yaml")
@@ -251,8 +251,8 @@ func LoadConf(confPath string) (ConfYaml, error) {
 	viper.SetEnvPrefix("gorush") // will be uppercased automatically
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
-	if confPath != "" {
-		content, err := ioutil.ReadFile(confPath)
+	if len(confPath) > 0 && confPath[0] != "" {
+		content, err := ioutil.ReadFile(confPath[0])
 		if err != nil {
 			return conf, err
 		}

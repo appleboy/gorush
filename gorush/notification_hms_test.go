@@ -8,31 +8,32 @@ import (
 )
 
 func TestMissingHuaweiAppSecret(t *testing.T) {
-	PushConf, _ = config.LoadConf("")
+	cfg, _ := config.LoadConf()
 
-	PushConf.Huawei.Enabled = true
-	PushConf.Huawei.AppSecret = ""
+	cfg.Huawei.Enabled = true
+	cfg.Huawei.AppSecret = ""
 
-	err := CheckPushConf()
+	err := CheckPushConf(cfg)
 
 	assert.Error(t, err)
 	assert.Equal(t, "Missing Huawei App Secret", err.Error())
 }
 
 func TestMissingHuaweiAppID(t *testing.T) {
-	PushConf, _ = config.LoadConf("")
+	cfg, _ := config.LoadConf()
 
-	PushConf.Huawei.Enabled = true
-	PushConf.Huawei.AppID = ""
+	cfg.Huawei.Enabled = true
+	cfg.Huawei.AppID = ""
 
-	err := CheckPushConf()
+	err := CheckPushConf(cfg)
 
 	assert.Error(t, err)
 	assert.Equal(t, "Missing Huawei App ID", err.Error())
 }
 
 func TestMissingAppSecretForInitHMSClient(t *testing.T) {
-	client, err := InitHMSClient("", "APP_SECRET")
+	cfg, _ := config.LoadConf()
+	client, err := InitHMSClient(cfg, "", "APP_SECRET")
 
 	assert.Nil(t, client)
 	assert.Error(t, err)
@@ -40,7 +41,8 @@ func TestMissingAppSecretForInitHMSClient(t *testing.T) {
 }
 
 func TestMissingAppIDForInitHMSClient(t *testing.T) {
-	client, err := InitHMSClient("APP_ID", "")
+	cfg, _ := config.LoadConf()
+	client, err := InitHMSClient(cfg, "APP_ID", "")
 
 	assert.Nil(t, client)
 	assert.Error(t, err)

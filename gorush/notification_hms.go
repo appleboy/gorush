@@ -6,10 +6,11 @@ import (
 	"errors"
 	"sync"
 
+	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/logx"
 	"github.com/appleboy/gorush/status"
 
-	"github.com/msalihkarakasli/go-hms-push/push/config"
+	c "github.com/msalihkarakasli/go-hms-push/push/config"
 	"github.com/msalihkarakasli/go-hms-push/push/core"
 	"github.com/msalihkarakasli/go-hms-push/push/model"
 )
@@ -21,7 +22,7 @@ var (
 )
 
 // GetPushClient use for create HMS Push
-func GetPushClient(conf *config.Config) (*core.HMSClient, error) {
+func GetPushClient(conf *c.Config) (*core.HMSClient, error) {
 	once.Do(func() {
 		client, err := core.NewHttpClient(conf)
 		if err != nil {
@@ -35,7 +36,7 @@ func GetPushClient(conf *config.Config) (*core.HMSClient, error) {
 }
 
 // InitHMSClient use for initialize HMS Client.
-func InitHMSClient(appSecret, appID string) (*core.HMSClient, error) {
+func InitHMSClient(cfg config.ConfYaml, appSecret, appID string) (*core.HMSClient, error) {
 	if appSecret == "" {
 		return nil, errors.New("Missing Huawei App Secret")
 	}
@@ -44,14 +45,14 @@ func InitHMSClient(appSecret, appID string) (*core.HMSClient, error) {
 		return nil, errors.New("Missing Huawei App ID")
 	}
 
-	conf := &config.Config{
+	conf := &c.Config{
 		AppId:     appID,
 		AppSecret: appSecret,
 		AuthUrl:   "https://oauth-login.cloud.huawei.com/oauth2/v3/token",
 		PushUrl:   "https://push-api.cloud.huawei.com",
 	}
 
-	if appSecret != PushConf.Huawei.AppSecret || appID != PushConf.Huawei.AppID {
+	if appSecret != cfg.Huawei.AppSecret || appID != cfg.Huawei.AppID {
 		return GetPushClient(conf)
 	}
 
@@ -165,13 +166,13 @@ func GetHuaweiNotification(req PushNotification) (*model.MessageRequest, error) 
 }
 
 // PushToHuawei provide send notification to Android server.
-func PushToHuawei(req PushNotification) bool {
+func PushToHuawei(cfg config.ConfYaml, req PushNotification) bool {
 	logx.LogAccess.Debug("Start push notification for Huawei")
 
 	var (
 		client     *core.HMSClient
 		retryCount = 0
-		maxRetry   = PushConf.Huawei.MaxRetry
+		maxRetry   = cfg.Huawei.MaxRetry
 	)
 
 	if req.Retry > 0 && req.Retry < maxRetry {
@@ -190,7 +191,7 @@ Retry:
 
 	notification, _ := GetHuaweiNotification(req)
 
-	client, err = InitHMSClient(PushConf.Huawei.AppSecret, PushConf.Huawei.AppID)
+	client, err = InitHMSClient(cfg, cfg.Huawei.AppSecret, cfg.Huawei.AppID)
 
 	if err != nil {
 		// HMS server error

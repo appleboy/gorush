@@ -38,75 +38,75 @@ func TestSetLogOut(t *testing.T) {
 }
 
 func TestInitDefaultLog(t *testing.T) {
-	PushConf, _ := config.LoadConf("")
+	cfg, _ := config.LoadConf()
 
 	// no errors on default config
 	assert.Nil(t, InitLog(
-		PushConf.Log.AccessLevel,
-		PushConf.Log.AccessLog,
-		PushConf.Log.ErrorLevel,
-		PushConf.Log.ErrorLog,
+		cfg.Log.AccessLevel,
+		cfg.Log.AccessLog,
+		cfg.Log.ErrorLevel,
+		cfg.Log.ErrorLog,
 	))
 
-	PushConf.Log.AccessLevel = "invalid"
+	cfg.Log.AccessLevel = "invalid"
 
 	assert.NotNil(t, InitLog(
-		PushConf.Log.AccessLevel,
-		PushConf.Log.AccessLog,
-		PushConf.Log.ErrorLevel,
-		PushConf.Log.ErrorLog,
+		cfg.Log.AccessLevel,
+		cfg.Log.AccessLog,
+		cfg.Log.ErrorLevel,
+		cfg.Log.ErrorLog,
 	))
 }
 
 func TestAccessLevel(t *testing.T) {
-	PushConf, _ := config.LoadConf("")
+	cfg, _ := config.LoadConf()
 
-	PushConf.Log.AccessLevel = "invalid"
+	cfg.Log.AccessLevel = "invalid"
 
 	assert.NotNil(t, InitLog(
-		PushConf.Log.AccessLevel,
-		PushConf.Log.AccessLog,
-		PushConf.Log.ErrorLevel,
-		PushConf.Log.ErrorLog,
+		cfg.Log.AccessLevel,
+		cfg.Log.AccessLog,
+		cfg.Log.ErrorLevel,
+		cfg.Log.ErrorLog,
 	))
 }
 
 func TestErrorLevel(t *testing.T) {
-	PushConf, _ := config.LoadConf("")
+	cfg, _ := config.LoadConf()
 
-	PushConf.Log.ErrorLevel = "invalid"
+	cfg.Log.ErrorLevel = "invalid"
 
 	assert.NotNil(t, InitLog(
-		PushConf.Log.AccessLevel,
-		PushConf.Log.AccessLog,
-		PushConf.Log.ErrorLevel,
-		PushConf.Log.ErrorLog,
+		cfg.Log.AccessLevel,
+		cfg.Log.AccessLog,
+		cfg.Log.ErrorLevel,
+		cfg.Log.ErrorLog,
 	))
 }
 
 func TestAccessLogPath(t *testing.T) {
-	PushConf, _ := config.LoadConf("")
+	cfg, _ := config.LoadConf()
 
-	PushConf.Log.AccessLog = "logs/access.log"
+	cfg.Log.AccessLog = "logs/access.log"
 
 	assert.NotNil(t, InitLog(
-		PushConf.Log.AccessLevel,
-		PushConf.Log.AccessLog,
-		PushConf.Log.ErrorLevel,
-		PushConf.Log.ErrorLog,
+		cfg.Log.AccessLevel,
+		cfg.Log.AccessLog,
+		cfg.Log.ErrorLevel,
+		cfg.Log.ErrorLog,
 	))
 }
 
 func TestErrorLogPath(t *testing.T) {
-	PushConf, _ := config.LoadConf("")
+	cfg, _ := config.LoadConf()
 
-	PushConf.Log.ErrorLog = "logs/error.log"
+	cfg.Log.ErrorLog = "logs/error.log"
 
 	assert.NotNil(t, InitLog(
-		PushConf.Log.AccessLevel,
-		PushConf.Log.AccessLog,
-		PushConf.Log.ErrorLevel,
-		PushConf.Log.ErrorLog,
+		cfg.Log.AccessLevel,
+		cfg.Log.AccessLog,
+		cfg.Log.ErrorLevel,
+		cfg.Log.ErrorLog,
 	))
 }
 
