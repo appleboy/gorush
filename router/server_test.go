@@ -49,7 +49,11 @@ func TestMain(m *testing.M) {
 	w = simple.NewWorker(int(cfg.Core.QueueNum))
 	q = queue.NewQueue(w)
 	q.Start()
-	defer q.Stop()
+	defer func() {
+		q.Stop()
+		q.Wait()
+	}()
+
 	m.Run()
 }
 
@@ -313,7 +317,7 @@ func TestMutableContent(t *testing.T) {
 				{
 					"tokens":          []string{"aaaaa", "bbbbb"},
 					"platform":        core.PlatFormAndroid,
-					"message":         "Welcome",
+					"message":         "Welcome From API",
 					"mutable_content": 1,
 					"topic":           "test",
 					"badge":           1,
@@ -344,12 +348,12 @@ func TestOutOfRangeMaxNotifications(t *testing.T) {
 				{
 					"tokens":   []string{"aaaaa", "bbbbb"},
 					"platform": core.PlatFormAndroid,
-					"message":  "Welcome",
+					"message":  "Welcome API From Android",
 				},
 				{
 					"tokens":   []string{"aaaaa", "bbbbb"},
 					"platform": core.PlatFormAndroid,
-					"message":  "Welcome",
+					"message":  "Welcome API From Android",
 				},
 			},
 		}).
@@ -375,7 +379,7 @@ func TestSuccessPushHandler(t *testing.T) {
 				{
 					"tokens":   []string{androidToken, "bbbbb"},
 					"platform": core.PlatFormAndroid,
-					"message":  "Welcome",
+					"message":  "Welcome Android",
 				},
 			},
 		}).
@@ -472,17 +476,15 @@ func TestSenMultipleNotifications(t *testing.T) {
 		Notifications: []gorush.PushNotification{
 			// ios
 			{
-				Cfg:      cfg,
 				Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
 				Platform: core.PlatFormIos,
-				Message:  "Welcome",
+				Message:  "Welcome iOS",
 			},
 			// android
 			{
-				Cfg:      cfg,
 				Tokens:   []string{androidToken, "bbbbb"},
 				Platform: core.PlatFormAndroid,
-				Message:  "Welcome",
+				Message:  "Welcome Android",
 			},
 		},
 	}
@@ -510,17 +512,15 @@ func TestDisabledAndroidNotifications(t *testing.T) {
 		Notifications: []gorush.PushNotification{
 			// ios
 			{
-				Cfg:      cfg,
-				Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
+				Tokens:   []string{"11aa01229f15f0f0c5209d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
 				Platform: core.PlatFormIos,
-				Message:  "Welcome",
+				Message:  "Welcome iOS",
 			},
 			// android
 			{
-				Cfg:      cfg,
 				Tokens:   []string{androidToken, "bbbbb"},
 				Platform: core.PlatFormAndroid,
-				Message:  "Welcome",
+				Message:  "Welcome Android",
 			},
 		},
 	}
@@ -551,17 +551,17 @@ func TestSyncModeForNotifications(t *testing.T) {
 		Notifications: []gorush.PushNotification{
 			// ios
 			{
-				Cfg:      cfg,
-				Tokens:   []string{"11aa01229f15f0f0c12029d8c111d0aeaf2365f14cebc4af26cd6d76b7919ef7"},
+				Tokens: []string{
+					"11aa01229f15f0f0c12029d8c111d1ae1f2365f14cebc4af26cd6d76b7919ef7",
+				},
 				Platform: core.PlatFormIos,
-				Message:  "Welcome iOS",
+				Message:  "Welcome iOS Sync",
 			},
 			// android
 			{
-				Cfg:      cfg,
 				Tokens:   []string{androidToken, "bbbbb"},
 				Platform: core.PlatFormAndroid,
-				Message:  "Welcome Android",
+				Message:  "Welcome Android Sync",
 			},
 		},
 	}
@@ -588,7 +588,6 @@ func TestSyncModeForTopicNotification(t *testing.T) {
 			{
 				// error:InvalidParameters
 				// Check that the provided parameters have the right name and type.
-				Cfg:      cfg,
 				To:       "/topics/foo-bar@@@##",
 				Platform: core.PlatFormAndroid,
 				Message:  "This is a Firebase Cloud Messaging Topic Message!",
@@ -596,7 +595,6 @@ func TestSyncModeForTopicNotification(t *testing.T) {
 			// android
 			{
 				// success
-				Cfg:      cfg,
 				To:       "/topics/foo-bar",
 				Platform: core.PlatFormAndroid,
 				Message:  "This is a Firebase Cloud Messaging Topic Message!",
@@ -632,7 +630,6 @@ func TestSyncModeForDeviceGroupNotification(t *testing.T) {
 		Notifications: []gorush.PushNotification{
 			// android
 			{
-				Cfg:      cfg,
 				To:       "aUniqueKey",
 				Platform: core.PlatFormAndroid,
 				Message:  "This is a Firebase Cloud Messaging Device Group Message!",
@@ -663,17 +660,15 @@ func TestDisabledIosNotifications(t *testing.T) {
 		Notifications: []gorush.PushNotification{
 			// ios
 			{
-				Cfg:      cfg,
 				Tokens:   []string{"11aa01229f15f0f0c52021d8cf3cd0ae1f2365fe4cebc4af26cd6d76b7919ef7"},
 				Platform: core.PlatFormIos,
-				Message:  "Welcome",
+				Message:  "Welcome iOS platform",
 			},
 			// android
 			{
-				Cfg:      cfg,
 				Tokens:   []string{androidToken, androidToken + "_"},
 				Platform: core.PlatFormAndroid,
-				Message:  "Welcome",
+				Message:  "Welcome Android platform",
 			},
 		},
 	}

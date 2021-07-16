@@ -31,6 +31,8 @@ var (
 	tcpKeepAlive    = 60 * time.Second
 )
 
+var doOnce sync.Once
+
 // DialTLS is the default dial function for creating TLS connections for
 // non-proxied HTTPS requests.
 var DialTLS = func(cfg *tls.Config) func(network, addr string) (net.Conn, error) {
@@ -132,7 +134,9 @@ func InitAPNSClient(cfg config.ConfYaml) error {
 			return err
 		}
 
-		MaxConcurrentIOSPushes = make(chan struct{}, cfg.Ios.MaxConcurrentPushes)
+		doOnce.Do(func() {
+			MaxConcurrentIOSPushes = make(chan struct{}, cfg.Ios.MaxConcurrentPushes)
+		})
 	}
 
 	return nil
@@ -444,11 +448,13 @@ Retry:
 				logPush(req.Cfg, core.SucceededPush, token, req, nil)
 				status.StatStorage.AddIosSuccess(1)
 			}
+
 			// free push slot
 			<-MaxConcurrentIOSPushes
 			wg.Done()
 		}(*notification, token)
 	}
+
 	wg.Wait()
 
 	if len(newTokens) > 0 && retryCount < maxRetry {
