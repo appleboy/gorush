@@ -46,7 +46,7 @@ func TestMain(m *testing.M) {
 		log.Fatal(err)
 	}
 
-	w = simple.NewWorker(cfg)
+	w = simple.NewWorker(int(cfg.Core.QueueNum))
 	q = queue.NewQueue(w)
 	q.Start()
 	defer q.Stop()
@@ -465,7 +465,6 @@ func TestSenMultipleNotifications(t *testing.T) {
 
 	cfg.Android.Enabled = true
 	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
-	w.Config(cfg)
 
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
@@ -473,12 +472,14 @@ func TestSenMultipleNotifications(t *testing.T) {
 		Notifications: []gorush.PushNotification{
 			// ios
 			{
+				Cfg:      cfg,
 				Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
 				Platform: core.PlatFormIos,
 				Message:  "Welcome",
 			},
 			// android
 			{
+				Cfg:      cfg,
 				Tokens:   []string{androidToken, "bbbbb"},
 				Platform: core.PlatFormAndroid,
 				Message:  "Welcome",
@@ -502,7 +503,6 @@ func TestDisabledAndroidNotifications(t *testing.T) {
 
 	cfg.Android.Enabled = false
 	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
-	w.Config(cfg)
 
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
@@ -510,12 +510,14 @@ func TestDisabledAndroidNotifications(t *testing.T) {
 		Notifications: []gorush.PushNotification{
 			// ios
 			{
+				Cfg:      cfg,
 				Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
 				Platform: core.PlatFormIos,
 				Message:  "Welcome",
 			},
 			// android
 			{
+				Cfg:      cfg,
 				Tokens:   []string{androidToken, "bbbbb"},
 				Platform: core.PlatFormAndroid,
 				Message:  "Welcome",
@@ -542,7 +544,6 @@ func TestSyncModeForNotifications(t *testing.T) {
 
 	// enable sync mode
 	cfg.Core.Sync = true
-	w.Config(cfg)
 
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
@@ -550,15 +551,17 @@ func TestSyncModeForNotifications(t *testing.T) {
 		Notifications: []gorush.PushNotification{
 			// ios
 			{
-				Tokens:   []string{"11aa01229f15f0f0c12029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
+				Cfg:      cfg,
+				Tokens:   []string{"11aa01229f15f0f0c12029d8c111d0aeaf2365f14cebc4af26cd6d76b7919ef7"},
 				Platform: core.PlatFormIos,
-				Message:  "Welcome",
+				Message:  "Welcome iOS",
 			},
 			// android
 			{
+				Cfg:      cfg,
 				Tokens:   []string{androidToken, "bbbbb"},
 				Platform: core.PlatFormAndroid,
-				Message:  "Welcome",
+				Message:  "Welcome Android",
 			},
 		},
 	}
@@ -578,7 +581,6 @@ func TestSyncModeForTopicNotification(t *testing.T) {
 
 	// enable sync mode
 	cfg.Core.Sync = true
-	w.Config(cfg)
 
 	req := gorush.RequestPush{
 		Notifications: []gorush.PushNotification{
@@ -586,6 +588,7 @@ func TestSyncModeForTopicNotification(t *testing.T) {
 			{
 				// error:InvalidParameters
 				// Check that the provided parameters have the right name and type.
+				Cfg:      cfg,
 				To:       "/topics/foo-bar@@@##",
 				Platform: core.PlatFormAndroid,
 				Message:  "This is a Firebase Cloud Messaging Topic Message!",
@@ -593,6 +596,7 @@ func TestSyncModeForTopicNotification(t *testing.T) {
 			// android
 			{
 				// success
+				Cfg:      cfg,
 				To:       "/topics/foo-bar",
 				Platform: core.PlatFormAndroid,
 				Message:  "This is a Firebase Cloud Messaging Topic Message!",
@@ -600,6 +604,7 @@ func TestSyncModeForTopicNotification(t *testing.T) {
 			// android
 			{
 				// success
+				Cfg:       cfg,
 				Condition: "'dogs' in topics || 'cats' in topics",
 				Platform:  core.PlatFormAndroid,
 				Message:   "This is a Firebase Cloud Messaging Topic Message!",
@@ -622,12 +627,12 @@ func TestSyncModeForDeviceGroupNotification(t *testing.T) {
 
 	// enable sync mode
 	cfg.Core.Sync = true
-	w.Config(cfg)
 
 	req := gorush.RequestPush{
 		Notifications: []gorush.PushNotification{
 			// android
 			{
+				Cfg:      cfg,
 				To:       "aUniqueKey",
 				Platform: core.PlatFormAndroid,
 				Message:  "This is a Firebase Cloud Messaging Device Group Message!",
@@ -651,7 +656,6 @@ func TestDisabledIosNotifications(t *testing.T) {
 
 	cfg.Android.Enabled = true
 	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
-	w.Config(cfg)
 
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
@@ -659,12 +663,14 @@ func TestDisabledIosNotifications(t *testing.T) {
 		Notifications: []gorush.PushNotification{
 			// ios
 			{
-				Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
+				Cfg:      cfg,
+				Tokens:   []string{"11aa01229f15f0f0c52021d8cf3cd0ae1f2365fe4cebc4af26cd6d76b7919ef7"},
 				Platform: core.PlatFormIos,
 				Message:  "Welcome",
 			},
 			// android
 			{
+				Cfg:      cfg,
 				Tokens:   []string{androidToken, androidToken + "_"},
 				Platform: core.PlatFormAndroid,
 				Message:  "Welcome",

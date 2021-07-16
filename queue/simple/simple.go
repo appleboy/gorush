@@ -16,7 +16,7 @@ type Worker struct {
 // Run start the worker
 func (s *Worker) Run(_ chan struct{}) {
 	for notification := range s.queueNotification {
-		gorush.SendNotification(s.cfg, notification)
+		gorush.SendNotification(notification)
 	}
 }
 
@@ -45,15 +45,15 @@ func (s *Worker) Enqueue(job interface{}) error {
 	}
 }
 
-// Config update current config
-func (s *Worker) Config(cfg config.ConfYaml) {
-	s.cfg = cfg
-}
+// // Config update current config
+// func (s *Worker) Config(cfg config.ConfYaml) {
+// 	s.cfg = cfg
+// }
 
 // NewWorker for struct
-func NewWorker(cfg config.ConfYaml) *Worker {
+func NewWorker(num int) *Worker {
 	return &Worker{
-		cfg:               cfg,
-		queueNotification: make(chan gorush.PushNotification, cfg.Core.QueueNum),
+		// cfg:               cfg,
+		queueNotification: make(chan gorush.PushNotification, num),
 	}
 }

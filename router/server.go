@@ -266,6 +266,7 @@ func handleNotification(ctx context.Context, cfg config.ConfYaml, req gorush.Req
 				continue
 			}
 		}
+		notification.Cfg = cfg
 		newNotification = append(newNotification, notification)
 	}
 

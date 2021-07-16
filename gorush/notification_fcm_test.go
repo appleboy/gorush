@@ -41,13 +41,14 @@ func TestPushToAndroidWrongToken(t *testing.T) {
 	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
 
 	req := PushNotification{
+		Cfg:      cfg,
 		Tokens:   []string{"aaaaaa", "bbbbb"},
 		Platform: core.PlatFormAndroid,
 		Message:  "Welcome",
 	}
 
 	// Android Success count: 0, Failure count: 2
-	PushToAndroid(cfg, req)
+	PushToAndroid(req)
 }
 
 func TestPushToAndroidRightTokenForJSONLog(t *testing.T) {
@@ -61,12 +62,13 @@ func TestPushToAndroidRightTokenForJSONLog(t *testing.T) {
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
 	req := PushNotification{
+		Cfg:      cfg,
 		Tokens:   []string{androidToken},
 		Platform: core.PlatFormAndroid,
 		Message:  "Welcome",
 	}
 
-	PushToAndroid(cfg, req)
+	PushToAndroid(req)
 }
 
 func TestPushToAndroidRightTokenForStringLog(t *testing.T) {
@@ -78,12 +80,13 @@ func TestPushToAndroidRightTokenForStringLog(t *testing.T) {
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
 	req := PushNotification{
+		Cfg:      cfg,
 		Tokens:   []string{androidToken},
 		Platform: core.PlatFormAndroid,
 		Message:  "Welcome",
 	}
 
-	PushToAndroid(cfg, req)
+	PushToAndroid(req)
 }
 
 func TestOverwriteAndroidAPIKey(t *testing.T) {
@@ -96,6 +99,7 @@ func TestOverwriteAndroidAPIKey(t *testing.T) {
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
 	req := PushNotification{
+		Cfg:      cfg,
 		Tokens:   []string{androidToken, "bbbbb"},
 		Platform: core.PlatFormAndroid,
 		Message:  "Welcome",
@@ -106,7 +110,7 @@ func TestOverwriteAndroidAPIKey(t *testing.T) {
 	}
 
 	// FCM server error: 401 error: 401 Unauthorized (Wrong API Key)
-	PushToAndroid(cfg, req)
+	PushToAndroid(req)
 
 	assert.Len(t, *req.Log, 2)
 }
@@ -197,13 +201,14 @@ func TestCheckAndroidMessage(t *testing.T) {
 
 	timeToLive := uint(2419201)
 	req := PushNotification{
+		Cfg:        cfg,
 		Tokens:     []string{"aaaaaa", "bbbbb"},
 		Platform:   core.PlatFormAndroid,
 		Message:    "Welcome",
 		TimeToLive: &timeToLive,
 	}
 
-	PushToAndroid(cfg, req)
+	PushToAndroid(req)
 }
 
 func TestAndroidNotificationStructure(t *testing.T) {

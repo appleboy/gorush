@@ -57,6 +57,7 @@ type RequestPush struct {
 type PushNotification struct {
 	Wg  *sync.WaitGroup
 	Log *[]logx.LogPushEntry
+	Cfg config.ConfYaml
 
 	// Common
 	ID               string      `json:"notif_id,omitempty"`
@@ -238,17 +239,17 @@ func CheckPushConf(cfg config.ConfYaml) error {
 }
 
 // SendNotification send notification
-func SendNotification(cfg config.ConfYaml, req PushNotification) {
+func SendNotification(req PushNotification) {
 	defer func() {
 		req.WaitDone()
 	}()
 
 	switch req.Platform {
 	case core.PlatFormIos:
-		PushToIOS(cfg, req)
+		PushToIOS(req)
 	case core.PlatFormAndroid:
-		PushToAndroid(cfg, req)
+		PushToAndroid(req)
 	case core.PlatFormHuawei:
-		PushToHuawei(cfg, req)
+		PushToHuawei(req)
 	}
 }

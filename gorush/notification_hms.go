@@ -166,8 +166,9 @@ func GetHuaweiNotification(req PushNotification) (*model.MessageRequest, error) 
 }
 
 // PushToHuawei provide send notification to Android server.
-func PushToHuawei(cfg config.ConfYaml, req PushNotification) bool {
+func PushToHuawei(req PushNotification) bool {
 	logx.LogAccess.Debug("Start push notification for Huawei")
+	cfg := req.Cfg
 
 	var (
 		client     *core.HMSClient

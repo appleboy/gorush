@@ -193,6 +193,7 @@ func main() {
 	if opts.Android.Enabled {
 		cfg.Android.Enabled = opts.Android.Enabled
 		req := gorush.PushNotification{
+			Cfg:      cfg,
 			Platform: core.PlatFormAndroid,
 			Message:  message,
 			Title:    title,
@@ -217,7 +218,7 @@ func main() {
 			return
 		}
 
-		gorush.PushToAndroid(cfg, req)
+		gorush.PushToAndroid(req)
 
 		return
 	}
@@ -226,6 +227,7 @@ func main() {
 	if opts.Huawei.Enabled {
 		cfg.Huawei.Enabled = opts.Huawei.Enabled
 		req := gorush.PushNotification{
+			Cfg:      cfg,
 			Platform: core.PlatFormHuawei,
 			Message:  message,
 			Title:    title,
@@ -250,7 +252,7 @@ func main() {
 			return
 		}
 
-		gorush.PushToHuawei(cfg, req)
+		gorush.PushToHuawei(req)
 
 		return
 	}
@@ -263,6 +265,7 @@ func main() {
 
 		cfg.Ios.Enabled = opts.Ios.Enabled
 		req := gorush.PushNotification{
+			Cfg:      cfg,
 			Platform: core.PlatFormIos,
 			Message:  message,
 			Title:    title,
@@ -290,7 +293,7 @@ func main() {
 		if err := gorush.InitAPNSClient(cfg); err != nil {
 			return
 		}
-		gorush.PushToIOS(cfg, req)
+		gorush.PushToIOS(req)
 
 		return
 	}
@@ -313,7 +316,7 @@ func main() {
 		logx.LogError.Fatal(err)
 	}
 
-	w := simple.NewWorker(cfg)
+	w := simple.NewWorker(int(cfg.Core.QueueNum))
 	q := queue.NewQueue(w)
 	q.Start()
 
