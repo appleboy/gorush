@@ -142,7 +142,7 @@ android:
   max_retry: 0 # resend fail notification, default value zero is disabled
 
 huawei:
-  enabled: true
+  enabled: false
   appsecret: "YOUR_APP_SECRET"
   appid: "YOUR_APP_ID"
   max_retry: 0 # resend fail notification, default value zero is disabled
