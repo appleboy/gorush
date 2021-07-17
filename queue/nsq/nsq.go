@@ -87,7 +87,7 @@ func (s *Worker) BeforeRun() error {
 func (s *Worker) AfterRun() error {
 	s.once.Do(func() {
 		time.Sleep(100 * time.Millisecond)
-		err := s.q.ConnectToNSQLookupd(s.addr)
+		err := s.q.ConnectToNSQD(s.addr)
 		if err != nil {
 			panic("Could not connect nsq server: " + err.Error())
 		}
