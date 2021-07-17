@@ -80,6 +80,9 @@ services:
 - name: redis
   image: redis
 
+- name: nsq
+  image: nsqio/nsq
+
 volumes:
 - name: gopath
   temp: {}

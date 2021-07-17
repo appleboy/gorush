@@ -98,18 +98,24 @@ func (s *Worker) AfterRun() error {
 
 // Run start the worker
 func (s *Worker) Run(quit chan struct{}) error {
+	wg := &sync.WaitGroup{}
 	s.q.AddHandler(nsq.HandlerFunc(func(msg *nsq.Message) error {
+		wg.Add(1)
+		defer wg.Done()
 		var notification gorush.PushNotification
 		if err := json.Unmarshal(msg.Body, &notification); err != nil {
 			return err
 		}
 		gorush.SendNotification(notification)
+		time.Sleep(10 * time.Second)
 		return nil
 	}))
 
 	select {
 	case <-quit:
 	}
+
+	wg.Wait()
 	return nil
 }
 
