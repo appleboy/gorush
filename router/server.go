@@ -250,6 +250,11 @@ func handleNotification(ctx context.Context, cfg config.ConfYaml, req gorush.Req
 	var count int
 	wg := sync.WaitGroup{}
 	newNotification := []*gorush.PushNotification{}
+
+	if cfg.Core.Sync && !core.IsLocalQueue(core.Queue(cfg.Queue.Engine)) {
+		cfg.Core.Sync = false
+	}
+
 	for i := range req.Notifications {
 		notification := &req.Notifications[i]
 		switch notification.Platform {

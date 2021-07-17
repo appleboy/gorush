@@ -88,6 +88,12 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Ios.KeyID)
 	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Ios.TeamID)
 
+	// queue
+	assert.Equal(suite.T(), "local", suite.ConfGorushDefault.Queue.Engine)
+	assert.Equal(suite.T(), "127.0.0.1:4150", suite.ConfGorushDefault.Queue.NSQ.Addr)
+	assert.Equal(suite.T(), "gorush", suite.ConfGorushDefault.Queue.NSQ.Topic)
+	assert.Equal(suite.T(), "ch", suite.ConfGorushDefault.Queue.NSQ.Channel)
+
 	// log
 	assert.Equal(suite.T(), "string", suite.ConfGorushDefault.Log.Format)
 	assert.Equal(suite.T(), "stdout", suite.ConfGorushDefault.Log.AccessLog)

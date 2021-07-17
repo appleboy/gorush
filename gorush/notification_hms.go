@@ -6,24 +6,25 @@ import (
 	"sync"
 
 	"github.com/appleboy/gorush/config"
+	"github.com/appleboy/gorush/core"
 	"github.com/appleboy/gorush/logx"
 	"github.com/appleboy/gorush/status"
 
 	c "github.com/msalihkarakasli/go-hms-push/push/config"
-	"github.com/msalihkarakasli/go-hms-push/push/core"
+	client "github.com/msalihkarakasli/go-hms-push/push/core"
 	"github.com/msalihkarakasli/go-hms-push/push/model"
 )
 
 var (
 	pushError  error
-	pushClient *core.HMSClient
+	pushClient *client.HMSClient
 	once       sync.Once
 )
 
 // GetPushClient use for create HMS Push
-func GetPushClient(conf *c.Config) (*core.HMSClient, error) {
+func GetPushClient(conf *c.Config) (*client.HMSClient, error) {
 	once.Do(func() {
-		client, err := core.NewHttpClient(conf)
+		client, err := client.NewHttpClient(conf)
 		if err != nil {
 			panic(err)
 		}
@@ -35,7 +36,7 @@ func GetPushClient(conf *c.Config) (*core.HMSClient, error) {
 }
 
 // InitHMSClient use for initialize HMS Client.
-func InitHMSClient(cfg config.ConfYaml, appSecret, appID string) (*core.HMSClient, error) {
+func InitHMSClient(cfg config.ConfYaml, appSecret, appID string) (*client.HMSClient, error) {
 	if appSecret == "" {
 		return nil, errors.New("Missing Huawei App Secret")
 	}
@@ -167,12 +168,15 @@ func GetHuaweiNotification(req PushNotification) (*model.MessageRequest, error) 
 // PushToHuawei provide send notification to Android server.
 func PushToHuawei(req PushNotification) bool {
 	logx.LogAccess.Debug("Start push notification for Huawei")
-	cfg := req.Cfg
+
+	if req.Cfg.Core.Sync && !core.IsLocalQueue(core.Queue(req.Cfg.Queue.Engine)) {
+		req.Cfg.Core.Sync = false
+	}
 
 	var (
-		client     *core.HMSClient
+		client     *client.HMSClient
 		retryCount = 0
-		maxRetry   = cfg.Huawei.MaxRetry
+		maxRetry   = req.Cfg.Huawei.MaxRetry
 	)
 
 	if req.Retry > 0 && req.Retry < maxRetry {
@@ -191,7 +195,7 @@ Retry:
 
 	notification, _ := GetHuaweiNotification(req)
 
-	client, err = InitHMSClient(cfg, cfg.Huawei.AppSecret, cfg.Huawei.AppID)
+	client, err = InitHMSClient(req.Cfg, req.Cfg.Huawei.AppSecret, req.Cfg.Huawei.AppID)
 
 	if err != nil {
 		// HMS server error

@@ -13,12 +13,14 @@ require (
 	github.com/gin-contrib/logger v0.2.0
 	github.com/gin-gonic/gin v1.7.2
 	github.com/go-redis/redis/v7 v7.4.0
+	github.com/golang/glog v0.0.0-20210429001901-424d2337a529 // indirect
 	github.com/golang/protobuf v1.5.1
 	github.com/google/flatbuffers v2.0.0+incompatible // indirect
 	github.com/json-iterator/go v1.1.10
 	github.com/mattn/go-isatty v0.0.12
 	github.com/mitchellh/mapstructure v1.4.1
 	github.com/msalihkarakasli/go-hms-push v0.0.0-20200616114002-91cd23dfeed4
+	github.com/nsqio/go-nsq v1.0.8
 	github.com/prometheus/client_golang v1.10.0
 	github.com/rs/zerolog v1.23.0
 	github.com/sideshow/apns2 v0.20.0

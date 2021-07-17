@@ -19,6 +19,7 @@ import (
 	"github.com/appleboy/gorush/gorush"
 	"github.com/appleboy/gorush/logx"
 	"github.com/appleboy/gorush/queue"
+	"github.com/appleboy/gorush/queue/nsq"
 	"github.com/appleboy/gorush/queue/simple"
 	"github.com/appleboy/gorush/router"
 	"github.com/appleboy/gorush/rpc"
@@ -316,7 +317,16 @@ func main() {
 		logx.LogError.Fatal(err)
 	}
 
-	w := simple.NewWorker(simple.WithQueueNum(int(cfg.Core.QueueNum)))
+	var w queue.Worker
+	switch core.Queue(cfg.Queue.Engine) {
+	case core.LocalQueue:
+		w = simple.NewWorker(simple.WithQueueNum(int(cfg.Core.QueueNum)))
+	case core.NSQ:
+		w = nsq.NewWorker()
+	default:
+		logx.LogError.Fatalf("we don't support queue engine: %s", cfg.Queue.Engine)
+	}
+
 	q := queue.NewQueue(w, int(cfg.Core.WorkerNum))
 	q.Start()
 

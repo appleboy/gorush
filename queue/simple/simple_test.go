@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/appleboy/gorush/gorush"
+
 	"github.com/stretchr/testify/assert"
 )
 
