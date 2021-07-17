@@ -13,6 +13,8 @@ var _ queue.Worker = (*Worker)(nil)
 // Option for queue system
 type Option func(*Worker)
 
+var errMaxCapacity = errors.New("max capacity reached")
+
 // Worker for simple queue using channel
 type Worker struct {
 	queueNotification chan gorush.PushNotification
@@ -49,7 +51,7 @@ func (s *Worker) Queue(job interface{}) error {
 	case s.queueNotification <- job.(gorush.PushNotification):
 		return nil
 	default:
-		return errors.New("max capacity reached")
+		return errMaxCapacity
 	}
 }
 
