@@ -1,6 +1,8 @@
 package gorush
 
 import (
+	"bytes"
+	"encoding/binary"
 	"errors"
 	"net/http"
 	"net/url"
@@ -131,6 +133,16 @@ func (p *PushNotification) AddLog(log logx.LogPushEntry) {
 	if p.Log != nil {
 		*p.Log = append(*p.Log, log)
 	}
+}
+
+// Bytes for queue message
+func (p *PushNotification) Bytes() []byte {
+	buf := &bytes.Buffer{}
+	err := binary.Write(buf, binary.BigEndian, p)
+	if err != nil {
+		panic(err)
+	}
+	return buf.Bytes()
 }
 
 // IsTopic check if message format is topic for FCM
