@@ -121,6 +121,9 @@
       {
         name: 'nsq',
         image: 'nsqio/nsq',
+        commands: [
+          "/nsqd",
+        ],
       },
     ],
   },

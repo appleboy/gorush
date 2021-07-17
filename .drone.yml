@@ -82,6 +82,8 @@ services:
 
 - name: nsq
   image: nsqio/nsq
+  commands:
+  - /nsqd
 
 volumes:
 - name: gopath
