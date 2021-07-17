@@ -102,7 +102,7 @@ func (s *Worker) Run(quit chan struct{}) error {
 	s.q.AddHandler(nsq.HandlerFunc(func(msg *nsq.Message) error {
 		wg.Add(1)
 		defer wg.Done()
-		var notification gorush.PushNotification
+		var notification *gorush.PushNotification
 		if err := json.Unmarshal(msg.Body, &notification); err != nil {
 			return err
 		}
@@ -136,8 +136,8 @@ func (s *Worker) Usage() int {
 }
 
 // Queue send notification to queue
-func (s *Worker) Queue(job interface{}) error {
-	v, ok := job.(gorush.PushNotification)
+func (s *Worker) Queue(job queue.QueuedMessage) error {
+	v, ok := job.(*gorush.PushNotification)
 	if !ok {
 		return errors.New("wrong type of job")
 	}

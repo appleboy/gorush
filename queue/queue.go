@@ -59,7 +59,7 @@ func (q *Queue) Wait() {
 }
 
 // Queue to queue all job
-func (q *Queue) Queue(job interface{}) error {
+func (q *Queue) Queue(job QueuedMessage) error {
 	return q.worker.Queue(job)
 }
 

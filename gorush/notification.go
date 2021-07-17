@@ -12,6 +12,7 @@ import (
 	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/core"
 	"github.com/appleboy/gorush/logx"
+	"github.com/appleboy/gorush/queue"
 
 	jsoniter "github.com/json-iterator/go"
 	"github.com/msalihkarakasli/go-hms-push/push/model"
@@ -252,17 +253,19 @@ func CheckPushConf(cfg config.ConfYaml) error {
 }
 
 // SendNotification send notification
-func SendNotification(req PushNotification) {
+func SendNotification(req queue.QueuedMessage) {
+	v, _ := req.(*PushNotification)
+
 	defer func() {
-		req.WaitDone()
+		v.WaitDone()
 	}()
 
-	switch req.Platform {
+	switch v.Platform {
 	case core.PlatFormIos:
-		PushToIOS(req)
+		PushToIOS(*v)
 	case core.PlatFormAndroid:
-		PushToAndroid(req)
+		PushToAndroid(*v)
 	case core.PlatFormHuawei:
-		PushToHuawei(req)
+		PushToHuawei(*v)
 	}
 }
