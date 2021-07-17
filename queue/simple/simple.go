@@ -20,6 +20,14 @@ type Worker struct {
 	queueNotification chan gorush.PushNotification
 }
 
+func (s *Worker) BeforeRun() error {
+	return nil
+}
+
+func (s *Worker) AfterRun() error {
+	return nil
+}
+
 // Run start the worker
 func (s *Worker) Run(_ chan struct{}) error {
 	for notification := range s.queueNotification {

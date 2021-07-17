@@ -17,7 +17,7 @@ import (
 )
 
 // Stats provide response time, status code count, etc.
-var Stats = stats.New()
+var Stats *stats.Stats
 
 // StatStorage implements the storage interface
 var StatStorage storage.Storage
@@ -77,6 +77,8 @@ func InitAppStatus(conf config.ConfYaml) error {
 
 		return err
 	}
+
+	Stats = stats.New()
 
 	return nil
 }

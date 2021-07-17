@@ -62,6 +62,13 @@ huawei:
   appid: "YOUR_APP_ID"
   max_retry: 0 # resend fail notification, default value zero is disabled
 
+queue:
+  engine: "local" # support "local", "nsq", default value is "local"
+  nsq:
+    addr: 127.0.0.1:4150
+    topic: gorush
+    channel: ch
+
 ios:
   enabled: false
   key_path: ""
@@ -106,6 +113,7 @@ type ConfYaml struct {
 	Android SectionAndroid `yaml:"android"`
 	Huawei  SectionHuawei  `yaml:"huawei"`
 	Ios     SectionIos     `yaml:"ios"`
+	Queue   SectionQueue   `yaml:"queue"`
 	Log     SectionLog     `yaml:"log"`
 	Stat    SectionStat    `yaml:"stat"`
 	GRPC    SectionGRPC    `yaml:"grpc"`
@@ -199,6 +207,19 @@ type SectionStat struct {
 	BuntDB   SectionBuntDB   `yaml:"buntdb"`
 	LevelDB  SectionLevelDB  `yaml:"leveldb"`
 	BadgerDB SectionBadgerDB `yaml:"badgerdb"`
+}
+
+// SectionQueue is sub section of config.
+type SectionQueue struct {
+	Engine string     `yaml:"engine"`
+	NSQ    SectionNSQ `yaml:"nsq"`
+}
+
+// SectionNSQ is sub section of config.
+type SectionNSQ struct {
+	Addr    string `yaml:"addr"`
+	Topic   string `yaml:"topic"`
+	Channel string `yaml:"channel"`
 }
 
 // SectionRedis is sub section of config.
@@ -340,6 +361,12 @@ func LoadConf(confPath ...string) (ConfYaml, error) {
 	conf.Log.ErrorLog = viper.GetString("log.error_log")
 	conf.Log.ErrorLevel = viper.GetString("log.error_level")
 	conf.Log.HideToken = viper.GetBool("log.hide_token")
+
+	// Queue Engine
+	conf.Queue.Engine = viper.GetString("queue.engine")
+	conf.Queue.NSQ.Addr = viper.GetString("queue.nsq.addr")
+	conf.Queue.NSQ.Topic = viper.GetString("queue.nsq.topic")
+	conf.Queue.NSQ.Channel = viper.GetString("queue.nsq.channel")
 
 	// Stat Engine
 	conf.Stat.Engine = viper.GetString("stat.engine")

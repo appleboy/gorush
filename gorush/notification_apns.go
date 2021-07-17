@@ -391,6 +391,10 @@ func getApnsClient(cfg config.ConfYaml, req PushNotification) (client *apns2.Cli
 func PushToIOS(req PushNotification) {
 	logx.LogAccess.Debug("Start push notification for iOS")
 
+	if req.Cfg.Core.Sync && !core.IsLocalQueue(core.Queue(req.Cfg.Queue.Engine)) {
+		req.Cfg.Core.Sync = false
+	}
+
 	var (
 		retryCount = 0
 		maxRetry   = req.Cfg.Ios.MaxRetry

@@ -109,6 +109,10 @@ func GetAndroidNotification(req PushNotification) *fcm.Message {
 func PushToAndroid(req PushNotification) {
 	logx.LogAccess.Debug("Start push notification for Android")
 
+	if req.Cfg.Core.Sync && !core.IsLocalQueue(core.Queue(req.Cfg.Queue.Engine)) {
+		req.Cfg.Core.Sync = false
+	}
+
 	var (
 		client     *fcm.Client
 		retryCount = 0
