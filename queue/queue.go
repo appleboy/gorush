@@ -64,7 +64,9 @@ func (q *Queue) Queue(job interface{}) error {
 }
 
 func (q *Queue) work(num int) {
-	q.worker.BeforeRun()
+	if err := q.worker.BeforeRun(); err != nil {
+		logx.LogError.Fatal(err)
+	}
 	q.routineGroup.Run(func() {
 		// to handle panic cases from inside the worker
 		// in such case, we start a new goroutine
@@ -79,7 +81,9 @@ func (q *Queue) work(num int) {
 		q.worker.Run(q.quit)
 		logx.LogAccess.Info("closed the worker num ", num)
 	})
-	q.worker.AfterRun()
+	if err := q.worker.AfterRun(); err != nil {
+		logx.LogError.Fatal(err)
+	}
 }
 
 func (q *Queue) startWorker() {

@@ -80,6 +80,11 @@ services:
 - name: redis
   image: redis
 
+- name: nsq
+  image: nsqio/nsq
+  commands:
+  - /nsqd
+
 volumes:
 - name: gopath
   temp: {}

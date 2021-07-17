@@ -118,6 +118,13 @@
         name: 'redis',
         image: 'redis',
       },
+      {
+        name: 'nsq',
+        image: 'nsqio/nsq',
+        commands: [
+          "/nsqd",
+        ],
+      },
     ],
   },
 
