@@ -63,14 +63,25 @@ func (q *Queue) Queue(job interface{}) error {
 	return q.worker.Queue(job)
 }
 
+func (q *Queue) work(num int) {
+	q.routineGroup.Run(func() {
+		// to handle panic cases from inside the worker
+		// in such case, we start a new goroutine
+		defer func() {
+			if err := recover(); err != nil {
+				logx.LogError.Error(err)
+				go q.work(num)
+			}
+		}()
+
+		logx.LogAccess.Info("started the worker num ", num)
+		q.worker.Run(q.quit)
+		logx.LogAccess.Info("closed the worker num ", num)
+	})
+}
+
 func (q *Queue) startWorker() {
 	for i := 0; i < q.workerCount; i++ {
-		go func(num int) {
-			q.routineGroup.Run(func() {
-				logx.LogAccess.Info("started the worker num ", num)
-				q.worker.Run(q.quit)
-				logx.LogAccess.Info("closed the worker num ", num)
-			})
-		}(i)
+		go q.work(i)
 	}
 }
