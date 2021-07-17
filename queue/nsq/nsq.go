@@ -107,7 +107,6 @@ func (s *Worker) Run(quit chan struct{}) error {
 			return err
 		}
 		gorush.SendNotification(notification)
-		time.Sleep(10 * time.Second)
 		return nil
 	}))
 
