@@ -2,7 +2,6 @@ package gorush
 
 import (
 	"bytes"
-	"encoding/json"
 	"errors"
 	"net"
 	"net/http"

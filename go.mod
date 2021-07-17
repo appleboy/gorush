@@ -15,6 +15,7 @@ require (
 	github.com/go-redis/redis/v7 v7.4.0
 	github.com/golang/protobuf v1.5.1
 	github.com/google/flatbuffers v2.0.0+incompatible // indirect
+	github.com/json-iterator/go v1.1.10
 	github.com/mattn/go-isatty v0.0.12
 	github.com/mitchellh/mapstructure v1.4.1
 	github.com/msalihkarakasli/go-hms-push v0.0.0-20200616114002-91cd23dfeed4

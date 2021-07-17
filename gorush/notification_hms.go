@@ -2,7 +2,6 @@ package gorush
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"sync"
 

@@ -1,7 +1,6 @@
 package gorush
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 	"net/url"

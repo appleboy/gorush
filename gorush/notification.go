@@ -12,8 +12,12 @@ import (
 	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/core"
 	"github.com/appleboy/gorush/logx"
+
+	jsoniter "github.com/json-iterator/go"
 	"github.com/msalihkarakasli/go-hms-push/push/model"
 )
+
+var json = jsoniter.ConfigCompatibleWithStandardLibrary
 
 // D provide string array
 type D map[string]interface{}
@@ -131,6 +135,15 @@ func (p *PushNotification) AddLog(log logx.LogPushEntry) {
 	if p.Log != nil {
 		*p.Log = append(*p.Log, log)
 	}
+}
+
+// Bytes for queue message
+func (p *PushNotification) Bytes() []byte {
+	b, err := json.Marshal(p)
+	if err != nil {
+		panic(err)
+	}
+	return b
 }
 
 // IsTopic check if message format is topic for FCM
