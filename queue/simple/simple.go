@@ -17,7 +17,7 @@ var errMaxCapacity = errors.New("max capacity reached")
 
 // Worker for simple queue using channel
 type Worker struct {
-	queueNotification chan gorush.PushNotification
+	queueNotification chan queue.QueuedMessage
 }
 
 // BeforeRun run script before start worker
@@ -56,9 +56,9 @@ func (s *Worker) Usage() int {
 }
 
 // Queue send notification to queue
-func (s *Worker) Queue(job interface{}) error {
+func (s *Worker) Queue(job queue.QueuedMessage) error {
 	select {
-	case s.queueNotification <- job.(gorush.PushNotification):
+	case s.queueNotification <- job:
 		return nil
 	default:
 		return errMaxCapacity
@@ -68,14 +68,14 @@ func (s *Worker) Queue(job interface{}) error {
 // WithQueueNum setup the capcity of queue
 func WithQueueNum(num int) Option {
 	return func(w *Worker) {
-		w.queueNotification = make(chan gorush.PushNotification, num)
+		w.queueNotification = make(chan queue.QueuedMessage, num)
 	}
 }
 
 // NewWorker for struc
 func NewWorker(opts ...Option) *Worker {
 	w := &Worker{
-		queueNotification: make(chan gorush.PushNotification, runtime.NumCPU()<<1),
+		queueNotification: make(chan queue.QueuedMessage, runtime.NumCPU()<<1),
 	}
 
 	// Loop through each option

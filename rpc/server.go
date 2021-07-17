@@ -102,7 +102,7 @@ func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*prot
 		}
 	}
 
-	go gorush.SendNotification(notification)
+	go gorush.SendNotification(&notification)
 
 	return &proto.NotificationReply{
 		Success: true,
