@@ -20,10 +20,12 @@ type Worker struct {
 	queueNotification chan gorush.PushNotification
 }
 
+// BeforeRun run script before start worker
 func (s *Worker) BeforeRun() error {
 	return nil
 }
 
+// AfterRun run script after start worker
 func (s *Worker) AfterRun() error {
 	return nil
 }

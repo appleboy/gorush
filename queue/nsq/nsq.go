@@ -17,6 +17,7 @@ var _ queue.Worker = (*Worker)(nil)
 // Option for queue system
 type Option func(*Worker)
 
+// Worker for NSQ
 type Worker struct {
 	q       *nsq.Consumer
 	p       *nsq.Producer
@@ -26,19 +27,21 @@ type Worker struct {
 	channel string
 }
 
-// WithQueueNum setup the capcity of queue
+// WithAddr setup the addr of NSQ
 func WithAddr(addr string) Option {
 	return func(w *Worker) {
 		w.addr = addr
 	}
 }
 
+// WithTopic setup the topic of NSQ
 func WithTopic(topic string) Option {
 	return func(w *Worker) {
 		w.topic = topic
 	}
 }
 
+// WithChannel setup the channel of NSQ
 func WithChannel(channel string) Option {
 	return func(w *Worker) {
 		w.channel = channel
@@ -75,10 +78,12 @@ func NewWorker(opts ...Option) *Worker {
 	return w
 }
 
+// BeforeRun run script before start worker
 func (s *Worker) BeforeRun() error {
 	return nil
 }
 
+// AfterRun run script after start worker
 func (s *Worker) AfterRun() error {
 	s.once.Do(func() {
 		time.Sleep(100 * time.Millisecond)
