@@ -255,10 +255,6 @@ func handleNotification(ctx context.Context, cfg config.ConfYaml, req gorush.Req
 		cfg.Core.Sync = false
 	}
 
-	logx.LogAccess.Debug(cfg.Core.Sync)
-	logx.LogAccess.Debug(core.IsLocalQueue(core.Queue(cfg.Queue.Engine)))
-	logx.LogAccess.Debug(cfg.Queue.Engine)
-
 	for i := range req.Notifications {
 		notification := &req.Notifications[i]
 		switch notification.Platform {
