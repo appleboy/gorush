@@ -12,12 +12,12 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	PushConf, _ := config.LoadConf("")
+	cfg, _ := config.LoadConf()
 	if err := logx.InitLog(
-		PushConf.Log.AccessLevel,
-		PushConf.Log.AccessLog,
-		PushConf.Log.ErrorLevel,
-		PushConf.Log.ErrorLog,
+		cfg.Log.AccessLevel,
+		cfg.Log.AccessLog,
+		cfg.Log.ErrorLevel,
+		cfg.Log.ErrorLog,
 	); err != nil {
 		log.Fatal(err)
 	}
@@ -26,9 +26,9 @@ func TestMain(m *testing.M) {
 }
 
 func TestStorageDriverExist(t *testing.T) {
-	PushConf, _ := config.LoadConf("")
-	PushConf.Stat.Engine = "Test"
-	err := InitAppStatus(PushConf)
+	cfg, _ := config.LoadConf()
+	cfg.Stat.Engine = "Test"
+	err := InitAppStatus(cfg)
 	assert.Error(t, err)
 }
 
@@ -37,9 +37,9 @@ func TestStatForMemoryEngine(t *testing.T) {
 	time.Sleep(5 * time.Second)
 
 	var val int64
-	PushConf, _ := config.LoadConf("")
-	PushConf.Stat.Engine = "memory"
-	err := InitAppStatus(PushConf)
+	cfg, _ := config.LoadConf()
+	cfg.Stat.Engine = "memory"
+	err := InitAppStatus(cfg)
 	assert.Nil(t, err)
 
 	StatStorage.AddTotalCount(100)
@@ -61,31 +61,31 @@ func TestStatForMemoryEngine(t *testing.T) {
 }
 
 func TestRedisServerSuccess(t *testing.T) {
-	PushConf, _ := config.LoadConf("")
-	PushConf.Stat.Engine = "redis"
-	PushConf.Stat.Redis.Addr = "redis:6379"
+	cfg, _ := config.LoadConf()
+	cfg.Stat.Engine = "redis"
+	cfg.Stat.Redis.Addr = "redis:6379"
 
-	err := InitAppStatus(PushConf)
+	err := InitAppStatus(cfg)
 
 	assert.NoError(t, err)
 }
 
 func TestRedisServerError(t *testing.T) {
-	PushConf, _ := config.LoadConf("")
-	PushConf.Stat.Engine = "redis"
-	PushConf.Stat.Redis.Addr = "redis:6370"
+	cfg, _ := config.LoadConf()
+	cfg.Stat.Engine = "redis"
+	cfg.Stat.Redis.Addr = "redis:6370"
 
-	err := InitAppStatus(PushConf)
+	err := InitAppStatus(cfg)
 
 	assert.Error(t, err)
 }
 
 func TestStatForRedisEngine(t *testing.T) {
 	var val int64
-	PushConf, _ := config.LoadConf("")
-	PushConf.Stat.Engine = "redis"
-	PushConf.Stat.Redis.Addr = "redis:6379"
-	err := InitAppStatus(PushConf)
+	cfg, _ := config.LoadConf()
+	cfg.Stat.Engine = "redis"
+	cfg.Stat.Redis.Addr = "redis:6379"
+	err := InitAppStatus(cfg)
 	assert.Nil(t, err)
 
 	StatStorage.Init()
@@ -112,8 +112,8 @@ func TestStatForRedisEngine(t *testing.T) {
 func TestDefaultEngine(t *testing.T) {
 	var val int64
 	// defaul engine as memory
-	PushConf, _ := config.LoadConf("")
-	err := InitAppStatus(PushConf)
+	cfg, _ := config.LoadConf()
+	err := InitAppStatus(cfg)
 	assert.Nil(t, err)
 
 	StatStorage.Reset()
@@ -138,9 +138,9 @@ func TestDefaultEngine(t *testing.T) {
 
 func TestStatForBoltDBEngine(t *testing.T) {
 	var val int64
-	PushConf, _ := config.LoadConf("")
-	PushConf.Stat.Engine = "boltdb"
-	err := InitAppStatus(PushConf)
+	cfg, _ := config.LoadConf()
+	cfg.Stat.Engine = "boltdb"
+	err := InitAppStatus(cfg)
 	assert.Nil(t, err)
 
 	StatStorage.Reset()
@@ -165,7 +165,7 @@ func TestStatForBoltDBEngine(t *testing.T) {
 
 // func TestStatForBuntDBEngine(t *testing.T) {
 // 	var val int64
-// 	PushConf.Stat.Engine = "buntdb"
+// 	cfg.Stat.Engine = "buntdb"
 // 	err := InitAppStatus()
 // 	assert.Nil(t, err)
 
@@ -191,7 +191,7 @@ func TestStatForBoltDBEngine(t *testing.T) {
 
 // func TestStatForLevelDBEngine(t *testing.T) {
 // 	var val int64
-// 	PushConf.Stat.Engine = "leveldb"
+// 	cfg.Stat.Engine = "leveldb"
 // 	err := InitAppStatus()
 // 	assert.Nil(t, err)
 
@@ -217,7 +217,7 @@ func TestStatForBoltDBEngine(t *testing.T) {
 
 // func TestStatForBadgerEngine(t *testing.T) {
 // 	var val int64
-// 	PushConf.Stat.Engine = "badger"
+// 	cfg.Stat.Engine = "badger"
 // 	err := InitAppStatus()
 // 	assert.Nil(t, err)
 

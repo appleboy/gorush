@@ -15,6 +15,8 @@ import (
 	"github.com/appleboy/gorush/core"
 	"github.com/appleboy/gorush/gorush"
 	"github.com/appleboy/gorush/logx"
+	"github.com/appleboy/gorush/queue"
+	"github.com/appleboy/gorush/queue/simple"
 	"github.com/appleboy/gorush/status"
 
 	"github.com/appleboy/gofight/v2"
@@ -23,7 +25,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var goVersion = runtime.Version()
+var (
+	goVersion = runtime.Version()
+	q         *queue.Queue
+	w         queue.Worker
+)
 
 func TestMain(m *testing.M) {
 	cfg := initTest()
@@ -40,11 +46,19 @@ func TestMain(m *testing.M) {
 		log.Fatal(err)
 	}
 
+	w = simple.NewWorker()
+	q = queue.NewQueue(w, 4)
+	q.Start()
+	defer func() {
+		q.Shutdown()
+		q.Wait()
+	}()
+
 	m.Run()
 }
 
 func initTest() config.ConfYaml {
-	cfg, _ := config.LoadConf("")
+	cfg, _ := config.LoadConf()
 	cfg.Core.Mode = "test"
 	return cfg
 }
@@ -88,7 +102,7 @@ func TestRunNormalServer(t *testing.T) {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	go func() {
-		assert.NoError(t, RunHTTPServer(ctx, cfg))
+		assert.NoError(t, RunHTTPServer(ctx, cfg, q))
 	}()
 
 	defer func() {
@@ -112,7 +126,7 @@ func TestRunTLSServer(t *testing.T) {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	go func() {
-		assert.NoError(t, RunHTTPServer(ctx, cfg))
+		assert.NoError(t, RunHTTPServer(ctx, cfg, q))
 	}()
 
 	defer func() {
@@ -140,7 +154,7 @@ func TestRunTLSBase64Server(t *testing.T) {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	go func() {
-		assert.NoError(t, RunHTTPServer(ctx, cfg))
+		assert.NoError(t, RunHTTPServer(ctx, cfg, q))
 	}()
 
 	defer func() {
@@ -159,7 +173,7 @@ func TestRunAutoTLSServer(t *testing.T) {
 	cfg.Core.AutoTLS.Enabled = true
 	ctx, cancel := context.WithCancel(context.Background())
 	go func() {
-		assert.NoError(t, RunHTTPServer(ctx, cfg))
+		assert.NoError(t, RunHTTPServer(ctx, cfg, q))
 	}()
 
 	defer func() {
@@ -179,7 +193,7 @@ func TestLoadTLSCertError(t *testing.T) {
 	cfg.Core.CertPath = "../config/config.yml"
 	cfg.Core.KeyPath = "../config/config.yml"
 
-	assert.Error(t, RunHTTPServer(context.Background(), cfg))
+	assert.Error(t, RunHTTPServer(context.Background(), cfg, q))
 }
 
 func TestMissingTLSCertcfgg(t *testing.T) {
@@ -192,8 +206,8 @@ func TestMissingTLSCertcfgg(t *testing.T) {
 	cfg.Core.CertBase64 = ""
 	cfg.Core.KeyBase64 = ""
 
-	err := RunHTTPServer(context.Background(), cfg)
-	assert.Error(t, RunHTTPServer(context.Background(), cfg))
+	err := RunHTTPServer(context.Background(), cfg, q)
+	assert.Error(t, RunHTTPServer(context.Background(), cfg, q))
 	assert.Equal(t, "missing https cert config", err.Error())
 }
 
@@ -206,7 +220,7 @@ func TestRootHandler(t *testing.T) {
 	cfg.Log.Format = "json"
 
 	r.GET("/").
-		Run(routerEngine(cfg), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+		Run(routerEngine(cfg, q), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 			data := r.Body.Bytes()
 
 			value, _ := jsonparser.GetString(data, "text")
@@ -223,7 +237,7 @@ func TestAPIStatusGoHandler(t *testing.T) {
 	r := gofight.New()
 
 	r.GET("/api/stat/go").
-		Run(routerEngine(cfg), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+		Run(routerEngine(cfg, q), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 			data := r.Body.Bytes()
 
 			value, _ := jsonparser.GetString(data, "go_version")
@@ -242,7 +256,7 @@ func TestAPIStatusAppHandler(t *testing.T) {
 	SetVersion(appVersion)
 
 	r.GET("/api/stat/app").
-		Run(routerEngine(cfg), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+		Run(routerEngine(cfg, q), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 			data := r.Body.Bytes()
 
 			value, _ := jsonparser.GetString(data, "version")
@@ -258,7 +272,7 @@ func TestAPIConfigHandler(t *testing.T) {
 	r := gofight.New()
 
 	r.GET("/api/config").
-		Run(routerEngine(cfg), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+		Run(routerEngine(cfg, q), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 			assert.Equal(t, http.StatusCreated, r.Code)
 		})
 }
@@ -270,7 +284,7 @@ func TestMissingNotificationsParameter(t *testing.T) {
 
 	// missing notifications parameter.
 	r.POST("/api/push").
-		Run(routerEngine(cfg), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+		Run(routerEngine(cfg, q), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 			assert.Equal(t, http.StatusBadRequest, r.Code)
 			assert.Equal(t, "application/json; charset=utf-8", r.HeaderMap.Get("Content-Type"))
 		})
@@ -286,7 +300,7 @@ func TestEmptyNotifications(t *testing.T) {
 		SetJSON(gofight.D{
 			"notifications": []gorush.PushNotification{},
 		}).
-		Run(routerEngine(cfg), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+		Run(routerEngine(cfg, q), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 			assert.Equal(t, http.StatusBadRequest, r.Code)
 		})
 }
@@ -303,7 +317,7 @@ func TestMutableContent(t *testing.T) {
 				{
 					"tokens":          []string{"aaaaa", "bbbbb"},
 					"platform":        core.PlatFormAndroid,
-					"message":         "Welcome",
+					"message":         "Welcome From API",
 					"mutable_content": 1,
 					"topic":           "test",
 					"badge":           1,
@@ -314,8 +328,8 @@ func TestMutableContent(t *testing.T) {
 				},
 			},
 		}).
-		Run(routerEngine(cfg), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
-			// json: cannot unmarshal number into Go struct field PushNotification.mutable_content of type bool
+		Run(routerEngine(cfg, q), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+			// json: cannot unmarshal number into Go struct field gorush.PushNotification.mutable_content of type bool
 			assert.Equal(t, http.StatusBadRequest, r.Code)
 		})
 }
@@ -334,16 +348,16 @@ func TestOutOfRangeMaxNotifications(t *testing.T) {
 				{
 					"tokens":   []string{"aaaaa", "bbbbb"},
 					"platform": core.PlatFormAndroid,
-					"message":  "Welcome",
+					"message":  "Welcome API From Android",
 				},
 				{
 					"tokens":   []string{"aaaaa", "bbbbb"},
 					"platform": core.PlatFormAndroid,
-					"message":  "Welcome",
+					"message":  "Welcome API From Android",
 				},
 			},
 		}).
-		Run(routerEngine(cfg), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+		Run(routerEngine(cfg, q), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 			assert.Equal(t, http.StatusBadRequest, r.Code)
 		})
 }
@@ -365,11 +379,11 @@ func TestSuccessPushHandler(t *testing.T) {
 				{
 					"tokens":   []string{androidToken, "bbbbb"},
 					"platform": core.PlatFormAndroid,
-					"message":  "Welcome",
+					"message":  "Welcome Android",
 				},
 			},
 		}).
-		Run(routerEngine(cfg), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+		Run(routerEngine(cfg, q), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }
@@ -380,7 +394,7 @@ func TestSysStatsHandler(t *testing.T) {
 	r := gofight.New()
 
 	r.GET("/sys/stats").
-		Run(routerEngine(cfg), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+		Run(routerEngine(cfg, q), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }
@@ -391,7 +405,7 @@ func TestMetricsHandler(t *testing.T) {
 	r := gofight.New()
 
 	r.GET("/metrics").
-		Run(routerEngine(cfg), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+		Run(routerEngine(cfg, q), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }
@@ -402,7 +416,7 @@ func TestGETHeartbeatHandler(t *testing.T) {
 	r := gofight.New()
 
 	r.GET("/healthz").
-		Run(routerEngine(cfg), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+		Run(routerEngine(cfg, q), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }
@@ -413,7 +427,7 @@ func TestHEADHeartbeatHandler(t *testing.T) {
 	r := gofight.New()
 
 	r.HEAD("/healthz").
-		Run(routerEngine(cfg), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+		Run(routerEngine(cfg, q), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }
@@ -425,7 +439,7 @@ func TestVersionHandler(t *testing.T) {
 	r := gofight.New()
 
 	r.GET("/version").
-		Run(routerEngine(cfg), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+		Run(routerEngine(cfg, q), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 			assert.Equal(t, http.StatusOK, r.Code)
 			data := r.Body.Bytes()
 
@@ -438,8 +452,228 @@ func TestVersionHandler(t *testing.T) {
 func TestDisabledHTTPServer(t *testing.T) {
 	cfg := initTest()
 	cfg.Core.Enabled = false
-	err := RunHTTPServer(context.Background(), cfg)
+	err := RunHTTPServer(context.Background(), cfg, q)
 	cfg.Core.Enabled = true
 
 	assert.Nil(t, err)
+}
+
+func TestSenMultipleNotifications(t *testing.T) {
+	ctx := context.Background()
+	cfg := initTest()
+
+	cfg.Ios.Enabled = true
+	cfg.Ios.KeyPath = "../certificate/certificate-valid.pem"
+	err := gorush.InitAPNSClient(cfg)
+	assert.Nil(t, err)
+
+	cfg.Android.Enabled = true
+	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+
+	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
+
+	req := gorush.RequestPush{
+		Notifications: []gorush.PushNotification{
+			// ios
+			{
+				Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
+				Platform: core.PlatFormIos,
+				Message:  "Welcome iOS",
+			},
+			// android
+			{
+				Tokens:   []string{androidToken, "bbbbb"},
+				Platform: core.PlatFormAndroid,
+				Message:  "Welcome Android",
+			},
+		},
+	}
+
+	count, logs := handleNotification(ctx, cfg, req, q)
+	assert.Equal(t, 3, count)
+	assert.Equal(t, 0, len(logs))
+}
+
+func TestDisabledAndroidNotifications(t *testing.T) {
+	ctx := context.Background()
+	cfg := initTest()
+
+	cfg.Ios.Enabled = true
+	cfg.Ios.KeyPath = "../certificate/certificate-valid.pem"
+	err := gorush.InitAPNSClient(cfg)
+	assert.Nil(t, err)
+
+	cfg.Android.Enabled = false
+	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+
+	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
+
+	req := gorush.RequestPush{
+		Notifications: []gorush.PushNotification{
+			// ios
+			{
+				Tokens:   []string{"11aa01229f15f0f0c5209d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
+				Platform: core.PlatFormIos,
+				Message:  "Welcome iOS",
+			},
+			// android
+			{
+				Tokens:   []string{androidToken, "bbbbb"},
+				Platform: core.PlatFormAndroid,
+				Message:  "Welcome Android",
+			},
+		},
+	}
+
+	count, logs := handleNotification(ctx, cfg, req, q)
+	assert.Equal(t, 1, count)
+	assert.Equal(t, 0, len(logs))
+}
+
+func TestSyncModeForNotifications(t *testing.T) {
+	ctx := context.Background()
+	cfg := initTest()
+
+	cfg.Ios.Enabled = true
+	cfg.Ios.KeyPath = "../certificate/certificate-valid.pem"
+	err := gorush.InitAPNSClient(cfg)
+	assert.Nil(t, err)
+
+	cfg.Android.Enabled = true
+	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+
+	// enable sync mode
+	cfg.Core.Sync = true
+
+	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
+
+	req := gorush.RequestPush{
+		Notifications: []gorush.PushNotification{
+			// ios
+			{
+				Tokens: []string{
+					"11aa01229f15f0f0c12029d8c111d1ae1f2365f14cebc4af26cd6d76b7919ef7",
+				},
+				Platform: core.PlatFormIos,
+				Message:  "Welcome iOS Sync",
+			},
+			// android
+			{
+				Tokens:   []string{androidToken, "bbbbb"},
+				Platform: core.PlatFormAndroid,
+				Message:  "Welcome Android Sync",
+			},
+		},
+	}
+
+	count, logs := handleNotification(ctx, cfg, req, q)
+	assert.Equal(t, 3, count)
+	assert.Equal(t, 2, len(logs))
+}
+
+func TestSyncModeForTopicNotification(t *testing.T) {
+	ctx := context.Background()
+	cfg := initTest()
+
+	cfg.Android.Enabled = true
+	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+	cfg.Log.HideToken = false
+
+	// enable sync mode
+	cfg.Core.Sync = true
+
+	req := gorush.RequestPush{
+		Notifications: []gorush.PushNotification{
+			// android
+			{
+				// error:InvalidParameters
+				// Check that the provided parameters have the right name and type.
+				To:       "/topics/foo-bar@@@##",
+				Platform: core.PlatFormAndroid,
+				Message:  "This is a Firebase Cloud Messaging Topic Message!",
+			},
+			// android
+			{
+				// success
+				To:       "/topics/foo-bar",
+				Platform: core.PlatFormAndroid,
+				Message:  "This is a Firebase Cloud Messaging Topic Message!",
+			},
+			// android
+			{
+				// success
+				Cfg:       cfg,
+				Condition: "'dogs' in topics || 'cats' in topics",
+				Platform:  core.PlatFormAndroid,
+				Message:   "This is a Firebase Cloud Messaging Topic Message!",
+			},
+		},
+	}
+
+	count, logs := handleNotification(ctx, cfg, req, q)
+	assert.Equal(t, 2, count)
+	assert.Equal(t, 1, len(logs))
+}
+
+func TestSyncModeForDeviceGroupNotification(t *testing.T) {
+	ctx := context.Background()
+	cfg := initTest()
+
+	cfg.Android.Enabled = true
+	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+	cfg.Log.HideToken = false
+
+	// enable sync mode
+	cfg.Core.Sync = true
+
+	req := gorush.RequestPush{
+		Notifications: []gorush.PushNotification{
+			// android
+			{
+				To:       "aUniqueKey",
+				Platform: core.PlatFormAndroid,
+				Message:  "This is a Firebase Cloud Messaging Device Group Message!",
+			},
+		},
+	}
+
+	count, logs := handleNotification(ctx, cfg, req, q)
+	assert.Equal(t, 1, count)
+	assert.Equal(t, 1, len(logs))
+}
+
+func TestDisabledIosNotifications(t *testing.T) {
+	ctx := context.Background()
+	cfg := initTest()
+
+	cfg.Ios.Enabled = false
+	cfg.Ios.KeyPath = "../certificate/certificate-valid.pem"
+	err := gorush.InitAPNSClient(cfg)
+	assert.Nil(t, err)
+
+	cfg.Android.Enabled = true
+	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+
+	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
+
+	req := gorush.RequestPush{
+		Notifications: []gorush.PushNotification{
+			// ios
+			{
+				Tokens:   []string{"11aa01229f15f0f0c52021d8cf3cd0ae1f2365fe4cebc4af26cd6d76b7919ef7"},
+				Platform: core.PlatFormIos,
+				Message:  "Welcome iOS platform",
+			},
+			// android
+			{
+				Tokens:   []string{androidToken, androidToken + "_"},
+				Platform: core.PlatFormAndroid,
+				Message:  "Welcome Android platform",
+			},
+		},
+	}
+
+	count, logs := handleNotification(ctx, cfg, req, q)
+	assert.Equal(t, 2, count)
+	assert.Equal(t, 0, len(logs))
 }

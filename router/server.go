@@ -3,14 +3,18 @@ package router
 import (
 	"context"
 	"crypto/tls"
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
+	"sync"
 
 	"github.com/appleboy/gorush/config"
+	"github.com/appleboy/gorush/core"
 	"github.com/appleboy/gorush/gorush"
 	"github.com/appleboy/gorush/logx"
 	"github.com/appleboy/gorush/metric"
+	"github.com/appleboy/gorush/queue"
 	"github.com/appleboy/gorush/status"
 
 	api "github.com/appleboy/gin-status-api"
@@ -26,14 +30,12 @@ import (
 	"golang.org/x/crypto/acme/autocert"
 )
 
-var isTerm bool
+var (
+	isTerm bool
+	doOnce sync.Once
+)
 
 func init() {
-	// Support metrics
-	m := metric.NewMetrics(func() int {
-		return len(gorush.QueueNotification)
-	})
-	prometheus.MustRegister(m)
 	isTerm = isatty.IsTerminal(os.Stdout.Fd())
 }
 
@@ -61,7 +63,7 @@ func versionHandler(c *gin.Context) {
 	})
 }
 
-func pushHandler(cfg config.ConfYaml) gin.HandlerFunc {
+func pushHandler(cfg config.ConfYaml, q *queue.Queue) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var form gorush.RequestPush
 		var msg string
@@ -101,7 +103,7 @@ func pushHandler(cfg config.ConfYaml) gin.HandlerFunc {
 			}
 		}()
 
-		counts, logs := gorush.HandleNotification(ctx, form)
+		counts, logs := handleNotification(ctx, cfg, form, q)
 
 		c.JSON(http.StatusOK, gin.H{
 			"success": "ok",
@@ -121,21 +123,23 @@ func metricsHandler(c *gin.Context) {
 	promhttp.Handler().ServeHTTP(c.Writer, c.Request)
 }
 
-func appStatusHandler(c *gin.Context) {
-	result := status.App{}
+func appStatusHandler(q *queue.Queue) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		result := status.App{}
 
-	result.Version = GetVersion()
-	result.QueueMax = cap(gorush.QueueNotification)
-	result.QueueUsage = len(gorush.QueueNotification)
-	result.TotalCount = status.StatStorage.GetTotalCount()
-	result.Ios.PushSuccess = status.StatStorage.GetIosSuccess()
-	result.Ios.PushError = status.StatStorage.GetIosError()
-	result.Android.PushSuccess = status.StatStorage.GetAndroidSuccess()
-	result.Android.PushError = status.StatStorage.GetAndroidError()
-	result.Huawei.PushSuccess = status.StatStorage.GetHuaweiSuccess()
-	result.Huawei.PushError = status.StatStorage.GetHuaweiError()
+		result.Version = GetVersion()
+		result.QueueMax = q.Capacity()
+		result.QueueUsage = q.Usage()
+		result.TotalCount = status.StatStorage.GetTotalCount()
+		result.Ios.PushSuccess = status.StatStorage.GetIosSuccess()
+		result.Ios.PushError = status.StatStorage.GetIosError()
+		result.Android.PushSuccess = status.StatStorage.GetAndroidSuccess()
+		result.Android.PushError = status.StatStorage.GetAndroidError()
+		result.Huawei.PushSuccess = status.StatStorage.GetHuaweiSuccess()
+		result.Huawei.PushError = status.StatStorage.GetHuaweiError()
 
-	c.JSON(http.StatusOK, result)
+		c.JSON(http.StatusOK, result)
+	}
 }
 
 func sysStatsHandler() gin.HandlerFunc {
@@ -153,7 +157,7 @@ func StatMiddleware() gin.HandlerFunc {
 	}
 }
 
-func autoTLSServer(cfg config.ConfYaml) *http.Server {
+func autoTLSServer(cfg config.ConfYaml, q *queue.Queue) *http.Server {
 	m := autocert.Manager{
 		Prompt:     autocert.AcceptTOS,
 		HostPolicy: autocert.HostWhitelist(cfg.Core.AutoTLS.Host),
@@ -163,11 +167,11 @@ func autoTLSServer(cfg config.ConfYaml) *http.Server {
 	return &http.Server{
 		Addr:      ":https",
 		TLSConfig: &tls.Config{GetCertificate: m.GetCertificate},
-		Handler:   routerEngine(cfg),
+		Handler:   routerEngine(cfg, q),
 	}
 }
 
-func routerEngine(cfg config.ConfYaml) *gin.Engine {
+func routerEngine(cfg config.ConfYaml, q *queue.Queue) *gin.Engine {
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 	if cfg.Core.Mode == "debug" {
 		zerolog.SetGlobalLevel(zerolog.DebugLevel)
@@ -183,6 +187,14 @@ func routerEngine(cfg config.ConfYaml) *gin.Engine {
 			},
 		)
 	}
+
+	// Support metrics
+	doOnce.Do(func() {
+		m := metric.NewMetrics(func() int {
+			return q.Usage()
+		})
+		prometheus.MustRegister(m)
+	})
 
 	// set server mode
 	gin.SetMode(cfg.Core.Mode)
@@ -202,10 +214,10 @@ func routerEngine(cfg config.ConfYaml) *gin.Engine {
 	r.Use(StatMiddleware())
 
 	r.GET(cfg.API.StatGoURI, api.GinHandler)
-	r.GET(cfg.API.StatAppURI, appStatusHandler)
+	r.GET(cfg.API.StatAppURI, appStatusHandler(q))
 	r.GET(cfg.API.ConfigURI, configHandler(cfg))
 	r.GET(cfg.API.SysStatURI, sysStatsHandler())
-	r.POST(cfg.API.PushURI, pushHandler(cfg))
+	r.POST(cfg.API.PushURI, pushHandler(cfg, q))
 	r.GET(cfg.API.MetricURI, metricsHandler)
 	r.GET(cfg.API.HealthURI, heartbeatHandler)
 	r.HEAD(cfg.API.HealthURI, heartbeatHandler)
@@ -213,4 +225,75 @@ func routerEngine(cfg config.ConfYaml) *gin.Engine {
 	r.GET("/", rootHandler)
 
 	return r
+}
+
+// markFailedNotification adds failure logs for all tokens in push notification
+func markFailedNotification(cfg config.ConfYaml, notification *gorush.PushNotification, reason string) {
+	logx.LogError.Error(reason)
+	for _, token := range notification.Tokens {
+		notification.AddLog(logx.GetLogPushEntry(&logx.InputLog{
+			ID:        notification.ID,
+			Status:    core.FailedPush,
+			Token:     token,
+			Message:   notification.Message,
+			Platform:  notification.Platform,
+			Error:     errors.New(reason),
+			HideToken: cfg.Log.HideToken,
+			Format:    cfg.Log.Format,
+		}))
+	}
+	notification.WaitDone()
+}
+
+// HandleNotification add notification to queue list.
+func handleNotification(ctx context.Context, cfg config.ConfYaml, req gorush.RequestPush, q *queue.Queue) (int, []logx.LogPushEntry) {
+	var count int
+	wg := sync.WaitGroup{}
+	newNotification := []*gorush.PushNotification{}
+	for i := range req.Notifications {
+		notification := &req.Notifications[i]
+		switch notification.Platform {
+		case core.PlatFormIos:
+			if !cfg.Ios.Enabled {
+				continue
+			}
+		case core.PlatFormAndroid:
+			if !cfg.Android.Enabled {
+				continue
+			}
+		case core.PlatFormHuawei:
+			if !cfg.Huawei.Enabled {
+				continue
+			}
+		}
+		notification.Cfg = cfg
+		newNotification = append(newNotification, notification)
+	}
+
+	log := make([]logx.LogPushEntry, 0, count)
+	for _, notification := range newNotification {
+		if cfg.Core.Sync {
+			notification.Wg = &wg
+			notification.Log = &log
+			notification.AddWaitCount()
+		}
+
+		if err := q.Queue(*notification); err != nil {
+			markFailedNotification(cfg, notification, "max capacity reached")
+		}
+
+		count += len(notification.Tokens)
+		// Count topic message
+		if notification.To != "" {
+			count++
+		}
+	}
+
+	if cfg.Core.Sync {
+		wg.Wait()
+	}
+
+	status.StatStorage.AddTotalCount(int64(count))
+
+	return count, log
 }

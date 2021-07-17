@@ -12,12 +12,13 @@ import (
 
 	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/logx"
+	"github.com/appleboy/gorush/queue"
 
 	"golang.org/x/sync/errgroup"
 )
 
 // RunHTTPServer provide run http or https protocol.
-func RunHTTPServer(ctx context.Context, cfg config.ConfYaml, s ...*http.Server) (err error) {
+func RunHTTPServer(ctx context.Context, cfg config.ConfYaml, q *queue.Queue, s ...*http.Server) (err error) {
 	var server *http.Server
 
 	if !cfg.Core.Enabled {
@@ -28,7 +29,7 @@ func RunHTTPServer(ctx context.Context, cfg config.ConfYaml, s ...*http.Server) 
 	if len(s) == 0 {
 		server = &http.Server{
 			Addr:    cfg.Core.Address + ":" + cfg.Core.Port,
-			Handler: routerEngine(cfg),
+			Handler: routerEngine(cfg, q),
 		}
 	} else {
 		server = s[0]
@@ -36,7 +37,7 @@ func RunHTTPServer(ctx context.Context, cfg config.ConfYaml, s ...*http.Server) 
 
 	logx.LogAccess.Info("HTTPD server is running on " + cfg.Core.Port + " port.")
 	if cfg.Core.AutoTLS.Enabled {
-		return startServer(ctx, autoTLSServer(cfg), cfg)
+		return startServer(ctx, autoTLSServer(cfg, q), cfg)
 	} else if cfg.Core.SSL {
 		config := &tls.Config{
 			MinVersion: tls.VersionTLS10,

@@ -25,7 +25,7 @@ type ConfigTestSuite struct {
 
 func (suite *ConfigTestSuite) SetupTest() {
 	var err error
-	suite.ConfGorushDefault, err = LoadConf("")
+	suite.ConfGorushDefault, err = LoadConf()
 	if err != nil {
 		panic("failed to load default config.yml")
 	}
@@ -215,6 +215,6 @@ func TestLoadConfigFromEnv(t *testing.T) {
 
 func TestLoadWrongDefaultYAMLConfig(t *testing.T) {
 	defaultConf = []byte(`a`)
-	_, err := LoadConf("")
+	_, err := LoadConf()
 	assert.Error(t, err)
 }

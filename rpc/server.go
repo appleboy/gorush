@@ -6,6 +6,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/core"
 	"github.com/appleboy/gorush/gorush"
 	"github.com/appleboy/gorush/logx"
@@ -19,14 +20,16 @@ import (
 
 // Server is used to implement gorush grpc server.
 type Server struct {
-	mu sync.Mutex
+	cfg config.ConfYaml
+	mu  sync.Mutex
 	// statusMap stores the serving status of the services this Server monitors.
 	statusMap map[string]proto.HealthCheckResponse_ServingStatus
 }
 
 // NewServer returns a new Server.
-func NewServer() *Server {
+func NewServer(cfg config.ConfYaml) *Server {
 	return &Server{
+		cfg:       cfg,
 		statusMap: make(map[string]proto.HealthCheckResponse_ServingStatus),
 	}
 }
@@ -53,6 +56,7 @@ func (s *Server) Check(ctx context.Context, in *proto.HealthCheckRequest) (*prot
 func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*proto.NotificationReply, error) {
 	badge := int(in.Badge)
 	notification := gorush.PushNotification{
+		Cfg:              s.cfg,
 		Platform:         int(in.Platform),
 		Tokens:           in.Tokens,
 		Message:          in.Message,
@@ -98,7 +102,7 @@ func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*prot
 		}
 	}
 
-	go gorush.SendNotification(ctx, notification)
+	go gorush.SendNotification(notification)
 
 	return &proto.NotificationReply{
 		Success: true,
@@ -107,26 +111,26 @@ func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*prot
 }
 
 // RunGRPCServer run gorush grpc server
-func RunGRPCServer(ctx context.Context) error {
-	if !gorush.PushConf.GRPC.Enabled {
+func RunGRPCServer(ctx context.Context, cfg config.ConfYaml) error {
+	if !cfg.GRPC.Enabled {
 		logx.LogAccess.Info("gRPC server is disabled.")
 		return nil
 	}
 
 	s := grpc.NewServer()
-	rpcSrv := NewServer()
+	rpcSrv := NewServer(cfg)
 	proto.RegisterGorushServer(s, rpcSrv)
 	proto.RegisterHealthServer(s, rpcSrv)
 
 	// Register reflection service on gRPC server.
 	reflection.Register(s)
 
-	lis, err := net.Listen("tcp", ":"+gorush.PushConf.GRPC.Port)
+	lis, err := net.Listen("tcp", ":"+cfg.GRPC.Port)
 	if err != nil {
 		logx.LogError.Fatalln(err)
 		return err
 	}
-	logx.LogAccess.Info("gRPC server is running on " + gorush.PushConf.GRPC.Port + " port.")
+	logx.LogAccess.Info("gRPC server is running on " + cfg.GRPC.Port + " port.")
 	go func() {
 		select {
 		case <-ctx.Done():

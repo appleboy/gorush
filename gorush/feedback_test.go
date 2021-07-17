@@ -13,7 +13,7 @@ import (
 )
 
 func TestEmptyFeedbackURL(t *testing.T) {
-	// PushConf, _ = config.LoadConf("")
+	cfg, _ := config.LoadConf()
 	logEntry := logx.LogPushEntry{
 		ID:       "",
 		Type:     "",
@@ -23,13 +23,13 @@ func TestEmptyFeedbackURL(t *testing.T) {
 		Error:    "",
 	}
 
-	err := DispatchFeedback(logEntry, PushConf.Core.FeedbackURL, PushConf.Core.FeedbackTimeout)
+	err := DispatchFeedback(logEntry, cfg.Core.FeedbackURL, cfg.Core.FeedbackTimeout)
 	assert.NotNil(t, err)
 }
 
 func TestHTTPErrorInFeedbackCall(t *testing.T) {
-	config, _ := config.LoadConf("")
-	config.Core.FeedbackURL = "http://test.example.com/api/"
+	cfg, _ := config.LoadConf()
+	cfg.Core.FeedbackURL = "http://test.example.com/api/"
 	logEntry := logx.LogPushEntry{
 		ID:       "",
 		Type:     "",
@@ -39,7 +39,7 @@ func TestHTTPErrorInFeedbackCall(t *testing.T) {
 		Error:    "",
 	}
 
-	err := DispatchFeedback(logEntry, config.Core.FeedbackURL, config.Core.FeedbackTimeout)
+	err := DispatchFeedback(logEntry, cfg.Core.FeedbackURL, cfg.Core.FeedbackTimeout)
 	assert.NotNil(t, err)
 }
 
@@ -59,8 +59,8 @@ func TestSuccessfulFeedbackCall(t *testing.T) {
 	)
 	defer httpMock.Close()
 
-	config, _ := config.LoadConf("")
-	config.Core.FeedbackURL = httpMock.URL
+	cfg, _ := config.LoadConf()
+	cfg.Core.FeedbackURL = httpMock.URL
 	logEntry := logx.LogPushEntry{
 		ID:       "",
 		Type:     "",
@@ -70,6 +70,6 @@ func TestSuccessfulFeedbackCall(t *testing.T) {
 		Error:    "",
 	}
 
-	err := DispatchFeedback(logEntry, config.Core.FeedbackURL, config.Core.FeedbackTimeout)
+	err := DispatchFeedback(logEntry, cfg.Core.FeedbackURL, cfg.Core.FeedbackTimeout)
 	assert.Nil(t, err)
 }
