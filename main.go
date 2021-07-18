@@ -320,7 +320,9 @@ func main() {
 	var w queue.Worker
 	switch core.Queue(cfg.Queue.Engine) {
 	case core.LocalQueue:
-		w = simple.NewWorker(simple.WithQueueNum(int(cfg.Core.QueueNum)))
+		w = simple.NewWorker(
+			simple.WithQueueNum(int(cfg.Core.QueueNum)),
+		)
 	case core.NSQ:
 		w = nsq.NewWorker()
 	default:
