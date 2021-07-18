@@ -45,13 +45,14 @@ func TestShutdown(t *testing.T) {
 	q.Wait()
 }
 
-func TestCustomFunc(t *testing.T) {
+func TestCustomFuncAndWait(t *testing.T) {
 	m := mockMessage{
 		msg: "foo",
 	}
 	w := NewWorker(
 		WithAddr(host+":4150"),
 		WithTopic("test"),
+		WithMaxInFlight(2),
 		WithRunFunc(func(msg *nsq.Message) error {
 			logx.LogAccess.Infof("get message: %s", msg.Body)
 			time.Sleep(500 * time.Millisecond)
