@@ -10,6 +10,8 @@ import (
 	"github.com/nsqio/go-nsq"
 )
 
+var host = "nsq"
+
 type mockMessage struct {
 	msg string
 }
@@ -33,7 +35,7 @@ func TestMain(m *testing.M) {
 
 func TestShutdown(t *testing.T) {
 	w := NewWorker(
-		WithAddr("127.0.0.1:4150"),
+		WithAddr(host+":4150"),
 		WithTopic("test"),
 	)
 	q := queue.NewQueue(w, 2)
@@ -48,7 +50,7 @@ func TestCustomFunc(t *testing.T) {
 		msg: "foo",
 	}
 	w := NewWorker(
-		WithAddr("127.0.0.1:4150"),
+		WithAddr(host+":4150"),
 		WithTopic("test"),
 		WithRunFunc(func(msg *nsq.Message) error {
 			logx.LogAccess.Infof("get message: %s", msg.Body)
