@@ -17,8 +17,8 @@ var errMaxCapacity = errors.New("max capacity reached")
 
 // Worker for simple queue using channel
 type Worker struct {
-	QueueNotification chan queue.QueuedMessage
-	runFunc           func(*Worker) error
+	queueNotification chan queue.QueuedMessage
+	runFunc           func(queue.QueuedMessage) error
 }
 
 // BeforeRun run script before start worker
@@ -33,29 +33,32 @@ func (s *Worker) AfterRun() error {
 
 // Run start the worker
 func (s *Worker) Run(_ chan struct{}) error {
-	return s.runFunc(s)
+	for notification := range s.queueNotification {
+		s.runFunc(notification)
+	}
+	return nil
 }
 
 // Shutdown worker
 func (s *Worker) Shutdown() error {
-	close(s.QueueNotification)
+	close(s.queueNotification)
 	return nil
 }
 
 // Capacity for channel
 func (s *Worker) Capacity() int {
-	return cap(s.QueueNotification)
+	return cap(s.queueNotification)
 }
 
 // Usage for count of channel usage
 func (s *Worker) Usage() int {
-	return len(s.QueueNotification)
+	return len(s.queueNotification)
 }
 
 // Queue send notification to queue
 func (s *Worker) Queue(job queue.QueuedMessage) error {
 	select {
-	case s.QueueNotification <- job:
+	case s.queueNotification <- job:
 		return nil
 	default:
 		return errMaxCapacity
@@ -65,12 +68,12 @@ func (s *Worker) Queue(job queue.QueuedMessage) error {
 // WithQueueNum setup the capcity of queue
 func WithQueueNum(num int) Option {
 	return func(w *Worker) {
-		w.QueueNotification = make(chan queue.QueuedMessage, num)
+		w.queueNotification = make(chan queue.QueuedMessage, num)
 	}
 }
 
 // WithRunFunc setup the run func of queue
-func WithRunFunc(fn func(w *Worker) error) Option {
+func WithRunFunc(fn func(queue.QueuedMessage) error) Option {
 	return func(w *Worker) {
 		w.runFunc = fn
 	}
@@ -79,11 +82,9 @@ func WithRunFunc(fn func(w *Worker) error) Option {
 // NewWorker for struc
 func NewWorker(opts ...Option) *Worker {
 	w := &Worker{
-		QueueNotification: make(chan queue.QueuedMessage, runtime.NumCPU()<<1),
-		runFunc: func(w *Worker) error {
-			for notification := range w.QueueNotification {
-				gorush.SendNotification(notification)
-			}
+		queueNotification: make(chan queue.QueuedMessage, runtime.NumCPU()<<1),
+		runFunc: func(msg queue.QueuedMessage) error {
+			gorush.SendNotification(msg)
 			return nil
 		},
 	}
