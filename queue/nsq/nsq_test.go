@@ -54,7 +54,7 @@ func TestCustomFunc(t *testing.T) {
 		WithTopic("test"),
 		WithRunFunc(func(msg *nsq.Message) error {
 			logx.LogAccess.Infof("get message: %s", msg.Body)
-			time.Sleep(5 * time.Second)
+			time.Sleep(500 * time.Millisecond)
 			return nil
 		}),
 	)
@@ -65,8 +65,8 @@ func TestCustomFunc(t *testing.T) {
 	q.Queue(m)
 	q.Queue(m)
 	q.Queue(m)
-	time.Sleep(6000 * time.Millisecond)
+	time.Sleep(600 * time.Millisecond)
 	q.Shutdown()
 	q.Wait()
-	// you will see the execute time > 10s
+	// you will see the execute time > 1000ms
 }
