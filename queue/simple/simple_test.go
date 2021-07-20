@@ -1,7 +1,6 @@
 package simple
 
 import (
-	"log"
 	"runtime"
 	"testing"
 	"time"
@@ -22,15 +21,6 @@ func (m mockMessage) Bytes() []byte {
 }
 
 func TestMain(m *testing.M) {
-	if err := logx.InitLog(
-		"debug",
-		"stdout",
-		"debug",
-		"stdout",
-	); err != nil {
-		log.Fatalf("Can't load log module, error: %v", err)
-	}
-
 	m.Run()
 }
 
