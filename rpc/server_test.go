@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/appleboy/gorush/config"
-	"github.com/appleboy/gorush/logx"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
@@ -21,13 +20,6 @@ func initTest() config.ConfYaml {
 
 func TestGracefulShutDownGRPCServer(t *testing.T) {
 	cfg := initTest()
-	// server configs
-	logx.InitLog(
-		cfg.Log.AccessLevel,
-		cfg.Log.AccessLog,
-		cfg.Log.ErrorLevel,
-		cfg.Log.ErrorLog,
-	)
 	cfg.GRPC.Enabled = true
 	cfg.GRPC.Port = "9000"
 	cfg.Log.Format = "json"

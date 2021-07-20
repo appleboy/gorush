@@ -42,18 +42,14 @@ func init() {
 
 var (
 	// LogAccess is log server request log
-	LogAccess *logrus.Logger
+	LogAccess = logrus.New()
 	// LogError is log server error log
-	LogError *logrus.Logger
+	LogError = logrus.New()
 )
 
 // InitLog use for initial log module
 func InitLog(accessLevel, accessLog, errorLevel, errorLog string) error {
 	var err error
-
-	// init logger
-	LogAccess = logrus.New()
-	LogError = logrus.New()
 
 	if !isTerm {
 		LogAccess.SetFormatter(&logrus.JSONFormatter{})
