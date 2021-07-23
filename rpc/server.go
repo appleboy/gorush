@@ -8,8 +8,8 @@ import (
 
 	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/core"
-	"github.com/appleboy/gorush/gorush"
 	"github.com/appleboy/gorush/logx"
+	"github.com/appleboy/gorush/notify"
 	"github.com/appleboy/gorush/rpc/proto"
 
 	"google.golang.org/grpc"
@@ -55,7 +55,7 @@ func (s *Server) Check(ctx context.Context, in *proto.HealthCheckRequest) (*prot
 // Send implements helloworld.GreeterServer
 func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*proto.NotificationReply, error) {
 	badge := int(in.Badge)
-	notification := gorush.PushNotification{
+	notification := notify.PushNotification{
 		Cfg:              s.cfg,
 		Platform:         int(in.Platform),
 		Tokens:           in.Tokens,
@@ -81,7 +81,7 @@ func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*prot
 	}
 
 	if in.Alert != nil {
-		notification.Alert = gorush.Alert{
+		notification.Alert = notify.Alert{
 			Title:        in.Alert.Title,
 			Body:         in.Alert.Body,
 			Subtitle:     in.Alert.Subtitle,
@@ -102,7 +102,7 @@ func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*prot
 		}
 	}
 
-	go gorush.SendNotification(&notification)
+	go notify.SendNotification(&notification)
 
 	return &proto.NotificationReply{
 		Success: true,

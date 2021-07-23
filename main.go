@@ -16,8 +16,8 @@ import (
 
 	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/core"
-	"github.com/appleboy/gorush/gorush"
 	"github.com/appleboy/gorush/logx"
+	"github.com/appleboy/gorush/notify"
 	"github.com/appleboy/gorush/queue"
 	"github.com/appleboy/gorush/queue/nsq"
 	"github.com/appleboy/gorush/queue/simple"
@@ -116,7 +116,7 @@ func main() {
 	}
 
 	// Initialize push slots for concurrent iOS pushes
-	gorush.MaxConcurrentIOSPushes = make(chan struct{}, cfg.Ios.MaxConcurrentPushes)
+	notify.MaxConcurrentIOSPushes = make(chan struct{}, cfg.Ios.MaxConcurrentPushes)
 
 	if opts.Ios.KeyPath != "" {
 		cfg.Ios.KeyPath = opts.Ios.KeyPath
@@ -176,7 +176,7 @@ func main() {
 	}
 
 	if cfg.Core.HTTPProxy != "" {
-		err = gorush.SetProxy(cfg.Core.HTTPProxy)
+		err = notify.SetProxy(cfg.Core.HTTPProxy)
 
 		if err != nil {
 			logx.LogError.Fatalf("Set Proxy error: %v", err)
@@ -193,7 +193,7 @@ func main() {
 	// send android notification
 	if opts.Android.Enabled {
 		cfg.Android.Enabled = opts.Android.Enabled
-		req := gorush.PushNotification{
+		req := notify.PushNotification{
 			Cfg:      cfg,
 			Platform: core.PlatFormAndroid,
 			Message:  message,
@@ -210,7 +210,7 @@ func main() {
 			req.To = topic
 		}
 
-		err := gorush.CheckMessage(req)
+		err := notify.CheckMessage(req)
 		if err != nil {
 			logx.LogError.Fatal(err)
 		}
@@ -219,7 +219,7 @@ func main() {
 			return
 		}
 
-		gorush.PushToAndroid(req)
+		notify.PushToAndroid(req)
 
 		return
 	}
@@ -227,7 +227,7 @@ func main() {
 	// send huawei notification
 	if opts.Huawei.Enabled {
 		cfg.Huawei.Enabled = opts.Huawei.Enabled
-		req := gorush.PushNotification{
+		req := notify.PushNotification{
 			Cfg:      cfg,
 			Platform: core.PlatFormHuawei,
 			Message:  message,
@@ -244,7 +244,7 @@ func main() {
 			req.To = topic
 		}
 
-		err := gorush.CheckMessage(req)
+		err := notify.CheckMessage(req)
 		if err != nil {
 			logx.LogError.Fatal(err)
 		}
@@ -253,7 +253,7 @@ func main() {
 			return
 		}
 
-		gorush.PushToHuawei(req)
+		notify.PushToHuawei(req)
 
 		return
 	}
@@ -265,7 +265,7 @@ func main() {
 		}
 
 		cfg.Ios.Enabled = opts.Ios.Enabled
-		req := gorush.PushNotification{
+		req := notify.PushNotification{
 			Cfg:      cfg,
 			Platform: core.PlatFormIos,
 			Message:  message,
@@ -282,7 +282,7 @@ func main() {
 			req.Topic = topic
 		}
 
-		err := gorush.CheckMessage(req)
+		err := notify.CheckMessage(req)
 		if err != nil {
 			logx.LogError.Fatal(err)
 		}
@@ -291,15 +291,15 @@ func main() {
 			return
 		}
 
-		if err := gorush.InitAPNSClient(cfg); err != nil {
+		if err := notify.InitAPNSClient(cfg); err != nil {
 			return
 		}
-		gorush.PushToIOS(req)
+		notify.PushToIOS(req)
 
 		return
 	}
 
-	if err = gorush.CheckPushConf(cfg); err != nil {
+	if err = notify.CheckPushConf(cfg); err != nil {
 		logx.LogError.Fatal(err)
 	}
 
@@ -353,23 +353,23 @@ func main() {
 		}
 	})
 
-	// gorush.InitQueue(cfg.Core.WorkerNum, cfg.Core.QueueNum)
-	// gorush.InitWorkers(ctx, wg, cfg.Core.WorkerNum, cfg.Core.QueueNum)
+	// notify.InitQueue(cfg.Core.WorkerNum, cfg.Core.QueueNum)
+	// notify.InitWorkers(ctx, wg, cfg.Core.WorkerNum, cfg.Core.QueueNum)
 
 	if cfg.Ios.Enabled {
-		if err = gorush.InitAPNSClient(cfg); err != nil {
+		if err = notify.InitAPNSClient(cfg); err != nil {
 			logx.LogError.Fatal(err)
 		}
 	}
 
 	if cfg.Android.Enabled {
-		if _, err = gorush.InitFCMClient(cfg, cfg.Android.APIKey); err != nil {
+		if _, err = notify.InitFCMClient(cfg, cfg.Android.APIKey); err != nil {
 			logx.LogError.Fatal(err)
 		}
 	}
 
 	if cfg.Huawei.Enabled {
-		if _, err = gorush.InitHMSClient(cfg, cfg.Huawei.AppSecret, cfg.Huawei.AppID); err != nil {
+		if _, err = notify.InitHMSClient(cfg, cfg.Huawei.AppSecret, cfg.Huawei.AppID); err != nil {
 			logx.LogError.Fatal(err)
 		}
 	}
@@ -399,7 +399,7 @@ func main() {
 	}
 }
 
-// Version control for gorush.
+// Version control for notify.
 var Version = "No Version Provided"
 
 var usageStr = `

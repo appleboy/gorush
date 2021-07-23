@@ -1,4 +1,4 @@
-package gorush
+package notify
 
 import (
 	"log"
