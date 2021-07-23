@@ -13,7 +13,7 @@ import (
 
 	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/core"
-	"github.com/appleboy/gorush/gorush"
+	"github.com/appleboy/gorush/notify"
 	"github.com/appleboy/gorush/queue"
 	"github.com/appleboy/gorush/queue/simple"
 	"github.com/appleboy/gorush/status"
@@ -291,7 +291,7 @@ func TestEmptyNotifications(t *testing.T) {
 	// notifications is empty.
 	r.POST("/api/push").
 		SetJSON(gofight.D{
-			"notifications": []gorush.PushNotification{},
+			"notifications": []notify.PushNotification{},
 		}).
 		Run(routerEngine(cfg, q), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 			assert.Equal(t, http.StatusBadRequest, r.Code)
@@ -322,7 +322,7 @@ func TestMutableContent(t *testing.T) {
 			},
 		}).
 		Run(routerEngine(cfg, q), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
-			// json: cannot unmarshal number into Go struct field gorush.PushNotification.mutable_content of type bool
+			// json: cannot unmarshal number into Go struct field notify.PushNotification.mutable_content of type bool
 			assert.Equal(t, http.StatusBadRequest, r.Code)
 		})
 }
@@ -457,7 +457,7 @@ func TestSenMultipleNotifications(t *testing.T) {
 
 	cfg.Ios.Enabled = true
 	cfg.Ios.KeyPath = "../certificate/certificate-valid.pem"
-	err := gorush.InitAPNSClient(cfg)
+	err := notify.InitAPNSClient(cfg)
 	assert.Nil(t, err)
 
 	cfg.Android.Enabled = true
@@ -465,8 +465,8 @@ func TestSenMultipleNotifications(t *testing.T) {
 
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
-	req := gorush.RequestPush{
-		Notifications: []gorush.PushNotification{
+	req := notify.RequestPush{
+		Notifications: []notify.PushNotification{
 			// ios
 			{
 				Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
@@ -493,7 +493,7 @@ func TestDisabledAndroidNotifications(t *testing.T) {
 
 	cfg.Ios.Enabled = true
 	cfg.Ios.KeyPath = "../certificate/certificate-valid.pem"
-	err := gorush.InitAPNSClient(cfg)
+	err := notify.InitAPNSClient(cfg)
 	assert.Nil(t, err)
 
 	cfg.Android.Enabled = false
@@ -501,8 +501,8 @@ func TestDisabledAndroidNotifications(t *testing.T) {
 
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
-	req := gorush.RequestPush{
-		Notifications: []gorush.PushNotification{
+	req := notify.RequestPush{
+		Notifications: []notify.PushNotification{
 			// ios
 			{
 				Tokens:   []string{"11aa01229f15f0f0c5209d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
@@ -529,7 +529,7 @@ func TestSyncModeForNotifications(t *testing.T) {
 
 	cfg.Ios.Enabled = true
 	cfg.Ios.KeyPath = "../certificate/certificate-valid.pem"
-	err := gorush.InitAPNSClient(cfg)
+	err := notify.InitAPNSClient(cfg)
 	assert.Nil(t, err)
 
 	cfg.Android.Enabled = true
@@ -540,8 +540,8 @@ func TestSyncModeForNotifications(t *testing.T) {
 
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
-	req := gorush.RequestPush{
-		Notifications: []gorush.PushNotification{
+	req := notify.RequestPush{
+		Notifications: []notify.PushNotification{
 			// ios
 			{
 				Tokens: []string{
@@ -575,8 +575,8 @@ func TestSyncModeForTopicNotification(t *testing.T) {
 	// enable sync mode
 	cfg.Core.Sync = true
 
-	req := gorush.RequestPush{
-		Notifications: []gorush.PushNotification{
+	req := notify.RequestPush{
+		Notifications: []notify.PushNotification{
 			// android
 			{
 				// error:InvalidParameters
@@ -619,8 +619,8 @@ func TestSyncModeForDeviceGroupNotification(t *testing.T) {
 	// enable sync mode
 	cfg.Core.Sync = true
 
-	req := gorush.RequestPush{
-		Notifications: []gorush.PushNotification{
+	req := notify.RequestPush{
+		Notifications: []notify.PushNotification{
 			// android
 			{
 				To:       "aUniqueKey",
@@ -641,7 +641,7 @@ func TestDisabledIosNotifications(t *testing.T) {
 
 	cfg.Ios.Enabled = false
 	cfg.Ios.KeyPath = "../certificate/certificate-valid.pem"
-	err := gorush.InitAPNSClient(cfg)
+	err := notify.InitAPNSClient(cfg)
 	assert.Nil(t, err)
 
 	cfg.Android.Enabled = true
@@ -649,8 +649,8 @@ func TestDisabledIosNotifications(t *testing.T) {
 
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
-	req := gorush.RequestPush{
-		Notifications: []gorush.PushNotification{
+	req := notify.RequestPush{
+		Notifications: []notify.PushNotification{
 			// ios
 			{
 				Tokens:   []string{"11aa01229f15f0f0c52021d8cf3cd0ae1f2365fe4cebc4af26cd6d76b7919ef7"},

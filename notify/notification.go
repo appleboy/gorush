@@ -1,4 +1,4 @@
-package gorush
+package notify
 
 import (
 	"errors"
@@ -8,12 +8,12 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/appleboy/go-fcm"
 	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/core"
 	"github.com/appleboy/gorush/logx"
 	"github.com/appleboy/gorush/queue"
 
+	"github.com/appleboy/go-fcm"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/msalihkarakasli/go-hms-push/push/model"
 )

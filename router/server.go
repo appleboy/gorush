@@ -11,9 +11,9 @@ import (
 
 	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/core"
-	"github.com/appleboy/gorush/gorush"
 	"github.com/appleboy/gorush/logx"
 	"github.com/appleboy/gorush/metric"
+	"github.com/appleboy/gorush/notify"
 	"github.com/appleboy/gorush/queue"
 	"github.com/appleboy/gorush/status"
 
@@ -65,7 +65,7 @@ func versionHandler(c *gin.Context) {
 
 func pushHandler(cfg config.ConfYaml, q *queue.Queue) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var form gorush.RequestPush
+		var form notify.RequestPush
 		var msg string
 
 		if err := c.ShouldBindWith(&form, binding.JSON); err != nil {
@@ -228,7 +228,7 @@ func routerEngine(cfg config.ConfYaml, q *queue.Queue) *gin.Engine {
 }
 
 // markFailedNotification adds failure logs for all tokens in push notification
-func markFailedNotification(cfg config.ConfYaml, notification *gorush.PushNotification, reason string) {
+func markFailedNotification(cfg config.ConfYaml, notification *notify.PushNotification, reason string) {
 	logx.LogError.Error(reason)
 	for _, token := range notification.Tokens {
 		notification.AddLog(logx.GetLogPushEntry(&logx.InputLog{
@@ -246,10 +246,10 @@ func markFailedNotification(cfg config.ConfYaml, notification *gorush.PushNotifi
 }
 
 // HandleNotification add notification to queue list.
-func handleNotification(ctx context.Context, cfg config.ConfYaml, req gorush.RequestPush, q *queue.Queue) (int, []logx.LogPushEntry) {
+func handleNotification(ctx context.Context, cfg config.ConfYaml, req notify.RequestPush, q *queue.Queue) (int, []logx.LogPushEntry) {
 	var count int
 	wg := sync.WaitGroup{}
-	newNotification := []*gorush.PushNotification{}
+	newNotification := []*notify.PushNotification{}
 
 	if cfg.Core.Sync && !core.IsLocalQueue(core.Queue(cfg.Queue.Engine)) {
 		cfg.Core.Sync = false

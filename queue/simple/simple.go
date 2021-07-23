@@ -4,7 +4,7 @@ import (
 	"errors"
 	"runtime"
 
-	"github.com/appleboy/gorush/gorush"
+	"github.com/appleboy/gorush/notify"
 	"github.com/appleboy/gorush/queue"
 )
 
@@ -84,7 +84,7 @@ func NewWorker(opts ...Option) *Worker {
 	w := &Worker{
 		queueNotification: make(chan queue.QueuedMessage, runtime.NumCPU()<<1),
 		runFunc: func(msg queue.QueuedMessage) error {
-			gorush.SendNotification(msg)
+			notify.SendNotification(msg)
 			return nil
 		},
 	}

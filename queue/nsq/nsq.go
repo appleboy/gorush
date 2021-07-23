@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/appleboy/gorush/gorush"
+	"github.com/appleboy/gorush/notify"
 	"github.com/appleboy/gorush/queue"
 
 	"github.com/nsqio/go-nsq"
@@ -77,11 +77,11 @@ func NewWorker(opts ...Option) *Worker {
 				// In this case, a message with an empty body is simply ignored/discarded.
 				return nil
 			}
-			var notification *gorush.PushNotification
+			var notification *notify.PushNotification
 			if err := json.Unmarshal(msg.Body, &notification); err != nil {
 				return err
 			}
-			gorush.SendNotification(notification)
+			notify.SendNotification(notification)
 			return nil
 		},
 	}
