@@ -2,13 +2,12 @@ package queue
 
 import (
 	"runtime"
-
-	"github.com/appleboy/gorush/logx"
 )
 
 type (
 	// A Queue is a message queue.
 	Queue struct {
+		logger       Logger
 		workerCount  int
 		routineGroup *routineGroup
 		quit         chan struct{}
@@ -23,6 +22,7 @@ func NewQueue(w Worker, workerNum int) *Queue {
 		routineGroup: newRoutineGroup(),
 		quit:         make(chan struct{}),
 		worker:       w,
+		logger:       new(defaultLogger),
 	}
 
 	if workerNum > 0 {
@@ -65,24 +65,24 @@ func (q *Queue) Queue(job QueuedMessage) error {
 
 func (q *Queue) work(num int) {
 	if err := q.worker.BeforeRun(); err != nil {
-		logx.LogError.Fatal(err)
+		q.logger.Fatal(err)
 	}
 	q.routineGroup.Run(func() {
 		// to handle panic cases from inside the worker
 		// in such case, we start a new goroutine
 		defer func() {
 			if err := recover(); err != nil {
-				logx.LogError.Error(err)
+				q.logger.Error(err)
 				go q.work(num)
 			}
 		}()
 
-		logx.LogAccess.Info("started the worker num ", num)
+		q.logger.Info("started the worker num ", num)
 		q.worker.Run(q.quit)
-		logx.LogAccess.Info("closed the worker num ", num)
+		q.logger.Info("closed the worker num ", num)
 	})
 	if err := q.worker.AfterRun(); err != nil {
-		logx.LogError.Fatal(err)
+		q.logger.Fatal(err)
 	}
 }
 
