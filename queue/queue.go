@@ -19,6 +19,7 @@ type (
 // Option for queue system
 type Option func(*Queue)
 
+// ErrMissingWorker missing define worker
 var ErrMissingWorker = errors.New("missing worker module")
 
 // WithWorkerCount set worker count
