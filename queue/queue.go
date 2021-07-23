@@ -1,6 +1,7 @@
 package queue
 
 import (
+	"errors"
 	"runtime"
 )
 
@@ -15,21 +16,53 @@ type (
 	}
 )
 
+// Option for queue system
+type Option func(*Queue)
+
+// ErrMissingWorker missing define worker
+var ErrMissingWorker = errors.New("missing worker module")
+
+// WithWorkerCount set worker count
+func WithWorkerCount(num int) Option {
+	return func(q *Queue) {
+		q.workerCount = num
+	}
+}
+
+// WithLogger set custom logger
+func WithLogger(l Logger) Option {
+	return func(q *Queue) {
+		q.logger = l
+	}
+}
+
+// WithWorker set custom worker
+func WithWorker(w Worker) Option {
+	return func(q *Queue) {
+		q.worker = w
+	}
+}
+
 // NewQueue returns a Queue.
-func NewQueue(w Worker, workerNum int) *Queue {
+func NewQueue(opts ...Option) (*Queue, error) {
 	q := &Queue{
 		workerCount:  runtime.NumCPU(),
 		routineGroup: newRoutineGroup(),
 		quit:         make(chan struct{}),
-		worker:       w,
 		logger:       new(defaultLogger),
 	}
 
-	if workerNum > 0 {
-		q.workerCount = workerNum
+	// Loop through each option
+	for _, opt := range opts {
+		// Call the option giving the instantiated
+		opt(q)
 	}
 
-	return q
+	if q.worker == nil {
+		return nil, ErrMissingWorker
+	}
+
+	return q, nil
 }
 
 // Capacity for queue max size
