@@ -60,7 +60,11 @@ func TestCustomFuncAndWait(t *testing.T) {
 			return nil
 		}),
 	)
-	q := queue.NewQueue(w, 2)
+	q, err := queue.NewQueue(
+		queue.WithWorker(w),
+		queue.WithWorkerCount(2),
+	)
+	assert.NoError(t, err)
 	q.Start()
 	time.Sleep(100 * time.Millisecond)
 	q.Queue(m)

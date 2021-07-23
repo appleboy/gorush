@@ -329,7 +329,13 @@ func main() {
 		logx.LogError.Fatalf("we don't support queue engine: %s", cfg.Queue.Engine)
 	}
 
-	q := queue.NewQueue(w, int(cfg.Core.WorkerNum))
+	q, err := queue.NewQueue(
+		queue.WithWorker(w),
+		queue.WithWorkerCount(int(cfg.Core.WorkerNum)),
+	)
+	if err != nil {
+		logx.LogError.Fatal(err)
+	}
 	q.Start()
 
 	finished := make(chan struct{})

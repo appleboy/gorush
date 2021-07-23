@@ -6,7 +6,9 @@ import (
 
 	"github.com/appleboy/gorush/logx"
 	"github.com/appleboy/gorush/queue"
+
 	"github.com/nsqio/go-nsq"
+	"github.com/stretchr/testify/assert"
 )
 
 var host = "nsq"
@@ -28,7 +30,11 @@ func TestShutdown(t *testing.T) {
 		WithAddr(host+":4150"),
 		WithTopic("test"),
 	)
-	q := queue.NewQueue(w, 2)
+	q, err := queue.NewQueue(
+		queue.WithWorker(w),
+		queue.WithWorkerCount(2),
+	)
+	assert.NoError(t, err)
 	q.Start()
 	time.Sleep(1 * time.Second)
 	q.Shutdown()
@@ -49,7 +55,11 @@ func TestCustomFuncAndWait(t *testing.T) {
 			return nil
 		}),
 	)
-	q := queue.NewQueue(w, 2)
+	q, err := queue.NewQueue(
+		queue.WithWorker(w),
+		queue.WithWorkerCount(2),
+	)
+	assert.NoError(t, err)
 	q.Start()
 	time.Sleep(100 * time.Millisecond)
 	q.Queue(m)
