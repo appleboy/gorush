@@ -94,6 +94,9 @@ func TestShutDonwPanic(t *testing.T) {
 }
 
 func TestWorkersNum(t *testing.T) {
+	m := mockMessage{
+		msg: "test",
+	}
 	w := NewWorker(
 		WithRunFunc(func(msg queue.QueuedMessage) error {
 			logx.LogAccess.Infof("get message: %s", msg.Bytes())
@@ -104,12 +107,17 @@ func TestWorkersNum(t *testing.T) {
 	q, err := queue.NewQueue(
 		queue.WithWorker(w),
 		queue.WithWorkerCount(2),
+		queue.WithLogger(logx.LogAccess),
 	)
 	assert.NoError(t, err)
 	q.Start()
 	q.Start()
 	q.Start()
 	q.Start()
+	q.Queue(m)
+	q.Queue(m)
+	q.Queue(m)
+	q.Queue(m)
 	time.Sleep(50 * time.Millisecond)
 	assert.Equal(t, 8, q.Workers())
 	q.Shutdown()
