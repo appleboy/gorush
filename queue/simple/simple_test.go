@@ -76,3 +76,23 @@ func TestCustomFuncAndWait(t *testing.T) {
 	q.Wait()
 	// you will see the execute time > 1000ms
 }
+
+func TestShutDonwPanic(t *testing.T) {
+	w := NewWorker(
+		WithRunFunc(func(msg queue.QueuedMessage) error {
+			logx.LogAccess.Infof("get message: %s", msg.Bytes())
+			time.Sleep(100 * time.Millisecond)
+			return nil
+		}),
+	)
+	q, err := queue.NewQueue(
+		queue.WithWorker(w),
+		queue.WithWorkerCount(2),
+	)
+	assert.NoError(t, err)
+	q.Start()
+	q.Shutdown()
+	// check shutdown once
+	q.Shutdown()
+	q.Wait()
+}

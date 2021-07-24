@@ -3,6 +3,7 @@ package queue
 import (
 	"errors"
 	"runtime"
+	"sync"
 )
 
 type (
@@ -13,6 +14,7 @@ type (
 		routineGroup *routineGroup
 		quit         chan struct{}
 		worker       Worker
+		stopOnce     sync.Once
 	}
 )
 
@@ -82,8 +84,10 @@ func (q *Queue) Start() {
 
 // Shutdown stops all queues.
 func (q *Queue) Shutdown() {
-	q.worker.Shutdown()
-	close(q.quit)
+	q.stopOnce.Do(func() {
+		q.worker.Shutdown()
+		close(q.quit)
+	})
 }
 
 // Wait all process

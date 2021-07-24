@@ -38,6 +38,8 @@ func TestShutdown(t *testing.T) {
 	q.Start()
 	time.Sleep(1 * time.Second)
 	q.Shutdown()
+	// check shutdown once
+	q.Shutdown()
 	q.Wait()
 }
 
