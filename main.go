@@ -18,13 +18,13 @@ import (
 	"github.com/appleboy/gorush/core"
 	"github.com/appleboy/gorush/logx"
 	"github.com/appleboy/gorush/notify"
-	"github.com/appleboy/gorush/queue"
 	"github.com/appleboy/gorush/queue/nsq"
 	"github.com/appleboy/gorush/queue/simple"
 	"github.com/appleboy/gorush/router"
 	"github.com/appleboy/gorush/rpc"
 	"github.com/appleboy/gorush/status"
 
+	"github.com/appleboy/queue"
 	"golang.org/x/sync/errgroup"
 )
 

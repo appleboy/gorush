@@ -14,10 +14,10 @@ import (
 	"github.com/appleboy/gorush/logx"
 	"github.com/appleboy/gorush/metric"
 	"github.com/appleboy/gorush/notify"
-	"github.com/appleboy/gorush/queue"
 	"github.com/appleboy/gorush/status"
 
 	api "github.com/appleboy/gin-status-api"
+	"github.com/appleboy/queue"
 	"github.com/gin-contrib/logger"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"

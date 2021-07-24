@@ -12,8 +12,8 @@ import (
 
 	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/logx"
-	"github.com/appleboy/gorush/queue"
 
+	"github.com/appleboy/queue"
 	"golang.org/x/sync/errgroup"
 )
 

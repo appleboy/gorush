@@ -5,7 +5,8 @@ import (
 	"runtime"
 
 	"github.com/appleboy/gorush/notify"
-	"github.com/appleboy/gorush/queue"
+
+	"github.com/appleboy/queue"
 )
 
 var _ queue.Worker = (*Worker)(nil)
