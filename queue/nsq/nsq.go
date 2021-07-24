@@ -21,7 +21,7 @@ type Option func(*Worker)
 type Worker struct {
 	q           *nsq.Consumer
 	p           *nsq.Producer
-	once        sync.Once
+	startOnce   sync.Once
 	maxInFlight int
 	addr        string
 	topic       string
@@ -116,7 +116,7 @@ func (s *Worker) BeforeRun() error {
 
 // AfterRun run script after start worker
 func (s *Worker) AfterRun() error {
-	s.once.Do(func() {
+	s.startOnce.Do(func() {
 		time.Sleep(100 * time.Millisecond)
 		err := s.q.ConnectToNSQD(s.addr)
 		if err != nil {
