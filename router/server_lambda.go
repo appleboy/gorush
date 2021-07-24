@@ -8,9 +8,9 @@ import (
 
 	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/logx"
-	"github.com/appleboy/gorush/queue"
 
 	"github.com/apex/gateway"
+	"github.com/appleboy/queue"
 )
 
 // RunHTTPServer provide run http or https protocol.
