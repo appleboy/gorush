@@ -108,7 +108,7 @@ func (q *Queue) Queue(job QueuedMessage) error {
 }
 
 func (q *Queue) work() {
-	atomic.AddInt32(&q.runningWorkers, 1)
+	num := atomic.AddInt32(&q.runningWorkers, 1)
 	if err := q.worker.BeforeRun(); err != nil {
 		q.logger.Fatal(err)
 	}
@@ -122,8 +122,9 @@ func (q *Queue) work() {
 				go q.work()
 			}
 		}()
-
+		q.logger.Infof("start the worker num: %d", num)
 		q.worker.Run(q.quit)
+		q.logger.Infof("stop the worker num: %d", num)
 	})
 	if err := q.worker.AfterRun(); err != nil {
 		q.logger.Fatal(err)
