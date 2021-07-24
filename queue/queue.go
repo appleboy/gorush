@@ -4,17 +4,19 @@ import (
 	"errors"
 	"runtime"
 	"sync"
+	"sync/atomic"
 )
 
 type (
 	// A Queue is a message queue.
 	Queue struct {
-		logger       Logger
-		workerCount  int
-		routineGroup *routineGroup
-		quit         chan struct{}
-		worker       Worker
-		stopOnce     sync.Once
+		logger         Logger
+		workerCount    int
+		routineGroup   *routineGroup
+		quit           chan struct{}
+		worker         Worker
+		stopOnce       sync.Once
+		runningWorkers int32
 	}
 )
 
@@ -90,6 +92,11 @@ func (q *Queue) Shutdown() {
 	})
 }
 
+// Workers returns the numbers of workers has been created.
+func (q *Queue) Workers() int {
+	return int(atomic.LoadInt32(&q.runningWorkers))
+}
+
 // Wait all process
 func (q *Queue) Wait() {
 	q.routineGroup.Wait()
@@ -100,7 +107,8 @@ func (q *Queue) Queue(job QueuedMessage) error {
 	return q.worker.Queue(job)
 }
 
-func (q *Queue) work(num int) {
+func (q *Queue) work() {
+	atomic.AddInt32(&q.runningWorkers, 1)
 	if err := q.worker.BeforeRun(); err != nil {
 		q.logger.Fatal(err)
 	}
@@ -108,15 +116,14 @@ func (q *Queue) work(num int) {
 		// to handle panic cases from inside the worker
 		// in such case, we start a new goroutine
 		defer func() {
+			atomic.AddInt32(&q.runningWorkers, -1)
 			if err := recover(); err != nil {
 				q.logger.Error(err)
-				go q.work(num)
+				go q.work()
 			}
 		}()
 
-		q.logger.Info("started the worker num ", num)
 		q.worker.Run(q.quit)
-		q.logger.Info("closed the worker num ", num)
 	})
 	if err := q.worker.AfterRun(); err != nil {
 		q.logger.Fatal(err)
@@ -125,6 +132,6 @@ func (q *Queue) work(num int) {
 
 func (q *Queue) startWorker() {
 	for i := 0; i < q.workerCount; i++ {
-		go q.work(i)
+		go q.work()
 	}
 }

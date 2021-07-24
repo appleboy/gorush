@@ -20,10 +20,6 @@ func (m mockMessage) Bytes() []byte {
 	return []byte(m.msg)
 }
 
-func TestMain(m *testing.M) {
-	m.Run()
-}
-
 func TestQueueUsage(t *testing.T) {
 	w := NewWorker()
 	assert.Equal(t, runtime.NumCPU()<<1, w.Capacity())
@@ -95,4 +91,28 @@ func TestShutDonwPanic(t *testing.T) {
 	// check shutdown once
 	q.Shutdown()
 	q.Wait()
+}
+
+func TestWorkersNum(t *testing.T) {
+	w := NewWorker(
+		WithRunFunc(func(msg queue.QueuedMessage) error {
+			logx.LogAccess.Infof("get message: %s", msg.Bytes())
+			time.Sleep(100 * time.Millisecond)
+			return nil
+		}),
+	)
+	q, err := queue.NewQueue(
+		queue.WithWorker(w),
+		queue.WithWorkerCount(2),
+	)
+	assert.NoError(t, err)
+	q.Start()
+	q.Start()
+	q.Start()
+	q.Start()
+	time.Sleep(50 * time.Millisecond)
+	assert.Equal(t, 8, q.Workers())
+	q.Shutdown()
+	q.Wait()
+	assert.Equal(t, 0, q.Workers())
 }
