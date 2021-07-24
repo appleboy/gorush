@@ -14,11 +14,11 @@ import (
 	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/core"
 	"github.com/appleboy/gorush/notify"
-	"github.com/appleboy/gorush/queue/simple"
 	"github.com/appleboy/gorush/status"
 
 	"github.com/appleboy/gofight/v2"
 	"github.com/appleboy/queue"
+	"github.com/appleboy/queue/simple"
 	"github.com/buger/jsonparser"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
@@ -36,7 +36,12 @@ func TestMain(m *testing.M) {
 		log.Fatal(err)
 	}
 
-	w = simple.NewWorker()
+	w = simple.NewWorker(
+		simple.WithRunFunc(func(msg queue.QueuedMessage) error {
+			notify.SendNotification(msg)
+			return nil
+		}),
+	)
 	q, _ = queue.NewQueue(
 		queue.WithWorker(w),
 		queue.WithWorkerCount(4),

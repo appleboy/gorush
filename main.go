@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
@@ -18,13 +19,14 @@ import (
 	"github.com/appleboy/gorush/core"
 	"github.com/appleboy/gorush/logx"
 	"github.com/appleboy/gorush/notify"
-	"github.com/appleboy/gorush/queue/nsq"
-	"github.com/appleboy/gorush/queue/simple"
 	"github.com/appleboy/gorush/router"
 	"github.com/appleboy/gorush/rpc"
 	"github.com/appleboy/gorush/status"
 
 	"github.com/appleboy/queue"
+	"github.com/appleboy/queue/nsq"
+	"github.com/appleboy/queue/simple"
+	n "github.com/nsqio/go-nsq"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -322,9 +324,27 @@ func main() {
 	case core.LocalQueue:
 		w = simple.NewWorker(
 			simple.WithQueueNum(int(cfg.Core.QueueNum)),
+			simple.WithRunFunc(func(msg queue.QueuedMessage) error {
+				notify.SendNotification(msg)
+				return nil
+			}),
 		)
 	case core.NSQ:
-		w = nsq.NewWorker()
+		w = nsq.NewWorker(
+			nsq.WithRunFunc(func(msg *n.Message) error {
+				if len(msg.Body) == 0 {
+					// Returning nil will automatically send a FIN command to NSQ to mark the message as processed.
+					// In this case, a message with an empty body is simply ignored/discarded.
+					return nil
+				}
+				var notification *notify.PushNotification
+				if err := json.Unmarshal(msg.Body, &notification); err != nil {
+					return err
+				}
+				notify.SendNotification(notification)
+				return nil
+			}),
+		)
 	default:
 		logx.LogError.Fatalf("we don't support queue engine: %s", cfg.Queue.Engine)
 	}
