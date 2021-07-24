@@ -331,6 +331,10 @@ func main() {
 		)
 	case core.NSQ:
 		w = nsq.NewWorker(
+			nsq.WithAddr(cfg.Queue.NSQ.Addr),
+			nsq.WithTopic(cfg.Queue.NSQ.Topic),
+			nsq.WithChannel(cfg.Queue.NSQ.Channel),
+			nsq.WithMaxInFlight(int(cfg.Core.WorkerNum)),
 			nsq.WithRunFunc(func(msg *n.Message) error {
 				if len(msg.Body) == 0 {
 					// Returning nil will automatically send a FIN command to NSQ to mark the message as processed.
