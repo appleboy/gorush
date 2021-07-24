@@ -14,11 +14,11 @@ import (
 	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/core"
 	"github.com/appleboy/gorush/notify"
-	"github.com/appleboy/gorush/queue"
 	"github.com/appleboy/gorush/queue/simple"
 	"github.com/appleboy/gorush/status"
 
 	"github.com/appleboy/gofight/v2"
+	"github.com/appleboy/queue"
 	"github.com/buger/jsonparser"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"

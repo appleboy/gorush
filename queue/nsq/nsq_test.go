@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/appleboy/gorush/logx"
-	"github.com/appleboy/gorush/queue"
 
+	"github.com/appleboy/queue"
 	"github.com/nsqio/go-nsq"
 	"github.com/stretchr/testify/assert"
 )
