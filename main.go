@@ -360,9 +360,6 @@ func main() {
 		}
 	})
 
-	// notify.InitQueue(cfg.Core.WorkerNum, cfg.Core.QueueNum)
-	// notify.InitWorkers(ctx, wg, cfg.Core.WorkerNum, cfg.Core.QueueNum)
-
 	if cfg.Ios.Enabled {
 		if err = notify.InitAPNSClient(cfg); err != nil {
 			logx.LogError.Fatal(err)
