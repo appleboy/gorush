@@ -254,7 +254,12 @@ func CheckPushConf(cfg config.ConfYaml) error {
 
 // SendNotification send notification
 func SendNotification(req queue.QueuedMessage) {
-	v, _ := req.(*PushNotification)
+	v, ok := req.(*PushNotification)
+	if !ok {
+		if err := json.Unmarshal(req.Bytes(), v); err != nil {
+			return
+		}
+	}
 
 	defer func() {
 		v.WaitDone()
@@ -268,4 +273,10 @@ func SendNotification(req queue.QueuedMessage) {
 	case core.PlatFormHuawei:
 		PushToHuawei(*v)
 	}
+}
+
+// Run send notification
+var Run = func(msg queue.QueuedMessage) error {
+	SendNotification(msg)
+	return nil
 }
