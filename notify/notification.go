@@ -256,7 +256,7 @@ func CheckPushConf(cfg config.ConfYaml) error {
 func SendNotification(req queue.QueuedMessage) {
 	v, ok := req.(*PushNotification)
 	if !ok {
-		if err := json.Unmarshal(req.Bytes(), v); err != nil {
+		if err := json.Unmarshal(req.Bytes(), &v); err != nil {
 			return
 		}
 	}
