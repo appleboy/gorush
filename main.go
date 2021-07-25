@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
@@ -26,7 +25,6 @@ import (
 	"github.com/appleboy/queue"
 	"github.com/appleboy/queue/nsq"
 	"github.com/appleboy/queue/simple"
-	n "github.com/nsqio/go-nsq"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -324,10 +322,7 @@ func main() {
 	case core.LocalQueue:
 		w = simple.NewWorker(
 			simple.WithQueueNum(int(cfg.Core.QueueNum)),
-			simple.WithRunFunc(func(msg queue.QueuedMessage) error {
-				notify.SendNotification(msg)
-				return nil
-			}),
+			simple.WithRunFunc(notify.Run),
 		)
 	case core.NSQ:
 		w = nsq.NewWorker(
@@ -335,19 +330,7 @@ func main() {
 			nsq.WithTopic(cfg.Queue.NSQ.Topic),
 			nsq.WithChannel(cfg.Queue.NSQ.Channel),
 			nsq.WithMaxInFlight(int(cfg.Core.WorkerNum)),
-			nsq.WithRunFunc(func(msg *n.Message) error {
-				if len(msg.Body) == 0 {
-					// Returning nil will automatically send a FIN command to NSQ to mark the message as processed.
-					// In this case, a message with an empty body is simply ignored/discarded.
-					return nil
-				}
-				var notification *notify.PushNotification
-				if err := json.Unmarshal(msg.Body, &notification); err != nil {
-					return err
-				}
-				notify.SendNotification(notification)
-				return nil
-			}),
+			nsq.WithRunFunc(notify.Run),
 		)
 	default:
 		logx.LogError.Fatalf("we don't support queue engine: %s", cfg.Queue.Engine)

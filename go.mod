@@ -7,7 +7,7 @@ require (
 	github.com/appleboy/gin-status-api v1.1.0
 	github.com/appleboy/go-fcm v0.1.5
 	github.com/appleboy/gofight/v2 v2.1.2
-	github.com/appleboy/queue v0.0.3
+	github.com/appleboy/queue v0.0.4-0.20210725000413-1085ecaca645
 	github.com/asdine/storm/v3 v3.2.1
 	github.com/buger/jsonparser v1.1.1
 	github.com/dgraph-io/badger/v3 v3.2103.1
@@ -21,7 +21,6 @@ require (
 	github.com/mattn/go-isatty v0.0.12
 	github.com/mitchellh/mapstructure v1.4.1
 	github.com/msalihkarakasli/go-hms-push v0.0.0-20200616114002-91cd23dfeed4
-	github.com/nsqio/go-nsq v1.0.8
 	github.com/prometheus/client_golang v1.10.0
 	github.com/rs/zerolog v1.23.0
 	github.com/sideshow/apns2 v0.20.0
