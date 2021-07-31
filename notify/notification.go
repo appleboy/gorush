@@ -1,6 +1,7 @@
 package notify
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"net/url"
@@ -276,7 +277,7 @@ func SendNotification(req queue.QueuedMessage) {
 }
 
 // Run send notification
-var Run = func(msg queue.QueuedMessage) error {
+var Run = func(ctx context.Context, msg queue.QueuedMessage) error {
 	SendNotification(msg)
 	return nil
 }
