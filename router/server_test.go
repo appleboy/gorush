@@ -37,7 +37,7 @@ func TestMain(m *testing.M) {
 	}
 
 	w = simple.NewWorker(
-		simple.WithRunFunc(func(msg queue.QueuedMessage) error {
+		simple.WithRunFunc(func(ctx context.Context, msg queue.QueuedMessage) error {
 			notify.SendNotification(msg)
 			return nil
 		}),
