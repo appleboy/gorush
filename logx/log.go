@@ -200,7 +200,7 @@ type InputLog struct {
 }
 
 // LogPush record user push request and server response.
-func LogPush(input *InputLog) {
+func LogPush(input *InputLog) LogPushEntry {
 	var platColor, resetColor, output string
 
 	if isTerm {
@@ -249,4 +249,6 @@ func LogPush(input *InputLog) {
 	case core.FailedPush:
 		LogError.Error(output)
 	}
+
+	return log
 }

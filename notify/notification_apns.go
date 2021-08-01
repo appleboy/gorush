@@ -388,7 +388,7 @@ func getApnsClient(cfg config.ConfYaml, req PushNotification) (client *apns2.Cli
 }
 
 // PushToIOS provide send notification to APNs server.
-func PushToIOS(req PushNotification) {
+func PushToIOS(req PushNotification) (resp *ResponsePush, err error) {
 	logx.LogAccess.Debug("Start push notification for iOS")
 
 	if req.Cfg.Core.Sync && !core.IsLocalQueue(core.Queue(req.Cfg.Queue.Engine)) {
@@ -403,6 +403,8 @@ func PushToIOS(req PushNotification) {
 	if req.Retry > 0 && req.Retry < maxRetry {
 		maxRetry = req.Retry
 	}
+
+	resp = &ResponsePush{}
 
 Retry:
 	var newTokens []string
@@ -426,18 +428,18 @@ Retry:
 					// ref: https://github.com/sideshow/apns2/blob/master/response.go#L14-L65
 					err = errors.New(res.Reason)
 				}
-				// apns server error
-				logPush(req.Cfg, core.FailedPush, token, req, err)
 
+				// apns server error
+				errLog := logPush(req.Cfg, core.FailedPush, token, req, err)
 				if req.Cfg.Core.Sync {
-					req.AddLog(createLogPushEntry(req.Cfg, core.FailedPush, token, req, err))
+					resp.Logs = append(resp.Logs, errLog)
 				} else if req.Cfg.Core.FeedbackURL != "" {
 					go func(logger *logrus.Logger, log logx.LogPushEntry, url string, timeout int64) {
 						err := DispatchFeedback(log, url, timeout)
 						if err != nil {
 							logger.Error(err)
 						}
-					}(logx.LogError, createLogPushEntry(req.Cfg, core.FailedPush, token, req, err), req.Cfg.Core.FeedbackURL, req.Cfg.Core.FeedbackTimeout)
+					}(logx.LogError, errLog, req.Cfg.Core.FeedbackURL, req.Cfg.Core.FeedbackTimeout)
 				}
 
 				status.StatStorage.AddIosError(1)
@@ -468,4 +470,6 @@ Retry:
 		req.Tokens = newTokens
 		goto Retry
 	}
+
+	return
 }

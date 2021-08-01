@@ -1,12 +1,12 @@
 package notify
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"net/url"
 	"os"
 	"strings"
-	"sync"
 
 	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/core"
@@ -58,10 +58,13 @@ type RequestPush struct {
 	Notifications []PushNotification `json:"notifications" binding:"required"`
 }
 
+// ResponsePush response of notification request.
+type ResponsePush struct {
+	Logs []logx.LogPushEntry `json:"logs"`
+}
+
 // PushNotification is single notification request
 type PushNotification struct {
-	Wg  *sync.WaitGroup
-	Log *[]logx.LogPushEntry
 	Cfg config.ConfYaml
 
 	// Common
@@ -115,27 +118,6 @@ type PushNotification struct {
 	SoundName   string   `json:"name,omitempty"`
 	SoundVolume float32  `json:"volume,omitempty"`
 	Apns        D        `json:"apns,omitempty"`
-}
-
-// WaitDone decrements the WaitGroup counter.
-func (p *PushNotification) WaitDone() {
-	if p.Wg != nil {
-		p.Wg.Done()
-	}
-}
-
-// AddWaitCount increments the WaitGroup counter.
-func (p *PushNotification) AddWaitCount() {
-	if p.Wg != nil {
-		p.Wg.Add(1)
-	}
-}
-
-// AddLog record fail log of notification
-func (p *PushNotification) AddLog(log logx.LogPushEntry) {
-	if p.Log != nil {
-		*p.Log = append(*p.Log, log)
-	}
 }
 
 // Bytes for queue message
@@ -253,30 +235,28 @@ func CheckPushConf(cfg config.ConfYaml) error {
 }
 
 // SendNotification send notification
-func SendNotification(req queue.QueuedMessage) {
+func SendNotification(req queue.QueuedMessage) (resp *ResponsePush, err error) {
 	v, ok := req.(*PushNotification)
 	if !ok {
-		if err := json.Unmarshal(req.Bytes(), &v); err != nil {
+		if err = json.Unmarshal(req.Bytes(), &v); err != nil {
 			return
 		}
 	}
 
-	defer func() {
-		v.WaitDone()
-	}()
-
 	switch v.Platform {
 	case core.PlatFormIos:
-		PushToIOS(*v)
+		resp, err = PushToIOS(*v)
 	case core.PlatFormAndroid:
-		PushToAndroid(*v)
+		resp, err = PushToAndroid(*v)
 	case core.PlatFormHuawei:
-		PushToHuawei(*v)
+		resp, err = PushToHuawei(*v)
 	}
+
+	return
 }
 
 // Run send notification
-var Run = func(msg queue.QueuedMessage) error {
-	SendNotification(msg)
-	return nil
+var Run = func(ctx context.Context, msg queue.QueuedMessage) error {
+	_, err := SendNotification(msg)
+	return err
 }

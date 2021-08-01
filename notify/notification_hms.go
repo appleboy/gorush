@@ -166,7 +166,7 @@ func GetHuaweiNotification(req PushNotification) (*model.MessageRequest, error) 
 }
 
 // PushToHuawei provide send notification to Android server.
-func PushToHuawei(req PushNotification) bool {
+func PushToHuawei(req PushNotification) (resp *ResponsePush, err error) {
 	logx.LogAccess.Debug("Start push notification for Huawei")
 
 	if req.Cfg.Core.Sync && !core.IsLocalQueue(core.Queue(req.Cfg.Queue.Engine)) {
@@ -184,30 +184,34 @@ func PushToHuawei(req PushNotification) bool {
 	}
 
 	// check message
-	err := CheckMessage(req)
+	err = CheckMessage(req)
 	if err != nil {
 		logx.LogError.Error("request error: " + err.Error())
-		return false
+		return
 	}
-
-Retry:
-	isError := false
-
-	notification, _ := GetHuaweiNotification(req)
 
 	client, err = InitHMSClient(req.Cfg, req.Cfg.Huawei.AppSecret, req.Cfg.Huawei.AppID)
 
 	if err != nil {
 		// HMS server error
 		logx.LogError.Error("HMS server error: " + err.Error())
-		return false
+		return
 	}
+
+	resp = &ResponsePush{}
+
+Retry:
+	isError := false
+
+	notification, _ := GetHuaweiNotification(req)
 
 	res, err := client.SendMessage(context.Background(), notification)
 	if err != nil {
 		// Send Message error
+		errLog := logPush(req.Cfg, core.FailedPush, req.To, req, err)
+		resp.Logs = append(resp.Logs, errLog)
 		logx.LogError.Error("HMS server send message error: " + err.Error())
-		return false
+		return
 	}
 
 	// Huawei Push Send API does not support exact results for each token
@@ -227,5 +231,5 @@ Retry:
 		goto Retry
 	}
 
-	return isError
+	return
 }
