@@ -23,6 +23,7 @@ import (
 	"github.com/appleboy/gorush/status"
 
 	"github.com/appleboy/queue"
+	"github.com/appleboy/queue/nats"
 	"github.com/appleboy/queue/nsq"
 	"github.com/appleboy/queue/simple"
 	"golang.org/x/sync/errgroup"
@@ -328,6 +329,13 @@ func main() {
 			nsq.WithChannel(cfg.Queue.NSQ.Channel),
 			nsq.WithMaxInFlight(int(cfg.Core.WorkerNum)),
 			nsq.WithRunFunc(notify.Run(cfg)),
+		)
+	case core.NATS:
+		w = nats.NewWorker(
+			nats.WithAddr(cfg.Queue.NATS.Addr),
+			nats.WithSubj(cfg.Queue.NATS.Subj),
+			nats.WithQueue(cfg.Queue.NATS.Queue),
+			nats.WithRunFunc(notify.Run(cfg)),
 		)
 	default:
 		logx.LogError.Fatalf("we don't support queue engine: %s", cfg.Queue.Engine)

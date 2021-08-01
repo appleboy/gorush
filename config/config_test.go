@@ -92,7 +92,11 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 	assert.Equal(suite.T(), "local", suite.ConfGorushDefault.Queue.Engine)
 	assert.Equal(suite.T(), "127.0.0.1:4150", suite.ConfGorushDefault.Queue.NSQ.Addr)
 	assert.Equal(suite.T(), "gorush", suite.ConfGorushDefault.Queue.NSQ.Topic)
-	assert.Equal(suite.T(), "ch", suite.ConfGorushDefault.Queue.NSQ.Channel)
+	assert.Equal(suite.T(), "gorush", suite.ConfGorushDefault.Queue.NSQ.Channel)
+
+	assert.Equal(suite.T(), "127.0.0.1:4222", suite.ConfGorushDefault.Queue.NATS.Addr)
+	assert.Equal(suite.T(), "gorush", suite.ConfGorushDefault.Queue.NATS.Subj)
+	assert.Equal(suite.T(), "gorush", suite.ConfGorushDefault.Queue.NATS.Queue)
 
 	// log
 	assert.Equal(suite.T(), "string", suite.ConfGorushDefault.Log.Format)
