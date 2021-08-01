@@ -42,6 +42,8 @@ github.com/appleboy/gofight/v2 v2.1.2 h1:VOy3jow4vIK8BRQJoC/I9muxyYlJ2yb9ht2hZoS
 github.com/appleboy/gofight/v2 v2.1.2/go.mod h1:frW+U1QZEdDgixycTj4CygQ48yLTUhplt43+Wczp3rw=
 github.com/appleboy/queue v0.0.4 h1:WuRPuiYs4aj7cZfPbzgJBxvDyrJkOy0evNpkNvLS+JM=
 github.com/appleboy/queue v0.0.4/go.mod h1:cEQW2y7dduAUqUGnGJEK9oM5bZLlc0+3HI9bTUL0+Ek=
+github.com/appleboy/queue v0.0.5 h1:4wrS83ktdxg3U0YGx1EC9mU8vXD4BCAswAliqCEaxHw=
+github.com/appleboy/queue v0.0.5/go.mod h1:cEQW2y7dduAUqUGnGJEK9oM5bZLlc0+3HI9bTUL0+Ek=
 github.com/armon/circbuf v0.0.0-20150827004946-bbbad097214e/go.mod h1:3U/XgcO3hCbHZ8TKRvWD2dDTCfh9M9ya+I9JpbB7O8o=
 github.com/armon/consul-api v0.0.0-20180202201655-eb2c6b5be1b6/go.mod h1:grANhF5doyWs3UAsr3K4I6qtAmlQcZDesFNEHPZAzj8=
 github.com/armon/go-metrics v0.0.0-20180917152333-f0300d1749da/go.mod h1:Q73ZrmVTwzkszR9V5SSuryQ31EELlFMUz1kKyl939pY=

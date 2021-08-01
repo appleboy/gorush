@@ -7,7 +7,6 @@ import (
 	"net/url"
 	"os"
 	"strings"
-	"sync"
 
 	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/core"
@@ -61,7 +60,6 @@ type RequestPush struct {
 
 // PushNotification is single notification request
 type PushNotification struct {
-	Wg  *sync.WaitGroup
 	Log *[]logx.LogPushEntry
 	Cfg config.ConfYaml
 
@@ -116,20 +114,6 @@ type PushNotification struct {
 	SoundName   string   `json:"name,omitempty"`
 	SoundVolume float32  `json:"volume,omitempty"`
 	Apns        D        `json:"apns,omitempty"`
-}
-
-// WaitDone decrements the WaitGroup counter.
-func (p *PushNotification) WaitDone() {
-	if p.Wg != nil {
-		p.Wg.Done()
-	}
-}
-
-// AddWaitCount increments the WaitGroup counter.
-func (p *PushNotification) AddWaitCount() {
-	if p.Wg != nil {
-		p.Wg.Add(1)
-	}
 }
 
 // AddLog record fail log of notification
@@ -261,10 +245,6 @@ func SendNotification(req queue.QueuedMessage) {
 			return
 		}
 	}
-
-	defer func() {
-		v.WaitDone()
-	}()
 
 	switch v.Platform {
 	case core.PlatFormIos:

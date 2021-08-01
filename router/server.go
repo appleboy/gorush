@@ -242,7 +242,6 @@ func markFailedNotification(cfg config.ConfYaml, notification *notify.PushNotifi
 			Format:    cfg.Log.Format,
 		}))
 	}
-	notification.WaitDone()
 }
 
 // HandleNotification add notification to queue list.
@@ -278,13 +277,19 @@ func handleNotification(ctx context.Context, cfg config.ConfYaml, req notify.Req
 	log := make([]logx.LogPushEntry, 0, count)
 	for _, notification := range newNotification {
 		if cfg.Core.Sync {
-			notification.Wg = &wg
+			wg.Add(1)
 			notification.Log = &log
-			notification.AddWaitCount()
 		}
 
-		if err := q.Queue(notification); err != nil {
+		if core.IsLocalQueue(core.Queue(cfg.Queue.Engine)) && cfg.Core.Sync {
+			q.QueueTask(func(ctx context.Context) error {
+				notify.SendNotification(notification)
+				wg.Done()
+				return nil
+			})
+		} else if err := q.Queue(notification); err != nil {
 			markFailedNotification(cfg, notification, "max capacity reached")
+			wg.Done()
 		}
 
 		count += len(notification.Tokens)
