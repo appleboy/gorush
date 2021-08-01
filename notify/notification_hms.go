@@ -166,17 +166,17 @@ func GetHuaweiNotification(req PushNotification) (*model.MessageRequest, error) 
 }
 
 // PushToHuawei provide send notification to Android server.
-func PushToHuawei(req PushNotification) (resp *ResponsePush, err error) {
+func PushToHuawei(req PushNotification, cfg config.ConfYaml) (resp *ResponsePush, err error) {
 	logx.LogAccess.Debug("Start push notification for Huawei")
 
-	if req.Cfg.Core.Sync && !core.IsLocalQueue(core.Queue(req.Cfg.Queue.Engine)) {
-		req.Cfg.Core.Sync = false
+	if cfg.Core.Sync && !core.IsLocalQueue(core.Queue(cfg.Queue.Engine)) {
+		cfg.Core.Sync = false
 	}
 
 	var (
 		client     *client.HMSClient
 		retryCount = 0
-		maxRetry   = req.Cfg.Huawei.MaxRetry
+		maxRetry   = cfg.Huawei.MaxRetry
 	)
 
 	if req.Retry > 0 && req.Retry < maxRetry {
@@ -190,7 +190,7 @@ func PushToHuawei(req PushNotification) (resp *ResponsePush, err error) {
 		return
 	}
 
-	client, err = InitHMSClient(req.Cfg, req.Cfg.Huawei.AppSecret, req.Cfg.Huawei.AppID)
+	client, err = InitHMSClient(cfg, cfg.Huawei.AppSecret, cfg.Huawei.AppID)
 
 	if err != nil {
 		// HMS server error
@@ -208,7 +208,7 @@ Retry:
 	res, err := client.SendMessage(context.Background(), notification)
 	if err != nil {
 		// Send Message error
-		errLog := logPush(req.Cfg, core.FailedPush, req.To, req, err)
+		errLog := logPush(cfg, core.FailedPush, req.To, req, err)
 		resp.Logs = append(resp.Logs, errLog)
 		logx.LogError.Error("HMS server send message error: " + err.Error())
 		return

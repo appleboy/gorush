@@ -106,17 +106,17 @@ func GetAndroidNotification(req PushNotification) *fcm.Message {
 }
 
 // PushToAndroid provide send notification to Android server.
-func PushToAndroid(req PushNotification) (resp *ResponsePush, err error) {
+func PushToAndroid(req PushNotification, cfg config.ConfYaml) (resp *ResponsePush, err error) {
 	logx.LogAccess.Debug("Start push notification for Android")
 
-	if req.Cfg.Core.Sync && !core.IsLocalQueue(core.Queue(req.Cfg.Queue.Engine)) {
-		req.Cfg.Core.Sync = false
+	if cfg.Core.Sync && !core.IsLocalQueue(core.Queue(cfg.Queue.Engine)) {
+		cfg.Core.Sync = false
 	}
 
 	var (
 		client     *fcm.Client
 		retryCount = 0
-		maxRetry   = req.Cfg.Android.MaxRetry
+		maxRetry   = cfg.Android.MaxRetry
 	)
 
 	if req.Retry > 0 && req.Retry < maxRetry {
@@ -136,9 +136,9 @@ Retry:
 	notification := GetAndroidNotification(req)
 
 	if req.APIKey != "" {
-		client, err = InitFCMClient(req.Cfg, req.APIKey)
+		client, err = InitFCMClient(cfg, req.APIKey)
 	} else {
-		client, err = InitFCMClient(req.Cfg, req.Cfg.Android.APIKey)
+		client, err = InitFCMClient(cfg, cfg.Android.APIKey)
 	}
 
 	if err != nil {
@@ -153,30 +153,30 @@ Retry:
 		logx.LogError.Error("FCM server send message error: " + err.Error())
 
 		if req.IsTopic() {
-			errLog := logPush(req.Cfg, core.FailedPush, req.To, req, err)
-			if req.Cfg.Core.Sync {
+			errLog := logPush(cfg, core.FailedPush, req.To, req, err)
+			if cfg.Core.Sync {
 				resp.Logs = append(resp.Logs, errLog)
-			} else if req.Cfg.Core.FeedbackURL != "" {
+			} else if cfg.Core.FeedbackURL != "" {
 				go func(logger *logrus.Logger, log logx.LogPushEntry, url string, timeout int64) {
 					err := DispatchFeedback(log, url, timeout)
 					if err != nil {
 						logger.Error(err)
 					}
-				}(logx.LogError, errLog, req.Cfg.Core.FeedbackURL, req.Cfg.Core.FeedbackTimeout)
+				}(logx.LogError, errLog, cfg.Core.FeedbackURL, cfg.Core.FeedbackTimeout)
 			}
 			status.StatStorage.AddAndroidError(1)
 		} else {
 			for _, token := range req.Tokens {
-				errLog := logPush(req.Cfg, core.FailedPush, token, req, err)
-				if req.Cfg.Core.Sync {
+				errLog := logPush(cfg, core.FailedPush, token, req, err)
+				if cfg.Core.Sync {
 					resp.Logs = append(resp.Logs, errLog)
-				} else if req.Cfg.Core.FeedbackURL != "" {
+				} else if cfg.Core.FeedbackURL != "" {
 					go func(logger *logrus.Logger, log logx.LogPushEntry, url string, timeout int64) {
 						err := DispatchFeedback(log, url, timeout)
 						if err != nil {
 							logger.Error(err)
 						}
-					}(logx.LogError, errLog, req.Cfg.Core.FeedbackURL, req.Cfg.Core.FeedbackTimeout)
+					}(logx.LogError, errLog, cfg.Core.FeedbackURL, cfg.Core.FeedbackTimeout)
 				}
 			}
 			status.StatStorage.AddAndroidError(int64(len(req.Tokens)))
@@ -208,21 +208,21 @@ Retry:
 				newTokens = append(newTokens, to)
 			}
 
-			errLog := logPush(req.Cfg, core.FailedPush, to, req, result.Error)
-			if req.Cfg.Core.Sync {
+			errLog := logPush(cfg, core.FailedPush, to, req, result.Error)
+			if cfg.Core.Sync {
 				resp.Logs = append(resp.Logs, errLog)
-			} else if req.Cfg.Core.FeedbackURL != "" {
+			} else if cfg.Core.FeedbackURL != "" {
 				go func(logger *logrus.Logger, log logx.LogPushEntry, url string, timeout int64) {
 					err := DispatchFeedback(log, url, timeout)
 					if err != nil {
 						logger.Error(err)
 					}
-				}(logx.LogError, errLog, req.Cfg.Core.FeedbackURL, req.Cfg.Core.FeedbackTimeout)
+				}(logx.LogError, errLog, cfg.Core.FeedbackURL, cfg.Core.FeedbackTimeout)
 			}
 			continue
 		}
 
-		logPush(req.Cfg, core.SucceededPush, to, req, nil)
+		logPush(cfg, core.SucceededPush, to, req, nil)
 	}
 
 	// result from Send messages to topics
@@ -236,11 +236,11 @@ Retry:
 		logx.LogAccess.Debug("Send Topic Message: ", to)
 		// Success
 		if res.MessageID != 0 {
-			logPush(req.Cfg, core.SucceededPush, to, req, nil)
+			logPush(cfg, core.SucceededPush, to, req, nil)
 		} else {
 			// failure
-			errLog := logPush(req.Cfg, core.FailedPush, to, req, res.Error)
-			if req.Cfg.Core.Sync {
+			errLog := logPush(cfg, core.FailedPush, to, req, res.Error)
+			if cfg.Core.Sync {
 				resp.Logs = append(resp.Logs, errLog)
 			}
 		}
@@ -250,8 +250,8 @@ Retry:
 	if len(res.FailedRegistrationIDs) > 0 {
 		newTokens = append(newTokens, res.FailedRegistrationIDs...)
 
-		errLog := logPush(req.Cfg, core.FailedPush, notification.To, req, errors.New("device group: partial success or all fails"))
-		if req.Cfg.Core.Sync {
+		errLog := logPush(cfg, core.FailedPush, notification.To, req, errors.New("device group: partial success or all fails"))
+		if cfg.Core.Sync {
 			resp.Logs = append(resp.Logs, errLog)
 		}
 	}

@@ -194,7 +194,6 @@ func main() {
 	if opts.Android.Enabled {
 		cfg.Android.Enabled = opts.Android.Enabled
 		req := notify.PushNotification{
-			Cfg:      cfg,
 			Platform: core.PlatFormAndroid,
 			Message:  message,
 			Title:    title,
@@ -219,7 +218,7 @@ func main() {
 			return
 		}
 
-		notify.PushToAndroid(req)
+		notify.PushToAndroid(req, cfg)
 
 		return
 	}
@@ -228,7 +227,6 @@ func main() {
 	if opts.Huawei.Enabled {
 		cfg.Huawei.Enabled = opts.Huawei.Enabled
 		req := notify.PushNotification{
-			Cfg:      cfg,
 			Platform: core.PlatFormHuawei,
 			Message:  message,
 			Title:    title,
@@ -253,7 +251,7 @@ func main() {
 			return
 		}
 
-		notify.PushToHuawei(req)
+		notify.PushToHuawei(req, cfg)
 
 		return
 	}
@@ -266,7 +264,6 @@ func main() {
 
 		cfg.Ios.Enabled = opts.Ios.Enabled
 		req := notify.PushNotification{
-			Cfg:      cfg,
 			Platform: core.PlatFormIos,
 			Message:  message,
 			Title:    title,
@@ -294,7 +291,7 @@ func main() {
 		if err := notify.InitAPNSClient(cfg); err != nil {
 			return
 		}
-		notify.PushToIOS(req)
+		notify.PushToIOS(req, cfg)
 
 		return
 	}
@@ -322,7 +319,7 @@ func main() {
 	case core.LocalQueue:
 		w = simple.NewWorker(
 			simple.WithQueueNum(int(cfg.Core.QueueNum)),
-			simple.WithRunFunc(notify.Run),
+			simple.WithRunFunc(notify.Run(cfg)),
 		)
 	case core.NSQ:
 		w = nsq.NewWorker(
@@ -330,7 +327,7 @@ func main() {
 			nsq.WithTopic(cfg.Queue.NSQ.Topic),
 			nsq.WithChannel(cfg.Queue.NSQ.Channel),
 			nsq.WithMaxInFlight(int(cfg.Core.WorkerNum)),
-			nsq.WithRunFunc(notify.Run),
+			nsq.WithRunFunc(notify.Run(cfg)),
 		)
 	default:
 		logx.LogError.Fatalf("we don't support queue engine: %s", cfg.Queue.Engine)

@@ -36,10 +36,17 @@ func TestMain(m *testing.M) {
 		log.Fatal(err)
 	}
 
+	cfg.Android.Enabled = true
+	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+
+	if _, err := notify.InitFCMClient(cfg, ""); err != nil {
+		log.Fatal(err)
+	}
+
 	w = simple.NewWorker(
 		simple.WithRunFunc(func(ctx context.Context, msg queue.QueuedMessage) error {
-			notify.SendNotification(msg)
-			return nil
+			_, err := notify.SendNotification(msg, cfg)
+			return err
 		}),
 	)
 	q, _ = queue.NewQueue(
@@ -600,7 +607,6 @@ func TestSyncModeForTopicNotification(t *testing.T) {
 			// android
 			{
 				// success
-				Cfg:       cfg,
 				Condition: "'dogs' in topics || 'cats' in topics",
 				Platform:  core.PlatFormAndroid,
 				Message:   "This is a Firebase Cloud Messaging Topic Message!",
