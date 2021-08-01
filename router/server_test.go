@@ -38,8 +38,8 @@ func TestMain(m *testing.M) {
 
 	w = simple.NewWorker(
 		simple.WithRunFunc(func(ctx context.Context, msg queue.QueuedMessage) error {
-			notify.SendNotification(msg)
-			return nil
+			_, err := notify.SendNotification(msg, cfg)
+			return err
 		}),
 	)
 	q, _ = queue.NewQueue(
@@ -600,7 +600,6 @@ func TestSyncModeForTopicNotification(t *testing.T) {
 			// android
 			{
 				// success
-				Cfg:       cfg,
 				Condition: "'dogs' in topics || 'cats' in topics",
 				Platform:  core.PlatFormAndroid,
 				Message:   "This is a Firebase Cloud Messaging Topic Message!",

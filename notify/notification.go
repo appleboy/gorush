@@ -65,8 +65,6 @@ type ResponsePush struct {
 
 // PushNotification is single notification request
 type PushNotification struct {
-	Cfg config.ConfYaml
-
 	// Common
 	ID               string      `json:"notif_id,omitempty"`
 	Tokens           []string    `json:"tokens" binding:"required"`
@@ -235,7 +233,7 @@ func CheckPushConf(cfg config.ConfYaml) error {
 }
 
 // SendNotification send notification
-func SendNotification(req queue.QueuedMessage) (resp *ResponsePush, err error) {
+func SendNotification(req queue.QueuedMessage, cfg config.ConfYaml) (resp *ResponsePush, err error) {
 	v, ok := req.(*PushNotification)
 	if !ok {
 		if err = json.Unmarshal(req.Bytes(), &v); err != nil {
@@ -245,18 +243,20 @@ func SendNotification(req queue.QueuedMessage) (resp *ResponsePush, err error) {
 
 	switch v.Platform {
 	case core.PlatFormIos:
-		resp, err = PushToIOS(*v)
+		resp, err = PushToIOS(*v, cfg)
 	case core.PlatFormAndroid:
-		resp, err = PushToAndroid(*v)
+		resp, err = PushToAndroid(*v, cfg)
 	case core.PlatFormHuawei:
-		resp, err = PushToHuawei(*v)
+		resp, err = PushToHuawei(*v, cfg)
 	}
 
 	return
 }
 
 // Run send notification
-var Run = func(ctx context.Context, msg queue.QueuedMessage) error {
-	_, err := SendNotification(msg)
-	return err
+var Run = func(cfg config.ConfYaml) func(ctx context.Context, msg queue.QueuedMessage) error {
+	return func(ctx context.Context, msg queue.QueuedMessage) error {
+		_, err := SendNotification(msg, cfg)
+		return err
+	}
 }

@@ -40,14 +40,13 @@ func TestPushToAndroidWrongToken(t *testing.T) {
 	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
 
 	req := PushNotification{
-		Cfg:      cfg,
 		Tokens:   []string{"aaaaaa", "bbbbb"},
 		Platform: core.PlatFormAndroid,
 		Message:  "Welcome",
 	}
 
 	// Android Success count: 0, Failure count: 2
-	PushToAndroid(req)
+	PushToAndroid(req, cfg)
 }
 
 func TestPushToAndroidRightTokenForJSONLog(t *testing.T) {
@@ -61,13 +60,12 @@ func TestPushToAndroidRightTokenForJSONLog(t *testing.T) {
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
 	req := PushNotification{
-		Cfg:      cfg,
 		Tokens:   []string{androidToken},
 		Platform: core.PlatFormAndroid,
 		Message:  "Welcome",
 	}
 
-	PushToAndroid(req)
+	PushToAndroid(req, cfg)
 }
 
 func TestPushToAndroidRightTokenForStringLog(t *testing.T) {
@@ -79,13 +77,12 @@ func TestPushToAndroidRightTokenForStringLog(t *testing.T) {
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
 	req := PushNotification{
-		Cfg:      cfg,
 		Tokens:   []string{androidToken},
 		Platform: core.PlatFormAndroid,
 		Message:  "Welcome",
 	}
 
-	PushToAndroid(req)
+	PushToAndroid(req, cfg)
 }
 
 func TestOverwriteAndroidAPIKey(t *testing.T) {
@@ -98,7 +95,6 @@ func TestOverwriteAndroidAPIKey(t *testing.T) {
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
 	req := PushNotification{
-		Cfg:      cfg,
 		Tokens:   []string{androidToken, "bbbbb"},
 		Platform: core.PlatFormAndroid,
 		Message:  "Welcome",
@@ -107,7 +103,7 @@ func TestOverwriteAndroidAPIKey(t *testing.T) {
 	}
 
 	// FCM server error: 401 error: 401 Unauthorized (Wrong API Key)
-	resp, err := PushToAndroid(req)
+	resp, err := PushToAndroid(req, cfg)
 
 	assert.Error(t, err)
 	assert.Len(t, resp.Logs, 2)
@@ -199,14 +195,13 @@ func TestCheckAndroidMessage(t *testing.T) {
 
 	timeToLive := uint(2419201)
 	req := PushNotification{
-		Cfg:        cfg,
 		Tokens:     []string{"aaaaaa", "bbbbb"},
 		Platform:   core.PlatFormAndroid,
 		Message:    "Welcome",
 		TimeToLive: &timeToLive,
 	}
 
-	PushToAndroid(req)
+	PushToAndroid(req, cfg)
 }
 
 func TestAndroidNotificationStructure(t *testing.T) {

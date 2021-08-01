@@ -273,7 +273,6 @@ func handleNotification(ctx context.Context, cfg config.ConfYaml, req notify.Req
 				continue
 			}
 		}
-		notification.Cfg = cfg
 		newNotification = append(newNotification, notification)
 	}
 
@@ -287,7 +286,7 @@ func handleNotification(ctx context.Context, cfg config.ConfYaml, req notify.Req
 			func(msg *notify.PushNotification) {
 				q.QueueTask(func(ctx context.Context) error {
 					defer wg.Done()
-					resp, err := notify.SendNotification(msg)
+					resp, err := notify.SendNotification(msg, cfg)
 					if err != nil {
 						return err
 					}
