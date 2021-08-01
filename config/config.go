@@ -67,7 +67,11 @@ queue:
   nsq:
     addr: 127.0.0.1:4150
     topic: gorush
-    channel: ch
+    channel: gorush
+  nats:
+    addr: 127.0.0.1:4222
+    subj: gorush
+    queue: gorush
 
 ios:
   enabled: false
@@ -211,8 +215,9 @@ type SectionStat struct {
 
 // SectionQueue is sub section of config.
 type SectionQueue struct {
-	Engine string     `yaml:"engine"`
-	NSQ    SectionNSQ `yaml:"nsq"`
+	Engine string      `yaml:"engine"`
+	NSQ    SectionNSQ  `yaml:"nsq"`
+	NATS   SectionNATS `yaml:"nats"`
 }
 
 // SectionNSQ is sub section of config.
@@ -220,6 +225,13 @@ type SectionNSQ struct {
 	Addr    string `yaml:"addr"`
 	Topic   string `yaml:"topic"`
 	Channel string `yaml:"channel"`
+}
+
+// SectionNATS is sub section of config.
+type SectionNATS struct {
+	Addr  string `yaml:"addr"`
+	Subj  string `yaml:"subj"`
+	Queue string `yaml:"queue"`
 }
 
 // SectionRedis is sub section of config.
@@ -367,6 +379,9 @@ func LoadConf(confPath ...string) (ConfYaml, error) {
 	conf.Queue.NSQ.Addr = viper.GetString("queue.nsq.addr")
 	conf.Queue.NSQ.Topic = viper.GetString("queue.nsq.topic")
 	conf.Queue.NSQ.Channel = viper.GetString("queue.nsq.channel")
+	conf.Queue.NATS.Addr = viper.GetString("queue.nats.addr")
+	conf.Queue.NATS.Subj = viper.GetString("queue.nats.subj")
+	conf.Queue.NATS.Queue = viper.GetString("queue.nats.queue")
 
 	// Stat Engine
 	conf.Stat.Engine = viper.GetString("stat.engine")
