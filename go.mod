@@ -20,7 +20,7 @@ require (
 	github.com/json-iterator/go v1.1.10
 	github.com/mattn/go-isatty v0.0.12
 	github.com/mitchellh/mapstructure v1.4.1
-	github.com/msalihkarakasli/go-hms-push v0.0.0-20200616114002-91cd23dfeed4
+	github.com/msalihkarakasli/go-hms-push v0.0.0-20210731212030-00e7b986815b
 	github.com/prometheus/client_golang v1.10.0
 	github.com/rs/zerolog v1.23.0
 	github.com/sideshow/apns2 v0.20.0
