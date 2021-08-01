@@ -6,7 +6,6 @@ import (
 
 	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/core"
-	"github.com/appleboy/gorush/logx"
 
 	"github.com/appleboy/go-fcm"
 	"github.com/stretchr/testify/assert"
@@ -105,14 +104,13 @@ func TestOverwriteAndroidAPIKey(t *testing.T) {
 		Message:  "Welcome",
 		// overwrite android api key
 		APIKey: "1234",
-
-		Log: &[]logx.LogPushEntry{},
 	}
 
 	// FCM server error: 401 error: 401 Unauthorized (Wrong API Key)
-	PushToAndroid(req)
+	resp, err := PushToAndroid(req)
 
-	assert.Len(t, *req.Log, 2)
+	assert.NoError(t, err)
+	assert.Len(t, resp.Logs, 2)
 }
 
 func TestFCMMessage(t *testing.T) {

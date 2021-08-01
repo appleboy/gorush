@@ -58,9 +58,13 @@ type RequestPush struct {
 	Notifications []PushNotification `json:"notifications" binding:"required"`
 }
 
+// ResponsePush response of notification request.
+type ResponsePush struct {
+	Logs []logx.LogPushEntry `json:"logs"`
+}
+
 // PushNotification is single notification request
 type PushNotification struct {
-	Log *[]logx.LogPushEntry
 	Cfg config.ConfYaml
 
 	// Common
@@ -114,13 +118,6 @@ type PushNotification struct {
 	SoundName   string   `json:"name,omitempty"`
 	SoundVolume float32  `json:"volume,omitempty"`
 	Apns        D        `json:"apns,omitempty"`
-}
-
-// AddLog record fail log of notification
-func (p *PushNotification) AddLog(log logx.LogPushEntry) {
-	if p.Log != nil {
-		*p.Log = append(*p.Log, log)
-	}
 }
 
 // Bytes for queue message
@@ -238,26 +235,28 @@ func CheckPushConf(cfg config.ConfYaml) error {
 }
 
 // SendNotification send notification
-func SendNotification(req queue.QueuedMessage) {
+func SendNotification(req queue.QueuedMessage) (resp *ResponsePush, err error) {
 	v, ok := req.(*PushNotification)
 	if !ok {
-		if err := json.Unmarshal(req.Bytes(), &v); err != nil {
+		if err = json.Unmarshal(req.Bytes(), &v); err != nil {
 			return
 		}
 	}
 
 	switch v.Platform {
 	case core.PlatFormIos:
-		PushToIOS(*v)
+		resp, err = PushToIOS(*v)
 	case core.PlatFormAndroid:
-		PushToAndroid(*v)
+		resp, err = PushToAndroid(*v)
 	case core.PlatFormHuawei:
-		PushToHuawei(*v)
+		resp, err = PushToHuawei(*v)
 	}
+
+	return
 }
 
 // Run send notification
 var Run = func(ctx context.Context, msg queue.QueuedMessage) error {
-	SendNotification(msg)
-	return nil
+	_, err := SendNotification(msg)
+	return err
 }
