@@ -36,6 +36,13 @@ func TestMain(m *testing.M) {
 		log.Fatal(err)
 	}
 
+	cfg.Android.Enabled = true
+	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+
+	if _, err := notify.InitFCMClient(cfg, ""); err != nil {
+		log.Fatal(err)
+	}
+
 	w = simple.NewWorker(
 		simple.WithRunFunc(func(ctx context.Context, msg queue.QueuedMessage) error {
 			_, err := notify.SendNotification(msg, cfg)
