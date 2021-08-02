@@ -21,7 +21,6 @@ import (
 	"github.com/sideshow/apns2/certificate"
 	"github.com/sideshow/apns2/payload"
 	"github.com/sideshow/apns2/token"
-	"github.com/sirupsen/logrus"
 	"golang.org/x/net/http2"
 )
 
@@ -391,10 +390,6 @@ func getApnsClient(cfg config.ConfYaml, req PushNotification) (client *apns2.Cli
 func PushToIOS(req PushNotification, cfg config.ConfYaml) (resp *ResponsePush, err error) {
 	logx.LogAccess.Debug("Start push notification for iOS")
 
-	if cfg.Core.Sync && !core.IsLocalQueue(core.Queue(cfg.Queue.Engine)) {
-		cfg.Core.Sync = false
-	}
-
 	var (
 		retryCount = 0
 		maxRetry   = cfg.Ios.MaxRetry
@@ -431,16 +426,7 @@ Retry:
 
 				// apns server error
 				errLog := logPush(cfg, core.FailedPush, token, req, err)
-				if cfg.Core.Sync {
-					resp.Logs = append(resp.Logs, errLog)
-				} else if cfg.Core.FeedbackURL != "" {
-					go func(logger *logrus.Logger, log logx.LogPushEntry, url string, timeout int64) {
-						err := DispatchFeedback(log, url, timeout)
-						if err != nil {
-							logger.Error(err)
-						}
-					}(logx.LogError, errLog, cfg.Core.FeedbackURL, cfg.Core.FeedbackTimeout)
-				}
+				resp.Logs = append(resp.Logs, errLog)
 
 				status.StatStorage.AddIosError(1)
 				// We should retry only "retryable" statuses. More info about response:
