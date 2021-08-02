@@ -13,7 +13,7 @@ import (
 )
 
 // InitFCMClient use for initialize FCM Client.
-func InitFCMClient(cfg config.ConfYaml, key string) (*fcm.Client, error) {
+func InitFCMClient(cfg *config.ConfYaml, key string) (*fcm.Client, error) {
 	var err error
 
 	if key == "" && cfg.Android.APIKey == "" {
@@ -105,7 +105,7 @@ func GetAndroidNotification(req PushNotification) *fcm.Message {
 }
 
 // PushToAndroid provide send notification to Android server.
-func PushToAndroid(req PushNotification, cfg config.ConfYaml) (resp *ResponsePush, err error) {
+func PushToAndroid(req PushNotification, cfg *config.ConfYaml) (resp *ResponsePush, err error) {
 	logx.LogAccess.Debug("Start push notification for Android")
 
 	var (
@@ -231,7 +231,7 @@ Retry:
 	return
 }
 
-func logPush(cfg config.ConfYaml, status, token string, req PushNotification, err error) logx.LogPushEntry {
+func logPush(cfg *config.ConfYaml, status, token string, req PushNotification, err error) logx.LogPushEntry {
 	return logx.LogPush(&logx.InputLog{
 		ID:        req.ID,
 		Status:    status,

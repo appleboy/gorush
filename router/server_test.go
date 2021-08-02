@@ -62,7 +62,7 @@ func TestMain(m *testing.M) {
 	m.Run()
 }
 
-func initTest() config.ConfYaml {
+func initTest() *config.ConfYaml {
 	cfg, _ := config.LoadConf()
 	cfg.Core.Mode = "test"
 	return cfg

@@ -10,7 +10,7 @@ import (
 )
 
 // New func implements the storage interface for gorush (https://github.com/appleboy/gorush)
-func New(config config.ConfYaml) *Storage {
+func New(config *config.ConfYaml) *Storage {
 	return &Storage{
 		config: config,
 	}
@@ -23,7 +23,7 @@ func (s *Storage) getInt64(key string, count *int64) {
 
 // Storage is interface structure
 type Storage struct {
-	config config.ConfYaml
+	config *config.ConfYaml
 	client *redis.Client
 }
 

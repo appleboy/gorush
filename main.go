@@ -459,7 +459,7 @@ func usage() {
 
 // handles pinging the endpoint and returns an error if the
 // agent is in an unhealthy state.
-func pinger(cfg config.ConfYaml) error {
+func pinger(cfg *config.ConfYaml) error {
 	transport := &http.Transport{
 		Dial: (&net.Dialer{
 			Timeout: 5 * time.Second,
@@ -481,7 +481,7 @@ func pinger(cfg config.ConfYaml) error {
 	return nil
 }
 
-func createPIDFile(cfg config.ConfYaml) error {
+func createPIDFile(cfg *config.ConfYaml) error {
 	if !cfg.Core.PID.Enabled {
 		return nil
 	}

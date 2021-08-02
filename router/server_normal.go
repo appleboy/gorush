@@ -18,7 +18,7 @@ import (
 )
 
 // RunHTTPServer provide run http or https protocol.
-func RunHTTPServer(ctx context.Context, cfg config.ConfYaml, q *queue.Queue, s ...*http.Server) (err error) {
+func RunHTTPServer(ctx context.Context, cfg *config.ConfYaml, q *queue.Queue, s ...*http.Server) (err error) {
 	var server *http.Server
 
 	if !cfg.Core.Enabled {
@@ -79,7 +79,7 @@ func RunHTTPServer(ctx context.Context, cfg config.ConfYaml, q *queue.Queue, s .
 	return startServer(ctx, server, cfg)
 }
 
-func listenAndServe(ctx context.Context, s *http.Server, cfg config.ConfYaml) error {
+func listenAndServe(ctx context.Context, s *http.Server, cfg *config.ConfYaml) error {
 	var g errgroup.Group
 	g.Go(func() error {
 		select {
@@ -99,7 +99,7 @@ func listenAndServe(ctx context.Context, s *http.Server, cfg config.ConfYaml) er
 	return g.Wait()
 }
 
-func listenAndServeTLS(ctx context.Context, s *http.Server, cfg config.ConfYaml) error {
+func listenAndServeTLS(ctx context.Context, s *http.Server, cfg *config.ConfYaml) error {
 	var g errgroup.Group
 	g.Go(func() error {
 		select {
@@ -119,7 +119,7 @@ func listenAndServeTLS(ctx context.Context, s *http.Server, cfg config.ConfYaml)
 	return g.Wait()
 }
 
-func startServer(ctx context.Context, s *http.Server, cfg config.ConfYaml) error {
+func startServer(ctx context.Context, s *http.Server, cfg *config.ConfYaml) error {
 	if s.TLSConfig == nil {
 		return listenAndServe(ctx, s, cfg)
 	}

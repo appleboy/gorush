@@ -12,7 +12,7 @@ import (
 
 const gRPCAddr = "localhost:9000"
 
-func initTest() config.ConfYaml {
+func initTest() *config.ConfYaml {
 	cfg, _ := config.LoadConf()
 	cfg.Core.Mode = "test"
 	return cfg
