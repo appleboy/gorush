@@ -217,7 +217,7 @@ func configureHTTP2ConnHealthCheck(h2Transport *http2.Transport) {
 	h2Transport.PingTimeout = 1 * time.Second
 }
 
-func iosAlertDictionary(payload *payload.Payload, req PushNotification) *payload.Payload {
+func iosAlertDictionary(payload *payload.Payload, req *PushNotification) *payload.Payload {
 	// Alert dictionary
 
 	if len(req.Title) > 0 {
@@ -288,7 +288,7 @@ func iosAlertDictionary(payload *payload.Payload, req PushNotification) *payload
 // GetIOSNotification use for define iOS notification.
 // The iOS Notification Payload
 // ref: https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/PayloadKeyReference.html#//apple_ref/doc/uid/TP40008194-CH17-SW1
-func GetIOSNotification(req PushNotification) *apns2.Notification {
+func GetIOSNotification(req *PushNotification) *apns2.Notification {
 	notification := &apns2.Notification{
 		ApnsID:     req.ApnsID,
 		Topic:      req.Topic,
@@ -371,7 +371,7 @@ func GetIOSNotification(req PushNotification) *apns2.Notification {
 	return notification
 }
 
-func getApnsClient(cfg *config.ConfYaml, req PushNotification) (client *apns2.Client) {
+func getApnsClient(cfg *config.ConfYaml, req *PushNotification) (client *apns2.Client) {
 	if req.Production {
 		client = ApnsClient.Production()
 	} else if req.Development {
@@ -387,7 +387,7 @@ func getApnsClient(cfg *config.ConfYaml, req PushNotification) (client *apns2.Cl
 }
 
 // PushToIOS provide send notification to APNs server.
-func PushToIOS(req PushNotification, cfg *config.ConfYaml) (resp *ResponsePush, err error) {
+func PushToIOS(req *PushNotification, cfg *config.ConfYaml) (resp *ResponsePush, err error) {
 	logx.LogAccess.Debug("Start push notification for iOS")
 
 	var (

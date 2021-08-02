@@ -39,7 +39,7 @@ func TestPushToAndroidWrongToken(t *testing.T) {
 	cfg.Android.Enabled = true
 	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
 
-	req := PushNotification{
+	req := &PushNotification{
 		Tokens:   []string{"aaaaaa", "bbbbb"},
 		Platform: core.PlatFormAndroid,
 		Message:  "Welcome",
@@ -59,7 +59,7 @@ func TestPushToAndroidRightTokenForJSONLog(t *testing.T) {
 
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
-	req := PushNotification{
+	req := &PushNotification{
 		Tokens:   []string{androidToken},
 		Platform: core.PlatFormAndroid,
 		Message:  "Welcome",
@@ -76,7 +76,7 @@ func TestPushToAndroidRightTokenForStringLog(t *testing.T) {
 
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
-	req := PushNotification{
+	req := &PushNotification{
 		Tokens:   []string{androidToken},
 		Platform: core.PlatFormAndroid,
 		Message:  "Welcome",
@@ -94,7 +94,7 @@ func TestOverwriteAndroidAPIKey(t *testing.T) {
 
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
-	req := PushNotification{
+	req := &PushNotification{
 		Tokens:   []string{androidToken, "bbbbb"},
 		Platform: core.PlatFormAndroid,
 		Message:  "Welcome",
@@ -110,11 +110,10 @@ func TestOverwriteAndroidAPIKey(t *testing.T) {
 }
 
 func TestFCMMessage(t *testing.T) {
-	var req PushNotification
 	var err error
 
 	// the message must specify at least one registration ID
-	req = PushNotification{
+	req := &PushNotification{
 		Message: "Test",
 		Tokens:  []string{},
 	}
@@ -123,7 +122,7 @@ func TestFCMMessage(t *testing.T) {
 	assert.Error(t, err)
 
 	// the token must not be empty
-	req = PushNotification{
+	req = &PushNotification{
 		Message: "Test",
 		Tokens:  []string{""},
 	}
@@ -132,7 +131,7 @@ func TestFCMMessage(t *testing.T) {
 	assert.Error(t, err)
 
 	// ignore check token length if send topic message
-	req = PushNotification{
+	req = &PushNotification{
 		Message:  "Test",
 		Platform: core.PlatFormAndroid,
 		To:       "/topics/foo-bar",
@@ -142,7 +141,7 @@ func TestFCMMessage(t *testing.T) {
 	assert.NoError(t, err)
 
 	// "condition": "'dogs' in topics || 'cats' in topics",
-	req = PushNotification{
+	req = &PushNotification{
 		Message:   "Test",
 		Platform:  core.PlatFormAndroid,
 		Condition: "'dogs' in topics || 'cats' in topics",
@@ -152,7 +151,7 @@ func TestFCMMessage(t *testing.T) {
 	assert.NoError(t, err)
 
 	// the message may specify at most 1000 registration IDs
-	req = PushNotification{
+	req = &PushNotification{
 		Message:  "Test",
 		Platform: core.PlatFormAndroid,
 		Tokens:   make([]string, 1001),
@@ -164,7 +163,7 @@ func TestFCMMessage(t *testing.T) {
 	// the message's TimeToLive field must be an integer
 	// between 0 and 2419200 (4 weeks)
 	timeToLive := uint(2419201)
-	req = PushNotification{
+	req = &PushNotification{
 		Message:    "Test",
 		Platform:   core.PlatFormAndroid,
 		Tokens:     []string{"XXXXXXXXX"},
@@ -176,7 +175,7 @@ func TestFCMMessage(t *testing.T) {
 
 	// Pass
 	timeToLive = uint(86400)
-	req = PushNotification{
+	req = &PushNotification{
 		Message:    "Test",
 		Platform:   core.PlatFormAndroid,
 		Tokens:     []string{"XXXXXXXXX"},
@@ -194,7 +193,7 @@ func TestCheckAndroidMessage(t *testing.T) {
 	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
 
 	timeToLive := uint(2419201)
-	req := PushNotification{
+	req := &PushNotification{
 		Tokens:     []string{"aaaaaa", "bbbbb"},
 		Platform:   core.PlatFormAndroid,
 		Message:    "Welcome",
@@ -207,7 +206,7 @@ func TestCheckAndroidMessage(t *testing.T) {
 func TestAndroidNotificationStructure(t *testing.T) {
 	test := "test"
 	timeToLive := uint(100)
-	req := PushNotification{
+	req := &PushNotification{
 		Tokens:                []string{"a", "b"},
 		Message:               "Welcome",
 		To:                    test,
@@ -250,7 +249,7 @@ func TestAndroidNotificationStructure(t *testing.T) {
 	assert.Equal(t, 2, notification.Data["b"])
 
 	// test empty body
-	req = PushNotification{
+	req = &PushNotification{
 		Tokens: []string{"a", "b"},
 		To:     test,
 		Notification: &fcm.Notification{

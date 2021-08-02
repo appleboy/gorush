@@ -194,7 +194,7 @@ func main() {
 	// send android notification
 	if opts.Android.Enabled {
 		cfg.Android.Enabled = opts.Android.Enabled
-		req := notify.PushNotification{
+		req := &notify.PushNotification{
 			Platform: core.PlatFormAndroid,
 			Message:  message,
 			Title:    title,
@@ -227,7 +227,7 @@ func main() {
 	// send huawei notification
 	if opts.Huawei.Enabled {
 		cfg.Huawei.Enabled = opts.Huawei.Enabled
-		req := notify.PushNotification{
+		req := &notify.PushNotification{
 			Platform: core.PlatFormHuawei,
 			Message:  message,
 			Title:    title,
@@ -264,7 +264,7 @@ func main() {
 		}
 
 		cfg.Ios.Enabled = opts.Ios.Enabled
-		req := notify.PushNotification{
+		req := &notify.PushNotification{
 			Platform: core.PlatFormIos,
 			Message:  message,
 			Title:    title,

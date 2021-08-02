@@ -59,7 +59,7 @@ func TestIOSNotificationStructure(t *testing.T) {
 	expectBadge := 0
 	message := "Welcome notification Server"
 	expiration := int64(time.Now().Unix())
-	req := PushNotification{
+	req := &PushNotification{
 		ApnsID:     test,
 		Topic:      test,
 		Expiration: &expiration,
@@ -124,7 +124,7 @@ func TestIOSSoundAndVolume(t *testing.T) {
 
 	test := "test"
 	message := "Welcome notification Server"
-	req := PushNotification{
+	req := &PushNotification{
 		ApnsID:   test,
 		Topic:    test,
 		Priority: "normal",
@@ -175,7 +175,7 @@ func TestIOSSoundAndVolume(t *testing.T) {
 	assert.Equal(t, int64(1), soundCritical)
 	assert.Equal(t, "foobar", soundName)
 
-	req = PushNotification{
+	req = &PushNotification{
 		ApnsID:   test,
 		Topic:    test,
 		Priority: "normal",
@@ -202,7 +202,7 @@ func TestIOSSoundAndVolume(t *testing.T) {
 	assert.Equal(t, int64(3), soundCritical)
 	assert.Equal(t, "test", soundName)
 
-	req = PushNotification{
+	req = &PushNotification{
 		ApnsID:   test,
 		Topic:    test,
 		Priority: "normal",
@@ -227,7 +227,7 @@ func TestIOSSummaryArg(t *testing.T) {
 
 	test := "test"
 	message := "Welcome notification Server"
-	req := PushNotification{
+	req := &PushNotification{
 		ApnsID:   test,
 		Topic:    test,
 		Priority: "normal",
@@ -261,7 +261,7 @@ func TestSendZeroValueForBadgeKey(t *testing.T) {
 
 	test := "test"
 	message := "Welcome notification Server"
-	req := PushNotification{
+	req := &PushNotification{
 		ApnsID:           test,
 		Topic:            test,
 		Priority:         "normal",
@@ -334,7 +334,7 @@ func TestCheckSilentNotification(t *testing.T) {
 	var dat map[string]interface{}
 
 	test := "test"
-	req := PushNotification{
+	req := &PushNotification{
 		ApnsID:           test,
 		Topic:            test,
 		CollapseID:       test,
@@ -381,7 +381,7 @@ func TestAlertStringExample2ForIos(t *testing.T) {
 	title := "Game Request"
 	body := "Bob wants to play poker"
 	actionLocKey := "PLAY"
-	req := PushNotification{
+	req := &PushNotification{
 		ApnsID:   test,
 		Topic:    test,
 		Priority: "normal",
@@ -424,7 +424,7 @@ func TestAlertStringExample3ForIos(t *testing.T) {
 	test := "test"
 	badge := 9
 	sound := "bingbong.aiff"
-	req := PushNotification{
+	req := &PushNotification{
 		ApnsID:           test,
 		Topic:            test,
 		Priority:         "normal",
@@ -455,7 +455,7 @@ func TestMessageAndTitle(t *testing.T) {
 	test := "test"
 	message := "Welcome notification Server"
 	title := "Welcome notification Server title"
-	req := PushNotification{
+	req := &PushNotification{
 		ApnsID:           test,
 		Topic:            test,
 		Priority:         "normal",
@@ -509,7 +509,7 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 	var dat map[string]interface{}
 
 	test := "test"
-	req := PushNotification{
+	req := &PushNotification{
 		Message: "Welcome",
 		Title:   test,
 		Alert: Alert{
@@ -725,7 +725,7 @@ func TestPushToIOS(t *testing.T) {
 	err = status.InitAppStatus(cfg)
 	assert.Nil(t, err)
 
-	req := PushNotification{
+	req := &PushNotification{
 		Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7", "11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef1"},
 		Platform: 1,
 		Message:  "Welcome",
@@ -745,19 +745,19 @@ func TestApnsHostFromRequest(t *testing.T) {
 	err = status.InitAppStatus(cfg)
 	assert.Nil(t, err)
 
-	req := PushNotification{
+	req := &PushNotification{
 		Production: true,
 	}
 	client := getApnsClient(cfg, req)
 	assert.Equal(t, apns2.HostProduction, client.Host)
 
-	req = PushNotification{
+	req = &PushNotification{
 		Development: true,
 	}
 	client = getApnsClient(cfg, req)
 	assert.Equal(t, apns2.HostDevelopment, client.Host)
 
-	req = PushNotification{}
+	req = &PushNotification{}
 	cfg.Ios.Production = true
 	client = getApnsClient(cfg, req)
 	assert.Equal(t, apns2.HostProduction, client.Host)

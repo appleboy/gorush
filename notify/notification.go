@@ -142,7 +142,7 @@ func (p *PushNotification) IsTopic() bool {
 }
 
 // CheckMessage for check request message
-func CheckMessage(req PushNotification) error {
+func CheckMessage(req *PushNotification) error {
 	var msg string
 
 	// ignore send topic mesaage from FCM
@@ -243,11 +243,11 @@ func SendNotification(req queue.QueuedMessage, cfg *config.ConfYaml) (resp *Resp
 
 	switch v.Platform {
 	case core.PlatFormIos:
-		resp, err = PushToIOS(*v, cfg)
+		resp, err = PushToIOS(v, cfg)
 	case core.PlatFormAndroid:
-		resp, err = PushToAndroid(*v, cfg)
+		resp, err = PushToAndroid(v, cfg)
 	case core.PlatFormHuawei:
-		resp, err = PushToHuawei(*v, cfg)
+		resp, err = PushToHuawei(v, cfg)
 	}
 
 	if cfg.Core.FeedbackURL != "" {
