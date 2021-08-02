@@ -250,6 +250,15 @@ func SendNotification(req queue.QueuedMessage, cfg config.ConfYaml) (resp *Respo
 		resp, err = PushToHuawei(*v, cfg)
 	}
 
+	if cfg.Core.FeedbackURL != "" {
+		for _, l := range resp.Logs {
+			err := DispatchFeedback(l, cfg.Core.FeedbackURL, cfg.Core.FeedbackTimeout)
+			if err != nil {
+				logx.LogError.Error(err)
+			}
+		}
+	}
+
 	return
 }
 

@@ -169,10 +169,6 @@ func GetHuaweiNotification(req PushNotification) (*model.MessageRequest, error) 
 func PushToHuawei(req PushNotification, cfg config.ConfYaml) (resp *ResponsePush, err error) {
 	logx.LogAccess.Debug("Start push notification for Huawei")
 
-	if cfg.Core.Sync && !core.IsLocalQueue(core.Queue(cfg.Queue.Engine)) {
-		cfg.Core.Sync = false
-	}
-
 	var (
 		client     *client.HMSClient
 		retryCount = 0
