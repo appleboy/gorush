@@ -194,7 +194,7 @@ func main() {
 	// send android notification
 	if opts.Android.Enabled {
 		cfg.Android.Enabled = opts.Android.Enabled
-		req := notify.PushNotification{
+		req := &notify.PushNotification{
 			Platform: core.PlatFormAndroid,
 			Message:  message,
 			Title:    title,
@@ -227,7 +227,7 @@ func main() {
 	// send huawei notification
 	if opts.Huawei.Enabled {
 		cfg.Huawei.Enabled = opts.Huawei.Enabled
-		req := notify.PushNotification{
+		req := &notify.PushNotification{
 			Platform: core.PlatFormHuawei,
 			Message:  message,
 			Title:    title,
@@ -264,7 +264,7 @@ func main() {
 		}
 
 		cfg.Ios.Enabled = opts.Ios.Enabled
-		req := notify.PushNotification{
+		req := &notify.PushNotification{
 			Platform: core.PlatFormIos,
 			Message:  message,
 			Title:    title,
@@ -459,7 +459,7 @@ func usage() {
 
 // handles pinging the endpoint and returns an error if the
 // agent is in an unhealthy state.
-func pinger(cfg config.ConfYaml) error {
+func pinger(cfg *config.ConfYaml) error {
 	transport := &http.Transport{
 		Dial: (&net.Dialer{
 			Timeout: 5 * time.Second,
@@ -481,7 +481,7 @@ func pinger(cfg config.ConfYaml) error {
 	return nil
 }
 
-func createPIDFile(cfg config.ConfYaml) error {
+func createPIDFile(cfg *config.ConfYaml) error {
 	if !cfg.Core.PID.Enabled {
 		return nil
 	}

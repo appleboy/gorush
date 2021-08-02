@@ -20,14 +20,14 @@ import (
 
 // Server is used to implement gorush grpc server.
 type Server struct {
-	cfg config.ConfYaml
+	cfg *config.ConfYaml
 	mu  sync.Mutex
 	// statusMap stores the serving status of the services this Server monitors.
 	statusMap map[string]proto.HealthCheckResponse_ServingStatus
 }
 
 // NewServer returns a new Server.
-func NewServer(cfg config.ConfYaml) *Server {
+func NewServer(cfg *config.ConfYaml) *Server {
 	return &Server{
 		cfg:       cfg,
 		statusMap: make(map[string]proto.HealthCheckResponse_ServingStatus),
@@ -110,7 +110,7 @@ func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*prot
 }
 
 // RunGRPCServer run gorush grpc server
-func RunGRPCServer(ctx context.Context, cfg config.ConfYaml) error {
+func RunGRPCServer(ctx context.Context, cfg *config.ConfYaml) error {
 	if !cfg.GRPC.Enabled {
 		logx.LogAccess.Info("gRPC server is disabled.")
 		return nil

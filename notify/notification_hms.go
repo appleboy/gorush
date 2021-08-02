@@ -36,7 +36,7 @@ func GetPushClient(conf *c.Config) (*client.HMSClient, error) {
 }
 
 // InitHMSClient use for initialize HMS Client.
-func InitHMSClient(cfg config.ConfYaml, appSecret, appID string) (*client.HMSClient, error) {
+func InitHMSClient(cfg *config.ConfYaml, appSecret, appID string) (*client.HMSClient, error) {
 	if appSecret == "" {
 		return nil, errors.New("Missing Huawei App Secret")
 	}
@@ -66,7 +66,7 @@ func InitHMSClient(cfg config.ConfYaml, appSecret, appID string) (*client.HMSCli
 // GetHuaweiNotification use for define HMS notification.
 // HTTP Connection Server Reference for HMS
 // https://developer.huawei.com/consumer/en/doc/development/HMS-References/push-sendapi
-func GetHuaweiNotification(req PushNotification) (*model.MessageRequest, error) {
+func GetHuaweiNotification(req *PushNotification) (*model.MessageRequest, error) {
 	msgRequest := model.NewNotificationMsgRequest()
 
 	msgRequest.Message.Android = model.GetDefaultAndroid()
@@ -166,7 +166,7 @@ func GetHuaweiNotification(req PushNotification) (*model.MessageRequest, error) 
 }
 
 // PushToHuawei provide send notification to Android server.
-func PushToHuawei(req PushNotification, cfg config.ConfYaml) (resp *ResponsePush, err error) {
+func PushToHuawei(req *PushNotification, cfg *config.ConfYaml) (resp *ResponsePush, err error) {
 	logx.LogAccess.Debug("Start push notification for Huawei")
 
 	var (

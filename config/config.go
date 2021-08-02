@@ -276,8 +276,8 @@ type SectionGRPC struct {
 }
 
 // LoadConf load config from file and read in environment variables that match
-func LoadConf(confPath ...string) (ConfYaml, error) {
-	var conf ConfYaml
+func LoadConf(confPath ...string) (*ConfYaml, error) {
+	conf := &ConfYaml{}
 
 	viper.SetConfigType("yaml")
 	viper.AutomaticEnv()         // read in environment variables that match

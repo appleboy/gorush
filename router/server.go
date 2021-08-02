@@ -63,7 +63,7 @@ func versionHandler(c *gin.Context) {
 	})
 }
 
-func pushHandler(cfg config.ConfYaml, q *queue.Queue) gin.HandlerFunc {
+func pushHandler(cfg *config.ConfYaml, q *queue.Queue) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var form notify.RequestPush
 		var msg string
@@ -113,7 +113,7 @@ func pushHandler(cfg config.ConfYaml, q *queue.Queue) gin.HandlerFunc {
 	}
 }
 
-func configHandler(cfg config.ConfYaml) gin.HandlerFunc {
+func configHandler(cfg *config.ConfYaml) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.YAML(http.StatusCreated, cfg)
 	}
@@ -157,7 +157,7 @@ func StatMiddleware() gin.HandlerFunc {
 	}
 }
 
-func autoTLSServer(cfg config.ConfYaml, q *queue.Queue) *http.Server {
+func autoTLSServer(cfg *config.ConfYaml, q *queue.Queue) *http.Server {
 	m := autocert.Manager{
 		Prompt:     autocert.AcceptTOS,
 		HostPolicy: autocert.HostWhitelist(cfg.Core.AutoTLS.Host),
@@ -171,7 +171,7 @@ func autoTLSServer(cfg config.ConfYaml, q *queue.Queue) *http.Server {
 	}
 }
 
-func routerEngine(cfg config.ConfYaml, q *queue.Queue) *gin.Engine {
+func routerEngine(cfg *config.ConfYaml, q *queue.Queue) *gin.Engine {
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 	if cfg.Core.Mode == "debug" {
 		zerolog.SetGlobalLevel(zerolog.DebugLevel)
@@ -228,7 +228,7 @@ func routerEngine(cfg config.ConfYaml, q *queue.Queue) *gin.Engine {
 }
 
 // markFailedNotification adds failure logs for all tokens in push notification
-func markFailedNotification(cfg config.ConfYaml, notification *notify.PushNotification, reason string) []logx.LogPushEntry {
+func markFailedNotification(cfg *config.ConfYaml, notification *notify.PushNotification, reason string) []logx.LogPushEntry {
 	logx.LogError.Error(reason)
 	logs := make([]logx.LogPushEntry, 0)
 	for _, token := range notification.Tokens {
@@ -248,7 +248,7 @@ func markFailedNotification(cfg config.ConfYaml, notification *notify.PushNotifi
 }
 
 // HandleNotification add notification to queue list.
-func handleNotification(ctx context.Context, cfg config.ConfYaml, req notify.RequestPush, q *queue.Queue) (int, []logx.LogPushEntry) {
+func handleNotification(ctx context.Context, cfg *config.ConfYaml, req notify.RequestPush, q *queue.Queue) (int, []logx.LogPushEntry) {
 	var count int
 	wg := sync.WaitGroup{}
 	newNotification := []*notify.PushNotification{}
@@ -283,7 +283,7 @@ func handleNotification(ctx context.Context, cfg config.ConfYaml, req notify.Req
 		}
 
 		if core.IsLocalQueue(core.Queue(cfg.Queue.Engine)) && cfg.Core.Sync {
-			func(msg *notify.PushNotification, cfg config.ConfYaml) {
+			func(msg *notify.PushNotification, cfg *config.ConfYaml) {
 				q.QueueTask(func(ctx context.Context) error {
 					defer wg.Done()
 					resp, err := notify.SendNotification(msg, cfg)

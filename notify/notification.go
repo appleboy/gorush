@@ -142,7 +142,7 @@ func (p *PushNotification) IsTopic() bool {
 }
 
 // CheckMessage for check request message
-func CheckMessage(req PushNotification) error {
+func CheckMessage(req *PushNotification) error {
 	var msg string
 
 	// ignore send topic mesaage from FCM
@@ -195,7 +195,7 @@ func SetProxy(proxy string) error {
 }
 
 // CheckPushConf provide check your yml config.
-func CheckPushConf(cfg config.ConfYaml) error {
+func CheckPushConf(cfg *config.ConfYaml) error {
 	if !cfg.Ios.Enabled && !cfg.Android.Enabled && !cfg.Huawei.Enabled {
 		return errors.New("Please enable iOS, Android or Huawei config in yml config")
 	}
@@ -233,7 +233,7 @@ func CheckPushConf(cfg config.ConfYaml) error {
 }
 
 // SendNotification send notification
-func SendNotification(req queue.QueuedMessage, cfg config.ConfYaml) (resp *ResponsePush, err error) {
+func SendNotification(req queue.QueuedMessage, cfg *config.ConfYaml) (resp *ResponsePush, err error) {
 	v, ok := req.(*PushNotification)
 	if !ok {
 		if err = json.Unmarshal(req.Bytes(), &v); err != nil {
@@ -243,11 +243,11 @@ func SendNotification(req queue.QueuedMessage, cfg config.ConfYaml) (resp *Respo
 
 	switch v.Platform {
 	case core.PlatFormIos:
-		resp, err = PushToIOS(*v, cfg)
+		resp, err = PushToIOS(v, cfg)
 	case core.PlatFormAndroid:
-		resp, err = PushToAndroid(*v, cfg)
+		resp, err = PushToAndroid(v, cfg)
 	case core.PlatFormHuawei:
-		resp, err = PushToHuawei(*v, cfg)
+		resp, err = PushToHuawei(v, cfg)
 	}
 
 	if cfg.Core.FeedbackURL != "" {
@@ -263,7 +263,7 @@ func SendNotification(req queue.QueuedMessage, cfg config.ConfYaml) (resp *Respo
 }
 
 // Run send notification
-var Run = func(cfg config.ConfYaml) func(ctx context.Context, msg queue.QueuedMessage) error {
+var Run = func(cfg *config.ConfYaml) func(ctx context.Context, msg queue.QueuedMessage) error {
 	return func(ctx context.Context, msg queue.QueuedMessage) error {
 		_, err := SendNotification(msg, cfg)
 		return err

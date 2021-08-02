@@ -19,8 +19,8 @@ func TestMissingFile(t *testing.T) {
 
 type ConfigTestSuite struct {
 	suite.Suite
-	ConfGorushDefault ConfYaml
-	ConfGorush        ConfYaml
+	ConfGorushDefault *ConfYaml
+	ConfGorush        *ConfYaml
 }
 
 func (suite *ConfigTestSuite) SetupTest() {
