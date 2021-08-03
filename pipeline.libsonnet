@@ -163,22 +163,6 @@
         ],
       },
       {
-        name: 'dryrun',
-        image: 'plugins/docker:' + os + '-' + arch,
-        pull: 'always',
-        settings: {
-          daemon_off: false,
-          dry_run: true,
-          tags: os + '-' + arch,
-          dockerfile: 'docker/Dockerfile.' + os + '.' + arch,
-          repo: 'appleboy/' + name,
-          cache_from: 'appleboy/' + name,
-        },
-        when: {
-          event: [ 'pull_request' ],
-        },
-      },
-      {
         name: 'publish',
         image: 'plugins/docker:' + os + '-' + arch,
         pull: 'always',
