@@ -219,7 +219,9 @@ func main() {
 			return
 		}
 
-		notify.PushToAndroid(req, cfg)
+		if _, err := notify.PushToAndroid(req, cfg); err != nil {
+			return
+		}
 
 		return
 	}
@@ -252,7 +254,9 @@ func main() {
 			return
 		}
 
-		notify.PushToHuawei(req, cfg)
+		if _, err := notify.PushToHuawei(req, cfg); err != nil {
+			return
+		}
 
 		return
 	}
@@ -292,7 +296,10 @@ func main() {
 		if err := notify.InitAPNSClient(cfg); err != nil {
 			return
 		}
-		notify.PushToIOS(req, cfg)
+
+		if _, err := notify.PushToIOS(req, cfg); err != nil {
+			return
+		}
 
 		return
 	}
@@ -397,9 +404,7 @@ func main() {
 
 	// check job completely
 	g.Go(func() error {
-		select {
-		case <-finished:
-		}
+		<-finished
 		return nil
 	})
 

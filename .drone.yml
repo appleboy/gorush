@@ -7,29 +7,11 @@ platform:
   arch: amd64
 
 steps:
-- name: vet
-  pull: always
-  image: golang:1.16
-  commands:
-  - make vet
-  volumes:
-  - name: gopath
-    path: /go
-
 - name: lint
   pull: always
-  image: golang:1.16
+  image: golangci/golangci-lint:v1.41.1
   commands:
-  - make lint
-  volumes:
-  - name: gopath
-    path: /go
-
-- name: misspell
-  pull: always
-  image: golang:1.16
-  commands:
-  - make misspell-check
+  - golangci-lint run -v
   volumes:
   - name: gopath
     path: /go
@@ -127,19 +109,6 @@ steps:
   commands:
   - ./release/linux/amd64/gorush --help
 
-- name: dryrun
-  pull: always
-  image: plugins/docker:linux-amd64
-  settings:
-    cache_from: appleboy/gorush
-    dockerfile: docker/Dockerfile.linux.amd64
-    dry_run: true
-    repo: appleboy/gorush
-    tags: linux-amd64
-  when:
-    event:
-    - pull_request
-
 - name: publish
   pull: always
   image: plugins/docker:linux-amd64
@@ -206,19 +175,6 @@ steps:
   commands:
   - ./release/linux/arm64/gorush --help
 
-- name: dryrun
-  pull: always
-  image: plugins/docker:linux-arm64
-  settings:
-    cache_from: appleboy/gorush
-    dockerfile: docker/Dockerfile.linux.arm64
-    dry_run: true
-    repo: appleboy/gorush
-    tags: linux-arm64
-  when:
-    event:
-    - pull_request
-
 - name: publish
   pull: always
   image: plugins/docker:linux-arm64
@@ -284,19 +240,6 @@ steps:
   image: golang:1.16
   commands:
   - ./release/linux/arm/gorush --help
-
-- name: dryrun
-  pull: always
-  image: plugins/docker:linux-arm
-  settings:
-    cache_from: appleboy/gorush
-    dockerfile: docker/Dockerfile.linux.arm
-    dry_run: true
-    repo: appleboy/gorush
-    tags: linux-arm
-  when:
-    event:
-    - pull_request
 
 - name: publish
   pull: always

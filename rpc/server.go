@@ -101,7 +101,12 @@ func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*prot
 		}
 	}
 
-	go notify.SendNotification(&notification, s.cfg)
+	go func() {
+		_, err := notify.SendNotification(&notification, s.cfg)
+		if err != nil {
+			logx.LogError.Error(err)
+		}
+	}()
 
 	return &proto.NotificationReply{
 		Success: true,
@@ -131,11 +136,9 @@ func RunGRPCServer(ctx context.Context, cfg *config.ConfYaml) error {
 	}
 	logx.LogAccess.Info("gRPC server is running on " + cfg.GRPC.Port + " port.")
 	go func() {
-		select {
-		case <-ctx.Done():
-			s.GracefulStop() // graceful shutdown
-			logx.LogAccess.Info("shutdown the gRPC server")
-		}
+		<-ctx.Done()
+		s.GracefulStop() // graceful shutdown
+		logx.LogAccess.Info("shutdown the gRPC server")
 	}()
 	if err = s.Serve(lis); err != nil {
 		logx.LogError.Fatalln(err)

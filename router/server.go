@@ -284,7 +284,7 @@ func handleNotification(ctx context.Context, cfg *config.ConfYaml, req notify.Re
 
 		if core.IsLocalQueue(core.Queue(cfg.Queue.Engine)) && cfg.Core.Sync {
 			func(msg *notify.PushNotification, cfg *config.ConfYaml) {
-				q.QueueTask(func(ctx context.Context) error {
+				if err := q.QueueTask(func(ctx context.Context) error {
 					defer wg.Done()
 					resp, err := notify.SendNotification(msg, cfg)
 					if err != nil {
@@ -292,19 +292,17 @@ func handleNotification(ctx context.Context, cfg *config.ConfYaml, req notify.Re
 					}
 
 					// add log
-					for _, v := range resp.Logs {
-						logs = append(logs, v)
-					}
+					logs = append(logs, resp.Logs...)
 
 					return nil
-				})
+				}); err != nil {
+					logx.LogError.Error(err)
+				}
 			}(notification, cfg)
 		} else if err := q.Queue(notification); err != nil {
 			resp := markFailedNotification(cfg, notification, "max capacity reached")
 			// add log
-			for _, v := range resp {
-				logs = append(logs, v)
-			}
+			logs = append(logs, resp...)
 			wg.Done()
 		}
 

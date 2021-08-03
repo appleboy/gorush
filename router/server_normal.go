@@ -82,13 +82,11 @@ func RunHTTPServer(ctx context.Context, cfg *config.ConfYaml, q *queue.Queue, s 
 func listenAndServe(ctx context.Context, s *http.Server, cfg *config.ConfYaml) error {
 	var g errgroup.Group
 	g.Go(func() error {
-		select {
-		case <-ctx.Done():
-			timeout := time.Duration(cfg.Core.ShutdownTimeout) * time.Second
-			ctx, cancel := context.WithTimeout(context.Background(), timeout)
-			defer cancel()
-			return s.Shutdown(ctx)
-		}
+		<-ctx.Done()
+		timeout := time.Duration(cfg.Core.ShutdownTimeout) * time.Second
+		ctx, cancel := context.WithTimeout(context.Background(), timeout)
+		defer cancel()
+		return s.Shutdown(ctx)
 	})
 	g.Go(func() error {
 		if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
@@ -102,13 +100,11 @@ func listenAndServe(ctx context.Context, s *http.Server, cfg *config.ConfYaml) e
 func listenAndServeTLS(ctx context.Context, s *http.Server, cfg *config.ConfYaml) error {
 	var g errgroup.Group
 	g.Go(func() error {
-		select {
-		case <-ctx.Done():
-			timeout := time.Duration(cfg.Core.ShutdownTimeout) * time.Second
-			ctx, cancel := context.WithTimeout(context.Background(), timeout)
-			defer cancel()
-			return s.Shutdown(ctx)
-		}
+		<-ctx.Done()
+		timeout := time.Duration(cfg.Core.ShutdownTimeout) * time.Second
+		ctx, cancel := context.WithTimeout(context.Background(), timeout)
+		defer cancel()
+		return s.Shutdown(ctx)
 	})
 	g.Go(func() error {
 		if err := s.ListenAndServeTLS("", ""); err != nil && err != http.ErrServerClosed {
