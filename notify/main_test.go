@@ -2,6 +2,7 @@ package notify
 
 import (
 	"log"
+	"os"
 	"testing"
 
 	"github.com/appleboy/gorush/config"
@@ -14,5 +15,5 @@ func TestMain(m *testing.M) {
 		log.Fatal(err)
 	}
 
-	m.Run()
+	os.Exit(m.Run())
 }

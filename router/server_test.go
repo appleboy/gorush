@@ -59,7 +59,7 @@ func TestMain(m *testing.M) {
 		q.Wait()
 	}()
 
-	m.Run()
+	os.Exit(m.Run())
 }
 
 func initTest() *config.ConfYaml {

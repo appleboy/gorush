@@ -7,29 +7,11 @@ platform:
   arch: amd64
 
 steps:
-- name: vet
-  pull: always
-  image: golang:1.16
-  commands:
-  - make vet
-  volumes:
-  - name: gopath
-    path: /go
-
 - name: lint
   pull: always
-  image: golang:1.16
+  image: golangci/golangci-lint:v1.41.1
   commands:
-  - make lint
-  volumes:
-  - name: gopath
-    path: /go
-
-- name: misspell
-  pull: always
-  image: golang:1.16
-  commands:
-  - make misspell-check
+  - golangci-lint run -v
   volumes:
   - name: gopath
     path: /go

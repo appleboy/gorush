@@ -732,7 +732,9 @@ func TestPushToIOS(t *testing.T) {
 	}
 
 	// send fail
-	PushToIOS(req, cfg)
+	resp, err := PushToIOS(req, cfg)
+	assert.Nil(t, err)
+	assert.Len(t, resp.Logs, 2)
 }
 
 func TestApnsHostFromRequest(t *testing.T) {

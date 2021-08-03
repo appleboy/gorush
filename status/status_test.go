@@ -1,6 +1,7 @@
 package status
 
 import (
+	"os"
 	"testing"
 	"time"
 
@@ -10,7 +11,7 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	m.Run()
+	os.Exit(m.Run())
 }
 
 func TestStorageDriverExist(t *testing.T) {
@@ -76,7 +77,7 @@ func TestStatForRedisEngine(t *testing.T) {
 	err := InitAppStatus(cfg)
 	assert.Nil(t, err)
 
-	StatStorage.Init()
+	assert.Nil(t, StatStorage.Init())
 	StatStorage.Reset()
 
 	StatStorage.AddTotalCount(100)

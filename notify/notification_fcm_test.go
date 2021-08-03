@@ -46,7 +46,9 @@ func TestPushToAndroidWrongToken(t *testing.T) {
 	}
 
 	// Android Success count: 0, Failure count: 2
-	PushToAndroid(req, cfg)
+	resp, err := PushToAndroid(req, cfg)
+	assert.Nil(t, err)
+	assert.Len(t, resp.Logs, 2)
 }
 
 func TestPushToAndroidRightTokenForJSONLog(t *testing.T) {
@@ -65,7 +67,9 @@ func TestPushToAndroidRightTokenForJSONLog(t *testing.T) {
 		Message:  "Welcome",
 	}
 
-	PushToAndroid(req, cfg)
+	resp, err := PushToAndroid(req, cfg)
+	assert.Nil(t, err)
+	assert.Len(t, resp.Logs, 0)
 }
 
 func TestPushToAndroidRightTokenForStringLog(t *testing.T) {
@@ -82,7 +86,9 @@ func TestPushToAndroidRightTokenForStringLog(t *testing.T) {
 		Message:  "Welcome",
 	}
 
-	PushToAndroid(req, cfg)
+	resp, err := PushToAndroid(req, cfg)
+	assert.Nil(t, err)
+	assert.Len(t, resp.Logs, 0)
 }
 
 func TestOverwriteAndroidAPIKey(t *testing.T) {
@@ -200,7 +206,10 @@ func TestCheckAndroidMessage(t *testing.T) {
 		TimeToLive: &timeToLive,
 	}
 
-	PushToAndroid(req, cfg)
+	// the message's TimeToLive field must be an integer between 0 and 2419200 (4 weeks)
+	resp, err := PushToAndroid(req, cfg)
+	assert.NotNil(t, err)
+	assert.Nil(t, resp)
 }
 
 func TestAndroidNotificationStructure(t *testing.T) {

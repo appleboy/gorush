@@ -8,39 +8,11 @@
     },
     steps: [
       {
-        name: 'vet',
-        image: 'golang:1.16',
-        pull: 'always',
-        commands: [
-          'make vet',
-        ],
-        volumes: [
-          {
-            name: 'gopath',
-            path: '/go',
-          },
-        ],
-      },
-      {
         name: 'lint',
-        image: 'golang:1.16',
+        image: 'golangci/golangci-lint:v1.41.1',
         pull: 'always',
         commands: [
-          'make lint',
-        ],
-        volumes: [
-          {
-            name: 'gopath',
-            path: '/go',
-          },
-        ],
-      },
-      {
-        name: 'misspell',
-        image: 'golang:1.16',
-        pull: 'always',
-        commands: [
-          'make misspell-check',
+          'golangci-lint run -v',
         ],
         volumes: [
           {
