@@ -96,8 +96,8 @@ func TestIOSNotificationStructure(t *testing.T) {
 	soundVolume, _ := jsonparser.GetFloat(data, "aps", "sound", "volume")
 	contentAvailable, _ := jsonparser.GetInt(data, "aps", "content-available")
 	category, _ := jsonparser.GetString(data, "aps", "category")
-	key1 := dat["key1"].(interface{})
-	key2 := dat["key2"].(interface{})
+	key1 := dat["key1"]
+	key2 := dat["key2"]
 	aps := dat["aps"].(map[string]interface{})
 	urlArgs := aps["url-args"].([]interface{})
 

@@ -1,7 +1,6 @@
 package badger
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -84,7 +83,7 @@ func (s *Storage) getBadger(key string, count *int64) {
 			return err
 		}
 
-		i, err := strconv.ParseInt(fmt.Sprintf("%s", val), 10, 64)
+		i, err := strconv.ParseInt(string(val), 10, 64)
 		if err != nil {
 			return err
 		}
