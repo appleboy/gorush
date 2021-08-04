@@ -1070,10 +1070,13 @@ func main() {
 		},
 	})
 	if err != nil {
-		log.Fatalf("could not greet: %v", err)
+		log.Println("could not greet: ", err)
 	}
-	log.Printf("Success: %t\n", r.Success)
-	log.Printf("Count: %d\n", r.Counts)
+
+	if r != nil {
+		log.Printf("Success: %t\n", r.Success)
+		log.Printf("Count: %d\n", r.Counts)
+	}
 }
 ```
 
@@ -1172,10 +1175,13 @@ func main() {
 		},
 	})
 	if err != nil {
-		log.Fatalf("could not greet: %v", err)
+		log.Println("could not greet: ", err)
 	}
-	log.Printf("Success: %t\n", r.Success)
-	log.Printf("Count: %d\n", r.Counts)
+
+	if r != nil {
+		log.Printf("Success: %t\n", r.Success)
+		log.Printf("Count: %d\n", r.Counts)
+	}
 }
 ```
 

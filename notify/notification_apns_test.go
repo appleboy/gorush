@@ -58,7 +58,7 @@ func TestIOSNotificationStructure(t *testing.T) {
 	test := "test"
 	expectBadge := 0
 	message := "Welcome notification Server"
-	expiration := int64(time.Now().Unix())
+	expiration := time.Now().Unix()
 	req := &PushNotification{
 		ApnsID:     test,
 		Topic:      test,

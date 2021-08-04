@@ -228,7 +228,7 @@ Retry:
 		goto Retry
 	}
 
-	return
+	return resp, nil
 }
 
 func logPush(cfg *config.ConfYaml, status, token string, req *PushNotification, err error) logx.LogPushEntry {

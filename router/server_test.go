@@ -54,12 +54,13 @@ func TestMain(m *testing.M) {
 		queue.WithWorkerCount(4),
 	)
 	q.Start()
+
+	code := m.Run()
 	defer func() {
 		q.Shutdown()
 		q.Wait()
+		os.Exit(code)
 	}()
-
-	os.Exit(m.Run())
 }
 
 func initTest() *config.ConfYaml {

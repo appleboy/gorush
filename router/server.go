@@ -30,14 +30,7 @@ import (
 	"golang.org/x/crypto/acme/autocert"
 )
 
-var (
-	isTerm bool
-	doOnce sync.Once
-)
-
-func init() {
-	isTerm = isatty.IsTerminal(os.Stdout.Fd())
-}
+var doOnce sync.Once
 
 func abortWithError(c *gin.Context, code int, message string) {
 	c.AbortWithStatusJSON(code, gin.H{
@@ -179,6 +172,7 @@ func routerEngine(cfg *config.ConfYaml, q *queue.Queue) *gin.Engine {
 
 	log.Logger = zerolog.New(os.Stdout).With().Timestamp().Logger()
 
+	isTerm := isatty.IsTerminal(os.Stdout.Fd())
 	if isTerm {
 		log.Logger = log.Output(
 			zerolog.ConsoleWriter{
