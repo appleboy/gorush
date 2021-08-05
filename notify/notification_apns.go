@@ -286,8 +286,8 @@ func iosAlertDictionary(payload *payload.Payload, req *PushNotification) *payloa
 }
 
 // GetIOSNotification use for define iOS notification.
-// The iOS Notification Payload
-// ref: https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/PayloadKeyReference.html#//apple_ref/doc/uid/TP40008194-CH17-SW1
+// The iOS Notification Payload (Payload Key Reference)
+// Ref: https://apple.co/2VtH6Iu
 func GetIOSNotification(req *PushNotification) *apns2.Notification {
 	notification := &apns2.Notification{
 		ApnsID:     req.ApnsID,
@@ -372,17 +372,19 @@ func GetIOSNotification(req *PushNotification) *apns2.Notification {
 }
 
 func getApnsClient(cfg *config.ConfYaml, req *PushNotification) (client *apns2.Client) {
-	if req.Production {
+	switch {
+	case req.Production:
 		client = ApnsClient.Production()
-	} else if req.Development {
+	case req.Development:
 		client = ApnsClient.Development()
-	} else {
+	default:
 		if cfg.Ios.Production {
 			client = ApnsClient.Production()
 		} else {
 			client = ApnsClient.Development()
 		}
 	}
+
 	return
 }
 
@@ -430,7 +432,7 @@ Retry:
 
 				status.StatStorage.AddIosError(1)
 				// We should retry only "retryable" statuses. More info about response:
-				// https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/handling_notification_responses_from_apns
+				// See https://apple.co/3AdNane (Handling Notification Responses from APNs)
 				if res != nil && res.StatusCode >= http.StatusInternalServerError {
 					newTokens = append(newTokens, token)
 				}

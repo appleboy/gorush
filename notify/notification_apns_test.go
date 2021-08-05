@@ -30,7 +30,7 @@ func TestDisabledAndroidIosConf(t *testing.T) {
 	err := CheckPushConf(cfg)
 
 	assert.Error(t, err)
-	assert.Equal(t, "Please enable iOS, Android or Huawei config in yml config", err.Error())
+	assert.Equal(t, "please enable iOS, Android or Huawei config in yml config", err.Error())
 }
 
 func TestMissingIOSCertificate(t *testing.T) {
@@ -42,7 +42,7 @@ func TestMissingIOSCertificate(t *testing.T) {
 	err := CheckPushConf(cfg)
 
 	assert.Error(t, err)
-	assert.Equal(t, "Missing iOS certificate key", err.Error())
+	assert.Equal(t, "missing iOS certificate key", err.Error())
 
 	cfg.Ios.KeyPath = "test.pem"
 	err = CheckPushConf(cfg)

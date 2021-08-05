@@ -197,12 +197,12 @@ func SetProxy(proxy string) error {
 // CheckPushConf provide check your yml config.
 func CheckPushConf(cfg *config.ConfYaml) error {
 	if !cfg.Ios.Enabled && !cfg.Android.Enabled && !cfg.Huawei.Enabled {
-		return errors.New("Please enable iOS, Android or Huawei config in yml config")
+		return errors.New("please enable iOS, Android or Huawei config in yml config")
 	}
 
 	if cfg.Ios.Enabled {
 		if cfg.Ios.KeyPath == "" && cfg.Ios.KeyBase64 == "" {
-			return errors.New("Missing iOS certificate key")
+			return errors.New("missing iOS certificate key")
 		}
 
 		// check certificate file exist
