@@ -13,7 +13,7 @@ import (
 // DispatchFeedback sends a feedback to the configured gateway.
 func DispatchFeedback(log logx.LogPushEntry, url string, timeout int64) error {
 	if url == "" {
-		return errors.New("The url can't be empty")
+		return errors.New("url can't be empty")
 	}
 
 	payload, err := json.Marshal(log)
