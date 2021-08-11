@@ -7,38 +7,39 @@ import (
 )
 
 // QueueLogger for simple logger.
-func QueueLogger() defaultLogger {
-	return defaultLogger{
+func QueueLogger() DefaultQueueLogger {
+	return DefaultQueueLogger{
 		accessLogger: LogAccess,
 		errorLogger:  LogError,
 	}
 }
 
-type defaultLogger struct {
+// DefaultQueueLogger for queue custom logger
+type DefaultQueueLogger struct {
 	accessLogger *logrus.Logger
 	errorLogger  *logrus.Logger
 }
 
-func (l defaultLogger) Infof(format string, args ...interface{}) {
+func (l DefaultQueueLogger) Infof(format string, args ...interface{}) {
 	l.accessLogger.Printf(format, args...)
 }
 
-func (l defaultLogger) Errorf(format string, args ...interface{}) {
+func (l DefaultQueueLogger) Errorf(format string, args ...interface{}) {
 	l.errorLogger.Printf(format, args...)
 }
 
-func (l defaultLogger) Fatalf(format string, args ...interface{}) {
+func (l DefaultQueueLogger) Fatalf(format string, args ...interface{}) {
 	l.errorLogger.Fatalf(format, args...)
 }
 
-func (l defaultLogger) Info(args ...interface{}) {
+func (l DefaultQueueLogger) Info(args ...interface{}) {
 	l.accessLogger.Println(fmt.Sprint(args...))
 }
 
-func (l defaultLogger) Error(args ...interface{}) {
+func (l DefaultQueueLogger) Error(args ...interface{}) {
 	l.errorLogger.Println(fmt.Sprint(args...))
 }
 
-func (l defaultLogger) Fatal(args ...interface{}) {
+func (l DefaultQueueLogger) Fatal(args ...interface{}) {
 	l.errorLogger.Println(fmt.Sprint(args...))
 }
