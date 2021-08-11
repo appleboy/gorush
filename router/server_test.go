@@ -13,6 +13,7 @@ import (
 
 	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/core"
+	"github.com/appleboy/gorush/logx"
 	"github.com/appleboy/gorush/notify"
 	"github.com/appleboy/gorush/status"
 
@@ -52,6 +53,7 @@ func TestMain(m *testing.M) {
 	q, _ = queue.NewQueue(
 		queue.WithWorker(w),
 		queue.WithWorkerCount(4),
+		queue.WithLogger(logx.QueueLogger()),
 	)
 	q.Start()
 
