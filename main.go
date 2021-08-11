@@ -328,6 +328,7 @@ func main() {
 		w = simple.NewWorker(
 			simple.WithQueueNum(int(cfg.Core.QueueNum)),
 			simple.WithRunFunc(notify.Run(cfg)),
+			simple.WithLogger(logx.QueueLogger()),
 		)
 	case core.NSQ:
 		w = nsq.NewWorker(
@@ -336,6 +337,7 @@ func main() {
 			nsq.WithChannel(cfg.Queue.NSQ.Channel),
 			nsq.WithMaxInFlight(int(cfg.Core.WorkerNum)),
 			nsq.WithRunFunc(notify.Run(cfg)),
+			nsq.WithLogger(logx.QueueLogger()),
 		)
 	case core.NATS:
 		w = nats.NewWorker(
@@ -343,6 +345,7 @@ func main() {
 			nats.WithSubj(cfg.Queue.NATS.Subj),
 			nats.WithQueue(cfg.Queue.NATS.Queue),
 			nats.WithRunFunc(notify.Run(cfg)),
+			nats.WithLogger(logx.QueueLogger()),
 		)
 	default:
 		logx.LogError.Fatalf("we don't support queue engine: %s", cfg.Queue.Engine)
@@ -350,6 +353,7 @@ func main() {
 
 	q, err := queue.NewQueue(
 		queue.WithWorker(w),
+		queue.WithLogger(logx.QueueLogger()),
 		queue.WithWorkerCount(int(cfg.Core.WorkerNum)),
 	)
 	if err != nil {
