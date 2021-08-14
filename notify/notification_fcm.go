@@ -216,6 +216,7 @@ Retry:
 	if len(res.FailedRegistrationIDs) > 0 {
 		newTokens = append(newTokens, res.FailedRegistrationIDs...)
 
+		// nolint
 		errLog := logPush(cfg, core.FailedPush, notification.To, req, errors.New("device group: partial success or all fails"))
 		resp.Logs = append(resp.Logs, errLog)
 	}

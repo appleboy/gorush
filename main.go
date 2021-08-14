@@ -169,7 +169,7 @@ func main() {
 		cfg.Log.ErrorLevel,
 		cfg.Log.ErrorLog,
 	); err != nil {
-		log.Fatalf("Can't load log module, error: %v", err)
+		log.Fatalf("can't load log module, error: %v", err)
 	}
 
 	if opts.Core.HTTPProxy != "" {
@@ -500,16 +500,16 @@ func createPIDFile(cfg *config.ConfYaml) error {
 	if os.IsNotExist(err) || cfg.Core.PID.Override {
 		currentPid := os.Getpid()
 		if err := os.MkdirAll(filepath.Dir(pidPath), os.ModePerm); err != nil {
-			return fmt.Errorf("Can't create PID folder on %v", err)
+			return fmt.Errorf("can't create PID folder on %v", err)
 		}
 
 		file, err := os.Create(pidPath)
 		if err != nil {
-			return fmt.Errorf("Can't create PID file: %v", err)
+			return fmt.Errorf("can't create PID file: %v", err)
 		}
 		defer file.Close()
 		if _, err := file.WriteString(strconv.FormatInt(int64(currentPid), 10)); err != nil {
-			return fmt.Errorf("Can't write PID information on %s: %v", pidPath, err)
+			return fmt.Errorf("can't write PID information on %s: %v", pidPath, err)
 		}
 	} else {
 		return fmt.Errorf("%s already exists", pidPath)
