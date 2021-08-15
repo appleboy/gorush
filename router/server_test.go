@@ -18,10 +18,10 @@ import (
 	"github.com/appleboy/gorush/status"
 
 	"github.com/appleboy/gofight/v2"
-	"github.com/appleboy/queue"
-	"github.com/appleboy/queue/simple"
 	"github.com/buger/jsonparser"
 	"github.com/gin-gonic/gin"
+	"github.com/golang-queue/queue"
+	"github.com/golang-queue/queue/simple"
 	"github.com/stretchr/testify/assert"
 )
 

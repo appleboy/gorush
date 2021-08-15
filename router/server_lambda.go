@@ -10,7 +10,7 @@ import (
 	"github.com/appleboy/gorush/logx"
 
 	"github.com/apex/gateway"
-	"github.com/appleboy/queue"
+	"github.com/golang-queue/queue"
 )
 
 // RunHTTPServer provide run http or https protocol.
