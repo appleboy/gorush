@@ -7,13 +7,15 @@ require (
 	github.com/appleboy/gin-status-api v1.1.0
 	github.com/appleboy/go-fcm v0.1.5
 	github.com/appleboy/gofight/v2 v2.1.2
-	github.com/appleboy/queue v0.0.5
 	github.com/asdine/storm/v3 v3.2.1
 	github.com/buger/jsonparser v1.1.1
 	github.com/dgraph-io/badger/v3 v3.2103.1
 	github.com/gin-contrib/logger v0.2.0
 	github.com/gin-gonic/gin v1.7.2
 	github.com/go-redis/redis/v7 v7.4.0
+	github.com/golang-queue/nats v0.0.1
+	github.com/golang-queue/nsq v0.0.1
+	github.com/golang-queue/queue v0.0.6
 	github.com/golang/glog v0.0.0-20210429001901-424d2337a529 // indirect
 	github.com/golang/protobuf v1.5.2
 	github.com/google/flatbuffers v2.0.0+incompatible // indirect

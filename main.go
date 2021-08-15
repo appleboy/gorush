@@ -22,10 +22,10 @@ import (
 	"github.com/appleboy/gorush/rpc"
 	"github.com/appleboy/gorush/status"
 
-	"github.com/appleboy/queue"
-	"github.com/appleboy/queue/nats"
-	"github.com/appleboy/queue/nsq"
-	"github.com/appleboy/queue/simple"
+	"github.com/golang-queue/nats"
+	"github.com/golang-queue/nsq"
+	"github.com/golang-queue/queue"
+	"github.com/golang-queue/queue/simple"
 	"golang.org/x/sync/errgroup"
 )
 
