@@ -21,14 +21,12 @@ import (
 	"github.com/buger/jsonparser"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-queue/queue"
-	"github.com/golang-queue/queue/simple"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
 	goVersion = runtime.Version()
 	q         *queue.Queue
-	w         queue.Worker
 )
 
 func TestMain(m *testing.M) {
@@ -44,23 +42,18 @@ func TestMain(m *testing.M) {
 		log.Fatal(err)
 	}
 
-	w = simple.NewWorker(
-		simple.WithRunFunc(func(ctx context.Context, msg queue.QueuedMessage) error {
+	q = queue.NewPool(
+		int(cfg.Core.WorkerNum),
+		queue.WithFn(func(ctx context.Context, msg queue.QueuedMessage) error {
 			_, err := notify.SendNotification(msg, cfg)
 			return err
 		}),
-	)
-	q, _ = queue.NewQueue(
-		queue.WithWorker(w),
-		queue.WithWorkerCount(4),
 		queue.WithLogger(logx.QueueLogger()),
 	)
-	q.Start()
 
 	code := m.Run()
 	defer func() {
-		q.Shutdown()
-		q.Wait()
+		q.Release()
 		os.Exit(code)
 	}()
 }
