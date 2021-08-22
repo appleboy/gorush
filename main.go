@@ -25,7 +25,6 @@ import (
 	"github.com/golang-queue/nats"
 	"github.com/golang-queue/nsq"
 	"github.com/golang-queue/queue"
-	"github.com/golang-queue/queue/simple"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -325,10 +324,10 @@ func main() {
 	var w queue.Worker
 	switch core.Queue(cfg.Queue.Engine) {
 	case core.LocalQueue:
-		w = simple.NewWorker(
-			simple.WithQueueNum(int(cfg.Core.QueueNum)),
-			simple.WithRunFunc(notify.Run(cfg)),
-			simple.WithLogger(logx.QueueLogger()),
+		w = queue.NewConsumer(
+			queue.WithQueueSize(int(cfg.Core.QueueNum)),
+			queue.WithFn(notify.Run(cfg)),
+			queue.WithLogger(logx.QueueLogger()),
 		)
 	case core.NSQ:
 		w = nsq.NewWorker(
@@ -351,23 +350,17 @@ func main() {
 		logx.LogError.Fatalf("we don't support queue engine: %s", cfg.Queue.Engine)
 	}
 
-	q, err := queue.NewQueue(
+	q := queue.NewPool(
+		int(cfg.Core.WorkerNum),
 		queue.WithWorker(w),
 		queue.WithLogger(logx.QueueLogger()),
-		queue.WithWorkerCount(int(cfg.Core.WorkerNum)),
 	)
-	if err != nil {
-		logx.LogError.Fatal(err)
-	}
-	q.Start()
 
 	finished := make(chan struct{})
 	ctx := withContextFunc(context.Background(), func() {
 		logx.LogAccess.Info("close the queue system, current queue usage: ", q.Usage())
-		// stop queue system
-		q.Shutdown()
-		// wait job completed
-		q.Wait()
+		// stop queue system and wait job completed
+		q.Release()
 		close(finished)
 		// close the connection with storage
 		logx.LogAccess.Info("close the storage connection: ", cfg.Stat.Engine)
