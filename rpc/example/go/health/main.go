@@ -8,6 +8,7 @@ import (
 	"github.com/appleboy/gorush/rpc"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/status"
 )
 
 const (
@@ -27,7 +28,7 @@ func main() {
 	for {
 		ok, err := client.Check(context.Background())
 		if !ok || err != nil {
-			log.Printf("can't connect grpc server: %v, code: %v\n", err, grpc.Code(err))
+			log.Printf("can't connect grpc server: %v, code: %v\n", err, status.Code(err))
 		} else {
 			log.Println("connect the grpc server successfully")
 		}

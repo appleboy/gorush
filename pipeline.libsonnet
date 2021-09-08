@@ -8,39 +8,11 @@
     },
     steps: [
       {
-        name: 'vet',
-        image: 'golang:1.16',
-        pull: 'always',
-        commands: [
-          'make vet',
-        ],
-        volumes: [
-          {
-            name: 'gopath',
-            path: '/go',
-          },
-        ],
-      },
-      {
         name: 'lint',
-        image: 'golang:1.16',
+        image: 'golangci/golangci-lint:v1.41.1',
         pull: 'always',
         commands: [
-          'make lint',
-        ],
-        volumes: [
-          {
-            name: 'gopath',
-            path: '/go',
-          },
-        ],
-      },
-      {
-        name: 'misspell',
-        image: 'golang:1.16',
-        pull: 'always',
-        commands: [
-          'make misspell-check',
+          'golangci-lint run -v',
         ],
         volumes: [
           {
@@ -118,6 +90,13 @@
         name: 'redis',
         image: 'redis',
       },
+      {
+        name: 'nsq',
+        image: 'nsqio/nsq',
+        commands: [
+          "/nsqd",
+        ],
+      },
     ],
   },
 
@@ -182,22 +161,6 @@
         commands: [
           './release/' + os + '/' + arch + '/' + name + ' --help',
         ],
-      },
-      {
-        name: 'dryrun',
-        image: 'plugins/docker:' + os + '-' + arch,
-        pull: 'always',
-        settings: {
-          daemon_off: false,
-          dry_run: true,
-          tags: os + '-' + arch,
-          dockerfile: 'docker/Dockerfile.' + os + '.' + arch,
-          repo: 'appleboy/' + name,
-          cache_from: 'appleboy/' + name,
-        },
-        when: {
-          event: [ 'pull_request' ],
-        },
       },
       {
         name: 'publish',

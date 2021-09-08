@@ -3,16 +3,16 @@ package badger
 import (
 	"testing"
 
-	c "github.com/appleboy/gorush/config"
+	"github.com/appleboy/gorush/config"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestBadgerEngine(t *testing.T) {
 	var val int64
 
-	config, _ := c.LoadConf("")
+	cfg, _ := config.LoadConf()
 
-	badger := New(config)
+	badger := New(cfg)
 	err := badger.Init()
 	assert.Nil(t, err)
 	badger.Reset()

@@ -1,7 +1,6 @@
 package badger
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -9,11 +8,11 @@ import (
 	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/storage"
 
-	"github.com/dgraph-io/badger/v2"
+	"github.com/dgraph-io/badger/v3"
 )
 
 // New func implements the storage interface for gorush (https://github.com/appleboy/gorush)
-func New(config config.ConfYaml) *Storage {
+func New(config *config.ConfYaml) *Storage {
 	return &Storage{
 		config: config,
 	}
@@ -21,7 +20,7 @@ func New(config config.ConfYaml) *Storage {
 
 // Storage is interface structure
 type Storage struct {
-	config config.ConfYaml
+	config *config.ConfYaml
 	opts   badger.Options
 	name   string
 	db     *badger.DB
@@ -84,7 +83,7 @@ func (s *Storage) getBadger(key string, count *int64) {
 			return err
 		}
 
-		i, err := strconv.ParseInt(fmt.Sprintf("%s", val), 10, 64)
+		i, err := strconv.ParseInt(string(val), 10, 64)
 		if err != nil {
 			return err
 		}

@@ -6,8 +6,8 @@ DEPLOY_ACCOUNT := appleboy
 DEPLOY_IMAGE := $(EXECUTABLE)
 GOFMT ?= gofumpt -l -s -extra
 
-TARGETS ?= linux darwin windows openbsd
-ARCHS ?= amd64 386
+TARGETS ?= linux darwin windows
+ARCHS ?= amd64
 GOFILES := $(shell find . -name "*.go" -type f)
 TAGS ?= sqlite
 LDFLAGS ?= -X 'main.Version=$(VERSION)'
