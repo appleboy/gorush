@@ -4,21 +4,21 @@ import (
 	"os"
 	"testing"
 
-	c "github.com/appleboy/gorush/config"
+	"github.com/appleboy/gorush/config"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestLevelDBEngine(t *testing.T) {
 	var val int64
 
-	config, _ := c.LoadConf("")
+	cfg, _ := config.LoadConf()
 
-	if _, err := os.Stat(config.Stat.LevelDB.Path); os.IsNotExist(err) {
-		err = os.RemoveAll(config.Stat.LevelDB.Path)
+	if _, err := os.Stat(cfg.Stat.LevelDB.Path); os.IsNotExist(err) {
+		err = os.RemoveAll(cfg.Stat.LevelDB.Path)
 		assert.Nil(t, err)
 	}
 
-	levelDB := New(config)
+	levelDB := New(cfg)
 	err := levelDB.Init()
 	assert.Nil(t, err)
 	levelDB.Reset()

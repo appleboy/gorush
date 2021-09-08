@@ -19,13 +19,13 @@ func TestMissingFile(t *testing.T) {
 
 type ConfigTestSuite struct {
 	suite.Suite
-	ConfGorushDefault ConfYaml
-	ConfGorush        ConfYaml
+	ConfGorushDefault *ConfYaml
+	ConfGorush        *ConfYaml
 }
 
 func (suite *ConfigTestSuite) SetupTest() {
 	var err error
-	suite.ConfGorushDefault, err = LoadConf("")
+	suite.ConfGorushDefault, err = LoadConf()
 	if err != nil {
 		panic("failed to load default config.yml")
 	}
@@ -87,6 +87,16 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 	assert.Equal(suite.T(), 0, suite.ConfGorushDefault.Ios.MaxRetry)
 	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Ios.KeyID)
 	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Ios.TeamID)
+
+	// queue
+	assert.Equal(suite.T(), "local", suite.ConfGorushDefault.Queue.Engine)
+	assert.Equal(suite.T(), "127.0.0.1:4150", suite.ConfGorushDefault.Queue.NSQ.Addr)
+	assert.Equal(suite.T(), "gorush", suite.ConfGorushDefault.Queue.NSQ.Topic)
+	assert.Equal(suite.T(), "gorush", suite.ConfGorushDefault.Queue.NSQ.Channel)
+
+	assert.Equal(suite.T(), "127.0.0.1:4222", suite.ConfGorushDefault.Queue.NATS.Addr)
+	assert.Equal(suite.T(), "gorush", suite.ConfGorushDefault.Queue.NATS.Subj)
+	assert.Equal(suite.T(), "gorush", suite.ConfGorushDefault.Queue.NATS.Queue)
 
 	// log
 	assert.Equal(suite.T(), "string", suite.ConfGorushDefault.Log.Format)
@@ -215,6 +225,6 @@ func TestLoadConfigFromEnv(t *testing.T) {
 
 func TestLoadWrongDefaultYAMLConfig(t *testing.T) {
 	defaultConf = []byte(`a`)
-	_, err := LoadConf("")
+	_, err := LoadConf()
 	assert.Error(t, err)
 }

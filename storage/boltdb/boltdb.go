@@ -10,7 +10,7 @@ import (
 )
 
 // New func implements the storage interface for gorush (https://github.com/appleboy/gorush)
-func New(config config.ConfYaml) *Storage {
+func New(config *config.ConfYaml) *Storage {
 	return &Storage{
 		config: config,
 	}
@@ -18,7 +18,7 @@ func New(config config.ConfYaml) *Storage {
 
 // Storage is interface structure
 type Storage struct {
-	config config.ConfYaml
+	config *config.ConfYaml
 	db     *storm.DB
 }
 

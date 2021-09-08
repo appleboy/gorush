@@ -57,10 +57,21 @@ android:
   max_retry: 0 # resend fail notification, default value zero is disabled
 
 huawei:
-  enabled: true
-  apikey: "YOUR_API_KEY"
+  enabled: false
+  appsecret: "YOUR_APP_SECRET"
   appid: "YOUR_APP_ID"
   max_retry: 0 # resend fail notification, default value zero is disabled
+
+queue:
+  engine: "local" # support "local", "nsq", default value is "local"
+  nsq:
+    addr: 127.0.0.1:4150
+    topic: gorush
+    channel: gorush
+  nats:
+    addr: 127.0.0.1:4222
+    subj: gorush
+    queue: gorush
 
 ios:
   enabled: false
@@ -106,6 +117,7 @@ type ConfYaml struct {
 	Android SectionAndroid `yaml:"android"`
 	Huawei  SectionHuawei  `yaml:"huawei"`
 	Ios     SectionIos     `yaml:"ios"`
+	Queue   SectionQueue   `yaml:"queue"`
 	Log     SectionLog     `yaml:"log"`
 	Stat    SectionStat    `yaml:"stat"`
 	GRPC    SectionGRPC    `yaml:"grpc"`
@@ -161,10 +173,10 @@ type SectionAndroid struct {
 
 // SectionHuawei is sub section of config.
 type SectionHuawei struct {
-	Enabled  bool   `yaml:"enabled"`
-	APIKey   string `yaml:"apikey"`
-	APPId    string `yaml:"appid"`
-	MaxRetry int    `yaml:"max_retry"`
+	Enabled   bool   `yaml:"enabled"`
+	AppSecret string `yaml:"appsecret"`
+	AppID     string `yaml:"appid"`
+	MaxRetry  int    `yaml:"max_retry"`
 }
 
 // SectionIos is sub section of config.
@@ -199,6 +211,27 @@ type SectionStat struct {
 	BuntDB   SectionBuntDB   `yaml:"buntdb"`
 	LevelDB  SectionLevelDB  `yaml:"leveldb"`
 	BadgerDB SectionBadgerDB `yaml:"badgerdb"`
+}
+
+// SectionQueue is sub section of config.
+type SectionQueue struct {
+	Engine string      `yaml:"engine"`
+	NSQ    SectionNSQ  `yaml:"nsq"`
+	NATS   SectionNATS `yaml:"nats"`
+}
+
+// SectionNSQ is sub section of config.
+type SectionNSQ struct {
+	Addr    string `yaml:"addr"`
+	Topic   string `yaml:"topic"`
+	Channel string `yaml:"channel"`
+}
+
+// SectionNATS is sub section of config.
+type SectionNATS struct {
+	Addr  string `yaml:"addr"`
+	Subj  string `yaml:"subj"`
+	Queue string `yaml:"queue"`
 }
 
 // SectionRedis is sub section of config.
@@ -243,16 +276,16 @@ type SectionGRPC struct {
 }
 
 // LoadConf load config from file and read in environment variables that match
-func LoadConf(confPath string) (ConfYaml, error) {
-	var conf ConfYaml
+func LoadConf(confPath ...string) (*ConfYaml, error) {
+	conf := &ConfYaml{}
 
 	viper.SetConfigType("yaml")
 	viper.AutomaticEnv()         // read in environment variables that match
 	viper.SetEnvPrefix("gorush") // will be uppercased automatically
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
-	if confPath != "" {
-		content, err := ioutil.ReadFile(confPath)
+	if len(confPath) > 0 && confPath[0] != "" {
+		content, err := ioutil.ReadFile(confPath[0])
 		if err != nil {
 			return conf, err
 		}
@@ -317,8 +350,8 @@ func LoadConf(confPath string) (ConfYaml, error) {
 
 	// Huawei
 	conf.Huawei.Enabled = viper.GetBool("huawei.enabled")
-	conf.Huawei.APIKey = viper.GetString("huawei.apikey")
-	conf.Huawei.APPId = viper.GetString("huawei.appid")
+	conf.Huawei.AppSecret = viper.GetString("huawei.appsecret")
+	conf.Huawei.AppID = viper.GetString("huawei.appid")
 	conf.Huawei.MaxRetry = viper.GetInt("huawei.max_retry")
 
 	// iOS
@@ -340,6 +373,15 @@ func LoadConf(confPath string) (ConfYaml, error) {
 	conf.Log.ErrorLog = viper.GetString("log.error_log")
 	conf.Log.ErrorLevel = viper.GetString("log.error_level")
 	conf.Log.HideToken = viper.GetBool("log.hide_token")
+
+	// Queue Engine
+	conf.Queue.Engine = viper.GetString("queue.engine")
+	conf.Queue.NSQ.Addr = viper.GetString("queue.nsq.addr")
+	conf.Queue.NSQ.Topic = viper.GetString("queue.nsq.topic")
+	conf.Queue.NSQ.Channel = viper.GetString("queue.nsq.channel")
+	conf.Queue.NATS.Addr = viper.GetString("queue.nats.addr")
+	conf.Queue.NATS.Subj = viper.GetString("queue.nats.subj")
+	conf.Queue.NATS.Queue = viper.GetString("queue.nats.queue")
 
 	// Stat Engine
 	conf.Stat.Engine = viper.GetString("stat.engine")

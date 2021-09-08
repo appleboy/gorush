@@ -44,10 +44,21 @@ android:
   max_retry: 0 # resend fail notification, default value zero is disabled
 
 huawei:
-  enabled: true
-  apikey: "YOUR_API_KEY"
+  enabled: false
+  appsecret: "YOUR_APP_SECRET"
   appid: "YOUR_APP_ID"
   max_retry: 0 # resend fail notification, default value zero is disabled
+
+queue:
+  engine: "local" # support "local", "nsq" and "nats " default value is "local"
+  nsq:
+    addr: 127.0.0.1:4150
+    topic: gorush
+    channel: gorush
+  nats:
+    addr: 127.0.0.1:4222
+    subj: gorush
+    queue: gorush
 
 ios:
   enabled: false
