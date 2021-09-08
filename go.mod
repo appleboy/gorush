@@ -1,6 +1,8 @@
 module github.com/appleboy/gorush
 
-go 1.15
+go 1.16
+
+// +heroku goVersion go1.16
 
 require (
 	github.com/apex/gateway v1.1.2
