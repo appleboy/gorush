@@ -12,7 +12,7 @@ require (
 	github.com/dgraph-io/badger/v3 v3.2103.1
 	github.com/gin-contrib/logger v0.2.0
 	github.com/gin-gonic/gin v1.7.4
-	github.com/go-redis/redis/v7 v7.4.0
+	github.com/go-redis/redis/v8 v8.11.3
 	github.com/golang-queue/nats v0.0.2
 	github.com/golang-queue/nsq v0.0.2
 	github.com/golang-queue/queue v0.0.7
@@ -33,7 +33,7 @@ require (
 	github.com/thoas/stats v0.0.0-20190407194641-965cb2de1678
 	github.com/tidwall/buntdb v1.2.0
 	golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e
-	golang.org/x/net v0.0.0-20210405180319-a5a99cb37ef4
+	golang.org/x/net v0.0.0-20210428140749-89ef3d95e781
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	google.golang.org/grpc v1.36.1
 	google.golang.org/protobuf v1.27.1
