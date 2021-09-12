@@ -22,7 +22,7 @@ func New(config *config.ConfYaml) *Storage {
 }
 
 func (s *Storage) getInt64(key string, count *int64) {
-	val, _ := s.client.Get(context.Background(), key).Result()
+	val, _ := s.client.Get(s.ctx, key).Result()
 	*count, _ = strconv.ParseInt(val, 10, 64)
 }
 
