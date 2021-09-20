@@ -96,7 +96,8 @@ log:
 stat:
   engine: "memory" # support memory, redis, boltdb, buntdb or leveldb
   redis:
-    addr: "localhost:6379"
+	cluster: false
+    addr: "localhost:6379" # if cluster is true, you may set this to "localhost:6379,localhost:6380,localhost:6381"
     password: ""
     db: 0
   boltdb:
@@ -236,6 +237,7 @@ type SectionNATS struct {
 
 // SectionRedis is sub section of config.
 type SectionRedis struct {
+	Cluster  bool   `yaml:"cluster"`
 	Addr     string `yaml:"addr"`
 	Password string `yaml:"password"`
 	DB       int    `yaml:"db"`
@@ -385,6 +387,7 @@ func LoadConf(confPath ...string) (*ConfYaml, error) {
 
 	// Stat Engine
 	conf.Stat.Engine = viper.GetString("stat.engine")
+	conf.Stat.Redis.Cluster = viper.GetBool("stat.redis.cluster")
 	conf.Stat.Redis.Addr = viper.GetString("stat.redis.addr")
 	conf.Stat.Redis.Password = viper.GetString("stat.redis.password")
 	conf.Stat.Redis.DB = viper.GetInt("stat.redis.db")
