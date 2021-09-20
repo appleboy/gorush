@@ -96,7 +96,7 @@ log:
 stat:
   engine: "memory" # support memory, redis, boltdb, buntdb or leveldb
   redis:
-	cluster: false
+    cluster: false
     addr: "localhost:6379" # if cluster is true, you may set this to "localhost:6379,localhost:6380,localhost:6381"
     password: ""
     db: 0
