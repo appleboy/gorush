@@ -299,13 +299,9 @@ func GinLoggerMidleware(skipPath []string) gin.HandlerFunc {
 			}
 			switch {
 			case c.Writer.Status() >= http.StatusBadRequest && c.Writer.Status() < http.StatusInternalServerError:
-				{
-					LogError.WithContext(c).WithFields(fields).Warn(msg)
-				}
+				LogError.WithContext(c).WithFields(fields).Warn(msg)
 			case c.Writer.Status() >= http.StatusInternalServerError:
-				{
-					LogError.WithContext(c).WithFields(fields).Error(msg)
-				}
+				LogError.WithContext(c).WithFields(fields).Error(msg)
 			default:
 				LogAccess.WithContext(c).WithFields(fields).Info(msg)
 			}
