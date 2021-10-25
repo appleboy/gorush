@@ -33,10 +33,10 @@ message NotificationRequest {
   google.protobuf.Struct data = 14;
   string image = 15;
   enum Priority {
-    Normal = 0;
-    High = 1;
+    NORMAL = 0;
+    HIGH = 1;
   }
-  Priority Priority = 16;
+  Priority priority = 16;
 }
 
 message NotificationReply {
