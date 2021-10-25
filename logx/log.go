@@ -254,7 +254,6 @@ func LogPush(input *InputLog) LogPushEntry {
 }
 
 func GinLoggerMidleware(skipPath []string) gin.HandlerFunc {
-
 	var skip map[string]struct{}
 	if length := len(skipPath); length > 0 {
 		skip = make(map[string]struct{}, length)
