@@ -2,6 +2,7 @@ package rpc
 
 import (
 	"context"
+	"fmt"
 	"net"
 	"strings"
 	"sync"
@@ -96,8 +97,8 @@ func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*prot
 
 	if in.Data != nil {
 		notification.Data = map[string]interface{}{}
-		for k, v := range in.Data.Fields {
-			notification.Data[k] = v
+		for k, v := range in.Data.AsMap() {
+			notification.Data[k] = fmt.Sprintf("%v", v)
 		}
 	}
 
