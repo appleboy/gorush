@@ -19,13 +19,13 @@ func TestMissingFile(t *testing.T) {
 
 type ConfigTestSuite struct {
 	suite.Suite
-	ConfGorushDefault ConfYaml
-	ConfGorush        ConfYaml
+	ConfGorushDefault *ConfYaml
+	ConfGorush        *ConfYaml
 }
 
 func (suite *ConfigTestSuite) SetupTest() {
 	var err error
-	suite.ConfGorushDefault, err = LoadConf("")
+	suite.ConfGorushDefault, err = LoadConf()
 	if err != nil {
 		panic("failed to load default config.yml")
 	}
@@ -88,6 +88,16 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Ios.KeyID)
 	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Ios.TeamID)
 
+	// queue
+	assert.Equal(suite.T(), "local", suite.ConfGorushDefault.Queue.Engine)
+	assert.Equal(suite.T(), "127.0.0.1:4150", suite.ConfGorushDefault.Queue.NSQ.Addr)
+	assert.Equal(suite.T(), "gorush", suite.ConfGorushDefault.Queue.NSQ.Topic)
+	assert.Equal(suite.T(), "gorush", suite.ConfGorushDefault.Queue.NSQ.Channel)
+
+	assert.Equal(suite.T(), "127.0.0.1:4222", suite.ConfGorushDefault.Queue.NATS.Addr)
+	assert.Equal(suite.T(), "gorush", suite.ConfGorushDefault.Queue.NATS.Subj)
+	assert.Equal(suite.T(), "gorush", suite.ConfGorushDefault.Queue.NATS.Queue)
+
 	// log
 	assert.Equal(suite.T(), "string", suite.ConfGorushDefault.Log.Format)
 	assert.Equal(suite.T(), "stdout", suite.ConfGorushDefault.Log.AccessLog)
@@ -97,6 +107,7 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 	assert.Equal(suite.T(), true, suite.ConfGorushDefault.Log.HideToken)
 
 	assert.Equal(suite.T(), "memory", suite.ConfGorushDefault.Stat.Engine)
+	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Stat.Redis.Cluster)
 	assert.Equal(suite.T(), "localhost:6379", suite.ConfGorushDefault.Stat.Redis.Addr)
 	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Stat.Redis.Password)
 	assert.Equal(suite.T(), 0, suite.ConfGorushDefault.Stat.Redis.DB)
@@ -174,6 +185,7 @@ func (suite *ConfigTestSuite) TestValidateConf() {
 	assert.Equal(suite.T(), true, suite.ConfGorush.Log.HideToken)
 
 	assert.Equal(suite.T(), "memory", suite.ConfGorush.Stat.Engine)
+	assert.Equal(suite.T(), false, suite.ConfGorush.Stat.Redis.Cluster)
 	assert.Equal(suite.T(), "localhost:6379", suite.ConfGorush.Stat.Redis.Addr)
 	assert.Equal(suite.T(), "", suite.ConfGorush.Stat.Redis.Password)
 	assert.Equal(suite.T(), 0, suite.ConfGorush.Stat.Redis.DB)
@@ -215,6 +227,6 @@ func TestLoadConfigFromEnv(t *testing.T) {
 
 func TestLoadWrongDefaultYAMLConfig(t *testing.T) {
 	defaultConf = []byte(`a`)
-	_, err := LoadConf("")
+	_, err := LoadConf()
 	assert.Error(t, err)
 }

@@ -11,14 +11,20 @@ import (
 	"os/signal"
 	"path/filepath"
 	"strconv"
-	"sync"
 	"syscall"
 	"time"
 
 	"github.com/appleboy/gorush/config"
-	"github.com/appleboy/gorush/gorush"
+	"github.com/appleboy/gorush/core"
+	"github.com/appleboy/gorush/logx"
+	"github.com/appleboy/gorush/notify"
+	"github.com/appleboy/gorush/router"
 	"github.com/appleboy/gorush/rpc"
+	"github.com/appleboy/gorush/status"
 
+	"github.com/golang-queue/nats"
+	"github.com/golang-queue/nsq"
+	"github.com/golang-queue/queue"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -54,7 +60,7 @@ func main() {
 	)
 
 	flag.BoolVar(&showVersion, "version", false, "Print version information.")
-	flag.BoolVar(&showVersion, "v", false, "Print version information.")
+	flag.BoolVar(&showVersion, "V", false, "Print version information.")
 	flag.StringVar(&configFile, "c", "", "Configuration file path.")
 	flag.StringVar(&configFile, "config", "", "Configuration file path.")
 	flag.StringVar(&opts.Core.PID.Path, "pid", "", "PID file path.")
@@ -93,18 +99,16 @@ func main() {
 	flag.Usage = usage
 	flag.Parse()
 
-	gorush.SetVersion(Version)
+	router.SetVersion(Version)
 
 	// Show version and exit
 	if showVersion {
-		gorush.PrintGoRushVersion()
+		router.PrintGoRushVersion()
 		os.Exit(0)
 	}
 
-	var err error
-
 	// set default parameters.
-	gorush.PushConf, err = config.LoadConf(configFile)
+	cfg, err := config.LoadConf(configFile)
 	if err != nil {
 		log.Printf("Load yaml config file error: '%v'", err)
 
@@ -112,80 +116,85 @@ func main() {
 	}
 
 	// Initialize push slots for concurrent iOS pushes
-	gorush.MaxConcurrentIOSPushes = make(chan struct{}, gorush.PushConf.Ios.MaxConcurrentPushes)
+	notify.MaxConcurrentIOSPushes = make(chan struct{}, cfg.Ios.MaxConcurrentPushes)
 
 	if opts.Ios.KeyPath != "" {
-		gorush.PushConf.Ios.KeyPath = opts.Ios.KeyPath
+		cfg.Ios.KeyPath = opts.Ios.KeyPath
 	}
 
 	if opts.Ios.KeyID != "" {
-		gorush.PushConf.Ios.KeyID = opts.Ios.KeyID
+		cfg.Ios.KeyID = opts.Ios.KeyID
 	}
 
 	if opts.Ios.TeamID != "" {
-		gorush.PushConf.Ios.TeamID = opts.Ios.TeamID
+		cfg.Ios.TeamID = opts.Ios.TeamID
 	}
 
 	if opts.Ios.Password != "" {
-		gorush.PushConf.Ios.Password = opts.Ios.Password
+		cfg.Ios.Password = opts.Ios.Password
 	}
 
 	if opts.Android.APIKey != "" {
-		gorush.PushConf.Android.APIKey = opts.Android.APIKey
+		cfg.Android.APIKey = opts.Android.APIKey
 	}
 
 	if opts.Huawei.AppSecret != "" {
-		gorush.PushConf.Huawei.AppSecret = opts.Huawei.AppSecret
+		cfg.Huawei.AppSecret = opts.Huawei.AppSecret
 	}
 
 	if opts.Huawei.AppID != "" {
-		gorush.PushConf.Huawei.AppID = opts.Huawei.AppID
+		cfg.Huawei.AppID = opts.Huawei.AppID
 	}
 
 	if opts.Stat.Engine != "" {
-		gorush.PushConf.Stat.Engine = opts.Stat.Engine
+		cfg.Stat.Engine = opts.Stat.Engine
 	}
 
 	if opts.Stat.Redis.Addr != "" {
-		gorush.PushConf.Stat.Redis.Addr = opts.Stat.Redis.Addr
+		cfg.Stat.Redis.Addr = opts.Stat.Redis.Addr
 	}
 
 	// overwrite server port and address
 	if opts.Core.Port != "" {
-		gorush.PushConf.Core.Port = opts.Core.Port
+		cfg.Core.Port = opts.Core.Port
 	}
 	if opts.Core.Address != "" {
-		gorush.PushConf.Core.Address = opts.Core.Address
+		cfg.Core.Address = opts.Core.Address
 	}
 
-	if err = gorush.InitLog(); err != nil {
-		log.Fatalf("Can't load log module, error: %v", err)
+	if err = logx.InitLog(
+		cfg.Log.AccessLevel,
+		cfg.Log.AccessLog,
+		cfg.Log.ErrorLevel,
+		cfg.Log.ErrorLog,
+	); err != nil {
+		log.Fatalf("can't load log module, error: %v", err)
 	}
 
 	if opts.Core.HTTPProxy != "" {
-		gorush.PushConf.Core.HTTPProxy = opts.Core.HTTPProxy
+		cfg.Core.HTTPProxy = opts.Core.HTTPProxy
 	}
 
-	if gorush.PushConf.Core.HTTPProxy != "" {
-		err = gorush.SetProxy(gorush.PushConf.Core.HTTPProxy)
+	if cfg.Core.HTTPProxy != "" {
+		err = notify.SetProxy(cfg.Core.HTTPProxy)
 
 		if err != nil {
-			gorush.LogError.Fatalf("Set Proxy error: %v", err)
+			logx.LogError.Fatalf("Set Proxy error: %v", err)
 		}
 	}
 
 	if ping {
-		if err := pinger(); err != nil {
-			gorush.LogError.Warnf("ping server error: %v", err)
+		if err := pinger(cfg); err != nil {
+			logx.LogError.Warnf("ping server error: %v", err)
 		}
 		return
 	}
 
 	// send android notification
 	if opts.Android.Enabled {
-		gorush.PushConf.Android.Enabled = opts.Android.Enabled
-		req := gorush.PushNotification{
-			Platform: gorush.PlatFormAndroid,
+		cfg.Android.Enabled = opts.Android.Enabled
+		req := &notify.PushNotification{
+			Platform: core.PlatFormAndroid,
 			Message:  message,
 			Title:    title,
 		}
@@ -200,25 +209,27 @@ func main() {
 			req.To = topic
 		}
 
-		err := gorush.CheckMessage(req)
+		err := notify.CheckMessage(req)
 		if err != nil {
-			gorush.LogError.Fatal(err)
+			logx.LogError.Fatal(err)
 		}
 
-		if err := gorush.InitAppStatus(); err != nil {
+		if err := status.InitAppStatus(cfg); err != nil {
 			return
 		}
 
-		gorush.PushToAndroid(req)
+		if _, err := notify.PushToAndroid(req, cfg); err != nil {
+			return
+		}
 
 		return
 	}
 
 	// send huawei notification
 	if opts.Huawei.Enabled {
-		gorush.PushConf.Huawei.Enabled = opts.Huawei.Enabled
-		req := gorush.PushNotification{
-			Platform: gorush.PlatFormHuawei,
+		cfg.Huawei.Enabled = opts.Huawei.Enabled
+		req := &notify.PushNotification{
+			Platform: core.PlatFormHuawei,
 			Message:  message,
 			Title:    title,
 		}
@@ -233,16 +244,18 @@ func main() {
 			req.To = topic
 		}
 
-		err := gorush.CheckMessage(req)
+		err := notify.CheckMessage(req)
 		if err != nil {
-			gorush.LogError.Fatal(err)
+			logx.LogError.Fatal(err)
 		}
 
-		if err := gorush.InitAppStatus(); err != nil {
+		if err := status.InitAppStatus(cfg); err != nil {
 			return
 		}
 
-		gorush.PushToHuawei(req)
+		if _, err := notify.PushToHuawei(req, cfg); err != nil {
+			return
+		}
 
 		return
 	}
@@ -250,12 +263,12 @@ func main() {
 	// send ios notification
 	if opts.Ios.Enabled {
 		if opts.Ios.Production {
-			gorush.PushConf.Ios.Production = opts.Ios.Production
+			cfg.Ios.Production = opts.Ios.Production
 		}
 
-		gorush.PushConf.Ios.Enabled = opts.Ios.Enabled
-		req := gorush.PushNotification{
-			Platform: gorush.PlatFormIos,
+		cfg.Ios.Enabled = opts.Ios.Enabled
+		req := &notify.PushNotification{
+			Platform: core.PlatFormIos,
 			Message:  message,
 			Title:    title,
 		}
@@ -270,74 +283,107 @@ func main() {
 			req.Topic = topic
 		}
 
-		err := gorush.CheckMessage(req)
+		err := notify.CheckMessage(req)
 		if err != nil {
-			gorush.LogError.Fatal(err)
+			logx.LogError.Fatal(err)
 		}
 
-		if err := gorush.InitAppStatus(); err != nil {
+		if err := status.InitAppStatus(cfg); err != nil {
 			return
 		}
 
-		if err := gorush.InitAPNSClient(); err != nil {
+		if err := notify.InitAPNSClient(cfg); err != nil {
 			return
 		}
-		gorush.PushToIOS(req)
+
+		if _, err := notify.PushToIOS(req, cfg); err != nil {
+			return
+		}
 
 		return
 	}
 
-	if err = gorush.CheckPushConf(); err != nil {
-		gorush.LogError.Fatal(err)
+	if err = notify.CheckPushConf(cfg); err != nil {
+		logx.LogError.Fatal(err)
 	}
 
 	if opts.Core.PID.Path != "" {
-		gorush.PushConf.Core.PID.Path = opts.Core.PID.Path
-		gorush.PushConf.Core.PID.Enabled = true
-		gorush.PushConf.Core.PID.Override = true
+		cfg.Core.PID.Path = opts.Core.PID.Path
+		cfg.Core.PID.Enabled = true
+		cfg.Core.PID.Override = true
 	}
 
-	if err = createPIDFile(); err != nil {
-		gorush.LogError.Fatal(err)
+	if err = createPIDFile(cfg); err != nil {
+		logx.LogError.Fatal(err)
 	}
 
-	if err = gorush.InitAppStatus(); err != nil {
-		gorush.LogError.Fatal(err)
+	if err = status.InitAppStatus(cfg); err != nil {
+		logx.LogError.Fatal(err)
 	}
+
+	var w queue.Worker
+	switch core.Queue(cfg.Queue.Engine) {
+	case core.LocalQueue:
+		w = queue.NewConsumer(
+			queue.WithQueueSize(int(cfg.Core.QueueNum)),
+			queue.WithFn(notify.Run(cfg)),
+			queue.WithLogger(logx.QueueLogger()),
+		)
+	case core.NSQ:
+		w = nsq.NewWorker(
+			nsq.WithAddr(cfg.Queue.NSQ.Addr),
+			nsq.WithTopic(cfg.Queue.NSQ.Topic),
+			nsq.WithChannel(cfg.Queue.NSQ.Channel),
+			nsq.WithMaxInFlight(int(cfg.Core.WorkerNum)),
+			nsq.WithRunFunc(notify.Run(cfg)),
+			nsq.WithLogger(logx.QueueLogger()),
+		)
+	case core.NATS:
+		w = nats.NewWorker(
+			nats.WithAddr(cfg.Queue.NATS.Addr),
+			nats.WithSubj(cfg.Queue.NATS.Subj),
+			nats.WithQueue(cfg.Queue.NATS.Queue),
+			nats.WithRunFunc(notify.Run(cfg)),
+			nats.WithLogger(logx.QueueLogger()),
+		)
+	default:
+		logx.LogError.Fatalf("we don't support queue engine: %s", cfg.Queue.Engine)
+	}
+
+	q := queue.NewPool(
+		int(cfg.Core.WorkerNum),
+		queue.WithWorker(w),
+		queue.WithLogger(logx.QueueLogger()),
+	)
 
 	finished := make(chan struct{})
-	wg := &sync.WaitGroup{}
-	wg.Add(int(gorush.PushConf.Core.WorkerNum))
 	ctx := withContextFunc(context.Background(), func() {
-		gorush.LogAccess.Info("close the notification queue channel, current queue len: ", len(gorush.QueueNotification))
-		close(gorush.QueueNotification)
-		wg.Wait()
-		gorush.LogAccess.Info("the notification queue has been clear")
+		logx.LogAccess.Info("close the queue system, current queue usage: ", q.Usage())
+		// stop queue system and wait job completed
+		q.Release()
 		close(finished)
 		// close the connection with storage
-		gorush.LogAccess.Info("close the storage connection: ", gorush.PushConf.Stat.Engine)
-		if err := gorush.StatStorage.Close(); err != nil {
-			gorush.LogError.Fatal("can't close the storage connection: ", err.Error())
+		logx.LogAccess.Info("close the storage connection: ", cfg.Stat.Engine)
+		if err := status.StatStorage.Close(); err != nil {
+			logx.LogError.Fatal("can't close the storage connection: ", err.Error())
 		}
 	})
 
-	gorush.InitWorkers(ctx, wg, gorush.PushConf.Core.WorkerNum, gorush.PushConf.Core.QueueNum)
-
-	if gorush.PushConf.Ios.Enabled {
-		if err = gorush.InitAPNSClient(); err != nil {
-			gorush.LogError.Fatal(err)
+	if cfg.Ios.Enabled {
+		if err = notify.InitAPNSClient(cfg); err != nil {
+			logx.LogError.Fatal(err)
 		}
 	}
 
-	if gorush.PushConf.Android.Enabled {
-		if _, err = gorush.InitFCMClient(gorush.PushConf.Android.APIKey); err != nil {
-			gorush.LogError.Fatal(err)
+	if cfg.Android.Enabled {
+		if _, err = notify.InitFCMClient(cfg, cfg.Android.APIKey); err != nil {
+			logx.LogError.Fatal(err)
 		}
 	}
 
-	if gorush.PushConf.Huawei.Enabled {
-		if _, err = gorush.InitHMSClient(gorush.PushConf.Huawei.AppSecret, gorush.PushConf.Huawei.AppID); err != nil {
-			gorush.LogError.Fatal(err)
+	if cfg.Huawei.Enabled {
+		if _, err = notify.InitHMSClient(cfg, cfg.Huawei.AppSecret, cfg.Huawei.AppID); err != nil {
+			logx.LogError.Fatal(err)
 		}
 	}
 
@@ -345,28 +391,26 @@ func main() {
 
 	// Run httpd server
 	g.Go(func() error {
-		return gorush.RunHTTPServer(ctx)
+		return router.RunHTTPServer(ctx, cfg, q)
 	})
 
 	// Run gRPC internal server
 	g.Go(func() error {
-		return rpc.RunGRPCServer(ctx)
+		return rpc.RunGRPCServer(ctx, cfg)
 	})
 
 	// check job completely
 	g.Go(func() error {
-		select {
-		case <-finished:
-		}
+		<-finished
 		return nil
 	})
 
 	if err = g.Wait(); err != nil {
-		gorush.LogError.Fatal(err)
+		logx.LogError.Fatal(err)
 	}
 }
 
-// Version control for gorush.
+// Version control for notify.
 var Version = "No Version Provided"
 
 var usageStr = `
@@ -406,7 +450,7 @@ Huawei Options:
 Common Options:
     --topic <topic>                  iOS, Android or Huawei topic message
     -h, --help                       Show this message
-    -v, --version                    Show version
+    -V, --version                    Show version
 `
 
 // usage will print out the flag options for the server.
@@ -417,7 +461,7 @@ func usage() {
 
 // handles pinging the endpoint and returns an error if the
 // agent is in an unhealthy state.
-func pinger() error {
+func pinger(cfg *config.ConfYaml) error {
 	transport := &http.Transport{
 		Dial: (&net.Dialer{
 			Timeout: 5 * time.Second,
@@ -428,7 +472,7 @@ func pinger() error {
 		Timeout:   time.Second * 10,
 		Transport: transport,
 	}
-	resp, err := client.Get("http://localhost:" + gorush.PushConf.Core.Port + gorush.PushConf.API.HealthURI)
+	resp, err := client.Get("http://localhost:" + cfg.Core.Port + cfg.API.HealthURI)
 	if err != nil {
 		return err
 	}
@@ -439,26 +483,26 @@ func pinger() error {
 	return nil
 }
 
-func createPIDFile() error {
-	if !gorush.PushConf.Core.PID.Enabled {
+func createPIDFile(cfg *config.ConfYaml) error {
+	if !cfg.Core.PID.Enabled {
 		return nil
 	}
 
-	pidPath := gorush.PushConf.Core.PID.Path
+	pidPath := cfg.Core.PID.Path
 	_, err := os.Stat(pidPath)
-	if os.IsNotExist(err) || gorush.PushConf.Core.PID.Override {
+	if os.IsNotExist(err) || cfg.Core.PID.Override {
 		currentPid := os.Getpid()
 		if err := os.MkdirAll(filepath.Dir(pidPath), os.ModePerm); err != nil {
-			return fmt.Errorf("Can't create PID folder on %v", err)
+			return fmt.Errorf("can't create PID folder on %v", err)
 		}
 
 		file, err := os.Create(pidPath)
 		if err != nil {
-			return fmt.Errorf("Can't create PID file: %v", err)
+			return fmt.Errorf("can't create PID file: %v", err)
 		}
 		defer file.Close()
 		if _, err := file.WriteString(strconv.FormatInt(int64(currentPid), 10)); err != nil {
-			return fmt.Errorf("Can't write PID information on %s: %v", pidPath, err)
+			return fmt.Errorf("can't write PID information on %s: %v", pidPath, err)
 		}
 	} else {
 		return fmt.Errorf("%s already exists", pidPath)

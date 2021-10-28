@@ -4,21 +4,21 @@ import (
 	"os"
 	"testing"
 
-	c "github.com/appleboy/gorush/config"
+	"github.com/appleboy/gorush/config"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestBuntDBEngine(t *testing.T) {
 	var val int64
 
-	config, _ := c.LoadConf("")
+	cfg, _ := config.LoadConf()
 
-	if _, err := os.Stat(config.Stat.BuntDB.Path); os.IsNotExist(err) {
-		err := os.RemoveAll(config.Stat.BuntDB.Path)
+	if _, err := os.Stat(cfg.Stat.BuntDB.Path); os.IsNotExist(err) {
+		err := os.RemoveAll(cfg.Stat.BuntDB.Path)
 		assert.Nil(t, err)
 	}
 
-	buntDB := New(config)
+	buntDB := New(cfg)
 	err := buntDB.Init()
 	assert.Nil(t, err)
 	buntDB.Reset()

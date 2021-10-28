@@ -3,16 +3,16 @@ package boltdb
 import (
 	"testing"
 
-	c "github.com/appleboy/gorush/config"
+	"github.com/appleboy/gorush/config"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestBoltDBEngine(t *testing.T) {
 	var val int64
 
-	config, _ := c.LoadConf("")
+	cfg, _ := config.LoadConf()
 
-	boltDB := New(config)
+	boltDB := New(cfg)
 	err := boltDB.Init()
 	assert.Nil(t, err)
 	boltDB.Reset()

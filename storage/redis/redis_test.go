@@ -4,15 +4,15 @@ import (
 	"sync"
 	"testing"
 
-	c "github.com/appleboy/gorush/config"
+	"github.com/appleboy/gorush/config"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestRedisServerError(t *testing.T) {
-	config, _ := c.LoadConf("")
-	config.Stat.Redis.Addr = "redis:6370"
+	cfg, _ := config.LoadConf()
+	cfg.Stat.Redis.Addr = "redis:6370"
 
-	redis := New(config)
+	redis := New(cfg)
 	err := redis.Init()
 
 	assert.Error(t, err)
@@ -21,10 +21,10 @@ func TestRedisServerError(t *testing.T) {
 func TestRedisEngine(t *testing.T) {
 	var val int64
 
-	config, _ := c.LoadConf("")
-	config.Stat.Redis.Addr = "redis:6379"
+	cfg, _ := config.LoadConf()
+	cfg.Stat.Redis.Addr = "redis:6379"
 
-	redis := New(config)
+	redis := New(cfg)
 	err := redis.Init()
 	assert.Nil(t, err)
 	redis.Reset()

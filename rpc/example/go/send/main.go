@@ -30,7 +30,7 @@ func main() {
 		Badge:    1,
 		Category: "test",
 		Sound:    "test",
-		Priority: proto.Priority_High,
+		Priority: proto.NotificationRequest_HIGH,
 		Alert: &proto.Alert{
 			Title:    "Test Title",
 			Body:     "Test Alert Body",
@@ -50,8 +50,11 @@ func main() {
 		},
 	})
 	if err != nil {
-		log.Fatalf("could not greet: %v", err)
+		log.Println("could not greet: ", err)
 	}
-	log.Printf("Success: %t\n", r.Success)
-	log.Printf("Count: %d\n", r.Counts)
+
+	if r != nil {
+		log.Printf("Success: %t\n", r.Success)
+		log.Printf("Count: %d\n", r.Counts)
+	}
 }

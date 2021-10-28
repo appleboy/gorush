@@ -4,7 +4,7 @@ import (
 	"sync/atomic"
 )
 
-// StatusApp is app status structure
+// statApp is app status structure
 type statApp struct {
 	TotalCount int64         `json:"total_count"`
 	Ios        IosStatus     `json:"ios"`

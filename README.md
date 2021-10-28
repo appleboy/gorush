@@ -4,14 +4,10 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 
 [![GoDoc](https://godoc.org/github.com/appleboy/gorush?status.svg)](https://godoc.org/github.com/appleboy/gorush)
 [![Build Status](https://cloud.drone.io/api/badges/appleboy/gorush/status.svg)](https://cloud.drone.io/appleboy/gorush)
-[![Build status](https://ci.appveyor.com/api/projects/status/ka4hvplssp1q2s5u?svg=true)](https://ci.appveyor.com/project/appleboy/gorush-fp5dh)
 [![codecov](https://codecov.io/gh/appleboy/gorush/branch/master/graph/badge.svg)](https://codecov.io/gh/appleboy/gorush)
 [![Go Report Card](https://goreportcard.com/badge/github.com/appleboy/gorush)](https://goreportcard.com/report/github.com/appleboy/gorush)
 [![codebeat badge](https://codebeat.co/badges/0a4eff2d-c9ac-46ed-8fd7-b59942983390)](https://codebeat.co/projects/github-com-appleboy-gorush)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/c82e0ed283474c5686d705ce64d004f7)](https://www.codacy.com/app/appleboy/gorush?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=appleboy/gorush&amp;utm_campaign=Badge_Grade)
 [![Docker Pulls](https://img.shields.io/docker/pulls/appleboy/gorush.svg)](https://hub.docker.com/r/appleboy/gorush/)
-[![microbadger](https://images.microbadger.com/badges/image/appleboy/gorush.svg)](https://microbadger.com/images/appleboy/gorush "Get your own image badge on microbadger.com")
-[![Release](https://github-release-version.herokuapp.com/github/appleboy/gorush/release.svg?style=flat)](https://github.com/appleboy/gorush/releases/latest)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/8ab14c9f-44fd-4d9a-8bba-f73f76d253b1/deploy-status)](https://app.netlify.com/sites/gorush/deploys)
 [![Financial Contributors on Open Collective](https://opencollective.com/gorush/all/badge.svg?label=financial+contributors)](https://opencollective.com/gorush)
 
@@ -94,6 +90,7 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 - Support send notification through [RPC](https://en.wikipedia.org/wiki/Remote_procedure_call) protocol, we use [gRPC](https://grpc.io/) as default framework.
 - Support running in Docker, [Kubernetes](https://kubernetes.io/) or [AWS Lambda](https://aws.amazon.com/lambda) ([Native Support in Golang](https://aws.amazon.com/blogs/compute/announcing-go-support-for-aws-lambda/))
 - Support graceful shutdown that workers and queue have been sent to APNs/FCM before shutdown service.
+- Support different Queue as backend like [NSQ](https://nsq.io/) or [NATS](https://nats.io/), defaut engine is local [Channel](https://tour.golang.org/concurrency/2).
 
 See the default [YAML config example](config/testdata/config.yml):
 
@@ -145,10 +142,21 @@ android:
   max_retry: 0 # resend fail notification, default value zero is disabled
 
 huawei:
-  enabled: true
+  enabled: false
   appsecret: "YOUR_APP_SECRET"
   appid: "YOUR_APP_ID"
   max_retry: 0 # resend fail notification, default value zero is disabled
+
+queue:
+  engine: "local" # support "local", "nsq" and "nats " default value is "local"
+  nsq:
+    addr: 127.0.0.1:4150
+    topic: gorush
+    channel: gorush
+  nats:
+    addr: 127.0.0.1:4222
+    subj: gorush
+    queue: gorush
 
 ios:
   enabled: false
@@ -173,7 +181,8 @@ log:
 stat:
   engine: "memory" # support memory, redis, boltdb, buntdb or leveldb
   redis:
-    addr: "localhost:6379"
+    cluster: false
+    addr: "localhost:6379" # if cluster is true, you may set this to "localhost:6379,localhost:6380,localhost:6381"
     password: ""
     db: 0
   boltdb:
@@ -216,19 +225,19 @@ go get -u -v github.com/appleboy/gorush
 On linux
 
 ```sh
-wget https://github.com/appleboy/gorush/releases/download/v1.13.0/gorush-v1.13.0-linux-amd64 -O gorush
+wget https://github.com/appleboy/gorush/releases/download/v1.14.0/gorush-v1.14.0-linux-amd64 -O gorush
 ```
 
 On OS X
 
 ```sh
-wget https://github.com/appleboy/gorush/releases/download/v1.13.0/gorush-v1.13.0-darwin-amd64 -O gorush
+wget https://github.com/appleboy/gorush/releases/download/v1.14.0/gorush-v1.14.0-darwin-amd64 -O gorush
 ```
 
 On Windows
 
 ```sh
-wget https://github.com/appleboy/gorush/releases/download/v1.13.0/gorush-v1.13.0-windows-amd64.exe -O gorush.exe
+wget https://github.com/appleboy/gorush/releases/download/v1.14.0/gorush-v1.14.0-windows-amd64.exe -O gorush.exe
 ```
 
 On macOS, use Homebrew.
@@ -294,7 +303,7 @@ Huawei Options:
 Common Options:
     --topic <topic>                  iOS or Android topic message
     -h, --help                       Show this message
-    -v, --version                    Show version
+    -V, --version                    Show version
 ```
 
 ### Send Android notification
@@ -1042,7 +1051,7 @@ func main() {
 		Badge:    1,
 		Category: "test",
 		Sound:    "test",
-		Priority: proto.Priority_High,
+		Priority: proto.NotificationRequest_HIGH,
 		Alert: &proto.Alert{
 			Title:    "Test Title",
 			Body:     "Test Alert Body",
@@ -1062,10 +1071,13 @@ func main() {
 		},
 	})
 	if err != nil {
-		log.Fatalf("could not greet: %v", err)
+		log.Println("could not greet: ", err)
 	}
-	log.Printf("Success: %t\n", r.Success)
-	log.Printf("Count: %d\n", r.Counts)
+
+	if r != nil {
+		log.Printf("Success: %t\n", r.Success)
+		log.Printf("Count: %d\n", r.Counts)
+	}
 }
 ```
 
@@ -1144,7 +1156,7 @@ func main() {
 		Badge:    1,
 		Category: "test",
 		Sound:    "test",
-		Priority: proto.Priority_High,
+		Priority: proto.NotificationRequest_HIGH,
 		Alert: &proto.Alert{
 			Title:    "Test Title",
 			Body:     "Test Alert Body",
@@ -1164,10 +1176,13 @@ func main() {
 		},
 	})
 	if err != nil {
-		log.Fatalf("could not greet: %v", err)
+		log.Println("could not greet: ", err)
 	}
-	log.Printf("Success: %t\n", r.Success)
-	log.Printf("Count: %d\n", r.Counts)
+
+	if r != nil {
+		log.Printf("Success: %t\n", r.Success)
+		log.Printf("Count: %d\n", r.Counts)
+	}
 }
 ```
 
