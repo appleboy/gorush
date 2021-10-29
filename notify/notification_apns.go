@@ -288,7 +288,7 @@ func iosAlertDictionary(payload *payload.Payload, req *PushNotification) *payloa
 // GetIOSNotification use for define iOS notification.
 // The iOS Notification Payload (Payload Key Reference)
 // Ref: https://apple.co/2VtH6Iu
-func GetIOSNotification(req *PushNotification) *apns2.Notification {
+func GetIOSNotification(req *PushNotification) (*apns2.Notification, error) {
 	notification := &apns2.Notification{
 		ApnsID:     req.ApnsID,
 		Topic:      req.Topic,
@@ -368,7 +368,15 @@ func GetIOSNotification(req *PushNotification) *apns2.Notification {
 
 	notification.Payload = payload
 
-	return notification
+	jsonMarshall, err := json.Marshal(notification)
+	if err != nil {
+		logx.LogError.Error("Failed to marshal the default message! Error is " + err.Error())
+		return nil, err
+	}
+
+	logx.LogAccess.Debugf("Default message going to APNs is %s", string(jsonMarshall))
+
+	return notification, nil
 }
 
 func getApnsClient(cfg *config.ConfYaml, req *PushNotification) (client *apns2.Client) {
@@ -406,7 +414,7 @@ func PushToIOS(req *PushNotification, cfg *config.ConfYaml) (resp *ResponsePush,
 Retry:
 	var newTokens []string
 
-	notification := GetIOSNotification(req)
+	notification, _ := GetIOSNotification(req)
 	client := getApnsClient(cfg, req)
 
 	var wg sync.WaitGroup

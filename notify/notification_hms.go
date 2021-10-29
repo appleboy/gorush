@@ -161,7 +161,7 @@ func GetHuaweiNotification(req *PushNotification) (*model.MessageRequest, error)
 		return nil, err
 	}
 
-	logx.LogAccess.Debugf("Default message is %s", string(b))
+	logx.LogAccess.Debugf("Default message going to Huawei Push Server is %s", string(b))
 	return msgRequest, nil
 }
 

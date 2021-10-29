@@ -48,11 +48,9 @@ func (s *Storage) Init() error {
 		})
 	}
 
-	if err := s.client.Ping(s.ctx).Err(); err != nil {
-		return err
-	}
+	err := s.client.Ping(s.ctx).Err()
 
-	return nil
+	return err
 }
 
 // Close the storage connection
