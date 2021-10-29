@@ -300,7 +300,7 @@ func LoadConf(confPath ...string) (*ConfYaml, error) {
 		viper.AddConfigPath("/etc/gorush/")
 		viper.AddConfigPath("$HOME/.gorush")
 		viper.AddConfigPath(".")
-		viper.SetConfigName("config")
+		viper.SetConfigName("config.yalm")
 
 		// If a config file is found, read it in.
 		if err := viper.ReadInConfig(); err == nil {
