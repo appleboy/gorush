@@ -35,7 +35,7 @@ func InitFCMClient(cfg *config.ConfYaml, key string) (*fcm.Client, error) {
 // GetAndroidNotification use for define Android notification.
 // HTTP Connection Server Reference for Android
 // https://firebase.google.com/docs/cloud-messaging/http-server-ref
-func GetAndroidNotification(req *PushNotification) (*fcm.Message, error) {
+func GetAndroidNotification(req *PushNotification) *fcm.Message {
 	notification := &fcm.Message{
 		To:                    req.To,
 		Condition:             req.Condition,
@@ -103,13 +103,12 @@ func GetAndroidNotification(req *PushNotification) (*fcm.Message, error) {
 
 	jsonMarshall, err := json.Marshal(notification)
 	if err != nil {
-		logx.LogError.Error("Failed to marshal the default message! Error is " + err.Error())
-		return nil, err
+		logx.LogError.Warnf("Failed to marshal the default message! Error: %v", err)
+	} else {
+		logx.LogAccess.Debugf("Default message going to FCM server is %s", string(jsonMarshall))
 	}
 
-	logx.LogAccess.Debugf("Default message going to FCM server is %s", string(jsonMarshall))
-
-	return notification, nil
+	return notification
 }
 
 // PushToAndroid provide send notification to Android server.
@@ -136,7 +135,7 @@ func PushToAndroid(req *PushNotification, cfg *config.ConfYaml) (resp *ResponseP
 	resp = &ResponsePush{}
 
 Retry:
-	notification, _ := GetAndroidNotification(req)
+	notification := GetAndroidNotification(req)
 
 	if req.APIKey != "" {
 		client, err = InitFCMClient(cfg, req.APIKey)
