@@ -7,11 +7,12 @@
 package proto
 
 import (
+	reflect "reflect"
+	sync "sync"
+
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -661,18 +662,21 @@ func file_gorush_proto_rawDescGZIP() []byte {
 	return file_gorush_proto_rawDescData
 }
 
-var file_gorush_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_gorush_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
-var file_gorush_proto_goTypes = []interface{}{
-	(NotificationRequest_Priority)(0),      // 0: proto.NotificationRequest.Priority
-	(HealthCheckResponse_ServingStatus)(0), // 1: proto.HealthCheckResponse.ServingStatus
-	(*Alert)(nil),                          // 2: proto.Alert
-	(*NotificationRequest)(nil),            // 3: proto.NotificationRequest
-	(*NotificationReply)(nil),              // 4: proto.NotificationReply
-	(*HealthCheckRequest)(nil),             // 5: proto.HealthCheckRequest
-	(*HealthCheckResponse)(nil),            // 6: proto.HealthCheckResponse
-	(*structpb.Struct)(nil),                // 7: google.protobuf.Struct
-}
+var (
+	file_gorush_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+	file_gorush_proto_msgTypes  = make([]protoimpl.MessageInfo, 5)
+	file_gorush_proto_goTypes   = []interface{}{
+		(NotificationRequest_Priority)(0),      // 0: proto.NotificationRequest.Priority
+		(HealthCheckResponse_ServingStatus)(0), // 1: proto.HealthCheckResponse.ServingStatus
+		(*Alert)(nil),                          // 2: proto.Alert
+		(*NotificationRequest)(nil),            // 3: proto.NotificationRequest
+		(*NotificationReply)(nil),              // 4: proto.NotificationReply
+		(*HealthCheckRequest)(nil),             // 5: proto.HealthCheckRequest
+		(*HealthCheckResponse)(nil),            // 6: proto.HealthCheckResponse
+		(*structpb.Struct)(nil),                // 7: google.protobuf.Struct
+	}
+)
+
 var file_gorush_proto_depIdxs = []int32{
 	2, // 0: proto.NotificationRequest.alert:type_name -> proto.Alert
 	7, // 1: proto.NotificationRequest.data:type_name -> google.protobuf.Struct
