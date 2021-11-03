@@ -3,6 +3,8 @@ import "google/protobuf/struct.proto";
 
 package proto;
 
+option go_package="./";
+
 message Alert {
   string title = 1;
   string body = 2;
@@ -37,6 +39,7 @@ message NotificationRequest {
     HIGH = 1;
   }
   Priority priority = 16;
+  string ID = 17;
 }
 
 message NotificationReply {
