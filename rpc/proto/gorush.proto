@@ -3,7 +3,7 @@ import "google/protobuf/struct.proto";
 
 package proto;
 
-option go_package="./";
+// option go_package = "./;proto";
 
 message Alert {
   string title = 1;
