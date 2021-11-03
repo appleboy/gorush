@@ -162,7 +162,6 @@ func hideToken(token string, markLen int) string {
 // GetLogPushEntry get push data into log structure
 func GetLogPushEntry(input *InputLog) LogPushEntry {
 	var errMsg string
-	var token string
 
 	plat := typeForPlatForm(input.Platform)
 
@@ -171,14 +170,14 @@ func GetLogPushEntry(input *InputLog) LogPushEntry {
 	}
 
 	if input.HideToken {
-		token = hideToken(input.Token, 10)
+		input.Token = hideToken(input.Token, 10)
 	}
 
 	return LogPushEntry{
 		ID:       input.ID,
 		Type:     input.Status,
 		Platform: plat,
-		Token:    token,
+		Token:    input.Token,
 		Message:  input.Message,
 		Error:    errMsg,
 	}
