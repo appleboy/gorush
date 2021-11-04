@@ -170,7 +170,10 @@ func GetLogPushEntry(input *InputLog) LogPushEntry {
 	}
 
 	if input.HideToken {
-		input.Token = hideToken(input.Token, 10)
+token := input.Token
+if input.HideToken {
+		token = hideToken(input.Token, 10)
+}
 	}
 
 	return LogPushEntry{
