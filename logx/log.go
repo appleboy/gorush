@@ -169,18 +169,16 @@ func GetLogPushEntry(input *InputLog) LogPushEntry {
 		errMsg = input.Error.Error()
 	}
 
+	token := input.Token
 	if input.HideToken {
-token := input.Token
-if input.HideToken {
 		token = hideToken(input.Token, 10)
-}
 	}
 
 	return LogPushEntry{
 		ID:       input.ID,
 		Type:     input.Status,
 		Platform: plat,
-		Token:    input.Token,
+		Token:    token,
 		Message:  input.Message,
 		Error:    errMsg,
 	}
