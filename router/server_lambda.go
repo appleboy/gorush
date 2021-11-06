@@ -1,3 +1,4 @@
+//go:build lambda
 // +build lambda
 
 package router
