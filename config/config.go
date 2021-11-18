@@ -368,6 +368,10 @@ func LoadConf(confPath ...string) (*ConfYaml, error) {
 	conf.Ios.KeyID = viper.GetString("ios.key_id")
 	conf.Ios.TeamID = viper.GetString("ios.team_id")
 
+	if conf.Ios.MaxConcurrentPushes == 0 {
+		conf.Ios.MaxConcurrentPushes = 100
+	}
+
 	// log
 	conf.Log.Format = viper.GetString("log.format")
 	conf.Log.AccessLog = viper.GetString("log.access_log")
