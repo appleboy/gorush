@@ -114,44 +114,42 @@ func GetHuaweiNotification(req *PushNotification) (*model.MessageRequest, error)
 	}
 
 	// Notification Message
-	msgRequest.Message.Android.Notification = model.GetDefaultAndroidNotification()
-
-	n := msgRequest.Message.Android.Notification
-	isNotificationSet := false
-
 	if req.HuaweiNotification != nil {
-		isNotificationSet = true
-		n = req.HuaweiNotification
+		msgRequest.Message.Android.Notification = req.HuaweiNotification
 
-		if n.ClickAction == nil {
-			n.ClickAction = model.GetDefaultClickAction()
+		if msgRequest.Message.Android.Notification.ClickAction == nil {
+			msgRequest.Message.Android.Notification.ClickAction = model.GetDefaultClickAction()
+		}
+	}
+
+	setDefaultAndroidNotification := func() {
+		if msgRequest.Message.Android == nil {
+			msgRequest.Message.Android.Notification = model.GetDefaultAndroidNotification()
 		}
 	}
 
 	if len(req.Message) > 0 {
-		isNotificationSet = true
-		n.Body = req.Message
+		setDefaultAndroidNotification()
+		msgRequest.Message.Android.Notification.Body = req.Message
 	}
 
 	if len(req.Title) > 0 {
-		isNotificationSet = true
-		n.Title = req.Title
+		setDefaultAndroidNotification()
+		msgRequest.Message.Android.Notification.Title = req.Title
 	}
 
 	if len(req.Image) > 0 {
-		isNotificationSet = true
-		n.Image = req.Image
+		setDefaultAndroidNotification()
+		msgRequest.Message.Android.Notification.Image = req.Image
 	}
 
 	if v, ok := req.Sound.(string); ok && len(v) > 0 {
-		isNotificationSet = true
-		n.Sound = v
+		setDefaultAndroidNotification()
+		msgRequest.Message.Android.Notification.Sound = v
 	} else {
-		n.DefaultSound = true
-	}
-
-	if isNotificationSet {
-		msgRequest.Message.Android.Notification = n
+		if msgRequest.Message.Android.Notification != nil {
+			msgRequest.Message.Android.Notification.DefaultSound = true
+		}
 	}
 
 	b, err := json.Marshal(msgRequest)
