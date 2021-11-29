@@ -146,10 +146,8 @@ func GetHuaweiNotification(req *PushNotification) (*model.MessageRequest, error)
 	if v, ok := req.Sound.(string); ok && len(v) > 0 {
 		setDefaultAndroidNotification()
 		msgRequest.Message.Android.Notification.Sound = v
-	} else {
-		if msgRequest.Message.Android.Notification != nil {
-			msgRequest.Message.Android.Notification.DefaultSound = true
-		}
+	} else if msgRequest.Message.Android.Notification != nil {
+		msgRequest.Message.Android.Notification.DefaultSound = true
 	}
 
 	b, err := json.Marshal(msgRequest)
