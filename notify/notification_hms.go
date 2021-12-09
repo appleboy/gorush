@@ -9,7 +9,6 @@ import (
 	"github.com/appleboy/gorush/core"
 	"github.com/appleboy/gorush/logx"
 	"github.com/appleboy/gorush/status"
-
 	c "github.com/msalihkarakasli/go-hms-push/push/config"
 	client "github.com/msalihkarakasli/go-hms-push/push/core"
 	"github.com/msalihkarakasli/go-hms-push/push/model"
@@ -21,7 +20,7 @@ var (
 	once       sync.Once
 )
 
-// GetPushClient use for create HMS Push
+// GetPushClient use for create HMS Push.
 func GetPushClient(conf *c.Config) (*client.HMSClient, error) {
 	once.Do(func() {
 		client, err := client.NewHttpClient(conf)
@@ -112,47 +111,43 @@ func GetHuaweiNotification(req *PushNotification) (*model.MessageRequest, error)
 	// Add data fields
 	if len(req.HuaweiData) > 0 {
 		msgRequest.Message.Data = req.HuaweiData
-	} else {
-		// Notification Message
-		msgRequest.Message.Android.Notification = model.GetDefaultAndroidNotification()
+	}
 
-		n := msgRequest.Message.Android.Notification
-		isNotificationSet := false
+	// Notification Message
+	if req.HuaweiNotification != nil {
+		msgRequest.Message.Android.Notification = req.HuaweiNotification
 
-		if req.HuaweiNotification != nil {
-			isNotificationSet = true
-			n = req.HuaweiNotification
-
-			if n.ClickAction == nil {
-				n.ClickAction = model.GetDefaultClickAction()
-			}
+		if msgRequest.Message.Android.Notification.ClickAction == nil {
+			msgRequest.Message.Android.Notification.ClickAction = model.GetDefaultClickAction()
 		}
+	}
 
-		if len(req.Message) > 0 {
-			isNotificationSet = true
-			n.Body = req.Message
+	setDefaultAndroidNotification := func() {
+		if msgRequest.Message.Android == nil {
+			msgRequest.Message.Android.Notification = model.GetDefaultAndroidNotification()
 		}
+	}
 
-		if len(req.Title) > 0 {
-			isNotificationSet = true
-			n.Title = req.Title
-		}
+	if len(req.Message) > 0 {
+		setDefaultAndroidNotification()
+		msgRequest.Message.Android.Notification.Body = req.Message
+	}
 
-		if len(req.Image) > 0 {
-			isNotificationSet = true
-			n.Image = req.Image
-		}
+	if len(req.Title) > 0 {
+		setDefaultAndroidNotification()
+		msgRequest.Message.Android.Notification.Title = req.Title
+	}
 
-		if v, ok := req.Sound.(string); ok && len(v) > 0 {
-			isNotificationSet = true
-			n.Sound = v
-		} else {
-			n.DefaultSound = true
-		}
+	if len(req.Image) > 0 {
+		setDefaultAndroidNotification()
+		msgRequest.Message.Android.Notification.Image = req.Image
+	}
 
-		if isNotificationSet {
-			msgRequest.Message.Android.Notification = n
-		}
+	if v, ok := req.Sound.(string); ok && len(v) > 0 {
+		setDefaultAndroidNotification()
+		msgRequest.Message.Android.Notification.Sound = v
+	} else if msgRequest.Message.Android.Notification != nil {
+		msgRequest.Message.Android.Notification.DefaultSound = true
 	}
 
 	b, err := json.Marshal(msgRequest)
