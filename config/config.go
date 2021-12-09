@@ -277,9 +277,16 @@ type SectionGRPC struct {
 	Port    string `yaml:"port"`
 }
 
+func setDefault() {
+	viper.SetDefault("ios.max_concurrent_pushes", uint(100))
+}
+
 // LoadConf load config from file and read in environment variables that match
 func LoadConf(confPath ...string) (*ConfYaml, error) {
 	conf := &ConfYaml{}
+
+	// load default values
+	setDefault()
 
 	viper.SetConfigType("yaml")
 	viper.AutomaticEnv()         // read in environment variables that match

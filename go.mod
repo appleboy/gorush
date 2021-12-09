@@ -38,3 +38,5 @@ require (
 	google.golang.org/grpc v1.36.1
 	google.golang.org/protobuf v1.27.1
 )
+
+replace github.com/msalihkarakasli/go-hms-push => github.com/spawn2kill/go-hms-push v0.0.0-20211125124117-e20af53b1304

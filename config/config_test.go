@@ -17,6 +17,15 @@ func TestMissingFile(t *testing.T) {
 	assert.NotNil(t, err)
 }
 
+func TestEmptyConfig(t *testing.T) {
+	conf, err := LoadConf("testdata/empty.yml")
+	if err != nil {
+		panic("failed to load config.yml from file")
+	}
+
+	assert.Equal(t, uint(100), conf.Ios.MaxConcurrentPushes)
+}
+
 type ConfigTestSuite struct {
 	suite.Suite
 	ConfGorushDefault *ConfYaml
