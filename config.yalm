@@ -2,7 +2,7 @@ core:
   enabled: true
   address: ""
   shutdown_timeout: 30
-  port: "8089"
+  port: "8088"
   max_notification: 100
   worker_num: 4
   queue_num: 8192
@@ -34,7 +34,7 @@ api:
   health_uri: /healthz
 android:
   enabled: true
-  apikey: AAAAcGjY3nQ:APA91bEU55A0rf2EzS8FxOtv21pfrurBeCSmLwXUr69rWHEz0p-MFRoD5offVaYfZqqF5jClbFE-UtQ0-___cozL-Dou_EhCBAjTToCitU_evTGD5bZfANjXaB9JP2tvsEOz7QwOI_nD
+  apikey: AAAAgcl5p9Y:APA91bGShAtRUxjH4zgyuXLx8HgORYc5pSoHGtbvRwcE8DVfJkEHhdhhwUysAR7CZMmZlBes06hxzN1x8kAykr1SgTyECrlOrQqeR-6OGTI8XHI04UyuscE39VzhleJCsqBB6ZKzYXxs
   max_retry: 0
 huawei:
   enabled: false
