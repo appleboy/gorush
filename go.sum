@@ -38,6 +38,8 @@ github.com/appleboy/gin-status-api v1.1.0 h1:zoXePlNxk/Aa3Jmh8TI2xX0KTF8iET/QwOM
 github.com/appleboy/gin-status-api v1.1.0/go.mod h1:qUmpFERWhlzRX4Hx+fEznIio8gXAXEDpEnb0Ald1d+g=
 github.com/appleboy/go-fcm v0.1.5 h1:fKbcZf/7vwGsvDkcop8a+kCHnK+tt4wXX0X7uEzwI6E=
 github.com/appleboy/go-fcm v0.1.5/go.mod h1:MSxZ4LqGRsnywOjnlXJXMqbjZrG4vf+0oHitfC9HRH0=
+github.com/appleboy/go-fcm v0.1.6-0.20210717010109-0181be2279cd h1:M/LhFbSWAwLmdhjOVBik1Ekj6wAgxS3H3XtV5czaxE4=
+github.com/appleboy/go-fcm v0.1.6-0.20210717010109-0181be2279cd/go.mod h1:MSxZ4LqGRsnywOjnlXJXMqbjZrG4vf+0oHitfC9HRH0=
 github.com/appleboy/gofight/v2 v2.1.2 h1:VOy3jow4vIK8BRQJoC/I9muxyYlJ2yb9ht2hZoS3rf4=
 github.com/appleboy/gofight/v2 v2.1.2/go.mod h1:frW+U1QZEdDgixycTj4CygQ48yLTUhplt43+Wczp3rw=
 github.com/armon/circbuf v0.0.0-20150827004946-bbbad097214e/go.mod h1:3U/XgcO3hCbHZ8TKRvWD2dDTCfh9M9ya+I9JpbB7O8o=
