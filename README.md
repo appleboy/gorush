@@ -986,7 +986,8 @@ See the following error format.
       "platform": "android",
       "token": "*******",
       "message": "Hello World Android!",
-      "error": "InvalidRegistration"
+      "error":"invalid registration token",
+      "error_reason":"InvalidRegistration"
     },
     {
       "type": "failed-push",

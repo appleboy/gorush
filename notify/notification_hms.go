@@ -6,7 +6,6 @@ import (
 	"sync"
 
 	"github.com/appleboy/gorush/config"
-	"github.com/appleboy/gorush/core"
 	"github.com/appleboy/gorush/logx"
 	"github.com/appleboy/gorush/status"
 	c "github.com/msalihkarakasli/go-hms-push/push/config"
@@ -199,7 +198,7 @@ Retry:
 	res, err := client.SendMessage(context.Background(), notification)
 	if err != nil {
 		// Send Message error
-		errLog := logPush(cfg, core.FailedPush, req.To, req, err)
+		errLog := logErrorPush(cfg, req.To, req, err, "")
 		resp.Logs = append(resp.Logs, errLog)
 		logx.LogError.Error("HMS server send message error: " + err.Error())
 		return
