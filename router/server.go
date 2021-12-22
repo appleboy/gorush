@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"os"
 	"sync"
 
 	"github.com/appleboy/gorush/config"
@@ -17,15 +16,11 @@ import (
 	"github.com/appleboy/gorush/status"
 
 	api "github.com/appleboy/gin-status-api"
-	"github.com/gin-contrib/logger"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/golang-queue/queue"
-	"github.com/mattn/go-isatty"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
 	"github.com/thoas/stats"
 	"golang.org/x/crypto/acme/autocert"
 )
@@ -165,23 +160,6 @@ func autoTLSServer(cfg *config.ConfYaml, q *queue.Queue) *http.Server {
 }
 
 func routerEngine(cfg *config.ConfYaml, q *queue.Queue) *gin.Engine {
-	zerolog.SetGlobalLevel(zerolog.InfoLevel)
-	if cfg.Core.Mode == "debug" {
-		zerolog.SetGlobalLevel(zerolog.DebugLevel)
-	}
-
-	log.Logger = zerolog.New(os.Stdout).With().Timestamp().Logger()
-
-	isTerm := isatty.IsTerminal(os.Stdout.Fd())
-	if isTerm {
-		log.Logger = log.Output(
-			zerolog.ConsoleWriter{
-				Out:     os.Stdout,
-				NoColor: false,
-			},
-		)
-	}
-
 	// Support metrics
 	doOnce.Do(func() {
 		m := metric.NewMetrics(func() int {
@@ -196,13 +174,14 @@ func routerEngine(cfg *config.ConfYaml, q *queue.Queue) *gin.Engine {
 	r := gin.New()
 
 	// Global middleware
-	r.Use(logger.SetLogger(
-		logger.WithUTC(true),
-		logger.WithSkipPath([]string{
-			cfg.API.HealthURI,
-			cfg.API.MetricURI,
-		}),
-	))
+	r.Use(
+		logx.GinLoggerMidleware(
+			[]string{
+				cfg.API.HealthURI,
+				cfg.API.MetricURI,
+			},
+		),
+	)
 	r.Use(gin.Recovery())
 	r.Use(VersionMiddleware())
 	r.Use(StatMiddleware())

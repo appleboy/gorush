@@ -4,11 +4,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/appleboy/gorush/core"
 
+	"github.com/gin-gonic/gin"
 	"github.com/mattn/go-isatty"
 	"github.com/sirupsen/logrus"
 )
@@ -248,4 +251,59 @@ func LogPush(input *InputLog) LogPushEntry {
 	}
 
 	return log
+}
+
+func GinLoggerMidleware(skipPath []string) gin.HandlerFunc {
+	var skip map[string]struct{}
+	if length := len(skipPath); length > 0 {
+		skip = make(map[string]struct{}, length)
+		for _, path := range skipPath {
+			skip[path] = struct{}{}
+		}
+	}
+
+	return func(c *gin.Context) {
+		start := time.Now().UTC()
+
+		path := c.Request.URL.Path
+		raw := c.Request.URL.RawQuery
+		if raw != "" {
+			path = path + "?" + raw
+		}
+
+		c.Next()
+
+		track := true
+
+		if _, ok := skip[path]; ok {
+			track = false
+		}
+
+		if track {
+
+			end := time.Now().UTC()
+			latency := end.Sub(start)
+
+			msg := "Request"
+			if len(c.Errors) > 0 {
+				msg = c.Errors.String()
+			}
+			fields := logrus.Fields{
+				"status":     c.Writer.Status(),
+				"method":     c.Request.Method,
+				"path":       c.Request.URL.Path,
+				"ip":         c.ClientIP(),
+				"latency":    latency,
+				"user_agent": c.Request.UserAgent(),
+			}
+			switch {
+			case c.Writer.Status() >= http.StatusBadRequest && c.Writer.Status() < http.StatusInternalServerError:
+				LogError.WithContext(c).WithFields(fields).Warn(msg)
+			case c.Writer.Status() >= http.StatusInternalServerError:
+				LogError.WithContext(c).WithFields(fields).Error(msg)
+			default:
+				LogAccess.WithContext(c).WithFields(fields).Info(msg)
+			}
+		}
+	}
 }
