@@ -1,9 +1,10 @@
 package memory
 
 import (
-	"github.com/appleboy/gorush/storage"
 	"sync"
 	"testing"
+
+	"github.com/appleboy/gorush/storage"
 
 	"github.com/stretchr/testify/assert"
 )

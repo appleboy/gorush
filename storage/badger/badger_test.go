@@ -1,9 +1,10 @@
 package badger
 
 import (
-	"github.com/appleboy/gorush/storage"
 	"sync"
 	"testing"
+
+	"github.com/appleboy/gorush/storage"
 
 	"github.com/appleboy/gorush/config"
 	"github.com/stretchr/testify/assert"

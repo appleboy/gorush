@@ -1,8 +1,9 @@
 package memory
 
 import (
-	"go.uber.org/atomic"
 	"sync"
+
+	"go.uber.org/atomic"
 )
 
 // New func implements the storage interface for gorush (https://github.com/appleboy/gorush)

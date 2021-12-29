@@ -1,10 +1,11 @@
 package buntdb
 
 import (
-	"github.com/appleboy/gorush/storage"
 	"os"
 	"sync"
 	"testing"
+
+	"github.com/appleboy/gorush/storage"
 
 	"github.com/appleboy/gorush/config"
 	"github.com/stretchr/testify/assert"
