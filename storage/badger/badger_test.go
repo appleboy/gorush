@@ -21,7 +21,7 @@ func TestBadgerEngine(t *testing.T) {
 	badger.Add(storage.HuaweiSuccessKey, 10)
 	val = badger.Get(storage.HuaweiSuccessKey)
 	assert.Equal(t, int64(10), val)
-	badger.Add(storage.HuaweiSuccessKey, 20)
+	badger.Add(storage.HuaweiSuccessKey, 10)
 	val = badger.Get(storage.HuaweiSuccessKey)
 	assert.Equal(t, int64(20), val)
 

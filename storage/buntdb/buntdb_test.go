@@ -27,7 +27,7 @@ func TestBuntDBEngine(t *testing.T) {
 	buntDB.Add(storage.HuaweiSuccessKey, 10)
 	val = buntDB.Get(storage.HuaweiSuccessKey)
 	assert.Equal(t, int64(10), val)
-	buntDB.Add(storage.HuaweiSuccessKey, 20)
+	buntDB.Add(storage.HuaweiSuccessKey, 10)
 	val = buntDB.Get(storage.HuaweiSuccessKey)
 	assert.Equal(t, int64(20), val)
 

@@ -32,7 +32,7 @@ func TestRedisEngine(t *testing.T) {
 	redis.Add(storage.HuaweiSuccessKey, 10)
 	val = redis.Get(storage.HuaweiSuccessKey)
 	assert.Equal(t, int64(10), val)
-	redis.Add(storage.HuaweiSuccessKey, 20)
+	redis.Add(storage.HuaweiSuccessKey, 10)
 	val = redis.Get(storage.HuaweiSuccessKey)
 	assert.Equal(t, int64(20), val)
 

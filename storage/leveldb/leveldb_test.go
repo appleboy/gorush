@@ -27,7 +27,7 @@ func TestLevelDBEngine(t *testing.T) {
 	levelDB.Add(storage.HuaweiSuccessKey, 10)
 	val = levelDB.Get(storage.HuaweiSuccessKey)
 	assert.Equal(t, int64(10), val)
-	levelDB.Add(storage.HuaweiSuccessKey, 20)
+	levelDB.Add(storage.HuaweiSuccessKey, 10)
 	val = levelDB.Get(storage.HuaweiSuccessKey)
 	assert.Equal(t, int64(20), val)
 

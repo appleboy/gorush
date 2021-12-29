@@ -18,7 +18,7 @@ func TestMemoryEngine(t *testing.T) {
 	memory.Add(storage.HuaweiSuccessKey, 10)
 	val = memory.Get(storage.HuaweiSuccessKey)
 	assert.Equal(t, int64(10), val)
-	memory.Add(storage.HuaweiSuccessKey, 20)
+	memory.Add(storage.HuaweiSuccessKey, 10)
 	val = memory.Get(storage.HuaweiSuccessKey)
 	assert.Equal(t, int64(20), val)
 

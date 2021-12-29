@@ -21,7 +21,7 @@ func TestBoltDBEngine(t *testing.T) {
 	boltDB.Add(storage.HuaweiSuccessKey, 10)
 	val = boltDB.Get(storage.HuaweiSuccessKey)
 	assert.Equal(t, int64(10), val)
-	boltDB.Add(storage.HuaweiSuccessKey, 20)
+	boltDB.Add(storage.HuaweiSuccessKey, 10)
 	val = boltDB.Get(storage.HuaweiSuccessKey)
 	assert.Equal(t, int64(20), val)
 
