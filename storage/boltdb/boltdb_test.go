@@ -1,6 +1,8 @@
 package boltdb
 
 import (
+	"github.com/appleboy/gorush/storage"
+	"sync"
 	"testing"
 
 	"github.com/appleboy/gorush/config"
@@ -15,35 +17,30 @@ func TestBoltDBEngine(t *testing.T) {
 	boltDB := New(cfg)
 	err := boltDB.Init()
 	assert.Nil(t, err)
-	boltDB.Reset()
 
-	boltDB.AddTotalCount(10)
-	val = boltDB.GetTotalCount()
+	boltDB.Add(storage.HuaweiSuccessKey, 10)
+	val = boltDB.Get(storage.HuaweiSuccessKey)
 	assert.Equal(t, int64(10), val)
-	boltDB.AddTotalCount(10)
-	val = boltDB.GetTotalCount()
+	boltDB.Add(storage.HuaweiSuccessKey, 20)
+	val = boltDB.Get(storage.HuaweiSuccessKey)
 	assert.Equal(t, int64(20), val)
 
-	boltDB.AddIosSuccess(20)
-	val = boltDB.GetIosSuccess()
-	assert.Equal(t, int64(20), val)
-
-	boltDB.AddIosError(30)
-	val = boltDB.GetIosError()
-	assert.Equal(t, int64(30), val)
-
-	boltDB.AddAndroidSuccess(40)
-	val = boltDB.GetAndroidSuccess()
-	assert.Equal(t, int64(40), val)
-
-	boltDB.AddAndroidError(50)
-	val = boltDB.GetAndroidError()
-	assert.Equal(t, int64(50), val)
-
-	// test reset db
-	boltDB.Reset()
-	val = boltDB.GetAndroidError()
+	boltDB.Set(storage.HuaweiSuccessKey, 0)
+	val = boltDB.Get(storage.HuaweiSuccessKey)
 	assert.Equal(t, int64(0), val)
+
+	// test concurrency issues
+	var wg sync.WaitGroup
+	for i := 0; i < 10; i++ {
+		wg.Add(1)
+		go func() {
+			boltDB.Add(storage.HuaweiSuccessKey, 1)
+			wg.Done()
+		}()
+	}
+	wg.Wait()
+	val = boltDB.Get(storage.HuaweiSuccessKey)
+	assert.Equal(t, int64(10), val)
 
 	assert.NoError(t, boltDB.Close())
 }

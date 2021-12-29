@@ -1,7 +1,9 @@
 package leveldb
 
 import (
+	"github.com/appleboy/gorush/storage"
 	"os"
+	"sync"
 	"testing"
 
 	"github.com/appleboy/gorush/config"
@@ -21,34 +23,30 @@ func TestLevelDBEngine(t *testing.T) {
 	levelDB := New(cfg)
 	err := levelDB.Init()
 	assert.Nil(t, err)
-	levelDB.Reset()
 
-	levelDB.AddTotalCount(10)
-	val = levelDB.GetTotalCount()
+	levelDB.Add(storage.HuaweiSuccessKey, 10)
+	val = levelDB.Get(storage.HuaweiSuccessKey)
 	assert.Equal(t, int64(10), val)
-	levelDB.AddTotalCount(10)
-	val = levelDB.GetTotalCount()
+	levelDB.Add(storage.HuaweiSuccessKey, 20)
+	val = levelDB.Get(storage.HuaweiSuccessKey)
 	assert.Equal(t, int64(20), val)
 
-	levelDB.AddIosSuccess(20)
-	val = levelDB.GetIosSuccess()
-	assert.Equal(t, int64(20), val)
-
-	levelDB.AddIosError(30)
-	val = levelDB.GetIosError()
-	assert.Equal(t, int64(30), val)
-
-	levelDB.AddAndroidSuccess(40)
-	val = levelDB.GetAndroidSuccess()
-	assert.Equal(t, int64(40), val)
-
-	levelDB.AddAndroidError(50)
-	val = levelDB.GetAndroidError()
-	assert.Equal(t, int64(50), val)
-
-	levelDB.Reset()
-	val = levelDB.GetAndroidError()
+	levelDB.Set(storage.HuaweiSuccessKey, 0)
+	val = levelDB.Get(storage.HuaweiSuccessKey)
 	assert.Equal(t, int64(0), val)
+
+	// test concurrency issues
+	var wg sync.WaitGroup
+	for i := 0; i < 10; i++ {
+		wg.Add(1)
+		go func() {
+			levelDB.Add(storage.HuaweiSuccessKey, 1)
+			wg.Done()
+		}()
+	}
+	wg.Wait()
+	val = levelDB.Get(storage.HuaweiSuccessKey)
+	assert.Equal(t, int64(10), val)
 
 	assert.NoError(t, levelDB.Close())
 }
