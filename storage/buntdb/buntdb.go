@@ -24,6 +24,21 @@ type Storage struct {
 	db     *buntdb.DB
 }
 
+func (s *Storage) Add(key string, count int64) {
+	s.Set(key, s.Get(key)+count)
+}
+
+func (s *Storage) Set(key string, count int64) {
+	s.setBuntDB(key, count)
+}
+
+func (s *Storage) Get(key string) int64 {
+	var count int64
+	s.getBuntDB(key, &count)
+
+	return count
+}
+
 // Init client storage.
 func (s *Storage) Init() error {
 	var err error
