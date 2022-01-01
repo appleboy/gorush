@@ -25,6 +25,7 @@ import (
 	"github.com/golang-queue/nats"
 	"github.com/golang-queue/nsq"
 	"github.com/golang-queue/queue"
+	"github.com/golang-queue/redisdb"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -345,6 +346,14 @@ func main() {
 			nats.WithQueue(cfg.Queue.NATS.Queue),
 			nats.WithRunFunc(notify.Run(cfg)),
 			nats.WithLogger(logx.QueueLogger()),
+		)
+	case core.Redis:
+		w = redisdb.NewWorker(
+			redisdb.WithAddr(cfg.Queue.Redis.Addr),
+			redisdb.WithChannel(cfg.Queue.Redis.Channel),
+			redisdb.WithChannelSize(cfg.Queue.Redis.Size),
+			redisdb.WithRunFunc(notify.Run(cfg)),
+			redisdb.WithLogger(logx.QueueLogger()),
 		)
 	default:
 		logx.LogError.Fatalf("we don't support queue engine: %s", cfg.Queue.Engine)

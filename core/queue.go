@@ -10,6 +10,8 @@ var (
 	NSQ Queue = "nsq"
 	// NATS Connective Technology for Adaptive Edge & Distributed Systems
 	NATS Queue = "nats"
+	// Redis Pub/Sub
+	Redis Queue = "redis"
 )
 
 // IsLocalQueue check is Local Queue
