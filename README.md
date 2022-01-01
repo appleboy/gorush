@@ -90,7 +90,7 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 - Support send notification through [RPC](https://en.wikipedia.org/wiki/Remote_procedure_call) protocol, we use [gRPC](https://grpc.io/) as default framework.
 - Support running in Docker, [Kubernetes](https://kubernetes.io/) or [AWS Lambda](https://aws.amazon.com/lambda) ([Native Support in Golang](https://aws.amazon.com/blogs/compute/announcing-go-support-for-aws-lambda/))
 - Support graceful shutdown that workers and queue have been sent to APNs/FCM before shutdown service.
-- Support different Queue as backend like [NSQ](https://nsq.io/) or [NATS](https://nats.io/), defaut engine is local [Channel](https://tour.golang.org/concurrency/2).
+- Support different Queue as backend like [NSQ](https://nsq.io/), [NATS](https://nats.io/) or [Redis Pub/Sub](https://redis.io/topics/pubsub), defaut engine is local [Channel](https://tour.golang.org/concurrency/2).
 
 See the default [YAML config example](config/testdata/config.yml):
 
@@ -148,7 +148,7 @@ huawei:
   max_retry: 0 # resend fail notification, default value zero is disabled
 
 queue:
-  engine: "local" # support "local", "nsq" and "nats " default value is "local"
+  engine: "local" # support "local", "nsq", "nats" and "redis" default value is "local"
   nsq:
     addr: 127.0.0.1:4150
     topic: gorush
@@ -157,6 +157,10 @@ queue:
     addr: 127.0.0.1:4222
     subj: gorush
     queue: gorush
+  redis:
+    addr: 127.0.0.1:6379
+    channel: gorush
+    size: 1024
 
 ios:
   enabled: false
