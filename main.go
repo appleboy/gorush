@@ -465,7 +465,6 @@ Common Options:
 // usage will print out the flag options for the server.
 func usage() {
 	fmt.Printf("%s\n", usageStr)
-	os.Exit(0)
 }
 
 // handles pinging the endpoint and returns an error if the
