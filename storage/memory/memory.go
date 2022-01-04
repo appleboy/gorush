@@ -38,11 +38,11 @@ func (s *Storage) Get(key string) int64 {
 }
 
 // Init client storage.
-func (_ *Storage) Init() error {
+func (*Storage) Init() error {
 	return nil
 }
 
 // Close the storage connection
-func (_ *Storage) Close() error {
+func (*Storage) Close() error {
 	return nil
 }
