@@ -3,6 +3,7 @@ package leveldb
 import (
 	"fmt"
 	"strconv"
+	"sync"
 
 	"github.com/appleboy/gorush/config"
 	"github.com/syndtr/goleveldb/leveldb"
@@ -13,9 +14,10 @@ func (s *Storage) setLevelDB(key string, count int64) {
 	_ = s.db.Put([]byte(key), []byte(value), nil)
 }
 
-func (s *Storage) getLevelDB(key string, count *int64) {
+func (s *Storage) getLevelDB(key string) int64 {
 	data, _ := s.db.Get([]byte(key), nil)
-	*count, _ = strconv.ParseInt(string(data), 10, 64)
+	count, _ := strconv.ParseInt(string(data), 10, 64)
+	return count
 }
 
 // New func implements the storage interface for gorush (https://github.com/appleboy/gorush)
@@ -29,21 +31,25 @@ func New(config *config.ConfYaml) *Storage {
 type Storage struct {
 	config *config.ConfYaml
 	db     *leveldb.DB
+	lock   sync.RWMutex
 }
 
 func (s *Storage) Add(key string, count int64) {
-	s.Set(key, s.Get(key)+count)
+	s.lock.Lock()
+	defer s.lock.Unlock()
+	s.setLevelDB(key, s.getLevelDB(key)+count)
 }
 
 func (s *Storage) Set(key string, count int64) {
+	s.lock.Lock()
+	defer s.lock.Unlock()
 	s.setLevelDB(key, count)
 }
 
 func (s *Storage) Get(key string) int64 {
-	var count int64
-	s.getLevelDB(key, &count)
-
-	return count
+	s.lock.RLock()
+	defer s.lock.RUnlock()
+	return s.getLevelDB(key)
 }
 
 // Init client storage.
