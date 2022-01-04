@@ -107,6 +107,10 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 	assert.Equal(suite.T(), "gorush", suite.ConfGorushDefault.Queue.NATS.Subj)
 	assert.Equal(suite.T(), "gorush", suite.ConfGorushDefault.Queue.NATS.Queue)
 
+	assert.Equal(suite.T(), "127.0.0.1:6379", suite.ConfGorushDefault.Queue.Redis.Addr)
+	assert.Equal(suite.T(), "gorush", suite.ConfGorushDefault.Queue.Redis.Channel)
+	assert.Equal(suite.T(), 1024, suite.ConfGorushDefault.Queue.Redis.Size)
+
 	// log
 	assert.Equal(suite.T(), "string", suite.ConfGorushDefault.Log.Format)
 	assert.Equal(suite.T(), "stdout", suite.ConfGorushDefault.Log.AccessLog)

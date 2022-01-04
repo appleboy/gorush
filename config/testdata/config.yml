@@ -50,7 +50,7 @@ huawei:
   max_retry: 0 # resend fail notification, default value zero is disabled
 
 queue:
-  engine: "local" # support "local", "nsq" and "nats " default value is "local"
+  engine: "local" # support "local", "nsq", "nats" and "redis" default value is "local"
   nsq:
     addr: 127.0.0.1:4150
     topic: gorush
@@ -59,6 +59,10 @@ queue:
     addr: 127.0.0.1:4222
     subj: gorush
     queue: gorush
+  redis:
+    addr: 127.0.0.1:6379
+    channel: gorush
+    size: 1024
 
 ios:
   enabled: false
