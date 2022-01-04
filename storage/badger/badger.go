@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"sync"
 
 	"github.com/appleboy/gorush/config"
 	"github.com/dgraph-io/badger/v3"
@@ -22,21 +23,26 @@ type Storage struct {
 	opts   badger.Options
 	name   string
 	db     *badger.DB
+
+	lock sync.RWMutex
 }
 
 func (s *Storage) Add(key string, count int64) {
-	s.Set(key, s.Get(key)+count)
+	s.lock.Lock()
+	defer s.lock.Unlock()
+	s.setBadger(key, s.getBadger(key)+count)
 }
 
 func (s *Storage) Set(key string, count int64) {
+	s.lock.Lock()
+	defer s.lock.Unlock()
 	s.setBadger(key, count)
 }
 
 func (s *Storage) Get(key string) int64 {
-	var count int64
-	s.getBadger(key, &count)
-
-	return count
+	s.lock.RLock()
+	defer s.lock.RUnlock()
+	return s.getBadger(key)
 }
 
 // Init client storage.
@@ -73,28 +79,28 @@ func (s *Storage) setBadger(key string, count int64) {
 	}
 }
 
-func (s *Storage) getBadger(key string, count *int64) {
+func (s *Storage) getBadger(key string) int64 {
+	var count int64
 	err := s.db.View(func(txn *badger.Txn) error {
 		item, err := txn.Get([]byte(key))
 		if err != nil {
 			return err
 		}
-		dst := []byte{}
+		var dst []byte
 		val, err := item.ValueCopy(dst)
 		if err != nil {
 			return err
 		}
 
-		i, err := strconv.ParseInt(string(val), 10, 64)
+		count, err = strconv.ParseInt(string(val), 10, 64)
 		if err != nil {
 			return err
 		}
-
-		*count = i
 
 		return nil
 	})
 	if err != nil {
 		log.Println(s.name, "get error:", err.Error())
 	}
+	return count
 }
