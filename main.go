@@ -8,10 +8,8 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"os/signal"
 	"path/filepath"
 	"strconv"
-	"syscall"
 	"time"
 
 	"github.com/appleboy/gorush/config"
@@ -28,24 +26,6 @@ import (
 	"github.com/golang-queue/queue"
 	"github.com/golang-queue/redisdb"
 )
-
-func withContextFunc(ctx context.Context, f func()) context.Context {
-	ctx, cancel := context.WithCancel(ctx)
-	go func() {
-		c := make(chan os.Signal, 1)
-		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
-		defer signal.Stop(c)
-
-		select {
-		case <-ctx.Done():
-		case <-c:
-			cancel()
-			f()
-		}
-	}()
-
-	return ctx
-}
 
 func main() {
 	opts := config.ConfYaml{}
@@ -365,9 +345,7 @@ func main() {
 		queue.WithLogger(logx.QueueLogger()),
 	)
 
-	ctx := context.Background()
 	g := graceful.NewManager(
-		graceful.WithContext(ctx),
 		graceful.WithLogger(logx.QueueLogger()),
 	)
 
