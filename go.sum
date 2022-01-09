@@ -40,6 +40,8 @@ github.com/appleboy/go-fcm v0.1.5 h1:fKbcZf/7vwGsvDkcop8a+kCHnK+tt4wXX0X7uEzwI6E
 github.com/appleboy/go-fcm v0.1.5/go.mod h1:MSxZ4LqGRsnywOjnlXJXMqbjZrG4vf+0oHitfC9HRH0=
 github.com/appleboy/gofight/v2 v2.1.2 h1:VOy3jow4vIK8BRQJoC/I9muxyYlJ2yb9ht2hZoS3rf4=
 github.com/appleboy/gofight/v2 v2.1.2/go.mod h1:frW+U1QZEdDgixycTj4CygQ48yLTUhplt43+Wczp3rw=
+github.com/appleboy/graceful v0.0.3 h1:qEnm61ofF76fTo2UISfjRZVhMhFnkLKTBJoWcK9lBXQ=
+github.com/appleboy/graceful v0.0.3/go.mod h1:Q2mVx0t+N0lCDZc5MJudbcpTm6cgGM/J2gZCZIqD9dc=
 github.com/armon/circbuf v0.0.0-20150827004946-bbbad097214e/go.mod h1:3U/XgcO3hCbHZ8TKRvWD2dDTCfh9M9ya+I9JpbB7O8o=
 github.com/armon/consul-api v0.0.0-20180202201655-eb2c6b5be1b6/go.mod h1:grANhF5doyWs3UAsr3K4I6qtAmlQcZDesFNEHPZAzj8=
 github.com/armon/go-metrics v0.0.0-20180917152333-f0300d1749da/go.mod h1:Q73ZrmVTwzkszR9V5SSuryQ31EELlFMUz1kKyl939pY=
@@ -159,15 +161,10 @@ github.com/gogo/protobuf v1.2.0/go.mod h1:r8qH/GZQm5c6nD/R0oafs1akxWv10x8SbQlK7a
 github.com/gogo/protobuf v1.2.1/go.mod h1:hp+jE20tsWTFYpLwKvXlhS1hjn+gTNwPg2I6zVXpSg4=
 github.com/gogo/protobuf v1.3.2 h1:Ov1cvc58UF3b5XjBnZv7+opcTcQFZebYjWzi34vdm4Q=
 github.com/gogo/protobuf v1.3.2/go.mod h1:P1XiOD3dCwIKUDQYPy72D8LYyHL2YPYrpS2s69NZV8Q=
-github.com/golang-queue/nats v0.0.2 h1:81Ege/02a9d2a1SDN2/t1S1XIr/JpY+s8xj/pLZIHXM=
-github.com/golang-queue/nats v0.0.2/go.mod h1:dzXOwbx20CJ5oX4UiBIDyfedCiR5sBWWKJVXmiRlDYc=
 github.com/golang-queue/nats v0.0.4 h1:in1fM5Aa5HYeuyXCC5A00zvWxvVvBs9gdCiIr429u7I=
 github.com/golang-queue/nats v0.0.4/go.mod h1:P82IIiPlNT+hGUvfddwJCn+yXd8tPeKtS9UK4AU5+I4=
-github.com/golang-queue/nsq v0.0.2 h1:kP4fMLl1K6TNlJGq3tJ4t07e703mDGiMYLLltT8F4/Q=
-github.com/golang-queue/nsq v0.0.2/go.mod h1:1Q/8y4BclWLj03sn0dApJIObatC3qMX5gLjlbo0TwXs=
 github.com/golang-queue/nsq v0.0.6 h1:GXk9Dx9ex3/rQDSaK78RK2B0CBNc0ym45hclEjNDNEk=
 github.com/golang-queue/nsq v0.0.6/go.mod h1:oKhZjEiAZ4scaQTePCSSnsmvyHb6ID0AsqE5rtKrAOE=
-github.com/golang-queue/queue v0.0.7/go.mod h1:JS5tYJacahCjafcplU5idNLX2vkYioqh6wEDX5o9Nms=
 github.com/golang-queue/queue v0.0.10 h1:cGqMgHMf2eamwdd3hmOzGcSQogGu9tMhhVYPQMrMC1g=
 github.com/golang-queue/queue v0.0.10/go.mod h1:ku8iyjYffqYY6Duts+xl+QYfN3/KDK4MEvXMZUkHyio=
 github.com/golang-queue/redisdb v0.0.5 h1:kW+zXopFVtBmd0/19aD3fZCWc1OoRbOV+MpXo2OBp+s=

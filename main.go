@@ -22,11 +22,11 @@ import (
 	"github.com/appleboy/gorush/rpc"
 	"github.com/appleboy/gorush/status"
 
+	"github.com/appleboy/graceful"
 	"github.com/golang-queue/nats"
 	"github.com/golang-queue/nsq"
 	"github.com/golang-queue/queue"
 	"github.com/golang-queue/redisdb"
-	"golang.org/x/sync/errgroup"
 )
 
 func withContextFunc(ctx context.Context, f func()) context.Context {
@@ -365,17 +365,22 @@ func main() {
 		queue.WithLogger(logx.QueueLogger()),
 	)
 
-	finished := make(chan struct{})
-	ctx := withContextFunc(context.Background(), func() {
+	ctx := context.Background()
+	g := graceful.NewManager(
+		graceful.WithContext(ctx),
+		graceful.WithLogger(logx.QueueLogger()),
+	)
+
+	g.AddShutdownJob(func() error {
 		logx.LogAccess.Info("close the queue system, current queue usage: ", q.Usage())
 		// stop queue system and wait job completed
 		q.Release()
-		close(finished)
 		// close the connection with storage
 		logx.LogAccess.Info("close the storage connection: ", cfg.Stat.Engine)
 		if err := status.StatStorage.Close(); err != nil {
 			logx.LogError.Fatal("can't close the storage connection: ", err.Error())
 		}
+		return nil
 	})
 
 	if cfg.Ios.Enabled {
@@ -396,27 +401,15 @@ func main() {
 		}
 	}
 
-	var g errgroup.Group
-
-	// Run httpd server
-	g.Go(func() error {
+	g.AddRunningJob(func(ctx context.Context) error {
 		return router.RunHTTPServer(ctx, cfg, q)
 	})
 
-	// Run gRPC internal server
-	g.Go(func() error {
+	g.AddRunningJob(func(ctx context.Context) error {
 		return rpc.RunGRPCServer(ctx, cfg)
 	})
 
-	// check job completely
-	g.Go(func() error {
-		<-finished
-		return nil
-	})
-
-	if err = g.Wait(); err != nil {
-		logx.LogError.Fatal(err)
-	}
+	<-g.Done()
 }
 
 // Version control for notify.
