@@ -14,10 +14,10 @@ require (
 	github.com/gin-contrib/logger v0.2.0
 	github.com/gin-gonic/gin v1.7.4
 	github.com/go-redis/redis/v8 v8.11.3
-	github.com/golang-queue/nats v0.0.4
-	github.com/golang-queue/nsq v0.0.6
-	github.com/golang-queue/queue v0.0.10
-	github.com/golang-queue/redisdb v0.0.5
+	github.com/golang-queue/nats v0.0.5
+	github.com/golang-queue/nsq v0.0.7
+	github.com/golang-queue/queue v0.0.11
+	github.com/golang-queue/redisdb v0.0.6
 	github.com/golang/glog v0.0.0-20210429001901-424d2337a529 // indirect
 	github.com/golang/protobuf v1.5.2
 	github.com/google/flatbuffers v2.0.0+incompatible // indirect
@@ -36,8 +36,8 @@ require (
 	github.com/tidwall/buntdb v1.2.0
 	github.com/tidwall/gjson v1.12.1 // indirect
 	go.uber.org/atomic v1.5.0
-	golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e
-	golang.org/x/net v0.0.0-20210428140749-89ef3d95e781
+	golang.org/x/crypto v0.0.0-20220112180741-5e0467b6c7ce
+	golang.org/x/net v0.0.0-20211112202133-69e39bad7dc2
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	google.golang.org/grpc v1.36.1
 	google.golang.org/protobuf v1.27.1
