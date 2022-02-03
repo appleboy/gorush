@@ -4,6 +4,8 @@ import (
 	"sync"
 	"testing"
 
+	"github.com/appleboy/gorush/storage"
+
 	"github.com/appleboy/gorush/config"
 	"github.com/stretchr/testify/assert"
 )
@@ -27,34 +29,16 @@ func TestRedisEngine(t *testing.T) {
 	redis := New(cfg)
 	err := redis.Init()
 	assert.Nil(t, err)
-	redis.Reset()
 
-	redis.AddTotalCount(10)
-	val = redis.GetTotalCount()
+	redis.Add(storage.HuaweiSuccessKey, 10)
+	val = redis.Get(storage.HuaweiSuccessKey)
 	assert.Equal(t, int64(10), val)
-	redis.AddTotalCount(10)
-	val = redis.GetTotalCount()
+	redis.Add(storage.HuaweiSuccessKey, 10)
+	val = redis.Get(storage.HuaweiSuccessKey)
 	assert.Equal(t, int64(20), val)
 
-	redis.AddIosSuccess(20)
-	val = redis.GetIosSuccess()
-	assert.Equal(t, int64(20), val)
-
-	redis.AddIosError(30)
-	val = redis.GetIosError()
-	assert.Equal(t, int64(30), val)
-
-	redis.AddAndroidSuccess(40)
-	val = redis.GetAndroidSuccess()
-	assert.Equal(t, int64(40), val)
-
-	redis.AddAndroidError(50)
-	val = redis.GetAndroidError()
-	assert.Equal(t, int64(50), val)
-
-	// test reset db
-	redis.Reset()
-	val = redis.GetAndroidError()
+	redis.Set(storage.HuaweiSuccessKey, 0)
+	val = redis.Get(storage.HuaweiSuccessKey)
 	assert.Equal(t, int64(0), val)
 
 	// test concurrency issues
@@ -62,12 +46,12 @@ func TestRedisEngine(t *testing.T) {
 	for i := 0; i < 10; i++ {
 		wg.Add(1)
 		go func() {
-			redis.AddTotalCount(1)
+			redis.Add(storage.HuaweiSuccessKey, 1)
 			wg.Done()
 		}()
 	}
 	wg.Wait()
-	val = redis.GetTotalCount()
+	val = redis.Get(storage.HuaweiSuccessKey)
 	assert.Equal(t, int64(10), val)
 
 	assert.NoError(t, redis.Close())

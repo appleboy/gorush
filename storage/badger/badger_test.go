@@ -1,7 +1,10 @@
 package badger
 
 import (
+	"sync"
 	"testing"
+
+	"github.com/appleboy/gorush/storage"
 
 	"github.com/appleboy/gorush/config"
 	"github.com/stretchr/testify/assert"
@@ -15,35 +18,30 @@ func TestBadgerEngine(t *testing.T) {
 	badger := New(cfg)
 	err := badger.Init()
 	assert.Nil(t, err)
-	badger.Reset()
 
-	badger.AddTotalCount(10)
-	val = badger.GetTotalCount()
+	badger.Add(storage.HuaweiSuccessKey, 10)
+	val = badger.Get(storage.HuaweiSuccessKey)
 	assert.Equal(t, int64(10), val)
-	badger.AddTotalCount(10)
-	val = badger.GetTotalCount()
+	badger.Add(storage.HuaweiSuccessKey, 10)
+	val = badger.Get(storage.HuaweiSuccessKey)
 	assert.Equal(t, int64(20), val)
 
-	badger.AddIosSuccess(20)
-	val = badger.GetIosSuccess()
-	assert.Equal(t, int64(20), val)
-
-	badger.AddIosError(30)
-	val = badger.GetIosError()
-	assert.Equal(t, int64(30), val)
-
-	badger.AddAndroidSuccess(40)
-	val = badger.GetAndroidSuccess()
-	assert.Equal(t, int64(40), val)
-
-	badger.AddAndroidError(50)
-	val = badger.GetAndroidError()
-	assert.Equal(t, int64(50), val)
-
-	// test reset db
-	badger.Reset()
-	val = badger.GetAndroidError()
+	badger.Set(storage.HuaweiSuccessKey, 0)
+	val = badger.Get(storage.HuaweiSuccessKey)
 	assert.Equal(t, int64(0), val)
+
+	// test concurrency issues
+	var wg sync.WaitGroup
+	for i := 0; i < 10; i++ {
+		wg.Add(1)
+		go func() {
+			badger.Add(storage.HuaweiSuccessKey, 1)
+			wg.Done()
+		}()
+	}
+	wg.Wait()
+	val = badger.Get(storage.HuaweiSuccessKey)
+	assert.Equal(t, int64(10), val)
 
 	assert.NoError(t, badger.Close())
 }
