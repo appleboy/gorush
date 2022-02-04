@@ -707,13 +707,13 @@ See more detail about [Firebase Cloud Messaging HTTP Protocol reference](https:/
 
 ### Huawei notification
 
-* app_id: app id from huawei developer console
-* huawei_data: mapped to data
-* huawei_notification: mapped to notification
-* huawei_ttl: mapped to ttl
-* huawei_collapse_key: mapped to collapse_key
-* bi_tag: 
-* fast_app_target: 
+1. app_id: app id from huawei developer console
+2. bi_tag:
+3. fast_app_target:
+4. huawei_data: mapped to data
+5. huawei_notification: mapped to notification
+6. huawei_ttl: mapped to ttl
+7. huawei_collapse_key: mapped to collapse_key
 
 See more detail about [Huawei Mobulse Services Push API reference](https://developer.huawei.com/consumer/en/doc/development/HMS-References/push-sendapi).
 
