@@ -269,6 +269,18 @@ cd gorush
 go install
 ```
 
+or you can use the `go get` command to install the latest or specific verison.
+
+**Note**: such go get installation aren't guaranteed to work. We recommend using binary installation.
+
+```sh
+# Go 1.16+
+go install github.com/appleboy/gorush@latest
+
+# Go version < 1.16
+go get -u github.com/appleboy/gorush@latest
+```
+
 ### Command Usage
 
 ```sh
