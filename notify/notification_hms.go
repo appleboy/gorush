@@ -123,7 +123,7 @@ func GetHuaweiNotification(req *PushNotification) (*model.MessageRequest, error)
 	}
 
 	setDefaultAndroidNotification := func() {
-		if msgRequest.Message.Android == nil {
+		if msgRequest.Message.Android.Notification == nil {
 			msgRequest.Message.Android.Notification = model.GetDefaultAndroidNotification()
 		}
 	}
