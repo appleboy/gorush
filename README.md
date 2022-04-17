@@ -1033,7 +1033,6 @@ GORUSH_GRPC_ENABLED=true GORUSH_GRPC_PORT=3000 gorush
 
 The following example code to send single notification in Go.
 
-[embedmd]:# (rpc/example/go/send/main.go go)
 ```go
 package main
 
@@ -1099,7 +1098,6 @@ func main() {
 
 See the Node.js example and see more detail frome [README](rpc/example/node/README.md):
 
-[embedmd]:# (rpc/example/node/client.js js)
 ```js
 var messages = require('./gorush_pb');
 var services = require('./gorush_grpc_pb');
@@ -1138,7 +1136,6 @@ main();
 
 GRPC Health Checking example: See [document](https://github.com/grpc/grpc/blob/master/doc/health-checking.md).
 
-[embedmd]:# (rpc/example/go/send/main.go go)
 ```go
 package main
 
