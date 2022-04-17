@@ -20,7 +20,7 @@ import (
 var Stats *stats.Stats
 
 // StatStorage implements the storage interface
-var StatStorage storage.Storage
+var StatStorage *StateStorage
 
 // App is status structure
 type App struct {
@@ -54,23 +54,27 @@ type HuaweiStatus struct {
 // InitAppStatus for initialize app status
 func InitAppStatus(conf *config.ConfYaml) error {
 	logx.LogAccess.Info("Init App Status Engine as ", conf.Stat.Engine)
+
+	var store storage.Storage
 	switch conf.Stat.Engine {
 	case "memory":
-		StatStorage = memory.New()
+		store = memory.New()
 	case "redis":
-		StatStorage = redis.New(conf)
+		store = redis.New(conf)
 	case "boltdb":
-		StatStorage = boltdb.New(conf)
+		store = boltdb.New(conf)
 	case "buntdb":
-		StatStorage = buntdb.New(conf)
+		store = buntdb.New(conf)
 	case "leveldb":
-		StatStorage = leveldb.New(conf)
+		store = leveldb.New(conf)
 	case "badger":
-		StatStorage = badger.New(conf)
+		store = badger.New(conf)
 	default:
 		logx.LogError.Error("storage error: can't find storage driver")
 		return errors.New("can't find storage driver")
 	}
+
+	StatStorage = NewStateStorage(store)
 
 	if err := StatStorage.Init(); err != nil {
 		logx.LogError.Error("storage error: " + err.Error())

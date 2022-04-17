@@ -57,6 +57,7 @@ func (s *Server) Check(ctx context.Context, in *proto.HealthCheckRequest) (*prot
 func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*proto.NotificationReply, error) {
 	badge := int(in.Badge)
 	notification := notify.PushNotification{
+		ID:               in.ID,
 		Platform:         int(in.Platform),
 		Tokens:           in.Tokens,
 		Message:          in.Message,

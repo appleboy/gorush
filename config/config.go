@@ -63,7 +63,7 @@ huawei:
   max_retry: 0 # resend fail notification, default value zero is disabled
 
 queue:
-  engine: "local" # support "local", "nsq", default value is "local"
+  engine: "local" # support "local", "nsq", "nats" and "redis" default value is "local"
   nsq:
     addr: 127.0.0.1:4150
     topic: gorush
@@ -72,6 +72,10 @@ queue:
     addr: 127.0.0.1:4222
     subj: gorush
     queue: gorush
+  redis:
+    addr: 127.0.0.1:6379
+    channel: gorush
+    size: 1024
 
 ios:
   enabled: false
@@ -216,9 +220,10 @@ type SectionStat struct {
 
 // SectionQueue is sub section of config.
 type SectionQueue struct {
-	Engine string      `yaml:"engine"`
-	NSQ    SectionNSQ  `yaml:"nsq"`
-	NATS   SectionNATS `yaml:"nats"`
+	Engine string            `yaml:"engine"`
+	NSQ    SectionNSQ        `yaml:"nsq"`
+	NATS   SectionNATS       `yaml:"nats"`
+	Redis  SectionRedisQueue `yaml:"redis"`
 }
 
 // SectionNSQ is sub section of config.
@@ -233,6 +238,13 @@ type SectionNATS struct {
 	Addr  string `yaml:"addr"`
 	Subj  string `yaml:"subj"`
 	Queue string `yaml:"queue"`
+}
+
+// SectionRedisQueue is sub section of config.
+type SectionRedisQueue struct {
+	Addr    string `yaml:"addr"`
+	Channel string `yaml:"channel"`
+	Size    int    `yaml:"size"`
 }
 
 // SectionRedis is sub section of config.
@@ -277,9 +289,16 @@ type SectionGRPC struct {
 	Port    string `yaml:"port"`
 }
 
+func setDefault() {
+	viper.SetDefault("ios.max_concurrent_pushes", uint(100))
+}
+
 // LoadConf load config from file and read in environment variables that match
 func LoadConf(confPath ...string) (*ConfYaml, error) {
 	conf := &ConfYaml{}
+
+	// load default values
+	setDefault()
 
 	viper.SetConfigType("yaml")
 	viper.AutomaticEnv()         // read in environment variables that match
@@ -384,6 +403,9 @@ func LoadConf(confPath ...string) (*ConfYaml, error) {
 	conf.Queue.NATS.Addr = viper.GetString("queue.nats.addr")
 	conf.Queue.NATS.Subj = viper.GetString("queue.nats.subj")
 	conf.Queue.NATS.Queue = viper.GetString("queue.nats.queue")
+	conf.Queue.Redis.Addr = viper.GetString("queue.redis.addr")
+	conf.Queue.Redis.Channel = viper.GetString("queue.redis.channel")
+	conf.Queue.Redis.Size = viper.GetInt("queue.redis.size")
 
 	// Stat Engine
 	conf.Stat.Engine = viper.GetString("stat.engine")

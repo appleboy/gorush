@@ -8,10 +8,8 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"os/signal"
 	"path/filepath"
 	"strconv"
-	"syscall"
 	"time"
 
 	"github.com/appleboy/gorush/config"
@@ -22,29 +20,12 @@ import (
 	"github.com/appleboy/gorush/rpc"
 	"github.com/appleboy/gorush/status"
 
+	"github.com/appleboy/graceful"
 	"github.com/golang-queue/nats"
 	"github.com/golang-queue/nsq"
 	"github.com/golang-queue/queue"
-	"golang.org/x/sync/errgroup"
+	"github.com/golang-queue/redisdb"
 )
-
-func withContextFunc(ctx context.Context, f func()) context.Context {
-	ctx, cancel := context.WithCancel(ctx)
-	go func() {
-		c := make(chan os.Signal, 1)
-		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
-		defer signal.Stop(c)
-
-		select {
-		case <-ctx.Done():
-		case <-c:
-			cancel()
-			f()
-		}
-	}()
-
-	return ctx
-}
 
 func main() {
 	opts := config.ConfYaml{}
@@ -346,6 +327,14 @@ func main() {
 			nats.WithRunFunc(notify.Run(cfg)),
 			nats.WithLogger(logx.QueueLogger()),
 		)
+	case core.Redis:
+		w = redisdb.NewWorker(
+			redisdb.WithAddr(cfg.Queue.Redis.Addr),
+			redisdb.WithChannel(cfg.Queue.Redis.Channel),
+			redisdb.WithChannelSize(cfg.Queue.Redis.Size),
+			redisdb.WithRunFunc(notify.Run(cfg)),
+			redisdb.WithLogger(logx.QueueLogger()),
+		)
 	default:
 		logx.LogError.Fatalf("we don't support queue engine: %s", cfg.Queue.Engine)
 	}
@@ -356,17 +345,20 @@ func main() {
 		queue.WithLogger(logx.QueueLogger()),
 	)
 
-	finished := make(chan struct{})
-	ctx := withContextFunc(context.Background(), func() {
+	g := graceful.NewManager(
+		graceful.WithLogger(logx.QueueLogger()),
+	)
+
+	g.AddShutdownJob(func() error {
 		logx.LogAccess.Info("close the queue system, current queue usage: ", q.Usage())
 		// stop queue system and wait job completed
 		q.Release()
-		close(finished)
 		// close the connection with storage
 		logx.LogAccess.Info("close the storage connection: ", cfg.Stat.Engine)
 		if err := status.StatStorage.Close(); err != nil {
 			logx.LogError.Fatal("can't close the storage connection: ", err.Error())
 		}
+		return nil
 	})
 
 	if cfg.Ios.Enabled {
@@ -387,27 +379,15 @@ func main() {
 		}
 	}
 
-	var g errgroup.Group
-
-	// Run httpd server
-	g.Go(func() error {
+	g.AddRunningJob(func(ctx context.Context) error {
 		return router.RunHTTPServer(ctx, cfg, q)
 	})
 
-	// Run gRPC internal server
-	g.Go(func() error {
+	g.AddRunningJob(func(ctx context.Context) error {
 		return rpc.RunGRPCServer(ctx, cfg)
 	})
 
-	// check job completely
-	g.Go(func() error {
-		<-finished
-		return nil
-	})
-
-	if err = g.Wait(); err != nil {
-		logx.LogError.Fatal(err)
-	}
+	<-g.Done()
 }
 
 // Version control for notify.
@@ -456,7 +436,6 @@ Common Options:
 // usage will print out the flag options for the server.
 func usage() {
 	fmt.Printf("%s\n", usageStr)
-	os.Exit(0)
 }
 
 // handles pinging the endpoint and returns an error if the

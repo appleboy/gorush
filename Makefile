@@ -141,6 +141,21 @@ build_linux_arm:
 build_linux_lambda:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -tags 'lambda' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)' -o release/linux/lambda/$(DEPLOY_IMAGE)
 
+build_darwin_amd64:
+	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -a -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)' -o release/darwin/amd64/$(DEPLOY_IMAGE)
+
+build_darwin_i386:
+	CGO_ENABLED=0 GOOS=darwin GOARCH=386 go build -a -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)' -o release/darwin/i386/$(DEPLOY_IMAGE)
+
+build_darwin_arm64:
+	CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -a -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)' -o release/darwin/arm64/$(DEPLOY_IMAGE)
+
+build_darwin_arm:
+	CGO_ENABLED=0 GOOS=darwin GOARCH=arm GOARM=7 go build -a -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)' -o release/darwin/arm/$(DEPLOY_IMAGE)
+
+build_darwin_lambda:
+	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -a -tags 'lambda' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)' -o release/darwin/lambda/$(DEPLOY_IMAGE)
+
 clean:
 	$(GO) clean -modcache -x -i ./...
 	find . -name coverage.txt -delete
