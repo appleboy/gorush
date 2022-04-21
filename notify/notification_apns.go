@@ -61,6 +61,11 @@ func InitAPNSClient(cfg *config.ConfYaml) error {
 
 		if cfg.Ios.KeyPath != "" {
 			ext = filepath.Ext(cfg.Ios.KeyPath)
+			if ext == "" {
+				// If the file has no extension, use KeyType
+				// This makes it possible to deploy GoRush with Terraform where the name of volume_mounts can only contain alphanumeric characters, hyphens and underscores but no dots
+				ext = "." + cfg.Ios.KeyType
+			}
 
 			switch ext {
 			case ".p12":
