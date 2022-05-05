@@ -13,7 +13,7 @@ import (
 	"github.com/appleboy/gorush/logx"
 
 	"github.com/appleboy/go-fcm"
-	"github.com/golang-queue/queue"
+	qcore "github.com/golang-queue/queue/core"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/msalihkarakasli/go-hms-push/push/model"
 )
@@ -233,7 +233,7 @@ func CheckPushConf(cfg *config.ConfYaml) error {
 }
 
 // SendNotification send notification
-func SendNotification(req queue.QueuedMessage, cfg *config.ConfYaml) (resp *ResponsePush, err error) {
+func SendNotification(req qcore.QueuedMessage, cfg *config.ConfYaml) (resp *ResponsePush, err error) {
 	v, ok := req.(*PushNotification)
 	if !ok {
 		if err = json.Unmarshal(req.Bytes(), &v); err != nil {
@@ -263,8 +263,8 @@ func SendNotification(req queue.QueuedMessage, cfg *config.ConfYaml) (resp *Resp
 }
 
 // Run send notification
-var Run = func(cfg *config.ConfYaml) func(ctx context.Context, msg queue.QueuedMessage) error {
-	return func(ctx context.Context, msg queue.QueuedMessage) error {
+var Run = func(cfg *config.ConfYaml) func(ctx context.Context, msg qcore.QueuedMessage) error {
+	return func(ctx context.Context, msg qcore.QueuedMessage) error {
 		_, err := SendNotification(msg, cfg)
 		return err
 	}

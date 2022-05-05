@@ -61,8 +61,9 @@ queue:
     queue: gorush
   redis:
     addr: 127.0.0.1:6379
-    channel: gorush
-    size: 1024
+    group: gorush
+    consumer: gorush
+    stream_name: gorush
 
 ios:
   enabled: false

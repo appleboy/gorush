@@ -24,7 +24,8 @@ import (
 	"github.com/golang-queue/nats"
 	"github.com/golang-queue/nsq"
 	"github.com/golang-queue/queue"
-	"github.com/golang-queue/redisdb"
+	qcore "github.com/golang-queue/queue/core"
+	redisdb "github.com/golang-queue/redisdb-stream"
 )
 
 func main() {
@@ -302,7 +303,7 @@ func main() {
 		logx.LogError.Fatal(err)
 	}
 
-	var w queue.Worker
+	var w qcore.Worker
 	switch core.Queue(cfg.Queue.Engine) {
 	case core.LocalQueue:
 		w = queue.NewConsumer(
@@ -330,8 +331,9 @@ func main() {
 	case core.Redis:
 		w = redisdb.NewWorker(
 			redisdb.WithAddr(cfg.Queue.Redis.Addr),
-			redisdb.WithChannel(cfg.Queue.Redis.Channel),
-			redisdb.WithChannelSize(cfg.Queue.Redis.Size),
+			redisdb.WithStreamName(cfg.Queue.Redis.StreamName),
+			redisdb.WithGroup(cfg.Queue.Redis.Group),
+			redisdb.WithConsumer(cfg.Queue.Redis.Consumer),
 			redisdb.WithRunFunc(notify.Run(cfg)),
 			redisdb.WithLogger(logx.QueueLogger()),
 		)
@@ -350,7 +352,7 @@ func main() {
 	)
 
 	g.AddShutdownJob(func() error {
-		logx.LogAccess.Info("close the queue system, current queue usage: ", q.Usage())
+		// logx.LogAccess.Info("close the queue system, current queue usage: ", q.Usage())
 		// stop queue system and wait job completed
 		q.Release()
 		// close the connection with storage

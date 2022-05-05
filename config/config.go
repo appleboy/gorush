@@ -74,8 +74,9 @@ queue:
     queue: gorush
   redis:
     addr: 127.0.0.1:6379
-    channel: gorush
-    size: 1024
+    group: gorush
+    consumer: gorush
+    stream_name: gorush
 
 ios:
   enabled: false
@@ -242,9 +243,10 @@ type SectionNATS struct {
 
 // SectionRedisQueue is sub section of config.
 type SectionRedisQueue struct {
-	Addr    string `yaml:"addr"`
-	Channel string `yaml:"channel"`
-	Size    int    `yaml:"size"`
+	Addr       string `yaml:"addr"`
+	StreamName string `yaml:"stream_name"`
+	Group      string `yaml:"group"`
+	Consumer   string `yaml:"consumer"`
 }
 
 // SectionRedis is sub section of config.
@@ -404,8 +406,9 @@ func LoadConf(confPath ...string) (*ConfYaml, error) {
 	conf.Queue.NATS.Subj = viper.GetString("queue.nats.subj")
 	conf.Queue.NATS.Queue = viper.GetString("queue.nats.queue")
 	conf.Queue.Redis.Addr = viper.GetString("queue.redis.addr")
-	conf.Queue.Redis.Channel = viper.GetString("queue.redis.channel")
-	conf.Queue.Redis.Size = viper.GetInt("queue.redis.size")
+	conf.Queue.Redis.StreamName = viper.GetString("queue.redis.stream_name")
+	conf.Queue.Redis.Group = viper.GetString("queue.redis.group")
+	conf.Queue.Redis.Consumer = viper.GetString("queue.redis.consumer")
 
 	// Stat Engine
 	conf.Stat.Engine = viper.GetString("stat.engine")
