@@ -12,7 +12,7 @@ require (
 	github.com/buger/jsonparser v1.1.1
 	github.com/dgraph-io/badger/v3 v3.2103.1
 	github.com/gin-contrib/logger v0.2.0
-	github.com/gin-gonic/gin v1.7.4
+	github.com/gin-gonic/gin v1.7.7
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/golang-queue/nats v0.0.7
 	github.com/golang-queue/nsq v0.1.0
