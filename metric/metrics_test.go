@@ -1,15 +1,23 @@
 package metric
 
 import (
+	"context"
 	"testing"
+	"time"
 
+	"github.com/golang-queue/queue"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewMetrics(t *testing.T) {
-	m := NewMetrics()
-	assert.Equal(t, 0, m.GetQueueUsage())
+var noTask = func(ctx context.Context) error { return nil }
 
-	m = NewMetrics(func() int { return 1 })
-	assert.Equal(t, 1, m.GetQueueUsage())
+func TestNewMetrics(t *testing.T) {
+	q := queue.NewPool(10)
+	assert.NoError(t, q.QueueTask(noTask))
+	assert.NoError(t, q.QueueTask(noTask))
+	time.Sleep(10 * time.Millisecond)
+	defer q.Release()
+	m := NewMetrics(q)
+	assert.Equal(t, 2, m.q.SubmittedTasks())
+	assert.Equal(t, 2, m.q.SuccessTasks())
 }

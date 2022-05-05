@@ -24,13 +24,15 @@ var StatStorage *StateStorage
 
 // App is status structure
 type App struct {
-	Version    string        `json:"version"`
-	QueueMax   int           `json:"queue_max"`
-	QueueUsage int           `json:"queue_usage"`
-	TotalCount int64         `json:"total_count"`
-	Ios        IosStatus     `json:"ios"`
-	Android    AndroidStatus `json:"android"`
-	Huawei     HuaweiStatus  `json:"huawei"`
+	Version        string        `json:"version"`
+	BusyWorkers    int           `json:"busy_workers"`
+	SuccessTasks   int           `json:"success_tasks"`
+	FailureTasks   int           `json:"failure_tasks"`
+	SubmittedTasks int           `json:"submitted_tasks"`
+	TotalCount     int64         `json:"total_count"`
+	Ios            IosStatus     `json:"ios"`
+	Android        AndroidStatus `json:"android"`
+	Huawei         HuaweiStatus  `json:"huawei"`
 }
 
 // AndroidStatus is android structure

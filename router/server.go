@@ -121,8 +121,10 @@ func appStatusHandler(q *queue.Queue) gin.HandlerFunc {
 		result := status.App{}
 
 		result.Version = GetVersion()
-		result.QueueMax = q.Capacity()
-		result.QueueUsage = q.Usage()
+		result.BusyWorkers = q.BusyWorkers()
+		result.SuccessTasks = q.SuccessTasks()
+		result.FailureTasks = q.FailureTasks()
+		result.SubmittedTasks = q.SubmittedTasks()
 		result.TotalCount = status.StatStorage.GetTotalCount()
 		result.Ios.PushSuccess = status.StatStorage.GetIosSuccess()
 		result.Ios.PushError = status.StatStorage.GetIosError()
@@ -184,9 +186,7 @@ func routerEngine(cfg *config.ConfYaml, q *queue.Queue) *gin.Engine {
 
 	// Support metrics
 	doOnce.Do(func() {
-		m := metric.NewMetrics(func() int {
-			return q.Usage()
-		})
+		m := metric.NewMetrics(q)
 		prometheus.MustRegister(m)
 	})
 

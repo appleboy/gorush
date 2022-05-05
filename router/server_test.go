@@ -21,6 +21,7 @@ import (
 	"github.com/buger/jsonparser"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-queue/queue"
+	qcore "github.com/golang-queue/queue/core"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -44,7 +45,7 @@ func TestMain(m *testing.M) {
 
 	q = queue.NewPool(
 		int(cfg.Core.WorkerNum),
-		queue.WithFn(func(ctx context.Context, msg queue.QueuedMessage) error {
+		queue.WithFn(func(ctx context.Context, msg qcore.QueuedMessage) error {
 			_, err := notify.SendNotification(msg, cfg)
 			return err
 		}),
