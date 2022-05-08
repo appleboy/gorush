@@ -66,7 +66,7 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 - [FCM](https://firebase.google.com/)
 - [HMS](https://developer.huawei.com/consumer/en/hms/)
 
-[A live demo on Netlify](https://gorush.netlify.com/).
+[A live demo on Netlify](https://gorush.netlify.app/).
 
 ## Features
 
@@ -90,7 +90,7 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 - Support send notification through [RPC](https://en.wikipedia.org/wiki/Remote_procedure_call) protocol, we use [gRPC](https://grpc.io/) as default framework.
 - Support running in Docker, [Kubernetes](https://kubernetes.io/) or [AWS Lambda](https://aws.amazon.com/lambda) ([Native Support in Golang](https://aws.amazon.com/blogs/compute/announcing-go-support-for-aws-lambda/))
 - Support graceful shutdown that workers and queue have been sent to APNs/FCM before shutdown service.
-- Support different Queue as backend like [NSQ](https://nsq.io/), [NATS](https://nats.io/) or [Redis Pub/Sub](https://redis.io/topics/pubsub), defaut engine is local [Channel](https://tour.golang.org/concurrency/2).
+- Support different Queue as backend like [NSQ](https://nsq.io/), [NATS](https://nats.io/) or [Redis streams](https://redis.io/docs/manual/data-types/streams/), defaut engine is local [Channel](https://tour.golang.org/concurrency/2).
 
 See the default [YAML config example](config/testdata/config.yml):
 
@@ -475,9 +475,11 @@ Show success or failure counts information of notification.
 ```json
 {
   "version": "v1.6.2",
-  "queue_max": 8192,
-  "queue_usage": 0,
-  "total_count": 77,
+  "busy_workers": 0,
+  "success_tasks": 32,
+  "failure_tasks": 49,
+  "submitted_tasks": 81,
+  "total_count": 81,
   "ios": {
     "push_success": 19,
     "push_error": 38
