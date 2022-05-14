@@ -4,7 +4,7 @@
   "dependencies": {
     "async": "^3.2.3",
     "global": "^4.4.0",
-    "google-protobuf": "^3.20.0",
+    "google-protobuf": "^3.20.1",
     "grpc": "^1.24.11",
     "lodash": "^4.17.21",
     "minimist": ">=1.2.6"
