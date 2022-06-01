@@ -19,11 +19,11 @@ require (
 	github.com/golang-queue/queue v0.1.1
 	github.com/golang-queue/redisdb-stream v0.0.1
 	github.com/golang/protobuf v1.5.2
-	github.com/json-iterator/go v1.1.10
+	github.com/json-iterator/go v1.1.11
 	github.com/mattn/go-isatty v0.0.12
 	github.com/mitchellh/mapstructure v1.4.1
 	github.com/msalihkarakasli/go-hms-push v0.0.0-20210731212030-00e7b986815b
-	github.com/prometheus/client_golang v1.10.0
+	github.com/prometheus/client_golang v1.11.1
 	github.com/rs/zerolog v1.23.0
 	github.com/sideshow/apns2 v0.20.0
 	github.com/sirupsen/logrus v1.8.1
@@ -78,7 +78,7 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/prometheus/client_model v0.2.0 // indirect
-	github.com/prometheus/common v0.18.0 // indirect
+	github.com/prometheus/common v0.26.0 // indirect
 	github.com/prometheus/procfs v0.6.0 // indirect
 	github.com/spf13/afero v1.1.2 // indirect
 	github.com/spf13/cast v1.3.0 // indirect
