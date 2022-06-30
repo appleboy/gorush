@@ -217,72 +217,76 @@ func configureHTTP2ConnHealthCheck(h2Transport *http2.Transport) {
 	h2Transport.PingTimeout = 1 * time.Second
 }
 
-func iosAlertDictionary(payload *payload.Payload, req *PushNotification) *payload.Payload {
+func iosAlertDictionary(notificationPayload *payload.Payload, req *PushNotification) *payload.Payload {
 	// Alert dictionary
 
 	if len(req.Title) > 0 {
-		payload.AlertTitle(req.Title)
+		notificationPayload.AlertTitle(req.Title)
+	}
+
+	if len(req.InterruptionLevel) > 0 {
+		notificationPayload.InterruptionLevel(payload.EInterruptionLevel(req.InterruptionLevel))
 	}
 
 	if len(req.Message) > 0 && len(req.Title) > 0 {
-		payload.AlertBody(req.Message)
+		notificationPayload.AlertBody(req.Message)
 	}
 
 	if len(req.Alert.Title) > 0 {
-		payload.AlertTitle(req.Alert.Title)
+		notificationPayload.AlertTitle(req.Alert.Title)
 	}
 
 	// Apple Watch & Safari display this string as part of the notification interface.
 	if len(req.Alert.Subtitle) > 0 {
-		payload.AlertSubtitle(req.Alert.Subtitle)
+		notificationPayload.AlertSubtitle(req.Alert.Subtitle)
 	}
 
 	if len(req.Alert.TitleLocKey) > 0 {
-		payload.AlertTitleLocKey(req.Alert.TitleLocKey)
+		notificationPayload.AlertTitleLocKey(req.Alert.TitleLocKey)
 	}
 
 	if len(req.Alert.LocArgs) > 0 {
-		payload.AlertLocArgs(req.Alert.LocArgs)
+		notificationPayload.AlertLocArgs(req.Alert.LocArgs)
 	}
 
 	if len(req.Alert.TitleLocArgs) > 0 {
-		payload.AlertTitleLocArgs(req.Alert.TitleLocArgs)
+		notificationPayload.AlertTitleLocArgs(req.Alert.TitleLocArgs)
 	}
 
 	if len(req.Alert.Body) > 0 {
-		payload.AlertBody(req.Alert.Body)
+		notificationPayload.AlertBody(req.Alert.Body)
 	}
 
 	if len(req.Alert.LaunchImage) > 0 {
-		payload.AlertLaunchImage(req.Alert.LaunchImage)
+		notificationPayload.AlertLaunchImage(req.Alert.LaunchImage)
 	}
 
 	if len(req.Alert.LocKey) > 0 {
-		payload.AlertLocKey(req.Alert.LocKey)
+		notificationPayload.AlertLocKey(req.Alert.LocKey)
 	}
 
 	if len(req.Alert.Action) > 0 {
-		payload.AlertAction(req.Alert.Action)
+		notificationPayload.AlertAction(req.Alert.Action)
 	}
 
 	if len(req.Alert.ActionLocKey) > 0 {
-		payload.AlertActionLocKey(req.Alert.ActionLocKey)
+		notificationPayload.AlertActionLocKey(req.Alert.ActionLocKey)
 	}
 
 	// General
 	if len(req.Category) > 0 {
-		payload.Category(req.Category)
+		notificationPayload.Category(req.Category)
 	}
 
 	if len(req.Alert.SummaryArg) > 0 {
-		payload.AlertSummaryArg(req.Alert.SummaryArg)
+		notificationPayload.AlertSummaryArg(req.Alert.SummaryArg)
 	}
 
 	if req.Alert.SummaryArgCount > 0 {
-		payload.AlertSummaryArgCount(req.Alert.SummaryArgCount)
+		notificationPayload.AlertSummaryArgCount(req.Alert.SummaryArgCount)
 	}
 
-	return payload
+	return notificationPayload
 }
 
 // GetIOSNotification use for define iOS notification.

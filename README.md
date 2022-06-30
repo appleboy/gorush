@@ -655,6 +655,7 @@ The Request body must have a notifications array. The following is a parameter t
 | mutable_content         | bool         | enable Notification Service app extension.                                                        | -        | only iOS(10.0+).                                              |
 | name                    | string       | sets the name value on the aps sound dictionary.                                                  | -        | only iOS                                                      |
 | volume                  | float32      | sets the volume value on the aps sound dictionary.                                                | -        | only iOS                                                      |
+| interruption_level      | string       | defines the interruption level for the push notification.                                         | -        | only iOS(15.0+)                                                      |
 
 ### iOS alert payload
 
