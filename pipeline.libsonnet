@@ -9,7 +9,7 @@
     steps: [
       {
         name: 'lint',
-        image: 'golangci/golangci-lint:v1.41.1',
+        image: 'golangci/golangci-lint:v1.45.0',
         pull: 'always',
         commands: [
           'golangci-lint run -v',
@@ -23,7 +23,7 @@
       },
       {
         name: 'embedmd',
-        image: 'golang:1.17',
+        image: 'golang:1.18',
         pull: 'always',
         commands: [
           'make embedmd',

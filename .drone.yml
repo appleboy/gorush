@@ -9,7 +9,7 @@ platform:
 steps:
 - name: lint
   pull: always
-  image: golangci/golangci-lint:v1.44.0
+  image: golangci/golangci-lint:v1.4.0
   commands:
   - golangci-lint run -v
   volumes:
