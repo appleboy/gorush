@@ -2,7 +2,7 @@
   "name": "gorush-examples",
   "version": "0.1.0",
   "dependencies": {
-    "async": "^3.2.3",
+    "async": "^3.2.4",
     "global": "^4.4.0",
     "google-protobuf": "^3.20.1",
     "grpc": "^1.24.11",
