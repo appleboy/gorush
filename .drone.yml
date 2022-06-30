@@ -14,7 +14,7 @@ services:
 steps:
 - commands:
   - golangci-lint run -v
-  image: golangci/golangci-lint:v1.45.0
+  image: golangci/golangci-lint:v1.46.2
   name: lint
   pull: always
   volumes:

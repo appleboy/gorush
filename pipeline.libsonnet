@@ -9,7 +9,7 @@
     steps: [
       {
         name: 'lint',
-        image: 'golangci/golangci-lint:v1.45.0',
+        image: 'golangci/golangci-lint:v1.46.2',
         pull: 'always',
         commands: [
           'golangci-lint run -v',
