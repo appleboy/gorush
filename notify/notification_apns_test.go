@@ -526,6 +526,7 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 			TitleLocArgs: []string{"a", "b"},
 			TitleLocKey:  test,
 		},
+		InterruptionLevel: test,
 	}
 
 	notification := GetIOSNotification(req)
@@ -546,6 +547,7 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 	title, _ := jsonparser.GetString(data, "aps", "alert", "title")
 	subtitle, _ := jsonparser.GetString(data, "aps", "alert", "subtitle")
 	titleLocKey, _ := jsonparser.GetString(data, "aps", "alert", "title-loc-key")
+	interruptionLevel, _ := jsonparser.GetString(data, "aps", "interruption-level")
 	aps := dat["aps"].(map[string]interface{})
 	alert := aps["alert"].(map[string]interface{})
 	titleLocArgs := alert["title-loc-args"].([]interface{})
@@ -559,6 +561,7 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 	assert.Equal(t, test, title)
 	assert.Equal(t, test, subtitle)
 	assert.Equal(t, test, titleLocKey)
+	assert.Equal(t, test, interruptionLevel)
 	assert.Contains(t, titleLocArgs, "a")
 	assert.Contains(t, titleLocArgs, "b")
 	assert.Contains(t, locArgs, "a")
