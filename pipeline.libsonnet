@@ -7,23 +7,23 @@
       arch: 'amd64',
     },
     steps: [
-      {
-        name: 'lint',
-        image: 'golangci/golangci-lint:v1.41.1',
-        pull: 'always',
-        commands: [
-          'golangci-lint run -v',
-        ],
-        volumes: [
-          {
-            name: 'gopath',
-            path: '/go',
-          },
-        ],
-      },
+      // {
+      //   name: 'lint',
+      //   image: 'golangci/golangci-lint:v1.46.2',
+      //   pull: 'always',
+      //   commands: [
+      //     'golangci-lint run -v',
+      //   ],
+      //   volumes: [
+      //     {
+      //       name: 'gopath',
+      //       path: '/go',
+      //     },
+      //   ],
+      // },
       {
         name: 'embedmd',
-        image: 'golang:1.17',
+        image: 'golang:1.18',
         pull: 'always',
         commands: [
           'make embedmd',
@@ -52,32 +52,32 @@
           },
         ],
       },
-      {
-        name: 'test',
-        image: 'golang:1.17',
-        pull: 'always',
-        environment: {
-          ANDROID_API_KEY: { 'from_secret': 'android_api_key' },
-          ANDROID_TEST_TOKEN: { 'from_secret': 'android_test_token' },
-        },
-        commands: [
-          'make test',
-        ],
-        volumes: [
-          {
-            name: 'gopath',
-            path: '/go',
-          },
-        ],
-      },
-      {
-        name: 'codecov',
-        image: 'robertstettner/drone-codecov',
-        pull: 'always',
-        settings: {
-          token: { 'from_secret': 'codecov_token' },
-        },
-      },
+      // {
+      //   name: 'test',
+      //   image: 'golang:1.18',
+      //   pull: 'always',
+      //   environment: {
+      //     ANDROID_API_KEY: { 'from_secret': 'android_api_key' },
+      //     ANDROID_TEST_TOKEN: { 'from_secret': 'android_test_token' },
+      //   },
+      //   commands: [
+      //     'make test',
+      //   ],
+      //   volumes: [
+      //     {
+      //       name: 'gopath',
+      //       path: '/go',
+      //     },
+      //   ],
+      // },
+      // {
+      //   name: 'codecov',
+      //   image: 'robertstettner/drone-codecov',
+      //   pull: 'always',
+      //   settings: {
+      //     token: { 'from_secret': 'codecov_token' },
+      //   },
+      // },
     ],
     volumes: [
       {
@@ -110,7 +110,7 @@
     steps: [
       {
         name: 'build-push',
-        image: 'golang:1.17',
+        image: 'golang:1.18',
         pull: 'always',
         environment: {
           CGO_ENABLED: '0',
@@ -126,7 +126,7 @@
       },
       // {
       //   name: 'build-push-lambda',
-      //   image: 'golang:1.17',
+      //   image: 'golang:1.18',
       //   pull: 'always',
       //   environment: {
       //     CGO_ENABLED: '0',
@@ -142,7 +142,7 @@
       // },
       {
         name: 'build-tag',
-        image: 'golang:1.17',
+        image: 'golang:1.18',
         pull: 'always',
         environment: {
           CGO_ENABLED: '0',
@@ -156,7 +156,7 @@
       },
       {
         name: 'executable',
-        image: 'golang:1.17',
+        image: 'golang:1.18',
         pull: 'always',
         commands: [
           './release/' + os + '/' + arch + '/' + name + ' --help',
@@ -205,7 +205,7 @@
     steps: [
       {
         name: 'build-all-binary',
-        image: 'golang:1.17',
+        image: 'golang:1.18',
         pull: 'always',
         commands: [
           'make release'
