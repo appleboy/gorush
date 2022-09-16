@@ -104,7 +104,7 @@ core:
   worker_num: 0 # default worker number is runtime.NumCPU()
   queue_num: 0 # default queue number is 8192
   max_notification: 100
-  sync: false # set true if you need get error message from fail push notification in API response.
+  sync: false # set true if you need get error message from fail push notification in API response. It only works when the queue engine is local.
   feedback_hook_url: "" # set a hook url if you need get error message asynchronously from fail push notification in API response.
   feedback_timeout: 10 # default is 10 second
   mode: "release"
@@ -983,7 +983,7 @@ core:
 + feedback_hook_url: "https://exemple.com/api/hook"
 ```
 
-You can also switch to **sync** mode by setting the `sync` value as `true` on yaml config.
+You can also switch to **sync** mode by setting the `sync` value as `true` on yaml config. It only works when the queue engine is local.
 
 ```diff
 core:
