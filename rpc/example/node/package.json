@@ -7,6 +7,6 @@
     "google-protobuf": "^3.21.0",
     "grpc": "^1.24.11",
     "lodash": "^4.17.21",
-    "minimist": ">=1.2.6"
+    "minimist": ">=1.2.7"
   }
 }
