@@ -40,6 +40,8 @@ message NotificationRequest {
   }
   Priority priority = 16;
   string ID = 17;
+
+  string pushType = 18;
 }
 
 message NotificationReply {
