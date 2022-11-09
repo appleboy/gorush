@@ -12,6 +12,9 @@ GOFILES := $(shell find . -name "*.go" -type f)
 TAGS ?= sqlite
 LDFLAGS ?= -X 'main.Version=$(VERSION)'
 
+PROTOC_GEN_GO=v1.28
+PROTOC_GEN_GO_GRPC=v1.2
+
 ifneq ($(shell uname), Darwin)
 	EXTLDFLAGS = -extldflags "-static" $(null)
 else
@@ -162,6 +165,11 @@ clean:
 	find . -name *.tar.gz -delete
 	find . -name *.db -delete
 	-rm -rf release dist .cover
+
+.PHONY: proto_install
+proto_install:
+	$(GO) install google.golang.org/protobuf/cmd/protoc-gen-go@$(PROTOC_GEN_GO)
+	$(GO) install google.golang.org/grpc/cmd/protoc-gen-go-grpc@$(PROTOC_GEN_GO_GRPC)
 
 generate_proto_js:
 	npm install grpc-tools
