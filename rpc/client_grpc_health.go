@@ -3,6 +3,7 @@ package rpc
 import (
 	"context"
 
+	"github.com/appleboy/gorush/core"
 	"github.com/appleboy/gorush/rpc/proto"
 
 	"google.golang.org/grpc"
@@ -19,7 +20,7 @@ type healthClient struct {
 }
 
 // NewGrpcHealthClient returns a new grpc Client.
-func NewGrpcHealthClient(conn *grpc.ClientConn) Health {
+func NewGrpcHealthClient(conn *grpc.ClientConn) core.Health {
 	client := new(healthClient)
 	client.client = proto.NewHealthClient(conn)
 	client.conn = conn

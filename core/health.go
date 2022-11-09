@@ -1,8 +1,6 @@
-package rpc
+package core
 
-import (
-	"context"
-)
+import "context"
 
 // Health defines a health-check connection.
 type Health interface {
