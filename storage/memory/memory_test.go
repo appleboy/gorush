@@ -4,7 +4,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/appleboy/gorush/storage"
+	"github.com/appleboy/gorush/core"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -16,15 +16,15 @@ func TestMemoryEngine(t *testing.T) {
 	err := memory.Init()
 	assert.Nil(t, err)
 
-	memory.Add(storage.HuaweiSuccessKey, 10)
-	val = memory.Get(storage.HuaweiSuccessKey)
+	memory.Add(core.HuaweiSuccessKey, 10)
+	val = memory.Get(core.HuaweiSuccessKey)
 	assert.Equal(t, int64(10), val)
-	memory.Add(storage.HuaweiSuccessKey, 10)
-	val = memory.Get(storage.HuaweiSuccessKey)
+	memory.Add(core.HuaweiSuccessKey, 10)
+	val = memory.Get(core.HuaweiSuccessKey)
 	assert.Equal(t, int64(20), val)
 
-	memory.Set(storage.HuaweiSuccessKey, 0)
-	val = memory.Get(storage.HuaweiSuccessKey)
+	memory.Set(core.HuaweiSuccessKey, 0)
+	val = memory.Get(core.HuaweiSuccessKey)
 	assert.Equal(t, int64(0), val)
 
 	// test concurrency issues
@@ -32,12 +32,12 @@ func TestMemoryEngine(t *testing.T) {
 	for i := 0; i < 10; i++ {
 		wg.Add(1)
 		go func() {
-			memory.Add(storage.HuaweiSuccessKey, 1)
+			memory.Add(core.HuaweiSuccessKey, 1)
 			wg.Done()
 		}()
 	}
 	wg.Wait()
-	val = memory.Get(storage.HuaweiSuccessKey)
+	val = memory.Get(core.HuaweiSuccessKey)
 	assert.Equal(t, int64(10), val)
 
 	assert.NoError(t, memory.Close())

@@ -4,8 +4,8 @@ import (
 	"errors"
 
 	"github.com/appleboy/gorush/config"
+	"github.com/appleboy/gorush/core"
 	"github.com/appleboy/gorush/logx"
-	"github.com/appleboy/gorush/storage"
 	"github.com/appleboy/gorush/storage/badger"
 	"github.com/appleboy/gorush/storage/boltdb"
 	"github.com/appleboy/gorush/storage/buntdb"
@@ -57,7 +57,7 @@ type HuaweiStatus struct {
 func InitAppStatus(conf *config.ConfYaml) error {
 	logx.LogAccess.Info("Init App Status Engine as ", conf.Stat.Engine)
 
-	var store storage.Storage
+	var store core.Storage
 	switch conf.Stat.Engine {
 	case "memory":
 		store = memory.New()
