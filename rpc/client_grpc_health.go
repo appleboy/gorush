@@ -3,10 +3,12 @@ package rpc
 import (
 	"context"
 
+	"github.com/appleboy/gorush/core"
 	"github.com/appleboy/gorush/rpc/proto"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // generate protobuffs
@@ -18,7 +20,7 @@ type healthClient struct {
 }
 
 // NewGrpcHealthClient returns a new grpc Client.
-func NewGrpcHealthClient(conn *grpc.ClientConn) Health {
+func NewGrpcHealthClient(conn *grpc.ClientConn) core.Health {
 	client := new(healthClient)
 	client.client = proto.NewHealthClient(conn)
 	client.conn = conn
@@ -41,7 +43,7 @@ func (c *healthClient) Check(ctx context.Context) (bool, error) {
 		}
 		return false, nil
 	}
-	switch grpc.Code(err) {
+	switch status.Code(err) {
 	case
 		codes.Aborted,
 		codes.DataLoss,

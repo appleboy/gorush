@@ -7,51 +7,23 @@
       arch: 'amd64',
     },
     steps: [
-      {
-        name: 'vet',
-        image: 'golang:1.15',
-        pull: 'always',
-        commands: [
-          'make vet',
-        ],
-        volumes: [
-          {
-            name: 'gopath',
-            path: '/go',
-          },
-        ],
-      },
-      {
-        name: 'lint',
-        image: 'golang:1.15',
-        pull: 'always',
-        commands: [
-          'make lint',
-        ],
-        volumes: [
-          {
-            name: 'gopath',
-            path: '/go',
-          },
-        ],
-      },
-      {
-        name: 'misspell',
-        image: 'golang:1.15',
-        pull: 'always',
-        commands: [
-          'make misspell-check',
-        ],
-        volumes: [
-          {
-            name: 'gopath',
-            path: '/go',
-          },
-        ],
-      },
+      // {
+      //   name: 'lint',
+      //   image: 'golangci/golangci-lint:v1.46.2',
+      //   pull: 'always',
+      //   commands: [
+      //     'golangci-lint run -v',
+      //   ],
+      //   volumes: [
+      //     {
+      //       name: 'gopath',
+      //       path: '/go',
+      //     },
+      //   ],
+      // },
       {
         name: 'embedmd',
-        image: 'golang:1.15',
+        image: 'golang:1.18',
         pull: 'always',
         commands: [
           'make embedmd',
@@ -72,7 +44,6 @@
           'hadolint docker/Dockerfile.linux.amd64',
           'hadolint docker/Dockerfile.linux.arm64',
           'hadolint docker/Dockerfile.linux.arm',
-          'hadolint docker/Dockerfile.windows.amd64',
         ],
         volumes: [
           {
@@ -81,32 +52,32 @@
           },
         ],
       },
-      {
-        name: 'test',
-        image: 'golang:1.15',
-        pull: 'always',
-        environment: {
-          ANDROID_API_KEY: { 'from_secret': 'android_api_key' },
-          ANDROID_TEST_TOKEN: { 'from_secret': 'android_test_token' },
-        },
-        commands: [
-          'make test',
-        ],
-        volumes: [
-          {
-            name: 'gopath',
-            path: '/go',
-          },
-        ],
-      },
-      {
-        name: 'codecov',
-        image: 'robertstettner/drone-codecov',
-        pull: 'always',
-        settings: {
-          token: { 'from_secret': 'codecov_token' },
-        },
-      },
+      // {
+      //   name: 'test',
+      //   image: 'golang:1.18',
+      //   pull: 'always',
+      //   environment: {
+      //     ANDROID_API_KEY: { 'from_secret': 'android_api_key' },
+      //     ANDROID_TEST_TOKEN: { 'from_secret': 'android_test_token' },
+      //   },
+      //   commands: [
+      //     'make test',
+      //   ],
+      //   volumes: [
+      //     {
+      //       name: 'gopath',
+      //       path: '/go',
+      //     },
+      //   ],
+      // },
+      // {
+      //   name: 'codecov',
+      //   image: 'robertstettner/drone-codecov',
+      //   pull: 'always',
+      //   settings: {
+      //     token: { 'from_secret': 'codecov_token' },
+      //   },
+      // },
     ],
     volumes: [
       {
@@ -118,6 +89,13 @@
       {
         name: 'redis',
         image: 'redis',
+      },
+      {
+        name: 'nsq',
+        image: 'nsqio/nsq',
+        commands: [
+          "/nsqd",
+        ],
       },
     ],
   },
@@ -132,7 +110,7 @@
     steps: [
       {
         name: 'build-push',
-        image: 'golang:1.15',
+        image: 'golang:1.18',
         pull: 'always',
         environment: {
           CGO_ENABLED: '0',
@@ -148,7 +126,7 @@
       },
       // {
       //   name: 'build-push-lambda',
-      //   image: 'golang:1.15',
+      //   image: 'golang:1.18',
       //   pull: 'always',
       //   environment: {
       //     CGO_ENABLED: '0',
@@ -164,7 +142,7 @@
       // },
       {
         name: 'build-tag',
-        image: 'golang:1.15',
+        image: 'golang:1.18',
         pull: 'always',
         environment: {
           CGO_ENABLED: '0',
@@ -178,27 +156,11 @@
       },
       {
         name: 'executable',
-        image: 'golang:1.15',
+        image: 'golang:1.18',
         pull: 'always',
         commands: [
           './release/' + os + '/' + arch + '/' + name + ' --help',
         ],
-      },
-      {
-        name: 'dryrun',
-        image: 'plugins/docker:' + os + '-' + arch,
-        pull: 'always',
-        settings: {
-          daemon_off: false,
-          dry_run: true,
-          tags: os + '-' + arch,
-          dockerfile: 'docker/Dockerfile.' + os + '.' + arch,
-          repo: 'appleboy/' + name,
-          cache_from: 'appleboy/' + name,
-        },
-        when: {
-          event: [ 'pull_request' ],
-        },
       },
       {
         name: 'publish',
@@ -243,7 +205,7 @@
     steps: [
       {
         name: 'build-all-binary',
-        image: 'golang:1.15',
+        image: 'golang:1.18',
         pull: 'always',
         commands: [
           'make release'

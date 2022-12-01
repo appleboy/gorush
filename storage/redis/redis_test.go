@@ -4,15 +4,17 @@ import (
 	"sync"
 	"testing"
 
-	c "github.com/appleboy/gorush/config"
+	"github.com/appleboy/gorush/config"
+	"github.com/appleboy/gorush/core"
+
 	"github.com/stretchr/testify/assert"
 )
 
 func TestRedisServerError(t *testing.T) {
-	config, _ := c.LoadConf("")
-	config.Stat.Redis.Addr = "redis:6370"
+	cfg, _ := config.LoadConf()
+	cfg.Stat.Redis.Addr = "redis:6370"
 
-	redis := New(config)
+	redis := New(cfg)
 	err := redis.Init()
 
 	assert.Error(t, err)
@@ -21,40 +23,22 @@ func TestRedisServerError(t *testing.T) {
 func TestRedisEngine(t *testing.T) {
 	var val int64
 
-	config, _ := c.LoadConf("")
-	config.Stat.Redis.Addr = "redis:6379"
+	cfg, _ := config.LoadConf()
+	cfg.Stat.Redis.Addr = "redis:6379"
 
-	redis := New(config)
+	redis := New(cfg)
 	err := redis.Init()
 	assert.Nil(t, err)
-	redis.Reset()
 
-	redis.AddTotalCount(10)
-	val = redis.GetTotalCount()
+	redis.Add(core.HuaweiSuccessKey, 10)
+	val = redis.Get(core.HuaweiSuccessKey)
 	assert.Equal(t, int64(10), val)
-	redis.AddTotalCount(10)
-	val = redis.GetTotalCount()
+	redis.Add(core.HuaweiSuccessKey, 10)
+	val = redis.Get(core.HuaweiSuccessKey)
 	assert.Equal(t, int64(20), val)
 
-	redis.AddIosSuccess(20)
-	val = redis.GetIosSuccess()
-	assert.Equal(t, int64(20), val)
-
-	redis.AddIosError(30)
-	val = redis.GetIosError()
-	assert.Equal(t, int64(30), val)
-
-	redis.AddAndroidSuccess(40)
-	val = redis.GetAndroidSuccess()
-	assert.Equal(t, int64(40), val)
-
-	redis.AddAndroidError(50)
-	val = redis.GetAndroidError()
-	assert.Equal(t, int64(50), val)
-
-	// test reset db
-	redis.Reset()
-	val = redis.GetAndroidError()
+	redis.Set(core.HuaweiSuccessKey, 0)
+	val = redis.Get(core.HuaweiSuccessKey)
 	assert.Equal(t, int64(0), val)
 
 	// test concurrency issues
@@ -62,12 +46,12 @@ func TestRedisEngine(t *testing.T) {
 	for i := 0; i < 10; i++ {
 		wg.Add(1)
 		go func() {
-			redis.AddTotalCount(1)
+			redis.Add(core.HuaweiSuccessKey, 1)
 			wg.Done()
 		}()
 	}
 	wg.Wait()
-	val = redis.GetTotalCount()
+	val = redis.Get(core.HuaweiSuccessKey)
 	assert.Equal(t, int64(10), val)
 
 	assert.NoError(t, redis.Close())

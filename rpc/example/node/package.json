@@ -2,11 +2,11 @@
   "name": "gorush-examples",
   "version": "0.1.0",
   "dependencies": {
-    "async": "^3.1.0",
+    "async": "^3.2.4",
     "global": "^4.4.0",
-    "google-protobuf": "^3.10.0",
-    "grpc": "^1.24.1",
-    "lodash": "^4.17.19",
-    "minimist": ">=1.2.2"
+    "google-protobuf": "^3.21.0",
+    "grpc": "^1.24.11",
+    "lodash": "^4.17.21",
+    "minimist": ">=1.2.6"
   }
 }

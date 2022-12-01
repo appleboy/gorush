@@ -19,7 +19,7 @@ core:
   worker_num: 0 # default worker number is runtime.NumCPU()
   queue_num: 0 # default queue number is 8192
   max_notification: 100
-  sync: false # set true if you need get error message from fail push notification in API response.
+  sync: false # set true if you need get error message from fail push notification in API response. It only works when the queue engine is local.
   feedback_hook_url: "" # set webhook url if you need get error message asynchronously from fail push notification in API response.
   feedback_timeout: 10 # default is 10 second
   mode: "release"
@@ -57,10 +57,26 @@ android:
   max_retry: 0 # resend fail notification, default value zero is disabled
 
 huawei:
-  enabled: true
-  apikey: "YOUR_API_KEY"
+  enabled: false
+  appsecret: "YOUR_APP_SECRET"
   appid: "YOUR_APP_ID"
   max_retry: 0 # resend fail notification, default value zero is disabled
+
+queue:
+  engine: "local" # support "local", "nsq", "nats" and "redis" default value is "local"
+  nsq:
+    addr: 127.0.0.1:4150
+    topic: gorush
+    channel: gorush
+  nats:
+    addr: 127.0.0.1:4222
+    subj: gorush
+    queue: gorush
+  redis:
+    addr: 127.0.0.1:6379
+    group: gorush
+    consumer: gorush
+    stream_name: gorush
 
 ios:
   enabled: false
@@ -85,7 +101,8 @@ log:
 stat:
   engine: "memory" # support memory, redis, boltdb, buntdb or leveldb
   redis:
-    addr: "localhost:6379"
+    cluster: false
+    addr: "localhost:6379" # if cluster is true, you may set this to "localhost:6379,localhost:6380,localhost:6381"
     password: ""
     db: 0
   boltdb:
@@ -106,6 +123,7 @@ type ConfYaml struct {
 	Android SectionAndroid `yaml:"android"`
 	Huawei  SectionHuawei  `yaml:"huawei"`
 	Ios     SectionIos     `yaml:"ios"`
+	Queue   SectionQueue   `yaml:"queue"`
 	Log     SectionLog     `yaml:"log"`
 	Stat    SectionStat    `yaml:"stat"`
 	GRPC    SectionGRPC    `yaml:"grpc"`
@@ -161,10 +179,10 @@ type SectionAndroid struct {
 
 // SectionHuawei is sub section of config.
 type SectionHuawei struct {
-	Enabled  bool   `yaml:"enabled"`
-	APIKey   string `yaml:"apikey"`
-	APPId    string `yaml:"appid"`
-	MaxRetry int    `yaml:"max_retry"`
+	Enabled   bool   `yaml:"enabled"`
+	AppSecret string `yaml:"appsecret"`
+	AppID     string `yaml:"appid"`
+	MaxRetry  int    `yaml:"max_retry"`
 }
 
 // SectionIos is sub section of config.
@@ -201,8 +219,39 @@ type SectionStat struct {
 	BadgerDB SectionBadgerDB `yaml:"badgerdb"`
 }
 
+// SectionQueue is sub section of config.
+type SectionQueue struct {
+	Engine string            `yaml:"engine"`
+	NSQ    SectionNSQ        `yaml:"nsq"`
+	NATS   SectionNATS       `yaml:"nats"`
+	Redis  SectionRedisQueue `yaml:"redis"`
+}
+
+// SectionNSQ is sub section of config.
+type SectionNSQ struct {
+	Addr    string `yaml:"addr"`
+	Topic   string `yaml:"topic"`
+	Channel string `yaml:"channel"`
+}
+
+// SectionNATS is sub section of config.
+type SectionNATS struct {
+	Addr  string `yaml:"addr"`
+	Subj  string `yaml:"subj"`
+	Queue string `yaml:"queue"`
+}
+
+// SectionRedisQueue is sub section of config.
+type SectionRedisQueue struct {
+	Addr       string `yaml:"addr"`
+	StreamName string `yaml:"stream_name"`
+	Group      string `yaml:"group"`
+	Consumer   string `yaml:"consumer"`
+}
+
 // SectionRedis is sub section of config.
 type SectionRedis struct {
+	Cluster  bool   `yaml:"cluster"`
 	Addr     string `yaml:"addr"`
 	Password string `yaml:"password"`
 	DB       int    `yaml:"db"`
@@ -242,17 +291,24 @@ type SectionGRPC struct {
 	Port    string `yaml:"port"`
 }
 
+func setDefault() {
+	viper.SetDefault("ios.max_concurrent_pushes", uint(100))
+}
+
 // LoadConf load config from file and read in environment variables that match
-func LoadConf(confPath string) (ConfYaml, error) {
-	var conf ConfYaml
+func LoadConf(confPath ...string) (*ConfYaml, error) {
+	conf := &ConfYaml{}
+
+	// load default values
+	setDefault()
 
 	viper.SetConfigType("yaml")
 	viper.AutomaticEnv()         // read in environment variables that match
 	viper.SetEnvPrefix("gorush") // will be uppercased automatically
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
-	if confPath != "" {
-		content, err := ioutil.ReadFile(confPath)
+	if len(confPath) > 0 && confPath[0] != "" {
+		content, err := ioutil.ReadFile(confPath[0])
 		if err != nil {
 			return conf, err
 		}
@@ -317,8 +373,8 @@ func LoadConf(confPath string) (ConfYaml, error) {
 
 	// Huawei
 	conf.Huawei.Enabled = viper.GetBool("huawei.enabled")
-	conf.Huawei.APIKey = viper.GetString("huawei.apikey")
-	conf.Huawei.APPId = viper.GetString("huawei.appid")
+	conf.Huawei.AppSecret = viper.GetString("huawei.appsecret")
+	conf.Huawei.AppID = viper.GetString("huawei.appid")
 	conf.Huawei.MaxRetry = viper.GetInt("huawei.max_retry")
 
 	// iOS
@@ -341,8 +397,22 @@ func LoadConf(confPath string) (ConfYaml, error) {
 	conf.Log.ErrorLevel = viper.GetString("log.error_level")
 	conf.Log.HideToken = viper.GetBool("log.hide_token")
 
+	// Queue Engine
+	conf.Queue.Engine = viper.GetString("queue.engine")
+	conf.Queue.NSQ.Addr = viper.GetString("queue.nsq.addr")
+	conf.Queue.NSQ.Topic = viper.GetString("queue.nsq.topic")
+	conf.Queue.NSQ.Channel = viper.GetString("queue.nsq.channel")
+	conf.Queue.NATS.Addr = viper.GetString("queue.nats.addr")
+	conf.Queue.NATS.Subj = viper.GetString("queue.nats.subj")
+	conf.Queue.NATS.Queue = viper.GetString("queue.nats.queue")
+	conf.Queue.Redis.Addr = viper.GetString("queue.redis.addr")
+	conf.Queue.Redis.StreamName = viper.GetString("queue.redis.stream_name")
+	conf.Queue.Redis.Group = viper.GetString("queue.redis.group")
+	conf.Queue.Redis.Consumer = viper.GetString("queue.redis.consumer")
+
 	// Stat Engine
 	conf.Stat.Engine = viper.GetString("stat.engine")
+	conf.Stat.Redis.Cluster = viper.GetBool("stat.redis.cluster")
 	conf.Stat.Redis.Addr = viper.GetString("stat.redis.addr")
 	conf.Stat.Redis.Password = viper.GetString("stat.redis.password")
 	conf.Stat.Redis.DB = viper.GetInt("stat.redis.db")
