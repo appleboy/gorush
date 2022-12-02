@@ -1,5 +1,5 @@
 core:
-  enabled: true # enable httpd server
+  enabled: false # enable httpd server
   address: "" # ip address to bind (default: any)
   shutdown_timeout: 30 # default is 30 second
   port: "8088" # ignore this port number if auto_tls is enabled (listen 443).
@@ -26,8 +26,8 @@ core:
     host: "" # which domains the Let's Encrypt will attempt
 
 grpc:
-  enabled: false # enable gRPC server
-  port: 9000
+  enabled: true # enable gRPC server
+  port: 8089
 
 api:
   push_uri: "/api/push"
@@ -66,12 +66,12 @@ queue:
     stream_name: gorush
 
 ios:
-  enabled: false
-  key_path: "key.pem"
+  enabled: true
+  key_path: "/Users/chengbo05/DucLoc/chongya/Server/vcserver_v1/SupportingFile/gorush_file/config/cert.pem"
   key_base64: "" # load iOS key from base64 input
   key_type: "pem" # could be pem, p12 or p8 type
   password: "" # certificate password, default as empty string.
-  production: false
+  production: true
   max_concurrent_pushes: 100 # just for push ios notification
   max_retry: 0 # resend fail notification, default value zero is disabled
   key_id: "" # KeyID from developer account (Certificates, Identifiers & Profiles -> Keys)
