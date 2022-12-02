@@ -42,6 +42,9 @@ message NotificationRequest {
   string ID = 17;
 
   string pushType = 18;
+
+  //默认是false即发布环境，传true是，使用开发环境的apns，
+  bool development = 19;
 }
 
 message NotificationReply {
