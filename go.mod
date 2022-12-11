@@ -13,11 +13,11 @@ require (
 	github.com/dgraph-io/badger/v3 v3.2103.4
 	github.com/gin-contrib/logger v0.2.5
 	github.com/gin-gonic/gin v1.8.1
-	github.com/go-redis/redis/v8 v8.11.5
+	github.com/go-redis/redis/v9 v9.0.0-rc.2
 	github.com/golang-queue/nats v0.0.8
 	github.com/golang-queue/nsq v0.1.1
 	github.com/golang-queue/queue v0.1.3
-	github.com/golang-queue/redisdb-stream v0.0.2
+	github.com/golang-queue/redisdb-stream v0.0.3
 	github.com/golang/protobuf v1.5.2
 	github.com/json-iterator/go v1.1.12
 	github.com/mattn/go-isatty v0.0.16

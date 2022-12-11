@@ -8,7 +8,8 @@ import (
 	"strings"
 
 	"github.com/appleboy/gorush/config"
-	"github.com/go-redis/redis/v8"
+
+	"github.com/go-redis/redis/v9"
 )
 
 // New func implements the storage interface for gorush (https://github.com/appleboy/gorush)
