@@ -14,7 +14,7 @@ services:
 steps:
 - commands:
   - make embedmd
-  image: golang:1.18
+  image: golang:1.19
   name: embedmd
   pull: always
   volumes:
@@ -47,7 +47,7 @@ steps:
   - go build -v -ldflags '-X main.build=${DRONE_BUILD_NUMBER}' -a -o release/linux/amd64/gorush
   environment:
     CGO_ENABLED: "0"
-  image: golang:1.18
+  image: golang:1.19
   name: build-push
   pull: always
   when:
@@ -59,7 +59,7 @@ steps:
     -a -o release/linux/amd64/gorush
   environment:
     CGO_ENABLED: "0"
-  image: golang:1.18
+  image: golang:1.19
   name: build-tag
   pull: always
   when:
@@ -67,7 +67,7 @@ steps:
     - tag
 - commands:
   - ./release/linux/amd64/gorush --help
-  image: golang:1.18
+  image: golang:1.19
   name: executable
   pull: always
 - image: plugins/docker:linux-amd64
@@ -106,7 +106,7 @@ steps:
   - go build -v -ldflags '-X main.build=${DRONE_BUILD_NUMBER}' -a -o release/linux/arm64/gorush
   environment:
     CGO_ENABLED: "0"
-  image: golang:1.18
+  image: golang:1.19
   name: build-push
   pull: always
   when:
@@ -118,7 +118,7 @@ steps:
     -a -o release/linux/arm64/gorush
   environment:
     CGO_ENABLED: "0"
-  image: golang:1.18
+  image: golang:1.19
   name: build-tag
   pull: always
   when:
@@ -126,7 +126,7 @@ steps:
     - tag
 - commands:
   - ./release/linux/arm64/gorush --help
-  image: golang:1.18
+  image: golang:1.19
   name: executable
   pull: always
 - image: plugins/docker:linux-arm64
@@ -165,7 +165,7 @@ steps:
   - go build -v -ldflags '-X main.build=${DRONE_BUILD_NUMBER}' -a -o release/linux/arm/gorush
   environment:
     CGO_ENABLED: "0"
-  image: golang:1.18
+  image: golang:1.19
   name: build-push
   pull: always
   when:
@@ -177,7 +177,7 @@ steps:
     -a -o release/linux/arm/gorush
   environment:
     CGO_ENABLED: "0"
-  image: golang:1.18
+  image: golang:1.19
   name: build-tag
   pull: always
   when:
@@ -185,7 +185,7 @@ steps:
     - tag
 - commands:
   - ./release/linux/arm/gorush --help
-  image: golang:1.18
+  image: golang:1.19
   name: executable
   pull: always
 - image: plugins/docker:linux-arm
@@ -222,7 +222,7 @@ platform:
 steps:
 - commands:
   - make release
-  image: golang:1.18
+  image: golang:1.19
   name: build-all-binary
   pull: always
   when:
