@@ -1337,7 +1337,7 @@ Or you can deploy gorush to alternative solution like [netlify functions](https:
 
 ## Stargazers over time
 
-[![Stargazers over time](https://starcharts.herokuapp.com/appleboy/gorush.svg)](https://starcharts.herokuapp.com/appleboy/gorush)
+[![Stargazers over time](https://starchart.cc/appleboy/gorush.svg)](https://starchart.cc/appleboy/gorush)
 
 ## License
 
