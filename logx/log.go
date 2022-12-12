@@ -23,12 +23,13 @@ var (
 
 // LogPushEntry is push response log
 type LogPushEntry struct {
-	ID       string `json:"notif_id,omitempty"`
-	Type     string `json:"type"`
-	Platform string `json:"platform"`
-	Token    string `json:"token"`
-	Message  string `json:"message"`
-	Error    string `json:"error"`
+	ID          string `json:"notif_id,omitempty"`
+	Type        string `json:"type"`
+	Platform    string `json:"platform"`
+	Token       string `json:"token"`
+	Message     string `json:"message"`
+	Error       string `json:"error"`
+	ErrorReason string `json:"error_reason,omitempty"`
 }
 
 var isTerm bool
@@ -175,25 +176,27 @@ func GetLogPushEntry(input *InputLog) LogPushEntry {
 	}
 
 	return LogPushEntry{
-		ID:       input.ID,
-		Type:     input.Status,
-		Platform: plat,
-		Token:    token,
-		Message:  input.Message,
-		Error:    errMsg,
+		ID:          input.ID,
+		Type:        input.Status,
+		Platform:    plat,
+		Token:       token,
+		Message:     input.Message,
+		Error:       errMsg,
+		ErrorReason: input.ErrorReason,
 	}
 }
 
 // InputLog log request
 type InputLog struct {
-	ID        string
-	Status    string
-	Token     string
-	Message   string
-	Platform  int
-	Error     error
-	HideToken bool
-	Format    string
+	ID          string
+	Status      string
+	Token       string
+	Message     string
+	Platform    int
+	Error       error
+	ErrorReason string
+	HideToken   bool
+	Format      string
 }
 
 // LogPush record user push request and server response.

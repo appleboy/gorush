@@ -148,12 +148,12 @@ Retry:
 		logx.LogError.Error("FCM server send message error: " + err.Error())
 
 		if req.IsTopic() {
-			errLog := logPush(cfg, core.FailedPush, req.To, req, err)
+			errLog := logErrorPush(cfg, req.To, req, err, "")
 			resp.Logs = append(resp.Logs, errLog)
 			status.StatStorage.AddAndroidError(1)
 		} else {
 			for _, token := range req.Tokens {
-				errLog := logPush(cfg, core.FailedPush, token, req, err)
+				errLog := logErrorPush(cfg, token, req, err, "")
 				resp.Logs = append(resp.Logs, errLog)
 			}
 			status.StatStorage.AddAndroidError(int64(len(req.Tokens)))
@@ -185,12 +185,12 @@ Retry:
 				newTokens = append(newTokens, to)
 			}
 
-			errLog := logPush(cfg, core.FailedPush, to, req, result.Error)
+			errLog := logErrorPush(cfg, to, req, result.Error, result.ErrorResponseCode)
 			resp.Logs = append(resp.Logs, errLog)
 			continue
 		}
 
-		logPush(cfg, core.SucceededPush, to, req, nil)
+		logSuccessPush(cfg, to, req)
 	}
 
 	// result from Send messages to topics
@@ -204,10 +204,10 @@ Retry:
 		logx.LogAccess.Debug("Send Topic Message: ", to)
 		// Success
 		if res.MessageID != 0 {
-			logPush(cfg, core.SucceededPush, to, req, nil)
+			logSuccessPush(cfg, to, req)
 		} else {
 			// failure
-			errLog := logPush(cfg, core.FailedPush, to, req, res.Error)
+			errLog := logErrorPush(cfg, to, req, res.Error, res.ErrorResponseCode)
 			resp.Logs = append(resp.Logs, errLog)
 		}
 	}
@@ -217,7 +217,7 @@ Retry:
 		newTokens = append(newTokens, res.FailedRegistrationIDs...)
 
 		// nolint
-		errLog := logPush(cfg, core.FailedPush, notification.To, req, errors.New("device group: partial success or all fails"))
+		errLog := logErrorPush(cfg, notification.To, req, errors.New("device group: partial success or all fails"), res.ErrorResponseCode)
 		resp.Logs = append(resp.Logs, errLog)
 	}
 
@@ -232,14 +232,28 @@ Retry:
 	return resp, nil
 }
 
-func logPush(cfg *config.ConfYaml, status, token string, req *PushNotification, err error) logx.LogPushEntry {
+func logErrorPush(cfg *config.ConfYaml, token string, req *PushNotification, err error, errorReason string) logx.LogPushEntry {
+	return logx.LogPush(&logx.InputLog{
+		ID:          req.ID,
+		Status:      core.FailedPush,
+		Token:       token,
+		Message:     req.Message,
+		Platform:    req.Platform,
+		Error:       err,
+		ErrorReason: errorReason,
+		HideToken:   cfg.Log.HideToken,
+		Format:      cfg.Log.Format,
+	})
+}
+
+func logSuccessPush(cfg *config.ConfYaml, token string, req *PushNotification) logx.LogPushEntry {
 	return logx.LogPush(&logx.InputLog{
 		ID:        req.ID,
-		Status:    status,
+		Status:    core.SucceededPush,
 		Token:     token,
 		Message:   req.Message,
 		Platform:  req.Platform,
-		Error:     err,
+		Error:     nil,
 		HideToken: cfg.Log.HideToken,
 		Format:    cfg.Log.Format,
 	})

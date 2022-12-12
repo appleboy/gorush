@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/appleboy/gorush/config"
-	"github.com/appleboy/gorush/core"
 	"github.com/appleboy/gorush/logx"
 	"github.com/appleboy/gorush/status"
 
@@ -431,7 +430,7 @@ Retry:
 				}
 
 				// apns server error
-				errLog := logPush(cfg, core.FailedPush, token, req, err)
+				errLog := logErrorPush(cfg, token, req, err, res.Reason)
 				resp.Logs = append(resp.Logs, errLog)
 
 				status.StatStorage.AddIosError(1)
@@ -443,7 +442,7 @@ Retry:
 			}
 
 			if res != nil && res.Sent() {
-				logPush(cfg, core.SucceededPush, token, req, nil)
+				logErrorPush(cfg, token, req, nil, res.Reason)
 				status.StatStorage.AddIosSuccess(1)
 			}
 
