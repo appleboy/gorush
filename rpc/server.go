@@ -70,6 +70,8 @@ func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*prot
 		MutableContent:   in.MutableContent,
 		Image:            in.Image,
 		Priority:         strings.ToLower(in.GetPriority().String()),
+		PushType:         in.PushType,
+		Development:      in.Development,
 	}
 
 	if badge > 0 {
