@@ -2,7 +2,9 @@ package rpc
 
 import (
 	"context"
+	"fmt"
 	"net"
+	"runtime/debug"
 	"strings"
 	"sync"
 
@@ -12,6 +14,10 @@ import (
 	"github.com/appleboy/gorush/notify"
 	"github.com/appleboy/gorush/rpc/proto"
 
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
+	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
+	"go.opencensus.io/plugin/ocgrpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/reflection"
@@ -121,7 +127,22 @@ func RunGRPCServer(ctx context.Context, cfg *config.ConfYaml) error {
 		return nil
 	}
 
-	s := grpc.NewServer()
+	recoveryOpt := grpc_recovery.WithRecoveryHandlerContext(
+		func(ctx context.Context, p interface{}) error {
+			fmt.Printf("[PANIC] %s\n%s", p, string(debug.Stack()))
+			return status.Error(codes.Internal, "system has been broken")
+		},
+	)
+
+	unaryInterceptors := []grpc.UnaryServerInterceptor{
+		grpc_prometheus.UnaryServerInterceptor,
+		grpc_recovery.UnaryServerInterceptor(recoveryOpt),
+	}
+
+	s := grpc.NewServer(
+		grpc.StatsHandler(&ocgrpc.ServerHandler{}),
+		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(unaryInterceptors...)),
+	)
 	rpcSrv := NewServer(cfg)
 	proto.RegisterGorushServer(s, rpcSrv)
 	proto.RegisterHealthServer(s, rpcSrv)
