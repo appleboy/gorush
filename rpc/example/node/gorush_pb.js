@@ -2,6 +2,7 @@
 /**
  * @fileoverview
  * @enhanceable
+ * @suppress {missingRequire} reports error on implicit type usages.
  * @suppress {messageConventions} JS Compiler reports an error if a variable or
  *     field starts with 'MSG_' and isn't a translatable message.
  * @public
@@ -12,7 +13,7 @@
 
 var jspb = require('google-protobuf');
 var goog = jspb;
-var global = Function('return this')();
+var global = (function() { return this || window || global || self || Function('return this')(); }).call(null);
 
 var google_protobuf_struct_pb = require('google-protobuf/google/protobuf/struct_pb.js');
 goog.object.extend(proto, google_protobuf_struct_pb);
@@ -627,7 +628,10 @@ proto.proto.NotificationRequest.toObject = function(includeInstance, msg) {
     mutablecontent: jspb.Message.getBooleanFieldWithDefault(msg, 13, false),
     data: (f = msg.getData()) && google_protobuf_struct_pb.Struct.toObject(includeInstance, f),
     image: jspb.Message.getFieldWithDefault(msg, 15, ""),
-    priority: jspb.Message.getFieldWithDefault(msg, 16, 0)
+    priority: jspb.Message.getFieldWithDefault(msg, 16, 0),
+    id: jspb.Message.getFieldWithDefault(msg, 17, ""),
+    pushtype: jspb.Message.getFieldWithDefault(msg, 18, ""),
+    development: jspb.Message.getBooleanFieldWithDefault(msg, 19, false)
   };
 
   if (includeInstance) {
@@ -729,6 +733,18 @@ proto.proto.NotificationRequest.deserializeBinaryFromReader = function(msg, read
     case 16:
       var value = /** @type {!proto.proto.NotificationRequest.Priority} */ (reader.readEnum());
       msg.setPriority(value);
+      break;
+    case 17:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setId(value);
+      break;
+    case 18:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setPushtype(value);
+      break;
+    case 19:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setDevelopment(value);
       break;
     default:
       reader.skipField();
@@ -870,6 +886,27 @@ proto.proto.NotificationRequest.serializeBinaryToWriter = function(message, writ
   if (f !== 0.0) {
     writer.writeEnum(
       16,
+      f
+    );
+  }
+  f = message.getId();
+  if (f.length > 0) {
+    writer.writeString(
+      17,
+      f
+    );
+  }
+  f = message.getPushtype();
+  if (f.length > 0) {
+    writer.writeString(
+      18,
+      f
+    );
+  }
+  f = message.getDevelopment();
+  if (f) {
+    writer.writeBool(
+      19,
       f
     );
   }
@@ -1226,6 +1263,60 @@ proto.proto.NotificationRequest.prototype.getPriority = function() {
  */
 proto.proto.NotificationRequest.prototype.setPriority = function(value) {
   return jspb.Message.setProto3EnumField(this, 16, value);
+};
+
+
+/**
+ * optional string ID = 17;
+ * @return {string}
+ */
+proto.proto.NotificationRequest.prototype.getId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 17, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.NotificationRequest} returns this
+ */
+proto.proto.NotificationRequest.prototype.setId = function(value) {
+  return jspb.Message.setProto3StringField(this, 17, value);
+};
+
+
+/**
+ * optional string pushType = 18;
+ * @return {string}
+ */
+proto.proto.NotificationRequest.prototype.getPushtype = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 18, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.NotificationRequest} returns this
+ */
+proto.proto.NotificationRequest.prototype.setPushtype = function(value) {
+  return jspb.Message.setProto3StringField(this, 18, value);
+};
+
+
+/**
+ * optional bool development = 19;
+ * @return {boolean}
+ */
+proto.proto.NotificationRequest.prototype.getDevelopment = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 19, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.proto.NotificationRequest} returns this
+ */
+proto.proto.NotificationRequest.prototype.setDevelopment = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 19, value);
 };
 
 
