@@ -3,7 +3,7 @@ package config
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"runtime"
 	"strings"
 
@@ -308,7 +308,7 @@ func LoadConf(confPath ...string) (*ConfYaml, error) {
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
 	if len(confPath) > 0 && confPath[0] != "" {
-		content, err := ioutil.ReadFile(confPath[0])
+		content, err := os.ReadFile(confPath[0])
 		if err != nil {
 			return conf, err
 		}

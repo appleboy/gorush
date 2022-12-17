@@ -159,6 +159,7 @@ func newApnsClient(cfg *config.ConfYaml, certificate tls.Certificate) (*apns2.Cl
 	}
 
 	if len(certificate.Certificate) > 0 {
+		//nolint:staticcheck
 		tlsConfig.BuildNameToCertificate()
 	}
 

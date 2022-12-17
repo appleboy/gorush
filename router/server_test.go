@@ -3,7 +3,7 @@ package router
 import (
 	"context"
 	"crypto/tls"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -84,7 +84,7 @@ func testRequest(t *testing.T, url string) {
 
 	assert.NoError(t, err)
 
-	_, ioerr := ioutil.ReadAll(resp.Body)
+	_, ioerr := io.ReadAll(resp.Body)
 	assert.NoError(t, ioerr)
 	assert.Equal(t, "200 OK", resp.Status, "should get a 200")
 }

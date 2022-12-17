@@ -8,6 +8,7 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 const gRPCAddr = "localhost:9000"
@@ -35,7 +36,7 @@ func TestGracefulShutDownGRPCServer(t *testing.T) {
 	// gRPC client conn
 	conn, err := grpc.Dial(
 		gRPCAddr,
-		grpc.WithInsecure(),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithDefaultCallOptions(grpc.WaitForReady(true)),
 	) // wait for server ready
 	if err != nil {
