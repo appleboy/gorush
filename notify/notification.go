@@ -216,17 +216,17 @@ func CheckPushConf(cfg *config.ConfYaml) error {
 
 	if cfg.Android.Enabled {
 		if cfg.Android.APIKey == "" {
-			return errors.New("Missing Android API Key")
+			return errors.New("missing android api key")
 		}
 	}
 
 	if cfg.Huawei.Enabled {
 		if cfg.Huawei.AppSecret == "" {
-			return errors.New("Missing Huawei App Secret")
+			return errors.New("missing huawei app secret")
 		}
 
 		if cfg.Huawei.AppID == "" {
-			return errors.New("Missing Huawei App ID")
+			return errors.New("missing huawei app id")
 		}
 	}
 

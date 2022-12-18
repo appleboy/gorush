@@ -38,11 +38,11 @@ func GetPushClient(conf *c.Config) (*client.HMSClient, error) {
 // InitHMSClient use for initialize HMS Client.
 func InitHMSClient(cfg *config.ConfYaml, appSecret, appID string) (*client.HMSClient, error) {
 	if appSecret == "" {
-		return nil, errors.New("Missing Huawei App Secret")
+		return nil, errors.New("missing huawei app secret")
 	}
 
 	if appID == "" {
-		return nil, errors.New("Missing Huawei App ID")
+		return nil, errors.New("missing huawei app id")
 	}
 
 	conf := &c.Config{

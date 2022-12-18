@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/viper"
 )
 
+//nolint
 var defaultConf = []byte(`
 core:
   enabled: true # enable httpd server

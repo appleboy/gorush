@@ -2,6 +2,7 @@ package notify
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"net"
 	"net/http"
@@ -21,7 +22,7 @@ func DispatchFeedback(log logx.LogPushEntry, url string, timeout int64) error {
 		return err
 	}
 
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(payload))
+	req, err := http.NewRequestWithContext(context.Background(), "POST", url, bytes.NewBuffer(payload))
 	if err != nil {
 		return err
 	}
