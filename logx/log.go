@@ -153,8 +153,8 @@ func hideToken(token string, markLen int) string {
 	start := token[len(token)-markLen:]
 	end := token[0:markLen]
 
-	result := strings.Replace(token, start, strings.Repeat("*", markLen), -1)
-	result = strings.Replace(result, end, strings.Repeat("*", markLen), -1)
+	result := strings.ReplaceAll(token, start, strings.Repeat("*", markLen))
+	result = strings.ReplaceAll(result, end, strings.Repeat("*", markLen))
 
 	return result
 }

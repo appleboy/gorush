@@ -17,7 +17,7 @@ func InitFCMClient(cfg *config.ConfYaml, key string) (*fcm.Client, error) {
 	var err error
 
 	if key == "" && cfg.Android.APIKey == "" {
-		return nil, errors.New("Missing Android API Key")
+		return nil, errors.New("missing android api key")
 	}
 
 	if key != "" && key != cfg.Android.APIKey {
@@ -216,7 +216,7 @@ Retry:
 	if len(res.FailedRegistrationIDs) > 0 {
 		newTokens = append(newTokens, res.FailedRegistrationIDs...)
 
-		// nolint
+		//nolint
 		errLog := logPush(cfg, core.FailedPush, notification.To, req, errors.New("device group: partial success or all fails"))
 		resp.Logs = append(resp.Logs, errLog)
 	}

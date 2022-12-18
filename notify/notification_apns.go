@@ -106,7 +106,7 @@ func InitAPNSClient(cfg *config.ConfYaml) error {
 
 		if ext == ".p8" {
 			if cfg.Ios.KeyID == "" || cfg.Ios.TeamID == "" {
-				msg := "You should provide ios.KeyID and ios.TeamID for P8 token"
+				msg := "you should provide ios.KeyID and ios.TeamID for p8 token"
 				logx.LogError.Error(msg)
 				return errors.New(msg)
 			}
