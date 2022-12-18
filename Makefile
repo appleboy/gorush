@@ -69,12 +69,6 @@ embedmd:
 	fi
 	embedmd -d *.md
 
-lint:
-	@hash revive > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		$(GO) install github.com/mgechev/revive@v1.0.5; \
-	fi
-	revive -config .revive.toml ./... || exit 1
-
 .PHONY: install
 install: $(GOFILES)
 	$(GO) install -v -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)'
