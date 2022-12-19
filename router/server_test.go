@@ -75,8 +75,13 @@ func testRequest(t *testing.T, url string) {
 		Timeout:   time.Second * 10,
 		Transport: tr,
 	}
-
-	resp, err := client.Get(url)
+	req, _ := http.NewRequestWithContext(
+		context.Background(),
+		http.MethodGet,
+		url,
+		nil,
+	)
+	resp, err := client.Do(req)
 	defer func() {
 		if err := resp.Body.Close(); err != nil {
 			log.Println("close body err:", err)

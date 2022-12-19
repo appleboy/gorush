@@ -247,7 +247,7 @@ func markFailedNotification(
 
 // HandleNotification add notification to queue list.
 func handleNotification(
-	ctx context.Context,
+	_ context.Context,
 	cfg *config.ConfYaml,
 	req notify.RequestPush,
 	q *queue.Queue,

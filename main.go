@@ -453,7 +453,13 @@ func pinger(cfg *config.ConfYaml) error {
 		Timeout:   time.Second * 10,
 		Transport: transport,
 	}
-	resp, err := client.Get("http://localhost:" + cfg.Core.Port + cfg.API.HealthURI)
+	req, _ := http.NewRequestWithContext(
+		context.Background(),
+		http.MethodGet,
+		"http://localhost:"+cfg.Core.Port+cfg.API.HealthURI,
+		nil,
+	)
+	resp, err := client.Do(req)
 	if err != nil {
 		return err
 	}
