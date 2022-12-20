@@ -18,11 +18,16 @@ jobs:
           go-version: '^1'
       - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Setup golangci-lint
+
+      - name: check documentation
+        run : make embedmd
+
+      - name: check golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
           version: latest
           args: --verbose
+
       - uses: hadolint/hadolint-action@v3.0.0
         name: hadolint for Dockerfile.linux.amd64
         with:
