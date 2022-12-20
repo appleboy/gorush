@@ -28,6 +28,7 @@ import (
 	redisdb "github.com/golang-queue/redisdb-stream"
 )
 
+//nolint:gocyclo
 func main() {
 	opts := config.ConfYaml{}
 

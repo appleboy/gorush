@@ -159,6 +159,7 @@ func autoTLSServer(cfg *config.ConfYaml, q *queue.Queue) *http.Server {
 		Cache:      autocert.DirCache(cfg.Core.AutoTLS.Folder),
 	}
 
+	//nolint:gosec
 	return &http.Server{
 		Addr:      ":https",
 		TLSConfig: &tls.Config{GetCertificate: m.GetCertificate},

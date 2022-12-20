@@ -30,6 +30,12 @@ var (
 	tcpKeepAlive    = 60 * time.Second
 )
 
+const (
+	dotP8  = ".p8"
+	dotPEM = ".pem"
+	dotP12 = ".p12"
+)
+
 var doOnce sync.Once
 
 // DialTLS is the default dial function for creating TLS connections for
@@ -63,11 +69,11 @@ func InitAPNSClient(cfg *config.ConfYaml) error {
 			ext = filepath.Ext(cfg.Ios.KeyPath)
 
 			switch ext {
-			case ".p12":
+			case dotP12:
 				certificateKey, err = certificate.FromP12File(cfg.Ios.KeyPath, cfg.Ios.Password)
-			case ".pem":
+			case dotPEM:
 				certificateKey, err = certificate.FromPemFile(cfg.Ios.KeyPath, cfg.Ios.Password)
-			case ".p8":
+			case dotP8:
 				authKey, err = token.AuthKeyFromFile(cfg.Ios.KeyPath)
 			default:
 				err = errors.New("wrong certificate key extension")
@@ -87,11 +93,11 @@ func InitAPNSClient(cfg *config.ConfYaml) error {
 				return err
 			}
 			switch ext {
-			case ".p12":
+			case dotP12:
 				certificateKey, err = certificate.FromP12Bytes(key, cfg.Ios.Password)
-			case ".pem":
+			case dotPEM:
 				certificateKey, err = certificate.FromPemBytes(key, cfg.Ios.Password)
-			case ".p8":
+			case dotP8:
 				authKey, err = token.AuthKeyFromBytes(key)
 			default:
 				err = errors.New("wrong certificate key type")
@@ -104,7 +110,7 @@ func InitAPNSClient(cfg *config.ConfYaml) error {
 			}
 		}
 
-		if ext == ".p8" {
+		if ext == dotP8 {
 			if cfg.Ios.KeyID == "" || cfg.Ios.TeamID == "" {
 				msg := "you should provide ios.KeyID and ios.TeamID for p8 token"
 				logx.LogError.Error(msg)
@@ -154,6 +160,7 @@ func newApnsClient(cfg *config.ConfYaml, certificate tls.Certificate) (*apns2.Cl
 		return client, nil
 	}
 
+	//nolint:gosec
 	tlsConfig := &tls.Config{
 		Certificates: []tls.Certificate{certificate},
 	}
@@ -307,7 +314,7 @@ func GetIOSNotification(req *PushNotification) *apns2.Notification {
 	if len(req.Priority) > 0 {
 		if req.Priority == "normal" {
 			notification.Priority = apns2.PriorityLow
-		} else if req.Priority == "high" {
+		} else if req.Priority == HIGH {
 			notification.Priority = apns2.PriorityHigh
 		}
 	}

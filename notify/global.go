@@ -16,3 +16,8 @@ var (
 	// MaxConcurrentIOSPushes pool to limit the number of concurrent iOS pushes
 	MaxConcurrentIOSPushes chan struct{}
 )
+
+const (
+	HIGH   = "high"
+	NORMAL = "nornal"
+)

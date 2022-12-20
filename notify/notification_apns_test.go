@@ -27,6 +27,13 @@ const (
 	authkeyValidP8 = `LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JR0hBZ0VBTUJNR0J5cUdTTTQ5QWdFR0NDcUdTTTQ5QXdFSEJHMHdhd0lCQVFRZ0ViVnpmUG5aUHhmQXl4cUUKWlYwNWxhQW9KQWwrLzZYdDJPNG1PQjYxMXNPaFJBTkNBQVNnRlRLandKQUFVOTVnKysvdnpLV0hrekFWbU5NSQp0QjV2VGpaT09Jd25FYjcwTXNXWkZJeVVGRDFQOUd3c3R6NCtha0hYN3ZJOEJINmhIbUJtZmVRbAotLS0tLUVORCBQUklWQVRFIEtFWS0tLS0tCg==`
 )
 
+var (
+	testMessage    = "test"
+	testKeyPathP8  = "../certificate/authkey-valid.p8"
+	testKeyPath    = "../certificate/certificate-valid.pem"
+	welcomeMessage = "Welcome notification Server"
+)
+
 func TestDisabledAndroidIosConf(t *testing.T) {
 	cfg, _ := config.LoadConf()
 	cfg.Android.Enabled = false
@@ -60,20 +67,19 @@ func TestIOSNotificationStructure(t *testing.T) {
 	var dat map[string]interface{}
 	unix := time.Now().Unix()
 
-	test := "test"
 	expectBadge := 0
-	message := "Welcome notification Server"
+	message := welcomeMessage
 	expiration := time.Now().Unix()
 	req := &PushNotification{
-		ApnsID:     test,
-		Topic:      test,
+		ApnsID:     testMessage,
+		Topic:      testMessage,
 		Expiration: &expiration,
 		Priority:   "normal",
 		Message:    message,
 		Badge:      &expectBadge,
 		Sound: Sound{
 			Critical: 1,
-			Name:     test,
+			Name:     testMessage,
 			Volume:   1.0,
 		},
 		ContentAvailable: true,
@@ -81,7 +87,7 @@ func TestIOSNotificationStructure(t *testing.T) {
 			"key1": "test",
 			"key2": 2,
 		},
-		Category: test,
+		Category: testMessage,
 		URLArgs:  []string{"a", "b"},
 	}
 
@@ -106,20 +112,20 @@ func TestIOSNotificationStructure(t *testing.T) {
 	aps := dat["aps"].(map[string]interface{})
 	urlArgs := aps["url-args"].([]interface{})
 
-	assert.Equal(t, test, notification.ApnsID)
-	assert.Equal(t, test, notification.Topic)
+	assert.Equal(t, testMessage, notification.ApnsID)
+	assert.Equal(t, testMessage, notification.Topic)
 	assert.Equal(t, unix, notification.Expiration.Unix())
 	assert.Equal(t, ApnsPriorityLow, notification.Priority)
 	assert.Equal(t, message, alert)
 	assert.Equal(t, expectBadge, int(badge))
 	assert.Equal(t, expectBadge, *req.Badge)
-	assert.Equal(t, test, soundName)
+	assert.Equal(t, testMessage, soundName)
 	assert.Equal(t, 1.0, soundVolume)
 	assert.Equal(t, int64(1), soundCritical)
 	assert.Equal(t, 1, int(contentAvailable))
 	assert.Equal(t, "test", key1)
 	assert.Equal(t, 2, int(key2.(float64)))
-	assert.Equal(t, test, category)
+	assert.Equal(t, testMessage, category)
 	assert.Contains(t, urlArgs, "a")
 	assert.Contains(t, urlArgs, "b")
 }
@@ -127,16 +133,15 @@ func TestIOSNotificationStructure(t *testing.T) {
 func TestIOSSoundAndVolume(t *testing.T) {
 	var dat map[string]interface{}
 
-	test := "test"
-	message := "Welcome notification Server"
+	message := welcomeMessage
 	req := &PushNotification{
-		ApnsID:   test,
-		Topic:    test,
+		ApnsID:   testMessage,
+		Topic:    testMessage,
 		Priority: "normal",
 		Message:  message,
 		Sound: Sound{
 			Critical: 3,
-			Name:     test,
+			Name:     testMessage,
 			Volume:   4.5,
 		},
 	}
@@ -155,11 +160,11 @@ func TestIOSSoundAndVolume(t *testing.T) {
 	soundCritical, _ := jsonparser.GetInt(data, "aps", "sound", "critical")
 	soundVolume, _ := jsonparser.GetFloat(data, "aps", "sound", "volume")
 
-	assert.Equal(t, test, notification.ApnsID)
-	assert.Equal(t, test, notification.Topic)
+	assert.Equal(t, testMessage, notification.ApnsID)
+	assert.Equal(t, testMessage, notification.Topic)
 	assert.Equal(t, ApnsPriorityLow, notification.Priority)
 	assert.Equal(t, message, alert)
-	assert.Equal(t, test, soundName)
+	assert.Equal(t, testMessage, soundName)
 	assert.Equal(t, 4.5, soundVolume)
 	assert.Equal(t, int64(3), soundCritical)
 
@@ -181,8 +186,8 @@ func TestIOSSoundAndVolume(t *testing.T) {
 	assert.Equal(t, "foobar", soundName)
 
 	req = &PushNotification{
-		ApnsID:   test,
-		Topic:    test,
+		ApnsID:   testMessage,
+		Topic:    testMessage,
 		Priority: "normal",
 		Message:  message,
 		Sound: map[string]interface{}{
@@ -208,8 +213,8 @@ func TestIOSSoundAndVolume(t *testing.T) {
 	assert.Equal(t, "test", soundName)
 
 	req = &PushNotification{
-		ApnsID:   test,
-		Topic:    test,
+		ApnsID:   testMessage,
+		Topic:    testMessage,
 		Priority: "normal",
 		Message:  message,
 		Sound:    "default",
@@ -230,11 +235,10 @@ func TestIOSSoundAndVolume(t *testing.T) {
 func TestIOSSummaryArg(t *testing.T) {
 	var dat map[string]interface{}
 
-	test := "test"
-	message := "Welcome notification Server"
+	message := welcomeMessage
 	req := &PushNotification{
-		ApnsID:   test,
-		Topic:    test,
+		ApnsID:   testMessage,
+		Topic:    testMessage,
 		Priority: "normal",
 		Message:  message,
 		Alert: Alert{
@@ -252,8 +256,8 @@ func TestIOSSummaryArg(t *testing.T) {
 		panic(err)
 	}
 
-	assert.Equal(t, test, notification.ApnsID)
-	assert.Equal(t, test, notification.Topic)
+	assert.Equal(t, testMessage, notification.ApnsID)
+	assert.Equal(t, testMessage, notification.Topic)
 	assert.Equal(t, ApnsPriorityLow, notification.Priority)
 	assert.Equal(t, "test", dat["aps"].(map[string]interface{})["alert"].(map[string]interface{})["summary-arg"])
 	assert.Equal(t, float64(3), dat["aps"].(map[string]interface{})["alert"].(map[string]interface{})["summary-arg-count"])
@@ -264,17 +268,16 @@ func TestIOSSummaryArg(t *testing.T) {
 func TestSendZeroValueForBadgeKey(t *testing.T) {
 	var dat map[string]interface{}
 
-	test := "test"
-	message := "Welcome notification Server"
+	message := welcomeMessage
 	req := &PushNotification{
-		ApnsID:           test,
-		Topic:            test,
+		ApnsID:           testMessage,
+		Topic:            testMessage,
 		Priority:         "normal",
 		Message:          message,
-		Sound:            test,
+		Sound:            testMessage,
 		ContentAvailable: true,
 		MutableContent:   true,
-		ThreadID:         test,
+		ThreadID:         testMessage,
 	}
 
 	notification := GetIOSNotification(req)
@@ -298,13 +301,13 @@ func TestSendZeroValueForBadgeKey(t *testing.T) {
 		t.Errorf("req.Badge must be nil")
 	}
 
-	assert.Equal(t, test, notification.ApnsID)
-	assert.Equal(t, test, notification.Topic)
+	assert.Equal(t, testMessage, notification.ApnsID)
+	assert.Equal(t, testMessage, notification.Topic)
 	assert.Equal(t, ApnsPriorityLow, notification.Priority)
 	assert.Equal(t, message, alert)
 	assert.Equal(t, 0, int(badge))
-	assert.Equal(t, test, sound)
-	assert.Equal(t, test, threadID)
+	assert.Equal(t, testMessage, sound)
+	assert.Equal(t, testMessage, threadID)
 	assert.Equal(t, 1, int(contentAvailable))
 	assert.Equal(t, 1, int(mutableContent))
 
@@ -338,11 +341,10 @@ func TestSendZeroValueForBadgeKey(t *testing.T) {
 func TestCheckSilentNotification(t *testing.T) {
 	var dat map[string]interface{}
 
-	test := "test"
 	req := &PushNotification{
-		ApnsID:           test,
-		Topic:            test,
-		CollapseID:       test,
+		ApnsID:           testMessage,
+		Topic:            testMessage,
+		CollapseID:       testMessage,
 		Priority:         "normal",
 		ContentAvailable: true,
 	}
@@ -357,9 +359,9 @@ func TestCheckSilentNotification(t *testing.T) {
 		panic(err)
 	}
 
-	assert.Equal(t, test, notification.CollapseID)
-	assert.Equal(t, test, notification.ApnsID)
-	assert.Equal(t, test, notification.Topic)
+	assert.Equal(t, testMessage, notification.CollapseID)
+	assert.Equal(t, testMessage, notification.ApnsID)
+	assert.Equal(t, testMessage, notification.Topic)
 	assert.Nil(t, dat["aps"].(map[string]interface{})["alert"])
 	assert.Nil(t, dat["aps"].(map[string]interface{})["sound"])
 	assert.Nil(t, dat["aps"].(map[string]interface{})["badge"])
@@ -383,13 +385,12 @@ func TestCheckSilentNotification(t *testing.T) {
 func TestAlertStringExample2ForIos(t *testing.T) {
 	var dat map[string]interface{}
 
-	test := "test"
 	title := "Game Request"
 	body := "Bob wants to play poker"
 	actionLocKey := "PLAY"
 	req := &PushNotification{
-		ApnsID:   test,
-		Topic:    test,
+		ApnsID:   testMessage,
+		Topic:    testMessage,
 		Priority: "normal",
 		Alert: Alert{
 			Title:        title,
@@ -428,15 +429,14 @@ func TestAlertStringExample2ForIos(t *testing.T) {
 func TestAlertStringExample3ForIos(t *testing.T) {
 	var dat map[string]interface{}
 
-	test := "test"
 	badge := 9
 	sound := "bingbong.aiff"
 	req := &PushNotification{
-		ApnsID:           test,
-		Topic:            test,
+		ApnsID:           testMessage,
+		Topic:            testMessage,
 		Priority:         "normal",
 		ContentAvailable: true,
-		Message:          test,
+		Message:          testMessage,
 		Badge:            &badge,
 		Sound:            sound,
 	}
@@ -453,18 +453,17 @@ func TestAlertStringExample3ForIos(t *testing.T) {
 
 	assert.Equal(t, sound, dat["aps"].(map[string]interface{})["sound"])
 	assert.Equal(t, float64(badge), dat["aps"].(map[string]interface{})["badge"].(float64))
-	assert.Equal(t, test, dat["aps"].(map[string]interface{})["alert"])
+	assert.Equal(t, testMessage, dat["aps"].(map[string]interface{})["alert"])
 }
 
 func TestMessageAndTitle(t *testing.T) {
 	var dat map[string]interface{}
 
-	test := "test"
-	message := "Welcome notification Server"
+	message := welcomeMessage
 	title := "Welcome notification Server title"
 	req := &PushNotification{
-		ApnsID:           test,
-		Topic:            test,
+		ApnsID:           testMessage,
+		Topic:            testMessage,
 		Priority:         "normal",
 		Message:          message,
 		Title:            title,
@@ -485,7 +484,7 @@ func TestMessageAndTitle(t *testing.T) {
 	alertBody, _ := jsonparser.GetString(data, "aps", "alert", "body")
 	alertTitle, _ := jsonparser.GetString(data, "aps", "alert", "title")
 
-	assert.Equal(t, test, notification.ApnsID)
+	assert.Equal(t, testMessage, notification.ApnsID)
 	assert.Equal(t, ApnsPriorityLow, notification.Priority)
 	assert.Equal(t, message, alertBody)
 	assert.Equal(t, title, alertTitle)
@@ -515,22 +514,21 @@ func TestMessageAndTitle(t *testing.T) {
 func TestIOSAlertNotificationStructure(t *testing.T) {
 	var dat map[string]interface{}
 
-	test := "test"
 	req := &PushNotification{
 		Message: "Welcome",
-		Title:   test,
+		Title:   testMessage,
 		Alert: Alert{
-			Action:       test,
-			ActionLocKey: test,
-			Body:         test,
-			LaunchImage:  test,
+			Action:       testMessage,
+			ActionLocKey: testMessage,
+			Body:         testMessage,
+			LaunchImage:  testMessage,
 			LocArgs:      []string{"a", "b"},
-			LocKey:       test,
-			Subtitle:     test,
+			LocKey:       testMessage,
+			Subtitle:     testMessage,
 			TitleLocArgs: []string{"a", "b"},
-			TitleLocKey:  test,
+			TitleLocKey:  testMessage,
 		},
-		InterruptionLevel: test,
+		InterruptionLevel: testMessage,
 	}
 
 	notification := GetIOSNotification(req)
@@ -557,15 +555,15 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 	titleLocArgs := alert["title-loc-args"].([]interface{})
 	locArgs := alert["loc-args"].([]interface{})
 
-	assert.Equal(t, test, action)
-	assert.Equal(t, test, actionLocKey)
-	assert.Equal(t, test, body)
-	assert.Equal(t, test, launchImage)
-	assert.Equal(t, test, locKey)
-	assert.Equal(t, test, title)
-	assert.Equal(t, test, subtitle)
-	assert.Equal(t, test, titleLocKey)
-	assert.Equal(t, test, interruptionLevel)
+	assert.Equal(t, testMessage, action)
+	assert.Equal(t, testMessage, actionLocKey)
+	assert.Equal(t, testMessage, body)
+	assert.Equal(t, testMessage, launchImage)
+	assert.Equal(t, testMessage, locKey)
+	assert.Equal(t, testMessage, title)
+	assert.Equal(t, testMessage, subtitle)
+	assert.Equal(t, testMessage, titleLocKey)
+	assert.Equal(t, testMessage, interruptionLevel)
 	assert.Contains(t, titleLocArgs, "a")
 	assert.Contains(t, titleLocArgs, "b")
 	assert.Contains(t, locArgs, "a")
@@ -613,7 +611,7 @@ func TestAPNSClientProdHost(t *testing.T) {
 
 	cfg.Ios.Enabled = true
 	cfg.Ios.Production = true
-	cfg.Ios.KeyPath = "../certificate/certificate-valid.pem"
+	cfg.Ios.KeyPath = testKeyPath
 	err := InitAPNSClient(cfg)
 	assert.Nil(t, err)
 	assert.Equal(t, apns2.HostProduction, ApnsClient.Host)
@@ -642,7 +640,7 @@ func TestAPNSClientInvaildToken(t *testing.T) {
 
 	// empty key-id or team-id
 	cfg.Ios.Enabled = true
-	cfg.Ios.KeyPath = "../certificate/authkey-valid.p8"
+	cfg.Ios.KeyPath = testKeyPathP8
 	err = InitAPNSClient(cfg)
 	assert.Error(t, err)
 
@@ -661,7 +659,7 @@ func TestAPNSClientVaildToken(t *testing.T) {
 	cfg, _ := config.LoadConf()
 
 	cfg.Ios.Enabled = true
-	cfg.Ios.KeyPath = "../certificate/authkey-valid.p8"
+	cfg.Ios.KeyPath = testKeyPathP8
 	cfg.Ios.KeyID = "key-id"
 	cfg.Ios.TeamID = "team-id"
 	err := InitAPNSClient(cfg)
@@ -706,7 +704,7 @@ func TestAPNSClientUseProxy(t *testing.T) {
 	expectedProxyURL, _ := url.ParseRequestURI(cfg.Core.HTTPProxy)
 	assert.Equal(t, expectedProxyURL, actualProxyURL)
 
-	cfg.Ios.KeyPath = "../certificate/authkey-valid.p8"
+	cfg.Ios.KeyPath = testKeyPathP8
 	cfg.Ios.TeamID = "example.team"
 	cfg.Ios.KeyID = "example.key"
 	err = InitAPNSClient(cfg)
@@ -729,7 +727,7 @@ func TestPushToIOS(t *testing.T) {
 	MaxConcurrentIOSPushes = make(chan struct{}, cfg.Ios.MaxConcurrentPushes)
 
 	cfg.Ios.Enabled = true
-	cfg.Ios.KeyPath = "../certificate/certificate-valid.pem"
+	cfg.Ios.KeyPath = testKeyPath
 	err := InitAPNSClient(cfg)
 	assert.Nil(t, err)
 	err = status.InitAppStatus(cfg)
@@ -752,7 +750,7 @@ func TestApnsHostFromRequest(t *testing.T) {
 	cfg, _ := config.LoadConf()
 
 	cfg.Ios.Enabled = true
-	cfg.Ios.KeyPath = "../certificate/certificate-valid.pem"
+	cfg.Ios.KeyPath = testKeyPath
 	err := InitAPNSClient(cfg)
 	assert.Nil(t, err)
 	err = status.InitAppStatus(cfg)

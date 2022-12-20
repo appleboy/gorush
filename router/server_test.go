@@ -26,8 +26,9 @@ import (
 )
 
 var (
-	goVersion = runtime.Version()
-	q         *queue.Queue
+	goVersion   = runtime.Version()
+	q           *queue.Queue
+	testKeyPath = "../certificate/certificate-valid.pem"
 )
 
 func TestMain(m *testing.M) {
@@ -471,7 +472,7 @@ func TestSenMultipleNotifications(t *testing.T) {
 	cfg := initTest()
 
 	cfg.Ios.Enabled = true
-	cfg.Ios.KeyPath = "../certificate/certificate-valid.pem"
+	cfg.Ios.KeyPath = testKeyPath
 	err := notify.InitAPNSClient(cfg)
 	assert.Nil(t, err)
 
@@ -507,7 +508,7 @@ func TestDisabledAndroidNotifications(t *testing.T) {
 	cfg := initTest()
 
 	cfg.Ios.Enabled = true
-	cfg.Ios.KeyPath = "../certificate/certificate-valid.pem"
+	cfg.Ios.KeyPath = testKeyPath
 	err := notify.InitAPNSClient(cfg)
 	assert.Nil(t, err)
 
@@ -543,7 +544,7 @@ func TestSyncModeForNotifications(t *testing.T) {
 	cfg := initTest()
 
 	cfg.Ios.Enabled = true
-	cfg.Ios.KeyPath = "../certificate/certificate-valid.pem"
+	cfg.Ios.KeyPath = testKeyPath
 	err := notify.InitAPNSClient(cfg)
 	assert.Nil(t, err)
 
@@ -654,7 +655,7 @@ func TestDisabledIosNotifications(t *testing.T) {
 	cfg := initTest()
 
 	cfg.Ios.Enabled = false
-	cfg.Ios.KeyPath = "../certificate/certificate-valid.pem"
+	cfg.Ios.KeyPath = testKeyPath
 	err := notify.InitAPNSClient(cfg)
 	assert.Nil(t, err)
 

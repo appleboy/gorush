@@ -87,7 +87,7 @@ func GetHuaweiNotification(req *PushNotification) (*model.MessageRequest, error)
 		msgRequest.Message.Condition = req.Condition
 	}
 
-	if req.Priority == "high" {
+	if req.Priority == HIGH {
 		msgRequest.Message.Android.Urgency = "HIGH"
 	}
 

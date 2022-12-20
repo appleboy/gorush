@@ -219,7 +219,7 @@ func TestAndroidNotificationStructure(t *testing.T) {
 		Tokens:                []string{"a", "b"},
 		Message:               "Welcome",
 		To:                    test,
-		Priority:              "high",
+		Priority:              HIGH,
 		CollapseKey:           "1",
 		ContentAvailable:      true,
 		DelayWhileIdle:        true,
@@ -242,7 +242,7 @@ func TestAndroidNotificationStructure(t *testing.T) {
 	notification := GetAndroidNotification(req)
 
 	assert.Equal(t, test, notification.To)
-	assert.Equal(t, "high", notification.Priority)
+	assert.Equal(t, HIGH, notification.Priority)
 	assert.Equal(t, "1", notification.CollapseKey)
 	assert.True(t, notification.ContentAvailable)
 	assert.True(t, notification.DelayWhileIdle)

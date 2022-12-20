@@ -43,6 +43,7 @@ func (c *healthClient) Check(ctx context.Context) (bool, error) {
 		}
 		return false, nil
 	}
+	//nolint:exhaustive
 	switch status.Code(err) {
 	case
 		codes.Aborted,

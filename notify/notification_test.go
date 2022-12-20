@@ -15,7 +15,7 @@ func TestCorrectConf(t *testing.T) {
 	cfg.Android.APIKey = "xxxxx"
 
 	cfg.Ios.Enabled = true
-	cfg.Ios.KeyPath = "../certificate/certificate-valid.pem"
+	cfg.Ios.KeyPath = testKeyPath
 
 	err := CheckPushConf(cfg)
 
