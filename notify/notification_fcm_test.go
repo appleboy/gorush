@@ -20,7 +20,7 @@ func TestMissingAndroidAPIKey(t *testing.T) {
 	err := CheckPushConf(cfg)
 
 	assert.Error(t, err)
-	assert.Equal(t, "Missing Android API Key", err.Error())
+	assert.Equal(t, "missing android api key", err.Error())
 }
 
 func TestMissingKeyForInitFCMClient(t *testing.T) {
@@ -30,7 +30,7 @@ func TestMissingKeyForInitFCMClient(t *testing.T) {
 
 	assert.Nil(t, client)
 	assert.Error(t, err)
-	assert.Equal(t, "Missing Android API Key", err.Error())
+	assert.Equal(t, "missing android api key", err.Error())
 }
 
 func TestPushToAndroidWrongToken(t *testing.T) {

@@ -41,25 +41,6 @@ ifeq ($(ANDROID_TEST_TOKEN),)
 endif
 	@echo "Already set ANDROID_API_KEY and ANDROID_TEST_TOKEN globale variable."
 
-.PHONY: fmt
-fmt:
-	@hash gofumpt > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		$(GO) install mvdan.cc/gofumpt@v0.1.1; \
-	fi
-	$(GOFMT) -w $(GOFILES)
-
-.PHONY: fmt-check
-fmt-check:
-	@hash gofumpt > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		$(GO) install mvdan.cc/gofumpt@v0.1.1; \
-	fi
-	@diff=$$($(GOFMT) -d $(GOFILES)); \
-	if [ -n "$$diff" ]; then \
-		echo "Please run 'make fmt' and commit the result:"; \
-		echo "$${diff}"; \
-		exit 1; \
-	fi;
-
 vet:
 	$(GO) vet ./...
 
@@ -96,7 +77,7 @@ misspell:
 	misspell -w $(GOFILES)
 
 .PHONY: test
-test: init fmt-check
+test: init
 	@$(GO) test -v -cover -tags $(TAGS) -coverprofile coverage.txt ./... && echo "\n==>\033[32m Ok\033[m\n" || exit 1
 
 release: release-dirs release-build release-copy release-compress release-check

@@ -17,7 +17,7 @@ func TestMissingHuaweiAppSecret(t *testing.T) {
 	err := CheckPushConf(cfg)
 
 	assert.Error(t, err)
-	assert.Equal(t, "Missing Huawei App Secret", err.Error())
+	assert.Equal(t, "missing huawei app secret", err.Error())
 }
 
 func TestMissingHuaweiAppID(t *testing.T) {
@@ -29,7 +29,7 @@ func TestMissingHuaweiAppID(t *testing.T) {
 	err := CheckPushConf(cfg)
 
 	assert.Error(t, err)
-	assert.Equal(t, "Missing Huawei App ID", err.Error())
+	assert.Equal(t, "missing huawei app id", err.Error())
 }
 
 func TestMissingAppSecretForInitHMSClient(t *testing.T) {
@@ -38,7 +38,7 @@ func TestMissingAppSecretForInitHMSClient(t *testing.T) {
 
 	assert.Nil(t, client)
 	assert.Error(t, err)
-	assert.Equal(t, "Missing Huawei App Secret", err.Error())
+	assert.Equal(t, "missing huawei app secret", err.Error())
 }
 
 func TestMissingAppIDForInitHMSClient(t *testing.T) {
@@ -47,5 +47,5 @@ func TestMissingAppIDForInitHMSClient(t *testing.T) {
 
 	assert.Nil(t, client)
 	assert.Error(t, err)
-	assert.Equal(t, "Missing Huawei App ID", err.Error())
+	assert.Equal(t, "missing huawei app id", err.Error())
 }
