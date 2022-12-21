@@ -58,8 +58,6 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
   - [Stargazers over time](#stargazers-over-time)
   - [License](#license)
 
-[![Buy Me A Coffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/appleboy)
-
 ## Support Platform
 
 - [APNS](https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/APNSOverview.html)
