@@ -70,3 +70,8 @@ jobs:
           ANDROID_API_KEY: ${{ secrets.ANDROID_API_KEY }}
           ANDROID_TEST_TOKEN: ${{ secrets.ANDROID_TEST_TOKEN }}
         run : make test
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          flags: ${{ matrix.os }},go-${{ matrix.go }}
