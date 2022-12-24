@@ -228,25 +228,19 @@ go get -u -v github.com/appleboy/gorush
 On linux
 
 ```sh
-wget https://github.com/appleboy/gorush/releases/download/v1.15.0/gorush-v1.15.0-linux-amd64 -O gorush
+wget https://github.com/appleboy/gorush/releases/download/v1.16.0/gorush_1.16.0_linux_amd64.tar.gz -O - | tar -xz
 ```
 
-On OS X
+On macOS (Intel amd64)
 
 ```sh
-wget https://github.com/appleboy/gorush/releases/download/v1.15.0/gorush-v1.15.0-darwin-amd64 -O gorush
+wget -c https://github.com/appleboy/gorush/releases/download/v1.16.0/gorush_1.16.0_darwin_amd64.tar.gz -O - | tar -xz
 ```
 
-On Windows
+On macOS (Apple arm64)
 
 ```sh
-wget https://github.com/appleboy/gorush/releases/download/v1.15.0/gorush-v1.15.0-windows-amd64.exe -O gorush.exe
-```
-
-On macOS, use Homebrew.
-
-```sh
-brew install --HEAD https://github.com/appleboy/gorush/raw/master/HomebrewFormula/gorush.rb
+wget -c https://github.com/appleboy/gorush/releases/download/v1.16.0/gorush_1.16.0_darwin_arm64.tar.gz -O - | tar -xz
 ```
 
 ### Install from source
