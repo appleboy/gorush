@@ -1,0 +1,29 @@
+name: Release Binary
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup go
+        uses: actions/setup-go@v3
+        with:
+          go-version: '^1'
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Build binary
+        run : |
+          make build_linux_amd64
+          make build_linux_arm64
+          make build_linux_arm
+
+      - name: Check binary
+        run : |
+          ./release/linux/amd64/gorush --help

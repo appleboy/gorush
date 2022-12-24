@@ -1,12 +1,7 @@
-name: Run Tests
+name: Run Lint and Testing
 
 on:
   push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
 
 jobs:
   lint:
