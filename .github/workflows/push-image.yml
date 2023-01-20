@@ -1,0 +1,92 @@
+---
+name: Push Image
+
+on:
+  workflow_call:
+    inputs:
+      AWS_REGION:
+        required: true
+        type: string
+        description: AWS Region to send the requests to
+      ECR_REPOSITORY:
+        required: true
+        type: string
+        description: AWS ECR repository name (without registry URL)
+      IMAGE_TAG:
+        required: true
+        type: string
+        description: Image tag
+      SHA_TAG:
+        required: false
+        type: string
+        description: Optional image tag matching the commit SHA (short or full)
+      RETAG_LATEST:
+        required: false
+        default: false
+        type: boolean
+        description: Retag latest image tag
+      BUILDER_IMAGE:
+        required: false
+        type: string
+        description: Optional build argument to override BUILDER_IMAGE
+      FINAL_IMAGE:
+        required: false
+        type: string
+        description: Optional build argument to override FINAL_IMAGE
+      DOCKERFILE:
+        required: false
+        type: string
+        default: ./Dockerfile
+        description: Optional path/name of the Dockerfile
+      BUILD_CONTEXT:
+        required: false
+        type: string
+        default: "."
+        description: Optional Docker build context
+    secrets:
+      AWS_ROLE_TO_ASSUME:
+        required: true
+        description: AWS IAM Role ARN to assume with GitHub OIDC Provider
+
+jobs:
+  amazon-ecr:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ inputs.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: push_ecr
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ inputs.ECR_REPOSITORY }}
+          IMAGE_TAG: ${{ inputs.IMAGE_TAG }}
+          SHA_TAG: ${{ inputs.SHA_TAG }}
+          DOCKERFILE: ${{ inputs.DOCKERFILE }}
+          BUILD_CONTEXT: ${{ inputs.BUILD_CONTEXT }}
+          BUILDER_IMAGE: ${{ inputs.BUILDER_IMAGE }}
+          FINAL_IMAGE: ${{ inputs.FINAL_IMAGE }}
+          RETAG_LATEST: ${{ inputs.RETAG_LATEST }}
+        run: |
+          docker build -t $ECR_REPOSITORY \
+              --tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+              ${BUILDER_IMAGE:+"--build-arg BUILDER_IMAGE=$BUILDER_IMAGE"} \
+              ${FINAL_IMAGE:+"--build-arg FINAL_IMAGE=$FINAL_IMAGE"} \
+              --file $DOCKERFILE $BUILD_CONTEXT
+
+          [[ -z "${SHA_TAG}" ]] || docker image tag $ECR_REPOSITORY $ECR_REGISTRY/$ECR_REPOSITORY:${SHA_TAG::8}
+
+          [[ "${RETAG_LATEST}" == false ]] || docker image tag $ECR_REPOSITORY $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+          docker image push --all-tags $ECR_REGISTRY/$ECR_REPOSITORY

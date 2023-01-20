@@ -1,0 +1,31 @@
+---
+name: Deploy Gorush
+
+on:
+  push:
+    branches:
+      - master
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  checkout:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+  push-image:
+    needs: checkout
+    uses: ./.github/workflows/push-image.yml
+    with:
+      AWS_REGION: us-east-1
+      ECR_REPOSITORY: ${{ github.repository }}/gorush
+      IMAGE_TAG: 1.13.0
+      RETAG_LATEST: true
+    secrets: inherit
