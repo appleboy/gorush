@@ -97,6 +97,7 @@ stat:
   engine: "memory" # support memory, redis, boltdb, buntdb or leveldb
   redis:
     addr: "localhost:6379"
+    username: ""
     password: ""
     db: 0
   boltdb:
@@ -387,6 +388,7 @@ func LoadConf(confPath ...string) (*ConfYaml, error) {
 	// Stat Engine
 	conf.Stat.Engine = viper.GetString("stat.engine")
 	conf.Stat.Redis.Addr = viper.GetString("stat.redis.addr")
+	conf.Stat.Redis.Username = viper.GetString("stat.redis.username")
 	conf.Stat.Redis.Password = viper.GetString("stat.redis.password")
 	conf.Stat.Redis.DB = viper.GetInt("stat.redis.db")
 	conf.Stat.BoltDB.Path = viper.GetString("stat.boltdb.path")
