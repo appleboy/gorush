@@ -25,16 +25,15 @@ func (s *Storage) getInt64(key string, count *int64) {
 // Storage is interface structure
 type Storage struct {
 	config *config.ConfYaml
-	client *redis.Client
+	client *redis.ClusterClient
 }
 
 // Init client storage.
 func (s *Storage) Init() error {
-	s.client = redis.NewClient(&redis.Options{
-		Addr:     s.config.Stat.Redis.Addr,
+	s.client = redis.NewClusterClient(&redis.ClusterOptions{
+		Addrs:    []string{s.config.Stat.Redis.Addr},
 		Username: s.config.Stat.Redis.Username,
 		Password: s.config.Stat.Redis.Password,
-		DB:       s.config.Stat.Redis.DB,
 		TLSConfig: &tls.Config{
 			MinVersion: tls.VersionTLS12,
 		},
