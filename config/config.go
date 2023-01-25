@@ -237,6 +237,7 @@ type SectionNATS struct {
 // SectionRedis is sub section of config.
 type SectionRedis struct {
 	Addr     string `yaml:"addr"`
+	Username string `yaml:"username"`
 	Password string `yaml:"password"`
 	DB       int    `yaml:"db"`
 }

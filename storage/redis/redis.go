@@ -32,6 +32,7 @@ type Storage struct {
 func (s *Storage) Init() error {
 	s.client = redis.NewClient(&redis.Options{
 		Addr:     s.config.Stat.Redis.Addr,
+		Username: s.config.Stat.Redis.Username,
 		Password: s.config.Stat.Redis.Password,
 		DB:       s.config.Stat.Redis.DB,
 		TLSConfig: &tls.Config{
