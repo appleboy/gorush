@@ -1,6 +1,7 @@
 package redis
 
 import (
+	"crypto/tls"
 	"strconv"
 
 	"github.com/appleboy/gorush/config"
@@ -33,6 +34,9 @@ func (s *Storage) Init() error {
 		Addr:     s.config.Stat.Redis.Addr,
 		Password: s.config.Stat.Redis.Password,
 		DB:       s.config.Stat.Redis.DB,
+		TLSConfig: &tls.Config{
+			MinVersion: tls.VersionTLS12,
+		},
 	})
 	_, err := s.client.Ping().Result()
 
