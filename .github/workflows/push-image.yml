@@ -12,14 +12,14 @@ on:
         required: true
         type: string
         description: AWS ECR repository name (without registry URL)
-      IMAGE_TAG:
+      VERSION:
         required: true
         type: string
-        description: Image tag
-      SHA_TAG:
+        description: Gorush version
+      SHA:
         required: false
         type: string
-        description: Optional image tag matching the commit SHA (short or full)
+        description: Git SHA representing the current commit
       RETAG_LATEST:
         required: false
         default: false
@@ -71,8 +71,8 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ inputs.ECR_REPOSITORY }}
-          IMAGE_TAG: ${{ inputs.IMAGE_TAG }}
-          SHA_TAG: ${{ inputs.SHA_TAG }}
+          VERSION: ${{ inputs.VERSION }}
+          SHA: ${{ inputs.SHA }}
           DOCKERFILE: ${{ inputs.DOCKERFILE }}
           BUILD_CONTEXT: ${{ inputs.BUILD_CONTEXT }}
           BUILDER_IMAGE: ${{ inputs.BUILDER_IMAGE }}
@@ -80,12 +80,10 @@ jobs:
           RETAG_LATEST: ${{ inputs.RETAG_LATEST }}
         run: |
           docker build -t $ECR_REPOSITORY \
-              --tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+              --tag $ECR_REGISTRY/$ECR_REPOSITORY:${VERSION}-${SHA::8} \
               ${BUILDER_IMAGE:+"--build-arg BUILDER_IMAGE=$BUILDER_IMAGE"} \
               ${FINAL_IMAGE:+"--build-arg FINAL_IMAGE=$FINAL_IMAGE"} \
               --file $DOCKERFILE $BUILD_CONTEXT
-
-          [[ -z "${SHA_TAG}" ]] || docker image tag $ECR_REPOSITORY $ECR_REGISTRY/$ECR_REPOSITORY:${SHA_TAG::8}
 
           [[ "${RETAG_LATEST}" == false ]] || docker image tag $ECR_REPOSITORY $ECR_REGISTRY/$ECR_REPOSITORY:latest
 

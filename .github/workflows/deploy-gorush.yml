@@ -26,6 +26,7 @@ jobs:
     with:
       AWS_REGION: us-east-1
       ECR_REPOSITORY: ${{ github.repository }}/gorush
-      IMAGE_TAG: 1.13.0
+      VERSION: 1.13.0
+      SHA: ${{ github.sha }}
       RETAG_LATEST: true
     secrets: inherit
