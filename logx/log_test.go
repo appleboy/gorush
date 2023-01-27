@@ -154,6 +154,10 @@ func TestLogPushEntry(t *testing.T) {
 	in.Token = "1234567890"
 	in.HideToken = true
 	assert.Equal(t, "**********", GetLogPushEntry(&in).Token)
+
+	in.Message = "hellothisisamessage"
+	in.HideMessage = true
+	assert.Equal(t, "(message redacted)", GetLogPushEntry(&in).Message)
 }
 
 func TestLogPush(t *testing.T) {
