@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-//nolint
+// nolint
 var defaultConf = []byte(`
 core:
   enabled: true # enable httpd server
@@ -98,6 +98,7 @@ log:
   error_log: "stderr" # stderr: output to console, or define log path like "log/error_log"
   error_level: "error"
   hide_token: true
+  hide_messages: false
 
 stat:
   engine: "memory" # support memory, redis, boltdb, buntdb or leveldb
@@ -202,12 +203,13 @@ type SectionIos struct {
 
 // SectionLog is sub section of config.
 type SectionLog struct {
-	Format      string `yaml:"format"`
-	AccessLog   string `yaml:"access_log"`
-	AccessLevel string `yaml:"access_level"`
-	ErrorLog    string `yaml:"error_log"`
-	ErrorLevel  string `yaml:"error_level"`
-	HideToken   bool   `yaml:"hide_token"`
+	Format       string `yaml:"format"`
+	AccessLog    string `yaml:"access_log"`
+	AccessLevel  string `yaml:"access_level"`
+	ErrorLog     string `yaml:"error_log"`
+	ErrorLevel   string `yaml:"error_level"`
+	HideToken    bool   `yaml:"hide_token"`
+	HideMessages bool   `yaml:"hide_messages"`
 }
 
 // SectionStat is sub section of config.
@@ -397,6 +399,7 @@ func LoadConf(confPath ...string) (*ConfYaml, error) {
 	conf.Log.ErrorLog = viper.GetString("log.error_log")
 	conf.Log.ErrorLevel = viper.GetString("log.error_level")
 	conf.Log.HideToken = viper.GetBool("log.hide_token")
+	conf.Log.HideMessages = viper.GetBool("log.hide_messages")
 
 	// Queue Engine
 	conf.Queue.Engine = viper.GetString("queue.engine")
