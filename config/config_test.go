@@ -119,6 +119,7 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 	assert.Equal(suite.T(), "stderr", suite.ConfGorushDefault.Log.ErrorLog)
 	assert.Equal(suite.T(), "error", suite.ConfGorushDefault.Log.ErrorLevel)
 	assert.Equal(suite.T(), true, suite.ConfGorushDefault.Log.HideToken)
+	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Log.HideMessages)
 
 	assert.Equal(suite.T(), "memory", suite.ConfGorushDefault.Stat.Engine)
 	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Stat.Redis.Cluster)
