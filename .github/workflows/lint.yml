@@ -23,15 +23,15 @@ jobs:
           version: latest
           args: --verbose
 
-      - uses: hadolint/hadolint-action@v3.0.0
+      - uses: hadolint/hadolint-action@v3.1.0
         name: hadolint for Dockerfile.linux.amd64
         with:
           dockerfile: docker/Dockerfile.linux.amd64
-      - uses: hadolint/hadolint-action@v3.0.0
+      - uses: hadolint/hadolint-action@v3.1.0
         name: hadolint for Dockerfile.linux.arm64
         with:
           dockerfile: docker/Dockerfile.linux.arm64
-      - uses: hadolint/hadolint-action@v3.0.0
+      - uses: hadolint/hadolint-action@v3.1.0
         name: hadolint for Dockerfile.linux.arm
         with:
           dockerfile: docker/Dockerfile.linux.arm
