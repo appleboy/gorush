@@ -33,7 +33,7 @@ type LogPushEntry struct {
 
 var isTerm bool
 
-//nolint
+// nolint
 func init() {
 	isTerm = isatty.IsTerminal(os.Stdout.Fd())
 }
@@ -175,26 +175,32 @@ func GetLogPushEntry(input *InputLog) LogPushEntry {
 		token = hideToken(input.Token, 10)
 	}
 
+	message := input.Message
+	if input.HideMessage {
+		message = "(message redacted)"
+	}
+
 	return LogPushEntry{
 		ID:       input.ID,
 		Type:     input.Status,
 		Platform: plat,
 		Token:    token,
-		Message:  input.Message,
+		Message:  message,
 		Error:    errMsg,
 	}
 }
 
 // InputLog log request
 type InputLog struct {
-	ID        string
-	Status    string
-	Token     string
-	Message   string
-	Platform  int
-	Error     error
-	HideToken bool
-	Format    string
+	ID          string
+	Status      string
+	Token       string
+	Message     string
+	Platform    int
+	Error       error
+	HideToken   bool
+	HideMessage bool
+	Format      string
 }
 
 // LogPush record user push request and server response.
