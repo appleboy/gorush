@@ -30,7 +30,7 @@ require (
 	github.com/sideshow/apns2 v0.23.0
 	github.com/sirupsen/logrus v1.9.0
 	github.com/spf13/viper v1.15.0
-	github.com/stretchr/testify v1.8.1
+	github.com/stretchr/testify v1.8.2
 	github.com/syndtr/goleveldb v1.0.0
 	github.com/thoas/stats v0.0.0-20190407194641-965cb2de1678
 	github.com/tidwall/buntdb v1.2.10
