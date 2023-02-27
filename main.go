@@ -82,7 +82,8 @@ func main() {
 	flag.Usage = usage
 	flag.Parse()
 
-	router.SetVersion(Version)
+	router.SetVersion(version)
+	router.SetCommit(commit)
 
 	// Show version and exit
 	if showVersion {
@@ -394,7 +395,10 @@ func main() {
 }
 
 // Version control for notify.
-var Version = "No Version Provided"
+var (
+	version = "No Version Provided"
+	commit  = "No Commit Provided"
+)
 
 var usageStr = `
   ________                              .__

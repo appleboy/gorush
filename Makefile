@@ -10,7 +10,7 @@ TARGETS ?= linux darwin windows
 ARCHS ?= amd64
 GOFILES := $(shell find . -name "*.go" -type f)
 TAGS ?= sqlite
-LDFLAGS ?= -X 'main.Version=$(VERSION)'
+LDFLAGS ?= -X main.version=$(VERSION) -X main.commit=$(COMMIT)
 
 PROTOC_GEN_GO=v1.28
 PROTOC_GEN_GO_GRPC=v1.2
@@ -26,6 +26,8 @@ ifneq ($(DRONE_TAG),)
 else
 	VERSION ?= $(shell git describe --tags --always || git rev-parse --short HEAD)
 endif
+
+COMMIT ?= $(shell git rev-parse --short HEAD)
 
 .PHONY: all
 all: build
