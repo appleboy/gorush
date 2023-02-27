@@ -228,19 +228,19 @@ go get -u -v github.com/appleboy/gorush
 On linux
 
 ```sh
-wget https://github.com/appleboy/gorush/releases/download/v1.16.0/gorush_1.16.0_linux_amd64.tar.gz -O - | tar -xz
+wget https://github.com/appleboy/gorush/releases/download/v1.16.1/gorush_1.16.1_linux_amd64.tar.gz -O - | tar -xz
 ```
 
 On macOS (Intel amd64)
 
 ```sh
-wget -c https://github.com/appleboy/gorush/releases/download/v1.16.0/gorush_1.16.0_darwin_amd64.tar.gz -O - | tar -xz
+wget -c https://github.com/appleboy/gorush/releases/download/v1.16.1/gorush_1.16.1_darwin_amd64.tar.gz -O - | tar -xz
 ```
 
 On macOS (Apple arm64)
 
 ```sh
-wget -c https://github.com/appleboy/gorush/releases/download/v1.16.0/gorush_1.16.0_darwin_arm64.tar.gz -O - | tar -xz
+wget -c https://github.com/appleboy/gorush/releases/download/v1.16.1/gorush_1.16.1_darwin_arm64.tar.gz -O - | tar -xz
 ```
 
 ### Install from source
