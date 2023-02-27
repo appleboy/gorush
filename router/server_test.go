@@ -98,6 +98,7 @@ func testRequest(t *testing.T, url string) {
 
 func TestPrintGoRushVersion(t *testing.T) {
 	SetVersion("3.0.0")
+	SetCommit("abcdefg")
 	ver := GetVersion()
 	PrintGoRushVersion()
 

@@ -31,7 +31,7 @@ func GetVersion() string {
 func PrintGoRushVersion() {
 	fmt.Printf(`GoRush %s, Commit: %s, Compiler: %s %s, Copyright (C) 2023 Bo-Yi Wu, Inc.`,
 		version,
-		commit,
+		commit[:7],
 		runtime.Compiler,
 		runtime.Version())
 	fmt.Println()
