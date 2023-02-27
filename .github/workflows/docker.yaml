@@ -6,22 +6,13 @@ on:
       - master
     tags:
       - 'v*'
+  pull_request:
+    branches:
+      - 'master'
 
 jobs:
-  build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      max-parallel: 3
-      matrix:
-        os: [ubuntu-latest]
-        system: [linux]
-        arch: [amd64, arm, arm64]
-        # support windows build and push?
-        # see the issue: https://github.com/docker/build-push-action/issues/18
-        # include:
-        #   - os: windows-2022
-        #     system: windows
-        #     arch: amd64
+  build-docker:
+    runs-on: ubuntu-latest
     steps:
       - name: Setup go
         uses: actions/setup-go@v3
@@ -34,13 +25,9 @@ jobs:
 
       - name: Build binary
         run : |
-          make build_${{ matrix.system }}_${{ matrix.arch }}
-
-      - name: Check binary
-        if: matrix.system == 'linux' && matrix.arch == 'amd64'
-        run : |
-          ./release/${{ matrix.system }}/${{ matrix.arch }}/${GITHUB_REPOSITORY#*/} --help
-
+          make build_linux_amd64
+          make build_linux_arm
+          make build_linux_arm64
       -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -65,30 +52,26 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       -
-        name: Docker meta for ${{ matrix.system }} ${{ matrix.arch }}
+        name: Docker meta
         id: docker-meta
         uses: docker/metadata-action@v4
         with:
-          flavor: |
-            latest=false
-            suffix=${{ matrix.system }}-${{ matrix.arch }}
           images: |
             ${{ github.repository }}
             ghcr.io/${{ github.repository }}
           tags: |
-            type=raw,value=,enable={{is_default_branch}}
-            type=raw,value=latest,suffix=,enable={{is_default_branch}}
-            type=semver,event=tag,pattern={{version}},suffix=-${{ matrix.system }}-${{ matrix.arch }}
-            type=semver,event=tag,pattern={{major}}.{{minor}},suffix=-${{ matrix.system }}-${{ matrix.arch }}
-            type=semver,event=tag,pattern={{major}},suffix=-${{ matrix.system }}-${{ matrix.arch }}
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
 
       -
-        name: Build and push ${{ matrix.system }} ${{ matrix.arch }}
+        name: Build and push
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: docker/Dockerfile.${{ matrix.system }}.${{ matrix.arch }}
-          platforms: ${{ matrix.system }}/${{ matrix.arch }}
-          push: true
+          platforms: linux/amd64,linux/arm,linux/arm64
+          file: docker/Dockerfile
+          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.docker-meta.outputs.tags }}
           labels: ${{ steps.docker-meta.outputs.labels }}
