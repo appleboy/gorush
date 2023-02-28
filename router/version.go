@@ -29,9 +29,13 @@ func GetVersion() string {
 
 // PrintGoRushVersion provide print server engine
 func PrintGoRushVersion() {
+	if len(commit) > 7 {
+		commit = commit[:7]
+	}
+
 	fmt.Printf(`GoRush %s, Commit: %s, Compiler: %s %s, Copyright (C) 2023 Bo-Yi Wu, Inc.`,
 		version,
-		commit[:7],
+		commit,
 		runtime.Compiler,
 		runtime.Version())
 	fmt.Println()
