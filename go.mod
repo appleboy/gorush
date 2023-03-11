@@ -18,7 +18,7 @@ require (
 	github.com/golang-queue/nsq v0.1.1
 	github.com/golang-queue/queue v0.1.3
 	github.com/golang-queue/redisdb-stream v0.0.3
-	github.com/golang/protobuf v1.5.2
+	github.com/golang/protobuf v1.5.3
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
 	github.com/json-iterator/go v1.1.12
