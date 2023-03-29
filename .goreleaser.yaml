@@ -1,43 +1,85 @@
-# This is an example .goreleaser.yml file with some sensible defaults.
-# Make sure to check the documentation at https://goreleaser.com
 before:
   hooks:
-    # You may remove this if you don't use go modules.
     - go mod tidy
+
 builds:
-  - env:
-      - CGO_ENABLED=0
-    goos:
-      - linux
-      - windows
-      - darwin
+- env:
+  - CGO_ENABLED=0
+  goos:
+  - darwin
+  - linux
+  - windows
+  - freebsd
+  goarch:
+  - amd64
+  - arm
+  - arm64
+  goarm:
+  - "5"
+  - "6"
+  - "7"
+  ignore:
+    - goos: darwin
+      goarch: arm
+    - goos: darwin
+      goarch: ppc64le
+    - goos: darwin
+      goarch: s390x
+    - goos: windows
+      goarch: ppc64le
+    - goos: windows
+      goarch: s390x
+    - goos: windows
+      goarch: arm
+      goarm: "5"
+    - goos: windows
+      goarch: arm
+      goarm: "6"
+    - goos: windows
+      goarch: arm
+      goarm: "7"
+    - goos: windows
+      goarch: arm64
+    - goos: freebsd
+      goarch: ppc64le
+    - goos: freebsd
+      goarch: s390x
+    - goos: freebsd
+      goarch: arm
+      goarm: "5"
+    - goos: freebsd
+      goarch: arm
+      goarm: "6"
+    - goos: freebsd
+      goarch: arm
+      goarm: "7"
+    - goos: freebsd
+      goarch: arm64
+  flags:
+  - -trimpath
+  ldflags:
+  - -s -w
+  - -X main.version={{.Version}}
+  - -X main.commit={{.ShortCommit}}
+  binary: >-
+    {{ .ProjectName }}-
+    {{- if .IsSnapshot }}{{ .Branch }}-
+    {{- else }}{{- .Version }}-{{ end }}
+    {{- .Os }}-
+    {{- if eq .Arch "amd64" }}amd64
+    {{- else if eq .Arch "amd64_v1" }}amd64
+    {{- else if eq .Arch "386" }}386
+    {{- else }}{{ .Arch }}{{ end }}
+    {{- if .Arm }}-{{ .Arm }}{{ end }}
+  no_unique_dist_dir: true
 
 archives:
-  - format: tar.gz
-    # this name template makes the OS and Arch compatible with the results of uname.
-    name_template: >-
-      {{ .ProjectName }}_
-      {{- title .Os }}_
-      {{- if eq .Arch "amd64" }}x86_64
-      {{- else if eq .Arch "386" }}i386
-      {{- else }}{{ .Arch }}{{ end }}
-      {{- if .Arm }}v{{ .Arm }}{{ end }}
-    # use zip for windows archives
-    format_overrides:
-    - goos: windows
-      format: zip
+  - format: binary
+    name_template: "{{ .Binary }}"
+    allow_different_binary_count: true
+
 checksum:
   name_template: 'checksums.txt'
-snapshot:
-  name_template: "{{ incpatch .Version }}-next"
-changelog:
-  sort: asc
-  filters:
-    exclude:
-      - '^docs:'
-      - '^test:'
 
-# The lines beneath this are called `modelines`. See `:help modeline`
-# Feel free to remove those if you don't want/use them.
-# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
-# vim: set ts=2 sw=2 tw=0 fo=cnqoj
+snapshot:
+  name_template: "{{ incpatch .Version }}"
