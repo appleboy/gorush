@@ -1,6 +1,6 @@
 module github.com/appleboy/gorush
 
-go 1.16
+go 1.18
 
 // +heroku goVersion go1.16
 
