@@ -2,14 +2,14 @@ package notify
 
 import (
 	"context"
+	"fmt"
+	"github.com/appleboy/gorush/config"
+	"github.com/appleboy/gorush/status"
 	"log"
 	"net/http"
 	"net/url"
 	"testing"
 	"time"
-
-	"github.com/appleboy/gorush/config"
-	"github.com/appleboy/gorush/status"
 
 	"github.com/buger/jsonparser"
 	"github.com/sideshow/apns2"
@@ -513,6 +513,9 @@ func TestMessageAndTitle(t *testing.T) {
 
 func TestIOSAlertNotificationStructure(t *testing.T) {
 	var dat map[string]interface{}
+	unix := time.Now().Unix()
+	stale_date := time.Now().Unix()
+	timeStamp := time.Now().Unix()
 
 	req := &PushNotification{
 		Message: "Welcome",
@@ -529,6 +532,9 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 			TitleLocKey:  testMessage,
 		},
 		InterruptionLevel: testMessage,
+		StaleDate:         stale_date,
+		Event:             testMessage,
+		Timestamp:         timeStamp,
 	}
 
 	notification := GetIOSNotification(req)
@@ -550,11 +556,17 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 	subtitle, _ := jsonparser.GetString(data, "aps", "alert", "subtitle")
 	titleLocKey, _ := jsonparser.GetString(data, "aps", "alert", "title-loc-key")
 	interruptionLevel, _ := jsonparser.GetString(data, "aps", "interruption-level")
+	staleDate, _ := jsonparser.GetInt(data, "aps", "stale-date")
+	event, _ := jsonparser.GetString(data, "aps", "event")
+	timestamp, _ := jsonparser.GetInt(data, "aps", "timestamp")
 	aps := dat["aps"].(map[string]interface{})
 	alert := aps["alert"].(map[string]interface{})
 	titleLocArgs := alert["title-loc-args"].([]interface{})
 	locArgs := alert["loc-args"].([]interface{})
 
+	fmt.Println("data", json.Unmarshal(data, &dat))
+	fmt.Println("testMessage", event)
+	fmt.Println("sataleDate", staleDate)
 	assert.Equal(t, testMessage, action)
 	assert.Equal(t, testMessage, actionLocKey)
 	assert.Equal(t, testMessage, body)
@@ -564,6 +576,9 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 	assert.Equal(t, testMessage, subtitle)
 	assert.Equal(t, testMessage, titleLocKey)
 	assert.Equal(t, testMessage, interruptionLevel)
+	assert.Equal(t, testMessage, event)
+	assert.Equal(t, unix, staleDate)
+	assert.Equal(t, unix, timestamp)
 	assert.Contains(t, titleLocArgs, "a")
 	assert.Contains(t, titleLocArgs, "b")
 	assert.Contains(t, locArgs, "a")
