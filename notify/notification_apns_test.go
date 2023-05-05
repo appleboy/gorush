@@ -516,6 +516,7 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 	unix := time.Now().Unix()
 	stale_date := time.Now().Unix()
 	timeStamp := time.Now().Unix()
+	itemId := float64(12345)
 
 	req := &PushNotification{
 		Message: "Welcome",
@@ -535,12 +536,17 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 		StaleDate:         stale_date,
 		Event:             testMessage,
 		Timestamp:         timeStamp,
+		ContentState: D{
+			"item_id":   itemId,
+			"item_name": testMessage,
+		},
 	}
 
 	notification := GetIOSNotification(req)
 
 	dump, _ := json.Marshal(notification.Payload)
 	data := []byte(string(dump))
+	fmt.Println("data", string(dump))
 
 	if err := json.Unmarshal(data, &dat); err != nil {
 		log.Println(err)
@@ -563,10 +569,10 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 	alert := aps["alert"].(map[string]interface{})
 	titleLocArgs := alert["title-loc-args"].([]interface{})
 	locArgs := alert["loc-args"].([]interface{})
+	contentSate := aps["content-state"].(map[string]interface{})
+	contentSateItemId := contentSate["item_id"]
+	contentSateItemName := contentSate["item_name"]
 
-	fmt.Println("data", json.Unmarshal(data, &dat))
-	fmt.Println("testMessage", event)
-	fmt.Println("sataleDate", staleDate)
 	assert.Equal(t, testMessage, action)
 	assert.Equal(t, testMessage, actionLocKey)
 	assert.Equal(t, testMessage, body)
@@ -579,6 +585,13 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 	assert.Equal(t, testMessage, event)
 	assert.Equal(t, unix, staleDate)
 	assert.Equal(t, unix, timestamp)
+
+	// extensible contentState content
+	assert.Equal(t, contentSateItemId, itemId)
+	assert.Equal(t, contentSateItemName, testMessage)
+	assert.Contains(t, contentSate, "item_id")
+	assert.Contains(t, contentSate, "item_name")
+
 	assert.Contains(t, titleLocArgs, "a")
 	assert.Contains(t, titleLocArgs, "b")
 	assert.Contains(t, locArgs, "a")
