@@ -295,7 +295,7 @@ func iosAlertDictionary(notificationPayload *payload.Payload, req *PushNotificat
 		notificationPayload.AlertSummaryArgCount(req.Alert.SummaryArgCount)
 	}
 
-	// will wait for apns2 library update to reflect new methods
+	// will wait for apns2 library release to reflect new methods in live-activity
 	if len(req.ContentState) > 0 {
 		notificationPayload.ContentState(req.ContentState)
 	}
