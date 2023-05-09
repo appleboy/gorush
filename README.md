@@ -721,7 +721,11 @@ The Request body must have a notifications array. The following is a parameter t
 | mutable_content         | bool         | enable Notification Service app extension.                                                        | -        | only iOS(10.0+).                                              |
 | name                    | string       | sets the name value on the aps sound dictionary.                                                  | -        | only iOS                                                      |
 | volume                  | float32      | sets the volume value on the aps sound dictionary.                                                | -        | only iOS                                                      |
-| interruption_level      | string       | defines the interruption level for the push notification.                                         | -        | only iOS(15.0+)                                                      |
+| interruption_level      | string       | defines the interruption level for the push notification.                                         | -        | only iOS(15.0+)                                               |
+| content-state           | string array | dynamic and custom content for live-activity notification.                                        | -        | only iOS(16.1+)                                               |
+| timestamp               | int          | the UNIX time when sending the remote notification that updates or ends a Live Activity           | -        | only iOS(16.1+)                                               |                                            
+| event                   | string       | describes whether you update or end an ongoing Live Activity                                      | -        | only iOS(16.1+)                                               |     
+| stale-date              | int          | the date which a Live Activity becomes stale, or out of date                                      | -        | only iOS(16.1+)                                               |
 
 ### iOS alert payload
 
