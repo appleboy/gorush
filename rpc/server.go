@@ -2,13 +2,22 @@ package rpc
 
 import (
 	"context"
+	"fmt"
 	"net"
+	"runtime/debug"
 	"strings"
 	"sync"
 
-	"github.com/appleboy/gorush/gorush"
+	"github.com/appleboy/gorush/config"
+	"github.com/appleboy/gorush/core"
+	"github.com/appleboy/gorush/logx"
+	"github.com/appleboy/gorush/notify"
 	"github.com/appleboy/gorush/rpc/proto"
 
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
+	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
+	"go.opencensus.io/plugin/ocgrpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/reflection"
@@ -17,14 +26,16 @@ import (
 
 // Server is used to implement gorush grpc server.
 type Server struct {
-	mu sync.Mutex
+	cfg *config.ConfYaml
+	mu  sync.Mutex
 	// statusMap stores the serving status of the services this Server monitors.
 	statusMap map[string]proto.HealthCheckResponse_ServingStatus
 }
 
 // NewServer returns a new Server.
-func NewServer() *Server {
+func NewServer(cfg *config.ConfYaml) *Server {
 	return &Server{
+		cfg:       cfg,
 		statusMap: make(map[string]proto.HealthCheckResponse_ServingStatus),
 	}
 }
@@ -50,7 +61,7 @@ func (s *Server) Check(ctx context.Context, in *proto.HealthCheckRequest) (*prot
 // Send implements helloworld.GreeterServer
 func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*proto.NotificationReply, error) {
 	badge := int(in.Badge)
-	notification := gorush.PushNotification{
+	notification := notify.PushNotification{
 		TenantId:         "sample",
 		Platform:         int(in.Platform),
 		Tokens:           in.Tokens,
@@ -65,18 +76,20 @@ func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*prot
 		MutableContent:   in.MutableContent,
 		Image:            in.Image,
 		Priority:         strings.ToLower(in.GetPriority().String()),
+		PushType:         in.PushType,
+		Development:      in.Development,
 	}
 
 	if badge > 0 {
 		notification.Badge = &badge
 	}
 
-	if in.Topic != "" && in.Platform == gorush.PlatformAndroid {
+	if in.Topic != "" && in.Platform == core.PlatformAndroid {
 		notification.To = in.Topic
 	}
 
 	if in.Alert != nil {
-		notification.Alert = gorush.Alert{
+		notification.Alert = notify.Alert{
 			Title:        in.Alert.Title,
 			Body:         in.Alert.Body,
 			Subtitle:     in.Alert.Subtitle,
@@ -91,13 +104,15 @@ func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*prot
 	}
 
 	if in.Data != nil {
-		notification.Data = map[string]interface{}{}
-		for k, v := range in.Data.Fields {
-			notification.Data[k] = v
-		}
+		notification.Data = in.Data.AsMap()
 	}
 
-	go gorush.SendNotification(ctx, notification)
+	go func() {
+		_, err := notify.SendNotification(&notification, s.cfg)
+		if err != nil {
+			logx.LogError.Error(err)
+		}
+	}()
 
 	return &proto.NotificationReply{
 		Success: true,
@@ -106,35 +121,48 @@ func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*prot
 }
 
 // RunGRPCServer run gorush grpc server
-func RunGRPCServer(ctx context.Context) error {
-	if !gorush.PushConf.GRPC.Enabled {
-		gorush.LogAccess.Info("gRPC server is disabled.")
+func RunGRPCServer(ctx context.Context, cfg *config.ConfYaml) error {
+	if !cfg.GRPC.Enabled {
+		logx.LogAccess.Info("gRPC server is disabled.")
 		return nil
 	}
 
-	s := grpc.NewServer()
-	rpcSrv := NewServer()
+	recoveryOpt := grpc_recovery.WithRecoveryHandlerContext(
+		func(ctx context.Context, p interface{}) error {
+			fmt.Printf("[PANIC] %s\n%s", p, string(debug.Stack()))
+			return status.Error(codes.Internal, "system has been broken")
+		},
+	)
+
+	unaryInterceptors := []grpc.UnaryServerInterceptor{
+		grpc_prometheus.UnaryServerInterceptor,
+		grpc_recovery.UnaryServerInterceptor(recoveryOpt),
+	}
+
+	s := grpc.NewServer(
+		grpc.StatsHandler(&ocgrpc.ServerHandler{}),
+		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(unaryInterceptors...)),
+	)
+	rpcSrv := NewServer(cfg)
 	proto.RegisterGorushServer(s, rpcSrv)
 	proto.RegisterHealthServer(s, rpcSrv)
 
 	// Register reflection service on gRPC server.
 	reflection.Register(s)
 
-	lis, err := net.Listen("tcp", ":"+gorush.PushConf.GRPC.Port)
+	lis, err := net.Listen("tcp", ":"+cfg.GRPC.Port)
 	if err != nil {
-		gorush.LogError.Fatalln(err)
+		logx.LogError.Fatalln(err)
 		return err
 	}
-	gorush.LogAccess.Info("gRPC server is running on " + gorush.PushConf.GRPC.Port + " port.")
+	logx.LogAccess.Info("gRPC server is running on " + cfg.GRPC.Port + " port.")
 	go func() {
-		select {
-		case <-ctx.Done():
-			s.GracefulStop() // graceful shutdown
-			gorush.LogAccess.Info("shutdown the gRPC server")
-		}
+		<-ctx.Done()
+		s.GracefulStop() // graceful shutdown
+		logx.LogAccess.Info("shutdown the gRPC server")
 	}()
 	if err = s.Serve(lis); err != nil {
-		gorush.LogError.Fatalln(err)
+		logx.LogError.Fatalln(err)
 	}
 	return err
 }

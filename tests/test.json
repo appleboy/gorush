@@ -6,7 +6,8 @@
         "token_b"
       ],
       "platform": 1,
-      "message": "Hello World iOS!"
+      "message": "Hello World iOS!",
+      "title": "Gorush with iOS"
     },
     {
       "tokens": [
@@ -14,7 +15,14 @@
         "token_b"
       ],
       "platform": 2,
-      "message": "Hello World Android!"
+      "message": "Hello World Android!",
+      "title": "Gorush with Android"
+    },
+    {
+      "tokens": ["token_a", "token_b"],
+      "platform": 3,
+      "message": "Hello World Huawei!",
+      "title": "Gorush with HMS"
     }
   ]
 }

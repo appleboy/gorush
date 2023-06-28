@@ -6,7 +6,7 @@ core:
   worker_num: 0 # default worker number is runtime.NumCPU()
   queue_num: 0 # default queue number is 8192
   max_notification: 100
-  sync: false # set true if you need get error message from fail push notification in API response.
+  sync: false # set true if you need get error message from fail push notification in API response. It only works when the queue engine is local.
   feedback_hook_url: "" # set a hook url if you need get error message asynchronously from fail push notification in API response.
   feedback_timeout: 10 # default is 10 second
   mode: "release"
@@ -61,6 +61,22 @@ tenants:
         app_id: "YOUR_APP_ID"
         max_retry: 0 # resend fail notification, default value zero is disabled
 
+queue:
+  engine: "local" # support "local", "nsq", "nats" and "redis" default value is "local"
+  nsq:
+    addr: 127.0.0.1:4150
+    topic: gorush
+    channel: gorush
+  nats:
+    addr: 127.0.0.1:4222
+    subj: gorush
+    queue: gorush
+  redis:
+    addr: 127.0.0.1:6379
+    group: gorush
+    consumer: gorush
+    stream_name: gorush
+
 log:
   format: "string" # string or json
   access_log: "stdout" # stdout: output to console, or define log path like "log/access_log"
@@ -68,11 +84,13 @@ log:
   error_log: "stderr" # stderr: output to console, or define log path like "log/error_log"
   error_level: "error"
   hide_token: true
+  hide_messages: false
 
 stat:
   engine: "memory" # support memory, redis, boltdb, buntdb or leveldb
   redis:
-    addr: "localhost:6379"
+    cluster: false
+    addr: "localhost:6379" # if cluster is true, you may set this to "localhost:6379,localhost:6380,localhost:6381"
     password: ""
     db: 0
   boltdb:
