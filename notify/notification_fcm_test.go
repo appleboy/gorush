@@ -13,8 +13,7 @@ import (
 
 func TestMissingAndroidAPIKey(t *testing.T) {
 	cfg, _ := config.LoadConf()
-	tenantId := "tenant_id1"
-	tenant := PushConf.Tenants[tenantId]
+	tenant := cfg.Tenants[tenantId]
 
 	tenant.Android.Enabled = true
 	tenant.Android.APIKey = ""
@@ -27,7 +26,6 @@ func TestMissingAndroidAPIKey(t *testing.T) {
 
 func TestMissingKeyForInitFCMClient(t *testing.T) {
 	tenantId := "1"
-	tenant.Android.APIKey = ""
 	client, err := InitFCMClient(tenantId, "")
 
 	assert.Nil(t, client)
@@ -37,8 +35,7 @@ func TestMissingKeyForInitFCMClient(t *testing.T) {
 
 func TestPushToAndroidWrongToken(t *testing.T) {
 	cfg, _ := config.LoadConf()
-	tenantId := "tenant_id1"
-	tenant := PushConf.Tenants[tenantId]
+	tenant := cfg.Tenants[tenantId]
 
 	tenant.Android.Enabled = true
 	tenant.Android.APIKey = os.Getenv("ANDROID_API_KEY")
@@ -58,8 +55,7 @@ func TestPushToAndroidWrongToken(t *testing.T) {
 
 func TestPushToAndroidRightTokenForJSONLog(t *testing.T) {
 	cfg, _ := config.LoadConf()
-	tenantId := "tenant_id1"
-	tenant := PushConf.Tenants[tenantId]
+	tenant := cfg.Tenants[tenantId]
 
 	tenant.Android.Enabled = true
 	tenant.Android.APIKey = os.Getenv("ANDROID_API_KEY")
@@ -82,8 +78,7 @@ func TestPushToAndroidRightTokenForJSONLog(t *testing.T) {
 
 func TestPushToAndroidRightTokenForStringLog(t *testing.T) {
 	cfg, _ := config.LoadConf()
-	tenantId := "tenant_id1"
-	tenant := PushConf.Tenants[tenantId]
+	tenant := cfg.Tenants[tenantId]
 
 	tenant.Android.Enabled = true
 	tenant.Android.APIKey = os.Getenv("ANDROID_API_KEY")
@@ -104,10 +99,9 @@ func TestPushToAndroidRightTokenForStringLog(t *testing.T) {
 
 func TestOverwriteAndroidAPIKey(t *testing.T) {
 	cfg, _ := config.LoadConf()
-	tenantId := "tenant_id1"
-	tenant := PushConf.Tenants[tenantId]
+	tenant := cfg.Tenants[tenantId]
 
-	PushConf.Core.Sync = true
+	cfg.Core.Sync = true
 	tenant.Android.Enabled = true
 	tenant.Android.APIKey = os.Getenv("ANDROID_API_KEY")
 
@@ -215,8 +209,7 @@ func TestFCMMessage(t *testing.T) {
 
 func TestCheckAndroidMessage(t *testing.T) {
 	cfg, _ := config.LoadConf()
-	tenantId := "tenant_id1"
-	tenant := PushConf.Tenants[tenantId]
+	tenant := cfg.Tenants[tenantId]
 
 	tenant.Android.Enabled = true
 	tenant.Android.APIKey = os.Getenv("ANDROID_API_KEY")

@@ -126,10 +126,10 @@ func InitAPNSClient(tenantId string, tenant config.SectionTenant) error {
 
 			ApnsClients[tenantId], err = newApnsTokenClient(jwt, tenant.Ios.Production)
 		} else {
-			ApnsClients[tenantId], err = newApnsClient(cfg, certificateKey, tenant.Ios.Production)
+			ApnsClients[tenantId], err = newApnsClient(certificateKey, tenant.Ios.Production)
 		}
 
-		if h2Transport, ok := ApnsClient.HTTPClient.Transport.(*http2.Transport); ok {
+		if h2Transport, ok := ApnsClients[tenantId].HTTPClient.Transport.(*http2.Transport); ok {
 			configureHTTP2ConnHealthCheck(h2Transport)
 		}
 
@@ -140,24 +140,20 @@ func InitAPNSClient(tenantId string, tenant config.SectionTenant) error {
 		}
 
 		doOnce.Do(func() {
-			MaxConcurrentIOSPushes = make(chan struct{}, cfg.Ios.MaxConcurrentPushes)
+			MaxConcurrentIOSPushes[tenantId] = make(chan struct{}, tenant.Ios.MaxConcurrentPushes)
 		})
 	}
 
 	return nil
 }
 
-func newApnsClient(cfg *config.ConfYaml, certificate tls.Certificate, isProduction bool) (*apns2.Client, error) {
+func newApnsClient(certificate tls.Certificate, isProduction bool) (*apns2.Client, error) {
 	var client *apns2.Client
 
-	if cfg.Ios.Production {
+	if isProduction {
 		client = apns2.NewClient(certificate).Production()
 	} else {
 		client = apns2.NewClient(certificate).Development()
-	}
-
-	if cfg.Core.HTTPProxy == "" {
-		return client, nil
 	}
 
 	//nolint:gosec
@@ -189,17 +185,13 @@ func newApnsClient(cfg *config.ConfYaml, certificate tls.Certificate, isProducti
 	return client, nil
 }
 
-func newApnsTokenClient(cfg *config.ConfYaml, token *token.Token, isProduction bool) (*apns2.Client, error) {
+func newApnsTokenClient(token *token.Token, isProduction bool) (*apns2.Client, error) {
 	var client *apns2.Client
 
-	if cfg.Ios.Production {
+	if isProduction {
 		client = apns2.NewTokenClient(token).Production()
 	} else {
 		client = apns2.NewTokenClient(token).Development()
-	}
-
-	if cfg.Core.HTTPProxy == "" {
-		return client, nil
 	}
 
 	transport := &http.Transport{
@@ -404,7 +396,7 @@ func getApnsClient(cfg *config.ConfYaml, req *PushNotification) (client *apns2.C
 func PushToIOS(req *PushNotification, cfg *config.ConfYaml) (resp *ResponsePush, err error) {
 	logx.LogAccess.Debug("Start push notification for iOS")
 	if req.TenantId == "" {
-		LogError.Error("missing tenant id for Android notification")
+		logx.LogError.Error("missing tenant id for Android notification")
 		return
 	}
 

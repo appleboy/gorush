@@ -34,7 +34,7 @@ type LogPushEntry struct {
 
 var isTerm bool
 
-//nolint
+// nolint
 func init() {
 	isTerm = isatty.IsTerminal(os.Stdout.Fd())
 }
@@ -182,7 +182,7 @@ func GetLogPushEntry(input *InputLog) LogPushEntry {
 	}
 
 	return LogPushEntry{
-		TenantId: req.TenantId,
+		TenantId: input.TenantId,
 		ID:       input.ID,
 		Type:     input.Status,
 		Platform: plat,
@@ -195,6 +195,7 @@ func GetLogPushEntry(input *InputLog) LogPushEntry {
 // InputLog log request
 type InputLog struct {
 	ID          string
+	TenantId    string
 	Status      string
 	Token       string
 	Message     string

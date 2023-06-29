@@ -84,7 +84,7 @@ func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*prot
 		notification.Badge = &badge
 	}
 
-	if in.Topic != "" && in.Platform == core.PlatformAndroid {
+	if in.Topic != "" && in.Platform == core.PlatFormAndroid {
 		notification.To = in.Topic
 	}
 

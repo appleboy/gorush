@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"path/filepath"
 	"sync"
 
 	"github.com/appleboy/gorush/config"
@@ -58,6 +59,8 @@ func versionHandler(c *gin.Context) {
 
 func pushHandler(cfg *config.ConfYaml, q *queue.Queue) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		fullPath := c.FullPath()
+		tenantId := filepath.Base(fullPath)
 		var form notify.RequestPush
 		var msg string
 
@@ -96,7 +99,7 @@ func pushHandler(cfg *config.ConfYaml, q *queue.Queue) gin.HandlerFunc {
 			}
 		}()
 
-		counts, logs := handleNotification(ctx, cfg, form, q)
+		counts, logs := handleNotification(ctx, cfg, form, q, tenantId)
 
 		c.JSON(http.StatusOK, gin.H{
 			"success": "ok",
@@ -212,13 +215,15 @@ func routerEngine(cfg *config.ConfYaml, q *queue.Queue) *gin.Engine {
 	r.GET(cfg.API.StatAppURI, appStatusHandler(q))
 	r.GET(cfg.API.ConfigURI, configHandler(cfg))
 	r.GET(cfg.API.SysStatURI, sysStatsHandler())
-	r.POST(cfg.API.PushURI, pushHandler(cfg, q))
 	r.GET(cfg.API.MetricURI, metricsHandler)
 	r.GET(cfg.API.HealthURI, heartbeatHandler)
 	r.HEAD(cfg.API.HealthURI, heartbeatHandler)
 	r.GET("/version", versionHandler)
 	r.GET("/", rootHandler)
 
+	for _, tenant := range cfg.Tenants {
+		r.POST(tenant.PushURI, pushHandler(cfg, q))
+	}
 	return r
 }
 
@@ -233,6 +238,7 @@ func markFailedNotification(
 	for _, token := range notification.Tokens {
 		logs = append(logs, logx.GetLogPushEntry(&logx.InputLog{
 			ID:        notification.ID,
+			TenantId:  notification.TenantId,
 			Status:    core.FailedPush,
 			Token:     token,
 			Message:   notification.Message,
@@ -252,10 +258,11 @@ func handleNotification(
 	cfg *config.ConfYaml,
 	req notify.RequestPush,
 	q *queue.Queue,
+	tenantId string,
 ) (int, []logx.LogPushEntry) {
 	var count int
 	wg := sync.WaitGroup{}
-	newNotification := []*notify.PushNotification{}
+	var newNotification []*notify.PushNotification
 
 	if cfg.Core.Sync && !core.IsLocalQueue(core.Queue(cfg.Queue.Engine)) {
 		cfg.Core.Sync = false
@@ -263,20 +270,22 @@ func handleNotification(
 
 	for i := range req.Notifications {
 		notification := &req.Notifications[i]
+		tenant := cfg.Tenants[tenantId]
 		switch notification.Platform {
 		case core.PlatFormIos:
-			if !cfg.Ios.Enabled {
+			if !tenant.Ios.Enabled {
 				continue
 			}
 		case core.PlatFormAndroid:
-			if !cfg.Android.Enabled {
+			if !tenant.Android.Enabled {
 				continue
 			}
 		case core.PlatFormHuawei:
-			if !cfg.Huawei.Enabled {
+			if !tenant.Huawei.Enabled {
 				continue
 			}
 		}
+		notification.TenantId = tenantId
 		newNotification = append(newNotification, notification)
 	}
 

@@ -10,9 +10,11 @@ import (
 
 func TestMissingHuaweiAppSecret(t *testing.T) {
 	cfg, _ := config.LoadConf()
+	tenantId := "tenant_id1"
+	tenant := cfg.Tenants[tenantId]
 
-	cfg.Huawei.Enabled = true
-	cfg.Huawei.AppSecret = ""
+	tenant.Huawei.Enabled = true
+	tenant.Huawei.APIKey = ""
 
 	err := CheckPushConf(cfg)
 
@@ -22,9 +24,11 @@ func TestMissingHuaweiAppSecret(t *testing.T) {
 
 func TestMissingHuaweiAppID(t *testing.T) {
 	cfg, _ := config.LoadConf()
+	tenantId := "tenant_id1"
+	tenant := cfg.Tenants[tenantId]
 
-	cfg.Huawei.Enabled = true
-	cfg.Huawei.AppID = ""
+	tenant.Huawei.Enabled = true
+	tenant.Huawei.APPId = ""
 
 	err := CheckPushConf(cfg)
 
@@ -34,7 +38,7 @@ func TestMissingHuaweiAppID(t *testing.T) {
 
 func TestMissingAppSecretForInitHMSClient(t *testing.T) {
 	cfg, _ := config.LoadConf()
-	client, err := InitHMSClient(cfg, "", "APP_SECRET")
+	client, err := InitHMSClient(cfg, "", "APP_SECRET", "")
 
 	assert.Nil(t, client)
 	assert.Error(t, err)
@@ -43,7 +47,7 @@ func TestMissingAppSecretForInitHMSClient(t *testing.T) {
 
 func TestMissingAppIDForInitHMSClient(t *testing.T) {
 	cfg, _ := config.LoadConf()
-	client, err := InitHMSClient(cfg, "APP_ID", "")
+	client, err := InitHMSClient(cfg, "tenant_id1", "APP_ID", "")
 
 	assert.Nil(t, client)
 	assert.Error(t, err)

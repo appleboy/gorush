@@ -21,7 +21,7 @@ func InitFCMClient(tenantId string, key string) (*fcm.Client, error) {
 	}
 
 	if FCMClients[tenantId] == nil {
-		FCMClients[tenantId], err = fcm.NewClient(cfg.Android.APIKey)
+		FCMClients[tenantId], err = fcm.NewClient(key)
 		return FCMClients[tenantId], err
 	}
 
@@ -104,7 +104,7 @@ func GetAndroidNotification(req *PushNotification) *fcm.Message {
 func PushToAndroid(req *PushNotification, cfg *config.ConfYaml) (resp *ResponsePush, err error) {
 	logx.LogAccess.Debug("Start push notification for Android")
 	if req.TenantId == "" {
-		LogError.Error("missing tenant id for Android notification")
+		logx.LogError.Error("missing tenant id for Android notification")
 		return
 	}
 
@@ -131,9 +131,9 @@ Retry:
 	notification := GetAndroidNotification(req)
 
 	if req.APIKey != "" {
-		client, err = InitFCMClient(cfg, req.TenantId, req.APIKey)
+		client, err = InitFCMClient(req.TenantId, req.APIKey)
 	} else {
-		client, err = InitFCMClient(req.TenantId, PushConf.Tenants[req.TenantId].Android.APIKey)
+		client, err = InitFCMClient(req.TenantId, cfg.Tenants[req.TenantId].Android.APIKey)
 	}
 
 	if err != nil {
@@ -235,6 +235,7 @@ Retry:
 func logPush(cfg *config.ConfYaml, status, token string, req *PushNotification, err error) logx.LogPushEntry {
 	return logx.LogPush(&logx.InputLog{
 		ID:          req.ID,
+		TenantId:    req.TenantId,
 		Status:      status,
 		Token:       token,
 		Message:     req.Message,

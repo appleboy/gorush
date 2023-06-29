@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-//nolint
+// nolint
 var defaultConf = []byte(`
 core:
   enabled: true # enable httpd server
@@ -123,7 +123,7 @@ type ConfYaml struct {
 	Core    SectionCore               `yaml:"core"`
 	API     SectionAPI                `yaml:"api"`
 	Tenants map[string]*SectionTenant `mapstructure:"tenants"`
-	Queue   SectionQueue   `yaml:"queue"`
+	Queue   SectionQueue              `yaml:"queue"`
 	Log     SectionLog                `yaml:"log"`
 	Stat    SectionStat               `yaml:"stat"`
 	GRPC    SectionGRPC               `yaml:"grpc"`
@@ -159,7 +159,7 @@ type SectionAutoTLS struct {
 	Host    string `yaml:"host"`
 }
 
-// SectionAPI is sub section of config.
+// SectionAPI is subsection of config.
 type SectionAPI struct {
 	StatGoURI  string `yaml:"stat_go_uri"`
 	StatAppURI string `yaml:"stat_app_uri"`
@@ -169,7 +169,7 @@ type SectionAPI struct {
 	HealthURI  string `yaml:"health_uri"`
 }
 
-// SectionTenant is sub section of config.
+// SectionTenant is subsection of config.
 type SectionTenant struct {
 	PushURI string         `mapstructure:"push_uri"`
 	Android SectionAndroid `mapstructure:"android"`
@@ -177,14 +177,14 @@ type SectionTenant struct {
 	Ios     SectionIos     `mapstructure:"ios"`
 }
 
-// SectionAndroid is sub section of tenant.
+// SectionAndroid is subsection of tenant.
 type SectionAndroid struct {
 	Enabled  bool   `mapstructure:"enabled"`
 	APIKey   string `mapstructure:"api_key"`
 	MaxRetry int    `mapstructure:"max_retry"`
 }
 
-// SectionHuawei is sub section of tenant.
+// SectionHuawei is subsection of tenant.
 type SectionHuawei struct {
 	Enabled  bool   `mapstructure:"enabled"`
 	APIKey   string `mapstructure:"api_key"`
@@ -192,7 +192,7 @@ type SectionHuawei struct {
 	MaxRetry int    `mapstructure:"max_retry"`
 }
 
-// SectionIos is sub section of tenant.
+// SectionIos is subsection of tenant.
 type SectionIos struct {
 	Enabled             bool   `mapstructure:"enabled"`
 	KeyPath             string `mapstructure:"key_path"`
@@ -206,7 +206,7 @@ type SectionIos struct {
 	TeamID              string `mapstructure:"team_id"`
 }
 
-// SectionLog is sub section of config.
+// SectionLog is subsection of config.
 type SectionLog struct {
 	Format       string `yaml:"format"`
 	AccessLog    string `yaml:"access_log"`
@@ -217,7 +217,7 @@ type SectionLog struct {
 	HideMessages bool   `yaml:"hide_messages"`
 }
 
-// SectionStat is sub section of config.
+// SectionStat is subsection of config.
 type SectionStat struct {
 	Engine   string          `yaml:"engine"`
 	Redis    SectionRedis    `yaml:"redis"`
@@ -227,7 +227,7 @@ type SectionStat struct {
 	BadgerDB SectionBadgerDB `yaml:"badgerdb"`
 }
 
-// SectionQueue is sub section of config.
+// SectionQueue is subsection of config.
 type SectionQueue struct {
 	Engine string            `yaml:"engine"`
 	NSQ    SectionNSQ        `yaml:"nsq"`
@@ -235,21 +235,21 @@ type SectionQueue struct {
 	Redis  SectionRedisQueue `yaml:"redis"`
 }
 
-// SectionNSQ is sub section of config.
+// SectionNSQ is subsection of config.
 type SectionNSQ struct {
 	Addr    string `yaml:"addr"`
 	Topic   string `yaml:"topic"`
 	Channel string `yaml:"channel"`
 }
 
-// SectionNATS is sub section of config.
+// SectionNATS is subsection of config.
 type SectionNATS struct {
 	Addr  string `yaml:"addr"`
 	Subj  string `yaml:"subj"`
 	Queue string `yaml:"queue"`
 }
 
-// SectionRedisQueue is sub section of config.
+// SectionRedisQueue is subsection of config.
 type SectionRedisQueue struct {
 	Addr       string `yaml:"addr"`
 	StreamName string `yaml:"stream_name"`
@@ -257,7 +257,7 @@ type SectionRedisQueue struct {
 	Consumer   string `yaml:"consumer"`
 }
 
-// SectionRedis is sub section of config.
+// SectionRedis is subsection of config.
 type SectionRedis struct {
 	Cluster  bool   `yaml:"cluster"`
 	Addr     string `yaml:"addr"`
@@ -265,35 +265,35 @@ type SectionRedis struct {
 	DB       int    `yaml:"db"`
 }
 
-// SectionBoltDB is sub section of config.
+// SectionBoltDB is subsection of config.
 type SectionBoltDB struct {
 	Path   string `yaml:"path"`
 	Bucket string `yaml:"bucket"`
 }
 
-// SectionBuntDB is sub section of config.
+// SectionBuntDB is subsection of config.
 type SectionBuntDB struct {
 	Path string `yaml:"path"`
 }
 
-// SectionLevelDB is sub section of config.
+// SectionLevelDB is subsection of config.
 type SectionLevelDB struct {
 	Path string `yaml:"path"`
 }
 
-// SectionBadgerDB is sub section of config.
+// SectionBadgerDB is subsection of config.
 type SectionBadgerDB struct {
 	Path string `yaml:"path"`
 }
 
-// SectionPID is sub section of config.
+// SectionPID is subsection of config.
 type SectionPID struct {
 	Enabled  bool   `yaml:"enabled"`
 	Path     string `yaml:"path"`
 	Override bool   `yaml:"override"`
 }
 
-// SectionGRPC is sub section of config.
+// SectionGRPC is subsection of config.
 type SectionGRPC struct {
 	Enabled bool   `yaml:"enabled"`
 	Port    string `yaml:"port"`

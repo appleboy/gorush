@@ -4,6 +4,9 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"github.com/appleboy/gorush/gorush"
+	core2 "github.com/msalihkarakasli/go-hms-push/push/core"
+	"github.com/sideshow/apns2"
 	"log"
 	"net"
 	"net/http"
@@ -116,12 +119,12 @@ func main() {
 		return
 	}
 
-	if gorush.PushConf.Tenants[tenantId] == nil {
-		gorush.PushConf.Tenants[tenantId] = defaultTenant
+	if tenantId != "" && cfg.Tenants[tenantId] == nil {
+		cfg.Tenants[tenantId] = defaultTenant
 	}
 
 	// Initialize push slots for concurrent iOS pushes
-	gorush.MaxConcurrentIOSPushes = make(map[string]chan struct{})
+	notify.MaxConcurrentIOSPushes = make(map[string]chan struct{})
 
 	if opts.Stat.Engine != "" {
 		cfg.Stat.Engine = opts.Stat.Engine
@@ -169,7 +172,7 @@ func main() {
 
 	// send android notification
 	if defaultTenant.Android.Enabled {
-		req := gorush.PushNotification{
+		req := &notify.PushNotification{
 			TenantId: tenantId,
 			Platform: gorush.PlatformAndroid,
 			Message:  message,
@@ -204,7 +207,7 @@ func main() {
 
 	// send huawei notification
 	if defaultTenant.Huawei.Enabled {
-		req := gorush.PushNotification{
+		req := &notify.PushNotification{
 			TenantId: tenantId,
 			Platform: gorush.PlatformHuawei,
 			Message:  message,
@@ -239,7 +242,7 @@ func main() {
 
 	// send ios notification
 	if defaultTenant.Ios.Enabled {
-		req := gorush.PushNotification{
+		req := &notify.PushNotification{
 			TenantId: tenantId,
 			Platform: gorush.PlatformIos,
 			Message:  message,
@@ -351,26 +354,25 @@ func main() {
 		if err := status.StatStorage.Close(); err != nil {
 			logx.LogError.Fatal("can't close the storage connection: ", err.Error())
 		}
+		return nil
 	})
 
-	gorush.ApnsClients = make(map[string]*apns2.Client)
-	gorush.FCMClients = make(map[string]*fcm.Client)
-	gorush.HMSClients = make(map[string]*core.HMSClient)
+	notify.ApnsClients = make(map[string]*apns2.Client)
+	notify.FCMClients = make(map[string]*fcm.Client)
+	notify.HMSClients = make(map[string]*core2.HMSClient)
 
-	gorush.InitWorkers(ctx, wg, gorush.PushConf.Core.WorkerNum, gorush.PushConf.Core.QueueNum)
-
-	for tenantId, tenant := range gorush.PushConf.Tenants {
+	for tenantId, tenant := range cfg.Tenants {
 		if err = notify.InitAPNSClient(tenantId, *tenant); err != nil {
 			logx.LogError.Fatal(err)
 		}
 		// Initialize push slots for concurrent iOS pushes
-		gorush.MaxConcurrentIOSPushes[tenantId] = make(chan struct{}, gorush.PushConf.Tenants[tenantId].Ios.MaxConcurrentPushes)
+		notify.MaxConcurrentIOSPushes[tenantId] = make(chan struct{}, cfg.Tenants[tenantId].Ios.MaxConcurrentPushes)
 
 		if _, err = notify.InitFCMClient(tenantId, tenant.Android.APIKey); err != nil {
 			logx.LogError.Fatal(err)
 		}
 
-		if _, err = notify.InitHMSClient(tenantId, tenant.Huawei.APIKey, tenant.Huawei.APPId); err != nil {
+		if _, err = notify.InitHMSClient(cfg, tenantId, tenant.Huawei.APIKey, tenant.Huawei.APPId); err != nil {
 			logx.LogError.Fatal(err)
 		}
 	}

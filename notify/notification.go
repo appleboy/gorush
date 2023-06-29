@@ -152,7 +152,7 @@ func CheckMessage(req *PushNotification) error {
 
 	if req.TenantId == "" {
 		msg = "the message must specify a tenant ID"
-		LogAccess.Debug(msg)
+		logx.LogAccess.Debug(msg)
 		return errors.New(msg)
 	}
 
@@ -206,8 +206,8 @@ func SetProxy(proxy string) error {
 }
 
 // CheckPushConf provide check your yml config.
-func CheckPushConf() error {
-	for tenantId, tenant := range PushConf.Tenants {
+func CheckPushConf(cfg *config.ConfYaml) error {
+	for tenantId, tenant := range cfg.Tenants {
 		if !tenant.Ios.Enabled && !tenant.Android.Enabled && !tenant.Huawei.Enabled {
 			return errors.New("please enable iOS, Android or Huawei config in yml config for tenant " + tenantId)
 		}
