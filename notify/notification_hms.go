@@ -36,7 +36,7 @@ func GetPushClient(conf *c.Config) (*client.HMSClient, error) {
 }
 
 // InitHMSClient use for initialize HMS Client.
-func InitHMSClient(cfg *config.ConfYaml, appSecret, appID string) (*client.HMSClient, error) {
+func InitHMSClient(cfg *config.ConfYaml, tenantId string, appSecret, appID string) (*client.HMSClient, error) {
 	if appSecret == "" {
 		return nil, errors.New("missing huawei app secret")
 	}
@@ -52,15 +52,15 @@ func InitHMSClient(cfg *config.ConfYaml, appSecret, appID string) (*client.HMSCl
 		PushUrl:   "https://push-api.cloud.huawei.com",
 	}
 
-	if appSecret != cfg.Huawei.AppSecret || appID != cfg.Huawei.AppID {
+	if appSecret != cfg.Tenants[tenantId].Huawei.APIKey || appID != cfg.Tenants[tenantId].Huawei.APPId {
 		return GetPushClient(conf)
 	}
 
-	if HMSClient == nil {
+	if HMSClients[tenantId] == nil {
 		return GetPushClient(conf)
 	}
 
-	return HMSClient, nil
+	return HMSClients[tenantId], nil
 }
 
 // GetHuaweiNotification use for define HMS notification.
@@ -168,7 +168,7 @@ func PushToHuawei(req *PushNotification, cfg *config.ConfYaml) (resp *ResponsePu
 	var (
 		client     *client.HMSClient
 		retryCount = 0
-		maxRetry   = cfg.Huawei.MaxRetry
+		maxRetry   = cfg.Tenants[req.TenantId].Huawei.MaxRetry
 	)
 
 	if req.Retry > 0 && req.Retry < maxRetry {
@@ -182,7 +182,7 @@ func PushToHuawei(req *PushNotification, cfg *config.ConfYaml) (resp *ResponsePu
 		return
 	}
 
-	client, err = InitHMSClient(cfg, cfg.Huawei.AppSecret, cfg.Huawei.AppID)
+	client, err = InitHMSClient(cfg, req.TenantId, cfg.Tenants[req.TenantId].Huawei.APIKey, cfg.Tenants[req.TenantId].Huawei.APPId)
 
 	if err != nil {
 		// HMS server error

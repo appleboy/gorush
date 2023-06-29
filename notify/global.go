@@ -7,14 +7,14 @@ import (
 )
 
 var (
-	// ApnsClient is apns client
-	ApnsClient *apns2.Client
-	// FCMClient is apns client
-	FCMClient *fcm.Client
-	// HMSClient is Huawei push client
-	HMSClient *core.HMSClient
+	// ApnsClients is apns client
+	ApnsClients map[string]*apns2.Client
+	// FCMClients is apns client
+	FCMClients map[string]*fcm.Client
+	// HMSClients is Huawei push client
+	HMSClients map[string]*core.HMSClient
 	// MaxConcurrentIOSPushes pool to limit the number of concurrent iOS pushes
-	MaxConcurrentIOSPushes chan struct{}
+	MaxConcurrentIOSPushes map[string]chan struct{}
 )
 
 const (

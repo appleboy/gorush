@@ -50,9 +50,9 @@ func (s *Server) Check(ctx context.Context, in *proto.HealthCheckRequest) (*prot
 			Status: proto.HealthCheckResponse_SERVING,
 		}, nil
 	}
-	if status, ok := s.statusMap[in.Service]; ok {
+	if serverStatus, ok := s.statusMap[in.Service]; ok {
 		return &proto.HealthCheckResponse{
-			Status: status,
+			Status: serverStatus,
 		}, nil
 	}
 	return nil, status.Error(codes.NotFound, "unknown service")
@@ -62,7 +62,7 @@ func (s *Server) Check(ctx context.Context, in *proto.HealthCheckRequest) (*prot
 func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*proto.NotificationReply, error) {
 	badge := int(in.Badge)
 	notification := notify.PushNotification{
-		ID:               in.ID,
+		TenantId:         "sample",
 		Platform:         int(in.Platform),
 		Tokens:           in.Tokens,
 		Message:          in.Message,

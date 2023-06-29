@@ -65,6 +65,8 @@ type ResponsePush struct {
 
 // PushNotification is single notification request
 type PushNotification struct {
+	TenantId string
+
 	// Common
 	ID               string      `json:"notif_id,omitempty"`
 	Tokens           []string    `json:"tokens" binding:"required"`
@@ -148,7 +150,13 @@ func (p *PushNotification) IsTopic() bool {
 func CheckMessage(req *PushNotification) error {
 	var msg string
 
-	// ignore send topic mesaage from FCM
+	if req.TenantId == "" {
+		msg = "the message must specify a tenant ID"
+		logx.LogAccess.Debug(msg)
+		return errors.New(msg)
+	}
+
+	// ignore send topic message from FCM
 	if !req.IsTopic() && len(req.Tokens) == 0 && req.To == "" {
 		msg = "the message must specify at least one registration ID"
 		logx.LogAccess.Debug(msg)
@@ -199,36 +207,38 @@ func SetProxy(proxy string) error {
 
 // CheckPushConf provide check your yml config.
 func CheckPushConf(cfg *config.ConfYaml) error {
-	if !cfg.Ios.Enabled && !cfg.Android.Enabled && !cfg.Huawei.Enabled {
-		return errors.New("please enable iOS, Android or Huawei config in yml config")
-	}
-
-	if cfg.Ios.Enabled {
-		if cfg.Ios.KeyPath == "" && cfg.Ios.KeyBase64 == "" {
-			return errors.New("missing iOS certificate key")
+	for tenantId, tenant := range cfg.Tenants {
+		if !tenant.Ios.Enabled && !tenant.Android.Enabled && !tenant.Huawei.Enabled {
+			return errors.New("please enable iOS, Android or Huawei config in yml config for tenant " + tenantId)
 		}
 
-		// check certificate file exist
-		if cfg.Ios.KeyPath != "" {
-			if _, err := os.Stat(cfg.Ios.KeyPath); os.IsNotExist(err) {
-				return errors.New("certificate file does not exist")
+		if tenant.Ios.Enabled {
+			if tenant.Ios.KeyPath == "" && tenant.Ios.KeyBase64 == "" {
+				return errors.New("missing iOS certificate key for tenant " + tenantId)
+			}
+
+			// check certificate file exist
+			if tenant.Ios.KeyPath != "" {
+				if _, err := os.Stat(tenant.Ios.KeyPath); os.IsNotExist(err) {
+					return errors.New("certificate file does not exist for tenant " + tenantId)
+				}
 			}
 		}
-	}
 
-	if cfg.Android.Enabled {
-		if cfg.Android.APIKey == "" {
-			return errors.New("missing android api key")
-		}
-	}
-
-	if cfg.Huawei.Enabled {
-		if cfg.Huawei.AppSecret == "" {
-			return errors.New("missing huawei app secret")
+		if tenant.Android.Enabled {
+			if tenant.Android.APIKey == "" {
+				return errors.New("missing Android API Key for tenant " + tenantId)
+			}
 		}
 
-		if cfg.Huawei.AppID == "" {
-			return errors.New("missing huawei app id")
+		if tenant.Huawei.Enabled {
+			if tenant.Huawei.APIKey == "" {
+				return errors.New("missing Huawei API Key for tenant " + tenantId)
+			}
+
+			if tenant.Huawei.APPId == "" {
+				return errors.New("missing Huawei APP Id for tenant " + tenantId)
+			}
 		}
 	}
 

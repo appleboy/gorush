@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-//nolint
+// nolint
 var defaultConf = []byte(`
 core:
   enabled: true # enable httpd server
@@ -44,7 +44,6 @@ grpc:
   port: 9000
 
 api:
-  push_uri: "/api/push"
   stat_go_uri: "/api/stat/go"
   stat_app_uri: "/api/stat/app"
   config_uri: "/api/config"
@@ -52,16 +51,29 @@ api:
   metric_uri: "/metrics"
   health_uri: "/healthz"
 
-android:
-  enabled: true
-  apikey: "YOUR_API_KEY"
-  max_retry: 0 # resend fail notification, default value zero is disabled
-
-huawei:
-  enabled: false
-  appsecret: "YOUR_APP_SECRET"
-  appid: "YOUR_APP_ID"
-  max_retry: 0 # resend fail notification, default value zero is disabled
+tenants:
+  - tenant_id1:
+      push_uri: "/push/uri/tenant1"
+      android:
+        enabled: true
+        api_key: "YOUR_API_KEY"
+        max_retry: 0 # resend fail notification, default value zero is disabled
+      ios:
+        enabled: false
+        key_path: ""
+        key_base64: "" # load iOS key from base64 input
+        key_type: "pem" # could be pem, p12 or p8 type
+        password: "" # certificate password, default as empty string.
+        production: false
+        max_concurrent_pushes: 100 # just for push ios notification
+        max_retry: 0 # resend fail notification, default value zero is disabled
+        key_id: "" # KeyID from developer account (Certificates, Identifiers & Profiles -> Keys)
+        team_id: "" # TeamID from developer account (View Account -> Membership)
+      huawei:
+  			enabled: false
+  			api_key: "YOUR_APP_SECRET"
+				app_id: "YOUR_APP_ID"
+  			max_retry: 0 # resend fail notification, default value zero is disabled
 
 queue:
   engine: "local" # support "local", "nsq", "nats" and "redis" default value is "local"
@@ -78,18 +90,6 @@ queue:
     group: gorush
     consumer: gorush
     stream_name: gorush
-
-ios:
-  enabled: false
-  key_path: ""
-  key_base64: "" # load iOS key from base64 input
-  key_type: "pem" # could be pem, p12 or p8 type
-  password: "" # certificate password, default as empty string.
-  production: false
-  max_concurrent_pushes: 100 # just for push ios notification
-  max_retry: 0 # resend fail notification, default value zero is disabled
-  key_id: "" # KeyID from developer account (Certificates, Identifiers & Profiles -> Keys)
-  team_id: "" # TeamID from developer account (View Account -> Membership)
 
 log:
   format: "string" # string or json
@@ -120,15 +120,13 @@ stat:
 
 // ConfYaml is config structure.
 type ConfYaml struct {
-	Core    SectionCore    `yaml:"core"`
-	API     SectionAPI     `yaml:"api"`
-	Android SectionAndroid `yaml:"android"`
-	Huawei  SectionHuawei  `yaml:"huawei"`
-	Ios     SectionIos     `yaml:"ios"`
-	Queue   SectionQueue   `yaml:"queue"`
-	Log     SectionLog     `yaml:"log"`
-	Stat    SectionStat    `yaml:"stat"`
-	GRPC    SectionGRPC    `yaml:"grpc"`
+	Core    SectionCore               `yaml:"core"`
+	API     SectionAPI                `yaml:"api"`
+	Tenants map[string]*SectionTenant `mapstructure:"tenants"`
+	Queue   SectionQueue              `yaml:"queue"`
+	Log     SectionLog                `yaml:"log"`
+	Stat    SectionStat               `yaml:"stat"`
+	GRPC    SectionGRPC               `yaml:"grpc"`
 }
 
 // SectionCore is sub section of config.
@@ -161,9 +159,8 @@ type SectionAutoTLS struct {
 	Host    string `yaml:"host"`
 }
 
-// SectionAPI is sub section of config.
+// SectionAPI is subsection of config.
 type SectionAPI struct {
-	PushURI    string `yaml:"push_uri"`
 	StatGoURI  string `yaml:"stat_go_uri"`
 	StatAppURI string `yaml:"stat_app_uri"`
 	ConfigURI  string `yaml:"config_uri"`
@@ -172,36 +169,44 @@ type SectionAPI struct {
 	HealthURI  string `yaml:"health_uri"`
 }
 
-// SectionAndroid is sub section of config.
+// SectionTenant is subsection of config.
+type SectionTenant struct {
+	PushURI string         `mapstructure:"push_uri"`
+	Android SectionAndroid `mapstructure:"android"`
+	Huawei  SectionHuawei  `mapstructure:"huawei"`
+	Ios     SectionIos     `mapstructure:"ios"`
+}
+
+// SectionAndroid is subsection of tenant.
 type SectionAndroid struct {
-	Enabled  bool   `yaml:"enabled"`
-	APIKey   string `yaml:"apikey"`
-	MaxRetry int    `yaml:"max_retry"`
+	Enabled  bool   `mapstructure:"enabled"`
+	APIKey   string `mapstructure:"api_key"`
+	MaxRetry int    `mapstructure:"max_retry"`
 }
 
-// SectionHuawei is sub section of config.
+// SectionHuawei is subsection of tenant.
 type SectionHuawei struct {
-	Enabled   bool   `yaml:"enabled"`
-	AppSecret string `yaml:"appsecret"`
-	AppID     string `yaml:"appid"`
-	MaxRetry  int    `yaml:"max_retry"`
+	Enabled  bool   `mapstructure:"enabled"`
+	APIKey   string `mapstructure:"api_key"`
+	APPId    string `mapstructure:"app_id"`
+	MaxRetry int    `mapstructure:"max_retry"`
 }
 
-// SectionIos is sub section of config.
+// SectionIos is subsection of tenant.
 type SectionIos struct {
-	Enabled             bool   `yaml:"enabled"`
-	KeyPath             string `yaml:"key_path"`
-	KeyBase64           string `yaml:"key_base64"`
-	KeyType             string `yaml:"key_type"`
-	Password            string `yaml:"password"`
-	Production          bool   `yaml:"production"`
-	MaxConcurrentPushes uint   `yaml:"max_concurrent_pushes"`
-	MaxRetry            int    `yaml:"max_retry"`
-	KeyID               string `yaml:"key_id"`
-	TeamID              string `yaml:"team_id"`
+	Enabled             bool   `mapstructure:"enabled"`
+	KeyPath             string `mapstructure:"key_path"`
+	KeyBase64           string `mapstructure:"key_base64"`
+	KeyType             string `mapstructure:"key_type"`
+	Password            string `mapstructure:"password"`
+	Production          bool   `mapstructure:"production"`
+	MaxConcurrentPushes uint   `mapstructure:"max_concurrent_pushes"`
+	MaxRetry            int    `mapstructure:"max_retry"`
+	KeyID               string `mapstructure:"key_id"`
+	TeamID              string `mapstructure:"team_id"`
 }
 
-// SectionLog is sub section of config.
+// SectionLog is subsection of config.
 type SectionLog struct {
 	Format       string `yaml:"format"`
 	AccessLog    string `yaml:"access_log"`
@@ -212,7 +217,7 @@ type SectionLog struct {
 	HideMessages bool   `yaml:"hide_messages"`
 }
 
-// SectionStat is sub section of config.
+// SectionStat is subsection of config.
 type SectionStat struct {
 	Engine   string          `yaml:"engine"`
 	Redis    SectionRedis    `yaml:"redis"`
@@ -222,7 +227,7 @@ type SectionStat struct {
 	BadgerDB SectionBadgerDB `yaml:"badgerdb"`
 }
 
-// SectionQueue is sub section of config.
+// SectionQueue is subsection of config.
 type SectionQueue struct {
 	Engine string            `yaml:"engine"`
 	NSQ    SectionNSQ        `yaml:"nsq"`
@@ -230,21 +235,21 @@ type SectionQueue struct {
 	Redis  SectionRedisQueue `yaml:"redis"`
 }
 
-// SectionNSQ is sub section of config.
+// SectionNSQ is subsection of config.
 type SectionNSQ struct {
 	Addr    string `yaml:"addr"`
 	Topic   string `yaml:"topic"`
 	Channel string `yaml:"channel"`
 }
 
-// SectionNATS is sub section of config.
+// SectionNATS is subsection of config.
 type SectionNATS struct {
 	Addr  string `yaml:"addr"`
 	Subj  string `yaml:"subj"`
 	Queue string `yaml:"queue"`
 }
 
-// SectionRedisQueue is sub section of config.
+// SectionRedisQueue is subsection of config.
 type SectionRedisQueue struct {
 	Addr       string `yaml:"addr"`
 	StreamName string `yaml:"stream_name"`
@@ -252,7 +257,7 @@ type SectionRedisQueue struct {
 	Consumer   string `yaml:"consumer"`
 }
 
-// SectionRedis is sub section of config.
+// SectionRedis is subsection of config.
 type SectionRedis struct {
 	Cluster  bool   `yaml:"cluster"`
 	Addr     string `yaml:"addr"`
@@ -260,35 +265,35 @@ type SectionRedis struct {
 	DB       int    `yaml:"db"`
 }
 
-// SectionBoltDB is sub section of config.
+// SectionBoltDB is subsection of config.
 type SectionBoltDB struct {
 	Path   string `yaml:"path"`
 	Bucket string `yaml:"bucket"`
 }
 
-// SectionBuntDB is sub section of config.
+// SectionBuntDB is subsection of config.
 type SectionBuntDB struct {
 	Path string `yaml:"path"`
 }
 
-// SectionLevelDB is sub section of config.
+// SectionLevelDB is subsection of config.
 type SectionLevelDB struct {
 	Path string `yaml:"path"`
 }
 
-// SectionBadgerDB is sub section of config.
+// SectionBadgerDB is subsection of config.
 type SectionBadgerDB struct {
 	Path string `yaml:"path"`
 }
 
-// SectionPID is sub section of config.
+// SectionPID is subsection of config.
 type SectionPID struct {
 	Enabled  bool   `yaml:"enabled"`
 	Path     string `yaml:"path"`
 	Override bool   `yaml:"override"`
 }
 
-// SectionGRPC is sub section of config.
+// SectionGRPC is subsection of config.
 type SectionGRPC struct {
 	Enabled bool   `yaml:"enabled"`
 	Port    string `yaml:"port"`
@@ -361,7 +366,6 @@ func LoadConf(confPath ...string) (*ConfYaml, error) {
 	conf.Core.AutoTLS.Host = viper.GetString("core.auto_tls.host")
 
 	// Api
-	conf.API.PushURI = viper.GetString("api.push_uri")
 	conf.API.StatGoURI = viper.GetString("api.stat_go_uri")
 	conf.API.StatAppURI = viper.GetString("api.stat_app_uri")
 	conf.API.ConfigURI = viper.GetString("api.config_uri")
@@ -369,28 +373,11 @@ func LoadConf(confPath ...string) (*ConfYaml, error) {
 	conf.API.MetricURI = viper.GetString("api.metric_uri")
 	conf.API.HealthURI = viper.GetString("api.health_uri")
 
-	// Android
-	conf.Android.Enabled = viper.GetBool("android.enabled")
-	conf.Android.APIKey = viper.GetString("android.apikey")
-	conf.Android.MaxRetry = viper.GetInt("android.max_retry")
-
-	// Huawei
-	conf.Huawei.Enabled = viper.GetBool("huawei.enabled")
-	conf.Huawei.AppSecret = viper.GetString("huawei.appsecret")
-	conf.Huawei.AppID = viper.GetString("huawei.appid")
-	conf.Huawei.MaxRetry = viper.GetInt("huawei.max_retry")
-
-	// iOS
-	conf.Ios.Enabled = viper.GetBool("ios.enabled")
-	conf.Ios.KeyPath = viper.GetString("ios.key_path")
-	conf.Ios.KeyBase64 = viper.GetString("ios.key_base64")
-	conf.Ios.KeyType = viper.GetString("ios.key_type")
-	conf.Ios.Password = viper.GetString("ios.password")
-	conf.Ios.Production = viper.GetBool("ios.production")
-	conf.Ios.MaxConcurrentPushes = viper.GetUint("ios.max_concurrent_pushes")
-	conf.Ios.MaxRetry = viper.GetInt("ios.max_retry")
-	conf.Ios.KeyID = viper.GetString("ios.key_id")
-	conf.Ios.TeamID = viper.GetString("ios.team_id")
+	// Tenants
+	err := viper.UnmarshalKey("tenants", &conf.Tenants)
+	if err != nil {
+		fmt.Print("could not unmarshal tenants")
+	}
 
 	// log
 	conf.Log.Format = viper.GetString("log.format")

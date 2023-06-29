@@ -1,6 +1,7 @@
 # gorush
 
-A push notification micro server using [Gin](https://github.com/gin-gonic/gin) framework written in Go (Golang) and see the [demo app](https://github.com/appleboy/flutter-gorush).
+A push notification micro server using [Gin](https://github.com/gin-gonic/gin) framework written in Go (Golang) and see
+the [demo app](https://github.com/appleboy/flutter-gorush).
 
 [![Run Lint and Testing](https://github.com/appleboy/gorush/actions/workflows/lint.yml/badge.svg)](https://github.com/appleboy/gorush/actions/workflows/lint.yml)
 [![GoDoc](https://godoc.org/github.com/appleboy/gorush?status.svg)](https://pkg.go.dev/github.com/appleboy/gorush)
@@ -68,9 +69,12 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 
 ## Features
 
-- Support [Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging) using [go-fcm](https://github.com/appleboy/go-fcm) library for Android.
-- Support [HTTP/2](https://http2.github.io/) Apple Push Notification Service using [apns2](https://github.com/sideshow/apns2) library.
-- Support [HMS Push Service](https://developer.huawei.com/consumer/en/hms/huawei-pushkit) using [go-hms-push](https://github.com/msalihkarakasli/go-hms-push) library for Huawei Devices.
+- Support [Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging)
+  using [go-fcm](https://github.com/appleboy/go-fcm) library for Android.
+- Support [HTTP/2](https://http2.github.io/) Apple Push Notification Service
+  using [apns2](https://github.com/sideshow/apns2) library.
+- Support [HMS Push Service](https://developer.huawei.com/consumer/en/hms/huawei-pushkit)
+  using [go-hms-push](https://github.com/msalihkarakasli/go-hms-push) library for Huawei Devices.
 - Support [YAML](https://github.com/go-yaml/yaml) configuration.
 - Support command line to send single Android or iOS notification.
 - Support Web API to send push notification.
@@ -78,15 +82,19 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 - Support notification queue and multiple workers.
 - Support `/api/stat/app` show notification success and failure counts.
 - Support `/api/config` show your [YAML](https://en.wikipedia.org/wiki/YAML) config.
-- Support store app stat to memory, [Redis](http://redis.io/), [BoltDB](https://github.com/boltdb/bolt), [BuntDB](https://github.com/tidwall/buntdb), [LevelDB](https://github.com/syndtr/goleveldb) or [BadgerDB](https://github.com/dgraph-io/badger).
+- Support store app stat to memory, [Redis](http://redis.io/), [BoltDB](https://github.com/boltdb/bolt)
+  , [BuntDB](https://github.com/tidwall/buntdb), [LevelDB](https://github.com/syndtr/goleveldb)
+  or [BadgerDB](https://github.com/dgraph-io/badger).
 - Support `p8`, `p12` or `pem` format of iOS certificate file.
 - Support `/sys/stats` show response time, status code count, etc.
 - Support for HTTP, HTTPS or SOCKS5 proxy.
 - Support retry send notification if server response is fail.
 - Support expose [prometheus](https://prometheus.io/) metrics.
 - Support install TLS certificates from [Let's Encrypt](https://letsencrypt.org/) automatically.
-- Support send notification through [RPC](https://en.wikipedia.org/wiki/Remote_procedure_call) protocol, we use [gRPC](https://grpc.io/) as default framework.
-- Support running in Docker, [Kubernetes](https://kubernetes.io/) or [AWS Lambda](https://aws.amazon.com/lambda) ([Native Support in Golang](https://aws.amazon.com/blogs/compute/announcing-go-support-for-aws-lambda/))
+- Support send notification through [RPC](https://en.wikipedia.org/wiki/Remote_procedure_call) protocol, we
+  use [gRPC](https://grpc.io/) as default framework.
+- Support running in Docker, [Kubernetes](https://kubernetes.io/)
+  or [AWS Lambda](https://aws.amazon.com/lambda) ([Native Support in Golang](https://aws.amazon.com/blogs/compute/announcing-go-support-for-aws-lambda/))
 - Support graceful shutdown that workers and queue have been sent to APNs/FCM before shutdown service.
 - Support different Queue as backend like [NSQ](https://nsq.io/), [NATS](https://nats.io/) or [Redis streams](https://redis.io/docs/manual/data-types/streams/), defaut engine is local [Channel](https://tour.golang.org/concurrency/2).
 
@@ -124,27 +132,20 @@ grpc:
   enabled: false # enable gRPC server
   port: 9000
 
-api:
-  push_uri: "/api/push"
-  stat_go_uri: "/api/stat/go"
-  stat_app_uri: "/api/stat/app"
-  config_uri: "/api/config"
-  sys_stat_uri: "/sys/stats"
-  metric_uri: "/metrics"
-  health_uri: "/healthz"
+tenants:
+  - tenant_id1:
+      push_uri: "/api/push/tenant1" # must be in the form of /api/push/:tenant_id
+      android:
+        enabled: true
+        max_retry: 0 # resend fail notification, default value zero is disabled
 
-android:
-  enabled: true
-  apikey: "YOUR_API_KEY"
-  max_retry: 0 # resend fail notification, default value zero is disabled
+      huawei:
+        enabled: true
+        api_key: "YOUR_API_KEY"
+        app_id: "YOUR_APP_ID"
+        max_retry: 0 # resend fail notification, default value zero is disabled
 
-huawei:
-  enabled: false
-  appsecret: "YOUR_APP_SECRET"
-  appid: "YOUR_APP_ID"
-  max_retry: 0 # resend fail notification, default value zero is disabled
-
-queue:
+      queue:
   engine: "local" # support "local", "nsq", "nats" and "redis" default value is "local"
   nsq:
     addr: 127.0.0.1:4150
@@ -158,19 +159,25 @@ queue:
     addr: 127.0.0.1:6379
     group: gorush
     consumer: gorush
-    stream_name: gorush
+    stream_name: gorushios:
+        enabled: false
+        key_path: "key.pem"
+        key_base64: "" # load iOS key from base64 input
+        key_type: "pem" # could be pem, p12 or p8 type
+        password: "" # certificate password, default as empty string.
+        production: false
+        max_concurrent_pushes: 100 # just for push ios notification
+        max_retry: 0 # resend fail notification, default value zero is disabled
+        key_id: "" # KeyID from developer account (Certificates, Identifiers & Profiles -> Keys)
+        team_id: "" # TeamID from developer account (View Account -> Membership)
 
-ios:
-  enabled: false
-  key_path: "key.pem"
-  key_base64: "" # load iOS key from base64 input
-  key_type: "pem" # could be pem, p12 or p8 type
-  password: "" # certificate password, default as empty string.
-  production: false
-  max_concurrent_pushes: 100 # just for push ios notification
-  max_retry: 0 # resend fail notification, default value zero is disabled
-  key_id: "" # KeyID from developer account (Certificates, Identifiers & Profiles -> Keys)
-  team_id: "" # TeamID from developer account (View Account -> Membership)
+api:
+  stat_go_uri: "/api/stat/go"
+  stat_app_uri: "/api/stat/app"
+  config_uri: "/api/config"
+  sys_stat_uri: "/sys/stats"
+  metric_uri: "/metrics"
+  health_uri: "/healthz"
 
 log:
   format: "string" # string or json
@@ -208,7 +215,7 @@ Memory average usage: **28Mb** (the total bytes of memory obtained from the OS.)
 Test Command (We use [bat](https://github.com/astaxie/bat) as default cli tool.):
 
 ```sh
-for i in {1..9999999}; do bat -b.N=1000 -b.C=100 POST localhost:8088/api/push notifications:=@notification.json; sleep 1;  done
+for i in {1..9999999}; do bat -b.N=1000 -b.C=100 POST localhost:8088/api/push/1 notifications:=@notification.json; sleep 1;  done
 ```
 
 ## Basic Usage
@@ -252,7 +259,8 @@ wget -c https://github.com/appleboy/gorush/releases/download/v1.16.1/gorush_1.16
 
 #### Fetch from GitHub
 
-Gorush uses the Go Modules support built into Go 1.11 to build. The easiest way to get started is to clone Gorush in a directory outside of the GOPATH, as in the following example:
+Gorush uses the Go Modules support built into Go 1.15 to build. The easiest way to get started is to clone Gorush in a
+directory outside of the GOPATH, as in the following example:
 
 ```sh
 mkdir $HOME/src
@@ -313,6 +321,7 @@ Common Options:
     --topic <topic>                  iOS or Android topic message
     -h, --help                       Show this message
     -V, --version                    Show version
+    -tid, --tenant                   Sets the tenant id
 ```
 
 ### Send Android notification
@@ -320,7 +329,7 @@ Common Options:
 Send single notification with the following command.
 
 ```bash
-gorush -android -m "your message" -k "API Key" -t "Device token"
+gorush -android -m "your message" -k "API Key" -t "Device token" -tid "tenant"
 ```
 
 Send messages to topics.
@@ -328,12 +337,14 @@ Send messages to topics.
 ```bash
 gorush --android --topic "/topics/foo-bar" \
   -m "This is a Firebase Cloud Messaging Topic Message" \
-  -k your_api_key
+  -k your_api_key \
+  -tid "tenant"
 ```
 
 - `-m`: Notification message.
 - `-k`: [Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging) api key
 - `-t`: Device token.
+- `-tid`: Tenant ID.
 - `--title`: Notification title.
 - `--topic`: Send messages to topics. note: don't add device token.
 - `--proxy`: Set `http`, `https` or `socks5` proxy url.
@@ -343,7 +354,7 @@ gorush --android --topic "/topics/foo-bar" \
 Send single notification with the following command.
 
 ```bash
-gorush -huawei -title "Gorush with HMS" -m "your message" -hk "API Key" -hid "App ID" -t "Device token"
+gorush -huawei -title "Gorush with HMS" -m "your message" -hk "API Key" -hid "App ID" -t "Device token" -tid "tenant"
 ```
 
 Send messages to topics.
@@ -353,12 +364,14 @@ gorush --huawei --topic "foo-bar" \
   -title "Gorush with HMS" \
   -m "This is a Huawei Mobile Services Topic Message" \
   -hk "API Key" \
-  -hid "App ID"
+  -hid "App ID" \
+  -tid "tenant"
 ```
 
 - `-m`: Notification message.
 - `-hk`: [Huawei Mobile Services](https://developer.huawei.com/consumer/en/doc/development/HMS-Guides/Preparations) api secret key
 - `-t`: Device token.
+- `-tid`: Tenant ID.
 - `--title`: Notification title.
 - `--topic`: Send messages to topics. note: don't add device token.
 - `--proxy`: Set `http`, `https` or `socks5` proxy url.
@@ -369,7 +382,7 @@ Send single notification with the following command.
 
 ```bash
 $ gorush -ios -m "your message" -i "your certificate path" \
-  -t "device token" --topic "apns topic"
+  -t "device token" --topic "apns topic" --tenantid "tenantId"
 ```
 
 - `-m`: Notification message.
@@ -378,13 +391,15 @@ $ gorush -ios -m "your message" -i "your certificate path" \
 - `--title`: Notification title.
 - `--topic`: The topic of the remote notification.
 - `--password`: The certificate password.
+- `--tenandid`: The tenant ID.
 
 The default endpoint is APNs development. Please add `-production` flag for APNs production push endpoint.
 
 ```bash
 $ gorush -ios -m "your message" -i "your certificate path" \
   -t "device token" \
-  -production
+  -production \
+  -tid "tenandId"
 ```
 
 ### Send Android or iOS notifications using Firebase
@@ -392,7 +407,7 @@ $ gorush -ios -m "your message" -i "your certificate path" \
 Send single notification with the following command:
 
 ```bash
-gorush -android -m "your message" -k "API key" -t "Device token"
+gorush -android -m "your message" -k "API key" -t "Device token" -tid "tenantId"
 ```
 
 ## Run gorush web server
@@ -416,10 +431,11 @@ http -v --verify=no --json GET http://localhost:8088/api/stat/go
 
 Gorush support the following API.
 
-- **GET**  `/api/stat/go` Golang cpu, memory, gc, etc information. Thanks for [golang-stats-api-handler](https://github.com/fukata/golang-stats-api-handler).
+- **GET**  `/api/stat/go` Golang cpu, memory, gc, etc information. Thanks
+  for [golang-stats-api-handler](https://github.com/fukata/golang-stats-api-handler).
 - **GET**  `/api/stat/app` show notification success and failure counts.
 - **GET**  `/api/config` show server yml config file.
-- **POST** `/api/push` push ios, android or huawei notifications.
+- **POST** `/api/push/:tenant_push_uri` push ios, android or huawei notifications.
 
 ### GET /api/stat/go
 
@@ -498,7 +514,7 @@ Show response time, status code count, etc.
   "uptime_sec": 102.428010614,
   "time": "2016-06-26 12:27:11.675973571 +0800 CST",
   "unixtime": 1466915231,
-  "status_code_count": { },
+  "status_code_count": {},
   "total_status_code_count": {
     "200": 5
   },
@@ -525,7 +541,10 @@ Simple send iOS notification example, the `platform` value is `1`:
 {
   "notifications": [
     {
-      "tokens": ["token_a", "token_b"],
+      "tokens": [
+        "token_a",
+        "token_b"
+      ],
       "platform": 1,
       "message": "Hello World iOS!"
     }
@@ -539,7 +558,10 @@ Simple send Android notification example, the `platform` value is `2`:
 {
   "notifications": [
     {
-      "tokens": ["token_a", "token_b"],
+      "tokens": [
+        "token_a",
+        "token_b"
+      ],
       "platform": 2,
       "message": "Hello World Android!"
     }
@@ -553,7 +575,10 @@ Simple send Huawei notification example, the `platform` value is `3`:
 {
   "notifications": [
     {
-      "tokens": ["token_a", "token_b"],
+      "tokens": [
+        "token_a",
+        "token_b"
+      ],
       "platform": 3,
       "title": "Gorush with HMS",
       "message": "Hello World Huawei!"
@@ -568,7 +593,10 @@ Simple send notification on Android and iOS devices using Firebase, the `platfor
 {
   "notifications": [
     {
-      "tokens": ["token_a", "token_b"],
+      "tokens": [
+        "token_a",
+        "token_b"
+      ],
       "platform": 2,
       "message": "This notification will go to iOS and Android platform via Firebase!"
     }
@@ -582,22 +610,30 @@ Send multiple notifications as below:
 {
   "notifications": [
     {
-      "tokens": ["token_a", "token_b"],
+      "tokens": [
+        "token_a",
+        "token_b"
+      ],
       "platform": 1,
       "message": "Hello World iOS!"
     },
     {
-      "tokens": ["token_a", "token_b"],
+      "tokens": [
+        "token_a",
+        "token_b"
+      ],
       "platform": 2,
       "message": "Hello World Android!"
     },
     {
-      "tokens": ["token_a", "token_b"],
+      "tokens": [
+        "token_a",
+        "token_b"
+      ],
       "platform": 3,
       "message": "Hello World Huawei!",
       "title": "Gorush with HMS"
-    },
-    .....
+    }
   ]
 }
 ```
@@ -664,7 +700,9 @@ The Request body must have a notifications array. The following is a parameter t
 | title-loc-args | array of strings | Variable string values to appear in place of the format specifiers in title-loc-key.             | -        |      |
 | title-loc-key  | string           | The key to a title string in the Localizable.strings file for the current localization.          | -        |      |
 
-See more detail about [APNs Remote Notification Payload](https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/PayloadKeyReference.html).
+See more detail
+about [APNs Remote Notification Payload](https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/PayloadKeyReference.html)
+.
 
 ### iOS sound payload
 
@@ -699,7 +737,9 @@ request format:
 | title_loc_key  | string | Indicates the key to the title string for localization.                                                   | -        |      |
 | title_loc_args | string | Indicates the string value to replace format specifiers in title string for localization.                 | -        |      |
 
-See more detail about [Firebase Cloud Messaging HTTP Protocol reference](https://firebase.google.com/docs/cloud-messaging/http-server-ref#send-downstream).
+See more detail
+about [Firebase Cloud Messaging HTTP Protocol reference](https://firebase.google.com/docs/cloud-messaging/http-server-ref#send-downstream)
+.
 
 ### Huawei notification
 
@@ -711,7 +751,9 @@ See more detail about [Firebase Cloud Messaging HTTP Protocol reference](https:/
 6. huawei_ttl: mapped to ttl
 7. huawei_collapse_key: mapped to collapse_key
 
-See more detail about [Huawei Mobulse Services Push API reference](https://developer.huawei.com/consumer/en/doc/development/HMS-References/push-sendapi).
+See more detail
+about [Huawei Mobulse Services Push API reference](https://developer.huawei.com/consumer/en/doc/development/HMS-References/push-sendapi)
+.
 
 ### iOS Example
 
@@ -721,7 +763,10 @@ Send normal notification.
 {
   "notifications": [
     {
-      "tokens": ["token_a", "token_b"],
+      "tokens": [
+        "token_a",
+        "token_b"
+      ],
       "platform": 1,
       "message": "Hello World iOS!"
     }
@@ -729,32 +774,42 @@ Send normal notification.
 }
 ```
 
-The following payload asks the system to display an alert with a Close button and a single action button.The title and body keys provide the contents of the alert. The “PLAY” string is used to retrieve a localized string from the appropriate Localizable.strings file of the app. The resulting string is used by the alert as the title of an action button. This payload also asks the system to badge the app’s icon with the number 5.
+The following payload asks the system to display an alert with a Close button and a single action button.The title and
+body keys provide the contents of the alert. The “PLAY” string is used to retrieve a localized string from the
+appropriate Localizable.strings file of the app. The resulting string is used by the alert as the title of an action
+button. This payload also asks the system to badge the app’s icon with the number 5.
 
 ```json
 {
   "notifications": [
     {
-      "tokens": ["token_a", "token_b"],
+      "tokens": [
+        "token_a",
+        "token_b"
+      ],
       "platform": 1,
       "badge": 5,
       "alert": {
-        "title" : "Game Request",
-        "body" : "Bob wants to play poker",
-        "action-loc-key" : "PLAY"
+        "title": "Game Request",
+        "body": "Bob wants to play poker",
+        "action-loc-key": "PLAY"
       }
     }
   ]
 }
 ```
 
-The following payload specifies that the device should display an alert message, plays a sound, and badges the app’s icon.
+The following payload specifies that the device should display an alert message, plays a sound, and badges the app’s
+icon.
 
 ```json
 {
   "notifications": [
     {
-      "tokens": ["token_a", "token_b"],
+      "tokens": [
+        "token_a",
+        "token_b"
+      ],
       "platform": 1,
       "message": "You got your emails.",
       "badge": 9,
@@ -774,7 +829,10 @@ Add other fields which user defined via `data` field.
 {
   "notifications": [
     {
-      "tokens": ["token_a", "token_b"],
+      "tokens": [
+        "token_a",
+        "token_b"
+      ],
       "platform": 1,
       "message": "Hello World iOS!",
       "data": {
@@ -786,7 +844,8 @@ Add other fields which user defined via `data` field.
 }
 ```
 
-Support send notification from different environment. See the detail of [issue](https://github.com/appleboy/gorush/issues/246).
+Support send notification from different environment. See the detail
+of [issue](https://github.com/appleboy/gorush/issues/246).
 
 ```diff
 {
@@ -815,7 +874,10 @@ Send normal notification.
 {
   "notifications": [
     {
-      "tokens": ["token_a", "token_b"],
+      "tokens": [
+        "token_a",
+        "token_b"
+      ],
       "platform": 2,
       "message": "Hello World Android!",
       "title": "You got message"
@@ -830,11 +892,14 @@ Add `notification` payload.
 {
   "notifications": [
     {
-      "tokens": ["token_a", "token_b"],
+      "tokens": [
+        "token_a",
+        "token_b"
+      ],
       "platform": 2,
       "message": "Hello World Android!",
       "title": "You got message",
-      "notification" : {
+      "notification": {
         "icon": "myicon",
         "color": "#112244"
       }
@@ -849,14 +914,17 @@ Add other fields which user defined via `data` field.
 {
   "notifications": [
     {
-      "tokens": ["token_a", "token_b"],
+      "tokens": [
+        "token_a",
+        "token_b"
+      ],
       "platform": 2,
       "message": "Hello World Android!",
       "title": "You got message",
       "data": {
-       "Nick" : "Mario",
-       "body" : "great match!",
-       "Room" : "PortugalVSDenmark"
+        "Nick": "Mario",
+        "body": "great match!",
+        "Room": "PortugalVSDenmark"
       }
     }
   ]
@@ -885,7 +953,10 @@ Send normal notification.
 {
   "notifications": [
     {
-      "tokens": ["token_a", "token_b"],
+      "tokens": [
+        "token_a",
+        "token_b"
+      ],
       "platform": 3,
       "message": "Hello World Huawei!",
       "title": "You got message"
@@ -900,11 +971,14 @@ Add `notification` payload.
 {
   "notifications": [
     {
-      "tokens": ["token_a", "token_b"],
+      "tokens": [
+        "token_a",
+        "token_b"
+      ],
       "platform": 3,
       "message": "Hello World Huawei!",
       "title": "You got message",
-      "huawei_notification" : {
+      "huawei_notification": {
         "icon": "myicon",
         "color": "#112244"
       }
@@ -919,7 +993,10 @@ Add other fields which user defined via `huawei_data` field.
 {
   "notifications": [
     {
-      "tokens": ["token_a", "token_b"],
+      "tokens": [
+        "token_a",
+        "token_b"
+      ],
       "platform": 3,
       "huawei_data": "{'title' : 'Mario','message' : 'great match!', 'Room' : 'PortugalVSDenmark'}"
     }
@@ -962,7 +1039,8 @@ Success response:
 }
 ```
 
-If you need error logs from sending fail notifications, please set a `feedback_hook_url`. The server with send the failing logs asynchronously to your API as `POST` requests.
+If you need error logs from sending fail notifications, please set a `feedback_hook_url`. The server with send the
+failing logs asynchronously to your API as `POST` requests.
 
 ```diff
 core:
@@ -1021,7 +1099,8 @@ See the following error format.
 
 ## Run gRPC service
 
-Gorush support [gRPC](https://grpc.io/) service. You can enable the gRPC in `config.yml`, default as disabled. Enable the gRPC server:
+Gorush support [gRPC](https://grpc.io/) service. You can enable the gRPC in `config.yml`, default as disabled. Enable
+the gRPC server:
 
 ```sh
 GORUSH_GRPC_ENABLED=true GORUSH_GRPC_PORT=3000 gorush
@@ -1056,6 +1135,7 @@ func main() {
   c := proto.NewGorushClient(conn)
 
   r, err := c.Send(context.Background(), &proto.NotificationRequest{
+    TenantId: "tenantId",
     Platform: 2,
     Tokens:   []string{"1234567890"},
     Message:  "test message",
@@ -1083,12 +1163,9 @@ func main() {
   })
   if err != nil {
     log.Println("could not greet: ", err)
-  }
-
-  if r != nil {
-    log.Printf("Success: %t\n", r.Success)
-    log.Printf("Count: %d\n", r.Counts)
-  }
+  }if r != nil {
+  log.Printf("Success: %t\n", r.Success)
+  log.Printf("Count: %d\n", r.Counts)}
 }
 ```
 
@@ -1118,7 +1195,7 @@ function main() {
   request.setContentavailable(false);
   request.setMutablecontent(false);
   client.send(request, function (err, response) {
-    if(err) {
+    if (err) {
       console.log(err);
     } else {
       console.log("Success:", response.getSuccess());
@@ -1186,18 +1263,16 @@ func main() {
   })
   if err != nil {
     log.Println("could not greet: ", err)
-  }
-
-  if r != nil {
-    log.Printf("Success: %t\n", r.Success)
-    log.Printf("Count: %d\n", r.Counts)
-  }
+  }if r != nil {
+  log.Printf("Success: %t\n", r.Success)
+  log.Printf("Count: %d\n", r.Counts)}
 }
 ```
 
 ## Run gorush in Docker
 
-Set up `gorush` in the cloud in under 5 minutes with zero knowledge of Golang or Linux shell using our [gorush Docker image](https://hub.docker.com/r/appleboy/gorush/).
+Set up `gorush` in the cloud in under 5 minutes with zero knowledge of Golang or Linux shell using
+our [gorush Docker image](https://hub.docker.com/r/appleboy/gorush/).
 
 ```bash
 docker pull appleboy/gorush
@@ -1277,7 +1352,10 @@ kubectl delete -f k8s
 
 ![lambda](./screenshot/lambda.png)
 
-AWS excited to [announce Go as a supported language for AWS Lambda](https://aws.amazon.com/blogs/compute/announcing-go-support-for-aws-lambda/). You’re going to create an application that uses an [API Gateway](https://aws.amazon.com/apigateway) event source to create a simple Hello World RESTful API.
+AWS excited
+to [announce Go as a supported language for AWS Lambda](https://aws.amazon.com/blogs/compute/announcing-go-support-for-aws-lambda/)
+. You’re going to create an application that uses an [API Gateway](https://aws.amazon.com/apigateway) event source to
+create a simple Hello World RESTful API.
 
 ### Build gorush binary
 
@@ -1298,7 +1376,8 @@ we need to build a binary that will run on Linux, and ZIP it up into a deploymen
 zip deployment.zip release/linux/lambda/gorush
 ```
 
-Upload the `deployment.zip` via web UI or you can try the [drone-lambda](https://github.com/appleboy/drone-lambda) as the following command. it will zip your binary file and upload to AWS Lambda automatically.
+Upload the `deployment.zip` via web UI or you can try the [drone-lambda](https://github.com/appleboy/drone-lambda) as
+the following command. it will zip your binary file and upload to AWS Lambda automatically.
 
 ```sh
 $ AWS_ACCESS_KEY_ID=YOUR_AWS_ACCESS_KEY_ID \
@@ -1310,7 +1389,9 @@ $ AWS_ACCESS_KEY_ID=YOUR_AWS_ACCESS_KEY_ID \
 
 ### Without an AWS account
 
-Or you can deploy gorush to alternative solution like [netlify functions](https://docs.netlify.com/functions/overview/). [Netlify](https://www.netlify.com/) lets you deploy serverless Lambda functions without an AWS account, and with function management handled directly within Netlify. Please see the netlify.toml file:
+Or you can deploy gorush to alternative solution like [netlify functions](https://docs.netlify.com/functions/overview/)
+. [Netlify](https://www.netlify.com/) lets you deploy serverless Lambda functions without an AWS account, and with
+function management handled directly within Netlify. Please see the netlify.toml file:
 
 ```toml
 [build]

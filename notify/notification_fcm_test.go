@@ -13,33 +13,35 @@ import (
 
 func TestMissingAndroidAPIKey(t *testing.T) {
 	cfg, _ := config.LoadConf()
+	tenant := cfg.Tenants[tenantId]
 
-	cfg.Android.Enabled = true
-	cfg.Android.APIKey = ""
+	tenant.Android.Enabled = true
+	tenant.Android.APIKey = ""
 
 	err := CheckPushConf(cfg)
 
 	assert.Error(t, err)
-	assert.Equal(t, "missing android api key", err.Error())
+	assert.Equal(t, "missing Android API Key for tenant "+tenantId, err.Error())
 }
 
 func TestMissingKeyForInitFCMClient(t *testing.T) {
-	cfg, _ := config.LoadConf()
-	cfg.Android.APIKey = ""
-	client, err := InitFCMClient(cfg, "")
+	tenantId := "1"
+	client, err := InitFCMClient(tenantId, "")
 
 	assert.Nil(t, client)
 	assert.Error(t, err)
-	assert.Equal(t, "missing android api key", err.Error())
+	assert.Equal(t, "missing Android API Key for tenant "+tenantId, err.Error())
 }
 
 func TestPushToAndroidWrongToken(t *testing.T) {
 	cfg, _ := config.LoadConf()
+	tenant := cfg.Tenants[tenantId]
 
-	cfg.Android.Enabled = true
-	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+	tenant.Android.Enabled = true
+	tenant.Android.APIKey = os.Getenv("ANDROID_API_KEY")
 
 	req := &PushNotification{
+		TenantId: tenantId,
 		Tokens:   []string{"aaaaaa", "bbbbb"},
 		Platform: core.PlatFormAndroid,
 		Message:  "Welcome",
@@ -53,15 +55,17 @@ func TestPushToAndroidWrongToken(t *testing.T) {
 
 func TestPushToAndroidRightTokenForJSONLog(t *testing.T) {
 	cfg, _ := config.LoadConf()
+	tenant := cfg.Tenants[tenantId]
 
-	cfg.Android.Enabled = true
-	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+	tenant.Android.Enabled = true
+	tenant.Android.APIKey = os.Getenv("ANDROID_API_KEY")
 	// log for json
 	cfg.Log.Format = "json"
 
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
 	req := &PushNotification{
+		TenantId: tenantId,
 		Tokens:   []string{androidToken},
 		Platform: core.PlatFormAndroid,
 		Message:  "Welcome",
@@ -74,13 +78,15 @@ func TestPushToAndroidRightTokenForJSONLog(t *testing.T) {
 
 func TestPushToAndroidRightTokenForStringLog(t *testing.T) {
 	cfg, _ := config.LoadConf()
+	tenant := cfg.Tenants[tenantId]
 
-	cfg.Android.Enabled = true
-	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+	tenant.Android.Enabled = true
+	tenant.Android.APIKey = os.Getenv("ANDROID_API_KEY")
 
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
 	req := &PushNotification{
+		TenantId: tenantId,
 		Tokens:   []string{androidToken},
 		Platform: core.PlatFormAndroid,
 		Message:  "Welcome",
@@ -93,14 +99,16 @@ func TestPushToAndroidRightTokenForStringLog(t *testing.T) {
 
 func TestOverwriteAndroidAPIKey(t *testing.T) {
 	cfg, _ := config.LoadConf()
+	tenant := cfg.Tenants[tenantId]
 
 	cfg.Core.Sync = true
-	cfg.Android.Enabled = true
-	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+	tenant.Android.Enabled = true
+	tenant.Android.APIKey = os.Getenv("ANDROID_API_KEY")
 
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
 	req := &PushNotification{
+		TenantId: tenantId,
 		Tokens:   []string{androidToken, "bbbbb"},
 		Platform: core.PlatFormAndroid,
 		Message:  "Welcome",
@@ -120,8 +128,9 @@ func TestFCMMessage(t *testing.T) {
 
 	// the message must specify at least one registration ID
 	req := &PushNotification{
-		Message: "Test",
-		Tokens:  []string{},
+		TenantId: "test",
+		Message:  "Test",
+		Tokens:   []string{},
 	}
 
 	err = CheckMessage(req)
@@ -129,8 +138,9 @@ func TestFCMMessage(t *testing.T) {
 
 	// the token must not be empty
 	req = &PushNotification{
-		Message: "Test",
-		Tokens:  []string{""},
+		TenantId: "test",
+		Message:  "Test",
+		Tokens:   []string{""},
 	}
 
 	err = CheckMessage(req)
@@ -138,6 +148,7 @@ func TestFCMMessage(t *testing.T) {
 
 	// ignore check token length if send topic message
 	req = &PushNotification{
+		TenantId: "test",
 		Message:  "Test",
 		Platform: core.PlatFormAndroid,
 		To:       "/topics/foo-bar",
@@ -148,6 +159,7 @@ func TestFCMMessage(t *testing.T) {
 
 	// "condition": "'dogs' in topics || 'cats' in topics",
 	req = &PushNotification{
+		TenantId:  "test",
 		Message:   "Test",
 		Platform:  core.PlatFormAndroid,
 		Condition: "'dogs' in topics || 'cats' in topics",
@@ -158,6 +170,7 @@ func TestFCMMessage(t *testing.T) {
 
 	// the message may specify at most 1000 registration IDs
 	req = &PushNotification{
+		TenantId: "test",
 		Message:  "Test",
 		Platform: core.PlatFormAndroid,
 		Tokens:   make([]string, 1001),
@@ -170,6 +183,7 @@ func TestFCMMessage(t *testing.T) {
 	// between 0 and 2419200 (4 weeks)
 	timeToLive := uint(2419201)
 	req = &PushNotification{
+		TenantId:   "test",
 		Message:    "Test",
 		Platform:   core.PlatFormAndroid,
 		Tokens:     []string{"XXXXXXXXX"},
@@ -182,6 +196,7 @@ func TestFCMMessage(t *testing.T) {
 	// Pass
 	timeToLive = uint(86400)
 	req = &PushNotification{
+		TenantId:   "test",
 		Message:    "Test",
 		Platform:   core.PlatFormAndroid,
 		Tokens:     []string{"XXXXXXXXX"},
@@ -194,12 +209,14 @@ func TestFCMMessage(t *testing.T) {
 
 func TestCheckAndroidMessage(t *testing.T) {
 	cfg, _ := config.LoadConf()
+	tenant := cfg.Tenants[tenantId]
 
-	cfg.Android.Enabled = true
-	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+	tenant.Android.Enabled = true
+	tenant.Android.APIKey = os.Getenv("ANDROID_API_KEY")
 
 	timeToLive := uint(2419201)
 	req := &PushNotification{
+		TenantId:   tenantId,
 		Tokens:     []string{"aaaaaa", "bbbbb"},
 		Platform:   core.PlatFormAndroid,
 		Message:    "Welcome",

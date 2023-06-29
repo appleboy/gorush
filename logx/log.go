@@ -23,6 +23,7 @@ var (
 
 // LogPushEntry is push response log
 type LogPushEntry struct {
+	TenantId string `json:"tenant_id"`
 	ID       string `json:"notif_id,omitempty"`
 	Type     string `json:"type"`
 	Platform string `json:"platform"`
@@ -33,7 +34,7 @@ type LogPushEntry struct {
 
 var isTerm bool
 
-//nolint
+// nolint
 func init() {
 	isTerm = isatty.IsTerminal(os.Stdout.Fd())
 }
@@ -181,6 +182,7 @@ func GetLogPushEntry(input *InputLog) LogPushEntry {
 	}
 
 	return LogPushEntry{
+		TenantId: input.TenantId,
 		ID:       input.ID,
 		Type:     input.Status,
 		Platform: plat,
@@ -193,6 +195,7 @@ func GetLogPushEntry(input *InputLog) LogPushEntry {
 // InputLog log request
 type InputLog struct {
 	ID          string
+	TenantId    string
 	Status      string
 	Token       string
 	Message     string

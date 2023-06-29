@@ -8,14 +8,19 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+const (
+	tenantId = "legacy"
+)
+
 func TestCorrectConf(t *testing.T) {
 	cfg, _ := config.LoadConf()
+	tenant := cfg.Tenants[tenantId]
 
-	cfg.Android.Enabled = true
-	cfg.Android.APIKey = "xxxxx"
+	tenant.Android.Enabled = true
+	tenant.Android.APIKey = "xxxxx"
 
-	cfg.Ios.Enabled = true
-	cfg.Ios.KeyPath = testKeyPath
+	tenant.Ios.Enabled = true
+	tenant.Ios.KeyPath = testKeyPath
 
 	err := CheckPushConf(cfg)
 

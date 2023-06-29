@@ -15,6 +15,7 @@ import (
 func TestEmptyFeedbackURL(t *testing.T) {
 	cfg, _ := config.LoadConf()
 	logEntry := logx.LogPushEntry{
+		TenantId: "",
 		ID:       "",
 		Type:     "",
 		Platform: "",
@@ -31,6 +32,7 @@ func TestHTTPErrorInFeedbackCall(t *testing.T) {
 	cfg, _ := config.LoadConf()
 	cfg.Core.FeedbackURL = "http://test.example.com/api/"
 	logEntry := logx.LogPushEntry{
+		TenantId: "",
 		ID:       "",
 		Type:     "",
 		Platform: "",
@@ -62,6 +64,7 @@ func TestSuccessfulFeedbackCall(t *testing.T) {
 	cfg, _ := config.LoadConf()
 	cfg.Core.FeedbackURL = httpMock.URL
 	logEntry := logx.LogPushEntry{
+		TenantId: "",
 		ID:       "",
 		Type:     "",
 		Platform: "",

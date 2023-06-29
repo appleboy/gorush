@@ -13,23 +13,19 @@ import (
 )
 
 // InitFCMClient use for initialize FCM Client.
-func InitFCMClient(cfg *config.ConfYaml, key string) (*fcm.Client, error) {
+func InitFCMClient(tenantId string, key string) (*fcm.Client, error) {
 	var err error
 
-	if key == "" && cfg.Android.APIKey == "" {
-		return nil, errors.New("missing android api key")
+	if key == "" {
+		return nil, errors.New("missing Android API Key for tenant " + tenantId)
 	}
 
-	if key != "" && key != cfg.Android.APIKey {
-		return fcm.NewClient(key)
+	if FCMClients[tenantId] == nil {
+		FCMClients[tenantId], err = fcm.NewClient(key)
+		return FCMClients[tenantId], err
 	}
 
-	if FCMClient == nil {
-		FCMClient, err = fcm.NewClient(cfg.Android.APIKey)
-		return FCMClient, err
-	}
-
-	return FCMClient, nil
+	return FCMClients[tenantId], nil
 }
 
 // GetAndroidNotification use for define Android notification.
@@ -107,11 +103,15 @@ func GetAndroidNotification(req *PushNotification) *fcm.Message {
 // PushToAndroid provide send notification to Android server.
 func PushToAndroid(req *PushNotification, cfg *config.ConfYaml) (resp *ResponsePush, err error) {
 	logx.LogAccess.Debug("Start push notification for Android")
+	if req.TenantId == "" {
+		logx.LogError.Error("missing tenant id for Android notification")
+		return
+	}
 
 	var (
 		client     *fcm.Client
 		retryCount = 0
-		maxRetry   = cfg.Android.MaxRetry
+		maxRetry   = cfg.Tenants[req.TenantId].Android.MaxRetry
 	)
 
 	if req.Retry > 0 && req.Retry < maxRetry {
@@ -131,9 +131,9 @@ Retry:
 	notification := GetAndroidNotification(req)
 
 	if req.APIKey != "" {
-		client, err = InitFCMClient(cfg, req.APIKey)
+		client, err = InitFCMClient(req.TenantId, req.APIKey)
 	} else {
-		client, err = InitFCMClient(cfg, cfg.Android.APIKey)
+		client, err = InitFCMClient(req.TenantId, cfg.Tenants[req.TenantId].Android.APIKey)
 	}
 
 	if err != nil {
@@ -235,6 +235,7 @@ Retry:
 func logPush(cfg *config.ConfYaml, status, token string, req *PushNotification, err error) logx.LogPushEntry {
 	return logx.LogPush(&logx.InputLog{
 		ID:          req.ID,
+		TenantId:    req.TenantId,
 		Status:      status,
 		Token:       token,
 		Message:     req.Message,

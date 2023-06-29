@@ -4,6 +4,9 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"github.com/appleboy/gorush/gorush"
+	core2 "github.com/msalihkarakasli/go-hms-push/push/core"
+	"github.com/sideshow/apns2"
 	"log"
 	"net"
 	"net/http"
@@ -12,6 +15,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/appleboy/go-fcm"
 	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/core"
 	"github.com/appleboy/gorush/logx"
@@ -40,25 +44,20 @@ func main() {
 		message     string
 		token       string
 		title       string
+		tenantId    string
 	)
+	defaultTenant := &config.SectionTenant{
+		PushURI: "",
+		Android: config.SectionAndroid{},
+		Huawei:  config.SectionHuawei{},
+		Ios:     config.SectionIos{},
+	}
 
 	flag.BoolVar(&showVersion, "version", false, "Print version information.")
 	flag.BoolVar(&showVersion, "V", false, "Print version information.")
 	flag.StringVar(&configFile, "c", "", "Configuration file path.")
 	flag.StringVar(&configFile, "config", "", "Configuration file path.")
 	flag.StringVar(&opts.Core.PID.Path, "pid", "", "PID file path.")
-	flag.StringVar(&opts.Ios.KeyPath, "i", "", "iOS certificate key file path")
-	flag.StringVar(&opts.Ios.KeyPath, "key", "", "iOS certificate key file path")
-	flag.StringVar(&opts.Ios.KeyID, "key-id", "", "iOS Key ID for P8 token")
-	flag.StringVar(&opts.Ios.TeamID, "team-id", "", "iOS Team ID for P8 token")
-	flag.StringVar(&opts.Ios.Password, "P", "", "iOS certificate password for gorush")
-	flag.StringVar(&opts.Ios.Password, "password", "", "iOS certificate password for gorush")
-	flag.StringVar(&opts.Android.APIKey, "k", "", "Android api key configuration for gorush")
-	flag.StringVar(&opts.Android.APIKey, "apikey", "", "Android api key configuration for gorush")
-	flag.StringVar(&opts.Huawei.AppSecret, "hk", "", "Huawei api key configuration for gorush")
-	flag.StringVar(&opts.Huawei.AppSecret, "hmskey", "", "Huawei api key configuration for gorush")
-	flag.StringVar(&opts.Huawei.AppID, "hid", "", "HMS app id configuration for gorush")
-	flag.StringVar(&opts.Huawei.AppID, "hmsid", "", "HMS app id configuration for gorush")
 	flag.StringVar(&opts.Core.Address, "A", "", "address to bind")
 	flag.StringVar(&opts.Core.Address, "address", "", "address to bind")
 	flag.StringVar(&opts.Core.Port, "p", "", "port number for gorush")
@@ -68,16 +67,37 @@ func main() {
 	flag.StringVar(&opts.Stat.Engine, "e", "", "store engine")
 	flag.StringVar(&opts.Stat.Engine, "engine", "", "store engine")
 	flag.StringVar(&opts.Stat.Redis.Addr, "redis-addr", "", "redis addr")
+	flag.StringVar(&opts.Core.HTTPProxy, "proxy", "", "http proxy url")
+	flag.BoolVar(&ping, "ping", false, "ping server")
+
 	flag.StringVar(&message, "m", "", "notification message")
 	flag.StringVar(&message, "message", "", "notification message")
 	flag.StringVar(&title, "title", "", "notification title")
-	flag.BoolVar(&opts.Android.Enabled, "android", false, "send android notification")
-	flag.BoolVar(&opts.Huawei.Enabled, "huawei", false, "send huawei notification")
-	flag.BoolVar(&opts.Ios.Enabled, "ios", false, "send ios notification")
-	flag.BoolVar(&opts.Ios.Production, "production", false, "production mode in iOS")
 	flag.StringVar(&topic, "topic", "", "apns topic in iOS")
-	flag.StringVar(&opts.Core.HTTPProxy, "proxy", "", "http proxy url")
-	flag.BoolVar(&ping, "ping", false, "ping server")
+	flag.StringVar(&tenantId, "tenantid", "", "tenant id used for notifications")
+	flag.StringVar(&tenantId, "tid", "", "tenant id used for notifications")
+
+	if tenantId != "" {
+		opts.Tenants = make(map[string]*config.SectionTenant)
+		opts.Tenants[tenantId] = defaultTenant
+
+		flag.StringVar(&defaultTenant.Ios.KeyPath, "i", "", "iOS certificate key file path")
+		flag.StringVar(&defaultTenant.Ios.KeyPath, "key", "", "iOS certificate key file path")
+		flag.StringVar(&defaultTenant.Ios.KeyID, "key-id", "", "iOS Key ID for P8 token")
+		flag.StringVar(&defaultTenant.Ios.TeamID, "team-id", "", "iOS Team ID for P8 token")
+		flag.StringVar(&defaultTenant.Ios.Password, "P", "", "iOS certificate password for gorush")
+		flag.StringVar(&defaultTenant.Ios.Password, "password", "", "iOS certificate password for gorush")
+		flag.StringVar(&defaultTenant.Android.APIKey, "k", "", "Android api key configuration for gorush")
+		flag.StringVar(&defaultTenant.Android.APIKey, "apikey", "", "Android api key configuration for gorush")
+		flag.StringVar(&defaultTenant.Huawei.APIKey, "hk", "", "Huawei api key configuration for gorush")
+		flag.StringVar(&defaultTenant.Huawei.APIKey, "hmskey", "", "Huawei api key configuration for gorush")
+		flag.StringVar(&defaultTenant.Huawei.APPId, "hid", "", "HMS app id configuration for gorush")
+		flag.StringVar(&defaultTenant.Huawei.APPId, "hmsid", "", "HMS app id configuration for gorush")
+		flag.BoolVar(&defaultTenant.Android.Enabled, "android", false, "send android notification")
+		flag.BoolVar(&defaultTenant.Huawei.Enabled, "huawei", false, "send huawei notification")
+		flag.BoolVar(&defaultTenant.Ios.Enabled, "ios", false, "send ios notification")
+		flag.BoolVar(&defaultTenant.Ios.Production, "production", false, "production mode in iOS")
+	}
 
 	flag.Usage = usage
 	flag.Parse()
@@ -99,36 +119,12 @@ func main() {
 		return
 	}
 
+	if tenantId != "" && cfg.Tenants[tenantId] == nil {
+		cfg.Tenants[tenantId] = defaultTenant
+	}
+
 	// Initialize push slots for concurrent iOS pushes
-	notify.MaxConcurrentIOSPushes = make(chan struct{}, cfg.Ios.MaxConcurrentPushes)
-
-	if opts.Ios.KeyPath != "" {
-		cfg.Ios.KeyPath = opts.Ios.KeyPath
-	}
-
-	if opts.Ios.KeyID != "" {
-		cfg.Ios.KeyID = opts.Ios.KeyID
-	}
-
-	if opts.Ios.TeamID != "" {
-		cfg.Ios.TeamID = opts.Ios.TeamID
-	}
-
-	if opts.Ios.Password != "" {
-		cfg.Ios.Password = opts.Ios.Password
-	}
-
-	if opts.Android.APIKey != "" {
-		cfg.Android.APIKey = opts.Android.APIKey
-	}
-
-	if opts.Huawei.AppSecret != "" {
-		cfg.Huawei.AppSecret = opts.Huawei.AppSecret
-	}
-
-	if opts.Huawei.AppID != "" {
-		cfg.Huawei.AppID = opts.Huawei.AppID
-	}
+	notify.MaxConcurrentIOSPushes = make(map[string]chan struct{})
 
 	if opts.Stat.Engine != "" {
 		cfg.Stat.Engine = opts.Stat.Engine
@@ -175,10 +171,10 @@ func main() {
 	}
 
 	// send android notification
-	if opts.Android.Enabled {
-		cfg.Android.Enabled = opts.Android.Enabled
+	if defaultTenant.Android.Enabled {
 		req := &notify.PushNotification{
-			Platform: core.PlatFormAndroid,
+			TenantId: tenantId,
+			Platform: gorush.PlatformAndroid,
 			Message:  message,
 			Title:    title,
 		}
@@ -210,10 +206,10 @@ func main() {
 	}
 
 	// send huawei notification
-	if opts.Huawei.Enabled {
-		cfg.Huawei.Enabled = opts.Huawei.Enabled
+	if defaultTenant.Huawei.Enabled {
 		req := &notify.PushNotification{
-			Platform: core.PlatFormHuawei,
+			TenantId: tenantId,
+			Platform: gorush.PlatformHuawei,
 			Message:  message,
 			Title:    title,
 		}
@@ -245,14 +241,10 @@ func main() {
 	}
 
 	// send ios notification
-	if opts.Ios.Enabled {
-		if opts.Ios.Production {
-			cfg.Ios.Production = opts.Ios.Production
-		}
-
-		cfg.Ios.Enabled = opts.Ios.Enabled
+	if defaultTenant.Ios.Enabled {
 		req := &notify.PushNotification{
-			Platform: core.PlatFormIos,
+			TenantId: tenantId,
+			Platform: gorush.PlatformIos,
 			Message:  message,
 			Title:    title,
 		}
@@ -276,7 +268,7 @@ func main() {
 			return
 		}
 
-		if err := notify.InitAPNSClient(cfg); err != nil {
+		if err := notify.InitAPNSClient(tenantId, *defaultTenant); err != nil {
 			return
 		}
 
@@ -365,20 +357,22 @@ func main() {
 		return nil
 	})
 
-	if cfg.Ios.Enabled {
-		if err = notify.InitAPNSClient(cfg); err != nil {
+	notify.ApnsClients = make(map[string]*apns2.Client)
+	notify.FCMClients = make(map[string]*fcm.Client)
+	notify.HMSClients = make(map[string]*core2.HMSClient)
+
+	for tenantId, tenant := range cfg.Tenants {
+		if err = notify.InitAPNSClient(tenantId, *tenant); err != nil {
 			logx.LogError.Fatal(err)
 		}
-	}
+		// Initialize push slots for concurrent iOS pushes
+		notify.MaxConcurrentIOSPushes[tenantId] = make(chan struct{}, cfg.Tenants[tenantId].Ios.MaxConcurrentPushes)
 
-	if cfg.Android.Enabled {
-		if _, err = notify.InitFCMClient(cfg, cfg.Android.APIKey); err != nil {
+		if _, err = notify.InitFCMClient(tenantId, tenant.Android.APIKey); err != nil {
 			logx.LogError.Fatal(err)
 		}
-	}
 
-	if cfg.Huawei.Enabled {
-		if _, err = notify.InitHMSClient(cfg, cfg.Huawei.AppSecret, cfg.Huawei.AppID); err != nil {
+		if _, err = notify.InitHMSClient(cfg, tenantId, tenant.Huawei.APIKey, tenant.Huawei.APPId); err != nil {
 			logx.LogError.Fatal(err)
 		}
 	}
@@ -438,6 +432,8 @@ Common Options:
     --topic <topic>                  iOS, Android or Huawei topic message
     -h, --help                       Show this message
     -V, --version                    Show version
+    -v, --version                    Show version
+    -tid, --tenantid                 Tenant id to be used
 `
 
 // usage will print out the flag options for the server.

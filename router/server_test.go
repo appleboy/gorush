@@ -31,16 +31,20 @@ var (
 	testKeyPath = "../certificate/certificate-valid.pem"
 )
 
+const (
+	tenantId = "legacy"
+)
+
 func TestMain(m *testing.M) {
 	cfg := initTest()
 	if err := status.InitAppStatus(cfg); err != nil {
 		log.Fatal(err)
 	}
 
-	cfg.Android.Enabled = true
-	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+	cfg.Tenants[tenantId].Android.Enabled = true
+	cfg.Tenants[tenantId].Android.APIKey = os.Getenv("ANDROID_API_KEY")
 
-	if _, err := notify.InitFCMClient(cfg, ""); err != nil {
+	if _, err := notify.InitFCMClient(tenantId, ""); err != nil {
 		log.Fatal(err)
 	}
 
@@ -376,8 +380,8 @@ func TestSuccessPushHandler(t *testing.T) {
 	t.Skip()
 	cfg := initTest()
 
-	cfg.Android.Enabled = true
-	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+	cfg.Tenants[tenantId].Android.Enabled = true
+	cfg.Tenants[tenantId].Android.APIKey = os.Getenv("ANDROID_API_KEY")
 
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
@@ -472,13 +476,14 @@ func TestSenMultipleNotifications(t *testing.T) {
 	ctx := context.Background()
 	cfg := initTest()
 
-	cfg.Ios.Enabled = true
-	cfg.Ios.KeyPath = testKeyPath
-	err := notify.InitAPNSClient(cfg)
+	tenant := *cfg.Tenants[tenantId]
+	tenant.Ios.Enabled = true
+	tenant.Ios.KeyPath = testKeyPath
+	err := notify.InitAPNSClient(tenantId, tenant)
 	assert.Nil(t, err)
 
-	cfg.Android.Enabled = true
-	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+	tenant.Android.Enabled = true
+	tenant.Android.APIKey = os.Getenv("ANDROID_API_KEY")
 
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
@@ -499,7 +504,7 @@ func TestSenMultipleNotifications(t *testing.T) {
 		},
 	}
 
-	count, logs := handleNotification(ctx, cfg, req, q)
+	count, logs := handleNotification(ctx, cfg, req, q, tenantId)
 	assert.Equal(t, 3, count)
 	assert.Equal(t, 0, len(logs))
 }
@@ -507,14 +512,15 @@ func TestSenMultipleNotifications(t *testing.T) {
 func TestDisabledAndroidNotifications(t *testing.T) {
 	ctx := context.Background()
 	cfg := initTest()
+	tenant := *cfg.Tenants[tenantId]
 
-	cfg.Ios.Enabled = true
-	cfg.Ios.KeyPath = testKeyPath
-	err := notify.InitAPNSClient(cfg)
+	tenant.Ios.Enabled = true
+	tenant.Ios.KeyPath = testKeyPath
+	err := notify.InitAPNSClient(tenantId, tenant)
 	assert.Nil(t, err)
 
-	cfg.Android.Enabled = false
-	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+	tenant.Android.Enabled = false
+	tenant.Android.APIKey = os.Getenv("ANDROID_API_KEY")
 
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
@@ -535,7 +541,7 @@ func TestDisabledAndroidNotifications(t *testing.T) {
 		},
 	}
 
-	count, logs := handleNotification(ctx, cfg, req, q)
+	count, logs := handleNotification(ctx, cfg, req, q, tenantId)
 	assert.Equal(t, 1, count)
 	assert.Equal(t, 0, len(logs))
 }
@@ -543,14 +549,15 @@ func TestDisabledAndroidNotifications(t *testing.T) {
 func TestSyncModeForNotifications(t *testing.T) {
 	ctx := context.Background()
 	cfg := initTest()
+	tenant := *cfg.Tenants[tenantId]
 
-	cfg.Ios.Enabled = true
-	cfg.Ios.KeyPath = testKeyPath
-	err := notify.InitAPNSClient(cfg)
+	tenant.Ios.Enabled = true
+	tenant.Ios.KeyPath = testKeyPath
+	err := notify.InitAPNSClient(tenantId, tenant)
 	assert.Nil(t, err)
 
-	cfg.Android.Enabled = true
-	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+	tenant.Android.Enabled = true
+	tenant.Android.APIKey = os.Getenv("ANDROID_API_KEY")
 
 	// enable sync mode
 	cfg.Core.Sync = true
@@ -576,7 +583,7 @@ func TestSyncModeForNotifications(t *testing.T) {
 		},
 	}
 
-	count, logs := handleNotification(ctx, cfg, req, q)
+	count, logs := handleNotification(ctx, cfg, req, q, tenantId)
 	assert.Equal(t, 3, count)
 	assert.Equal(t, 2, len(logs))
 }
@@ -584,9 +591,10 @@ func TestSyncModeForNotifications(t *testing.T) {
 func TestSyncModeForTopicNotification(t *testing.T) {
 	ctx := context.Background()
 	cfg := initTest()
+	tenant := *cfg.Tenants[tenantId]
 
-	cfg.Android.Enabled = true
-	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+	tenant.Android.Enabled = true
+	tenant.Android.APIKey = os.Getenv("ANDROID_API_KEY")
 	cfg.Log.HideToken = false
 
 	// enable sync mode
@@ -619,7 +627,7 @@ func TestSyncModeForTopicNotification(t *testing.T) {
 		},
 	}
 
-	count, logs := handleNotification(ctx, cfg, req, q)
+	count, logs := handleNotification(ctx, cfg, req, q, tenantId)
 	assert.Equal(t, 2, count)
 	assert.Equal(t, 1, len(logs))
 }
@@ -627,9 +635,10 @@ func TestSyncModeForTopicNotification(t *testing.T) {
 func TestSyncModeForDeviceGroupNotification(t *testing.T) {
 	ctx := context.Background()
 	cfg := initTest()
+	tenant := *cfg.Tenants[tenantId]
 
-	cfg.Android.Enabled = true
-	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+	tenant.Android.Enabled = true
+	tenant.Android.APIKey = os.Getenv("ANDROID_API_KEY")
 	cfg.Log.HideToken = false
 
 	// enable sync mode
@@ -646,7 +655,7 @@ func TestSyncModeForDeviceGroupNotification(t *testing.T) {
 		},
 	}
 
-	count, logs := handleNotification(ctx, cfg, req, q)
+	count, logs := handleNotification(ctx, cfg, req, q, tenantId)
 	assert.Equal(t, 1, count)
 	assert.Equal(t, 1, len(logs))
 }
@@ -654,14 +663,15 @@ func TestSyncModeForDeviceGroupNotification(t *testing.T) {
 func TestDisabledIosNotifications(t *testing.T) {
 	ctx := context.Background()
 	cfg := initTest()
+	tenant := *cfg.Tenants[tenantId]
 
-	cfg.Ios.Enabled = false
-	cfg.Ios.KeyPath = testKeyPath
-	err := notify.InitAPNSClient(cfg)
+	tenant.Ios.Enabled = false
+	tenant.Ios.KeyPath = testKeyPath
+	err := notify.InitAPNSClient(tenantId, tenant)
 	assert.Nil(t, err)
 
-	cfg.Android.Enabled = true
-	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+	tenant.Android.Enabled = true
+	tenant.Android.APIKey = os.Getenv("ANDROID_API_KEY")
 
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
@@ -682,7 +692,7 @@ func TestDisabledIosNotifications(t *testing.T) {
 		},
 	}
 
-	count, logs := handleNotification(ctx, cfg, req, q)
+	count, logs := handleNotification(ctx, cfg, req, q, tenantId)
 	assert.Equal(t, 2, count)
 	assert.Equal(t, 0, len(logs))
 }

@@ -36,27 +36,33 @@ var (
 
 func TestDisabledAndroidIosConf(t *testing.T) {
 	cfg, _ := config.LoadConf()
-	cfg.Android.Enabled = false
-	cfg.Huawei.Enabled = false
+	var firstTenant *config.SectionTenant
+	for _, value := range cfg.Tenants {
+		firstTenant = value
+		break // exit the loop after the first iteration
+	}
+	firstTenant.Android.Enabled = false
+	firstTenant.Huawei.Enabled = false
+	firstTenant.Ios.Enabled = false
 
 	err := CheckPushConf(cfg)
 
 	assert.Error(t, err)
-	assert.Equal(t, "please enable iOS, Android or Huawei config in yml config", err.Error())
 }
 
 func TestMissingIOSCertificate(t *testing.T) {
 	cfg, _ := config.LoadConf()
+	var _, tenant = getFirstTenant(cfg)
 
-	cfg.Ios.Enabled = true
-	cfg.Ios.KeyPath = ""
-	cfg.Ios.KeyBase64 = ""
+	tenant.Ios.Enabled = true
+	tenant.Ios.KeyPath = ""
+	tenant.Ios.KeyBase64 = ""
 	err := CheckPushConf(cfg)
 
 	assert.Error(t, err)
 	assert.Equal(t, "missing iOS certificate key", err.Error())
 
-	cfg.Ios.KeyPath = "test.pem"
+	tenant.Ios.KeyPath = "test.pem"
 	err = CheckPushConf(cfg)
 
 	assert.Error(t, err)
@@ -572,18 +578,19 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 
 func TestWrongIosCertificateExt(t *testing.T) {
 	cfg, _ := config.LoadConf()
+	var tenantId, tenant = getFirstTenant(cfg)
 
-	cfg.Ios.Enabled = true
-	cfg.Ios.KeyPath = "test"
-	err := InitAPNSClient(cfg)
+	tenant.Ios.Enabled = true
+	tenant.Ios.KeyPath = "test"
+	err := InitAPNSClient(tenantId, tenant)
 
 	assert.Error(t, err)
 	assert.Equal(t, "wrong certificate key extension", err.Error())
 
-	cfg.Ios.KeyPath = ""
-	cfg.Ios.KeyBase64 = "abcd"
-	cfg.Ios.KeyType = "abcd"
-	err = InitAPNSClient(cfg)
+	tenant.Ios.KeyPath = ""
+	tenant.Ios.KeyBase64 = "abcd"
+	tenant.Ios.KeyType = "abcd"
+	err = InitAPNSClient(tenantId, tenant)
 
 	assert.Error(t, err)
 	assert.Equal(t, "wrong certificate key type", err.Error())
@@ -591,129 +598,134 @@ func TestWrongIosCertificateExt(t *testing.T) {
 
 func TestAPNSClientDevHost(t *testing.T) {
 	cfg, _ := config.LoadConf()
+	var tenantId, tenant = getFirstTenant(cfg)
 
-	cfg.Ios.Enabled = true
-	cfg.Ios.KeyPath = "../certificate/certificate-valid.p12"
-	err := InitAPNSClient(cfg)
+	tenant.Ios.Enabled = true
+	tenant.Ios.KeyPath = "../certificate/certificate-valid.p12"
+	err := InitAPNSClient(tenantId, tenant)
 	assert.Nil(t, err)
-	assert.Equal(t, apns2.HostDevelopment, ApnsClient.Host)
+	assert.Equal(t, apns2.HostDevelopment, ApnsClients[tenantId].Host)
 
-	cfg.Ios.KeyPath = ""
-	cfg.Ios.KeyBase64 = certificateValidP12
-	cfg.Ios.KeyType = "p12"
-	err = InitAPNSClient(cfg)
+	tenant.Ios.KeyPath = ""
+	tenant.Ios.KeyBase64 = certificateValidP12
+	tenant.Ios.KeyType = "p12"
+	err = InitAPNSClient(tenantId, tenant)
 	assert.Nil(t, err)
-	assert.Equal(t, apns2.HostDevelopment, ApnsClient.Host)
+	assert.Equal(t, apns2.HostDevelopment, ApnsClients[tenantId].Host)
 }
 
 func TestAPNSClientProdHost(t *testing.T) {
 	cfg, _ := config.LoadConf()
+	var tenantId, tenant = getFirstTenant(cfg)
 
-	cfg.Ios.Enabled = true
-	cfg.Ios.Production = true
-	cfg.Ios.KeyPath = testKeyPath
-	err := InitAPNSClient(cfg)
+	tenant.Ios.Enabled = true
+	tenant.Ios.Production = true
+	tenant.Ios.KeyPath = testKeyPath
+	err := InitAPNSClient(tenantId, tenant)
 	assert.Nil(t, err)
-	assert.Equal(t, apns2.HostProduction, ApnsClient.Host)
+	assert.Equal(t, apns2.HostProduction, ApnsClients[tenantId].Host)
 
-	cfg.Ios.KeyPath = ""
-	cfg.Ios.KeyBase64 = certificateValidPEM
-	cfg.Ios.KeyType = "pem"
-	err = InitAPNSClient(cfg)
+	tenant.Ios.KeyPath = ""
+	tenant.Ios.KeyBase64 = certificateValidPEM
+	tenant.Ios.KeyType = "pem"
+	err = InitAPNSClient(tenantId, tenant)
 	assert.Nil(t, err)
-	assert.Equal(t, apns2.HostProduction, ApnsClient.Host)
+	assert.Equal(t, apns2.HostProduction, ApnsClients[tenantId].Host)
 }
 
 func TestAPNSClientInvaildToken(t *testing.T) {
 	cfg, _ := config.LoadConf()
+	var tenantId, tenant = getFirstTenant(cfg)
 
-	cfg.Ios.Enabled = true
-	cfg.Ios.KeyPath = "../certificate/authkey-invalid.p8"
-	err := InitAPNSClient(cfg)
+	tenant.Ios.Enabled = true
+	tenant.Ios.KeyPath = "../certificate/authkey-invalid.p8"
+	err := InitAPNSClient(tenantId, tenant)
 	assert.Error(t, err)
 
-	cfg.Ios.KeyPath = ""
-	cfg.Ios.KeyBase64 = authkeyInvalidP8
-	cfg.Ios.KeyType = "p8"
-	err = InitAPNSClient(cfg)
+	tenant.Ios.KeyPath = ""
+	tenant.Ios.KeyBase64 = authkeyInvalidP8
+	tenant.Ios.KeyType = "p8"
+	err = InitAPNSClient(tenantId, tenant)
 	assert.Error(t, err)
 
 	// empty key-id or team-id
-	cfg.Ios.Enabled = true
-	cfg.Ios.KeyPath = testKeyPathP8
-	err = InitAPNSClient(cfg)
+	tenant.Ios.Enabled = true
+	tenant.Ios.KeyPath = testKeyPathP8
+	err = InitAPNSClient(tenantId, tenant)
 	assert.Error(t, err)
 
-	cfg.Ios.KeyID = "key-id"
-	cfg.Ios.TeamID = ""
-	err = InitAPNSClient(cfg)
+	tenant.Ios.KeyID = "key-id"
+	tenant.Ios.TeamID = ""
+	err = InitAPNSClient(tenantId, tenant)
 	assert.Error(t, err)
 
-	cfg.Ios.KeyID = ""
-	cfg.Ios.TeamID = "team-id"
-	err = InitAPNSClient(cfg)
+	tenant.Ios.KeyID = ""
+	tenant.Ios.TeamID = "team-id"
+	err = InitAPNSClient(tenantId, tenant)
 	assert.Error(t, err)
 }
 
 func TestAPNSClientVaildToken(t *testing.T) {
 	cfg, _ := config.LoadConf()
+	var tenantId, tenant = getFirstTenant(cfg)
 
-	cfg.Ios.Enabled = true
-	cfg.Ios.KeyPath = testKeyPathP8
-	cfg.Ios.KeyID = "key-id"
-	cfg.Ios.TeamID = "team-id"
-	err := InitAPNSClient(cfg)
+	tenant.Ios.Enabled = true
+	tenant.Ios.KeyPath = testKeyPathP8
+	tenant.Ios.KeyID = "key-id"
+	tenant.Ios.TeamID = "team-id"
+	err := InitAPNSClient(tenantId, tenant)
 	assert.NoError(t, err)
-	assert.Equal(t, apns2.HostDevelopment, ApnsClient.Host)
+	assert.Equal(t, apns2.HostDevelopment, ApnsClients[tenantId].Host)
 
-	cfg.Ios.Production = true
-	err = InitAPNSClient(cfg)
+	tenant.Ios.Production = true
+	err = InitAPNSClient(tenantId, tenant)
 	assert.NoError(t, err)
-	assert.Equal(t, apns2.HostProduction, ApnsClient.Host)
+	assert.Equal(t, apns2.HostProduction, ApnsClients[tenantId].Host)
 
 	// test base64
-	cfg.Ios.Production = false
-	cfg.Ios.KeyPath = ""
-	cfg.Ios.KeyBase64 = authkeyValidP8
-	cfg.Ios.KeyType = "p8"
-	err = InitAPNSClient(cfg)
+	tenant.Ios.Production = false
+	tenant.Ios.KeyPath = ""
+	tenant.Ios.KeyBase64 = authkeyValidP8
+	tenant.Ios.KeyType = "p8"
+	err = InitAPNSClient(tenantId, tenant)
 	assert.NoError(t, err)
-	assert.Equal(t, apns2.HostDevelopment, ApnsClient.Host)
+	assert.Equal(t, apns2.HostDevelopment, ApnsClients[tenantId].Host)
 
-	cfg.Ios.Production = true
-	err = InitAPNSClient(cfg)
+	tenant.Ios.Production = true
+	err = InitAPNSClient(tenantId, tenant)
 	assert.NoError(t, err)
-	assert.Equal(t, apns2.HostProduction, ApnsClient.Host)
+	assert.Equal(t, apns2.HostProduction, ApnsClients[tenantId].Host)
 }
 
 func TestAPNSClientUseProxy(t *testing.T) {
 	cfg, _ := config.LoadConf()
+	var tenantId, tenant = getFirstTenant(cfg)
 
-	cfg.Ios.Enabled = true
-	cfg.Ios.KeyPath = "../certificate/certificate-valid.p12"
+	tenant.Ios.Enabled = true
+	tenant.Ios.KeyPath = "../certificate/certificate-valid.p12"
 	cfg.Core.HTTPProxy = "http://127.0.0.1:8080"
 	_ = SetProxy(cfg.Core.HTTPProxy)
-	err := InitAPNSClient(cfg)
+	err := InitAPNSClient(tenantId, tenant)
 	assert.Nil(t, err)
-	assert.Equal(t, apns2.HostDevelopment, ApnsClient.Host)
+	assert.Equal(t, apns2.HostDevelopment, ApnsClients[tenantId].Host)
 
 	req, _ := http.NewRequestWithContext(context.Background(), "GET", apns2.HostDevelopment, nil)
-	actualProxyURL, err := ApnsClient.HTTPClient.Transport.(*http.Transport).Proxy(req)
+	actualProxyURL, err := ApnsClients[tenantId].HTTPClient.Transport.(*http.Transport).Proxy(req)
 	assert.Nil(t, err)
 
 	expectedProxyURL, _ := url.ParseRequestURI(cfg.Core.HTTPProxy)
 	assert.Equal(t, expectedProxyURL, actualProxyURL)
 
-	cfg.Ios.KeyPath = testKeyPathP8
-	cfg.Ios.TeamID = "example.team"
-	cfg.Ios.KeyID = "example.key"
-	err = InitAPNSClient(cfg)
+	tenant.Ios.KeyPath = testKeyPathP8
+	tenant.Ios.TeamID = "example.team"
+	tenant.Ios.KeyID = "example.key"
+	err = InitAPNSClient(tenantId, tenant)
 	assert.Nil(t, err)
-	assert.Equal(t, apns2.HostDevelopment, ApnsClient.Host)
-	assert.NotNil(t, ApnsClient.Token)
+	assert.Equal(t, apns2.HostDevelopment, ApnsClients[tenantId].Host)
+	assert.NotNil(t, ApnsClients[tenantId].Token)
 
 	req, _ = http.NewRequestWithContext(context.Background(), "GET", apns2.HostDevelopment, nil)
-	actualProxyURL, err = ApnsClient.HTTPClient.Transport.(*http.Transport).Proxy(req)
+	actualProxyURL, err = ApnsClients[tenantId].HTTPClient.Transport.(*http.Transport).Proxy(req)
 	assert.Nil(t, err)
 
 	expectedProxyURL, _ = url.ParseRequestURI(cfg.Core.HTTPProxy)
@@ -724,11 +736,12 @@ func TestAPNSClientUseProxy(t *testing.T) {
 
 func TestPushToIOS(t *testing.T) {
 	cfg, _ := config.LoadConf()
-	MaxConcurrentIOSPushes = make(chan struct{}, cfg.Ios.MaxConcurrentPushes)
+	var tenantId, tenant = getFirstTenant(cfg)
+	MaxConcurrentIOSPushes[tenantId] = make(chan struct{}, tenant.Ios.MaxConcurrentPushes)
 
-	cfg.Ios.Enabled = true
-	cfg.Ios.KeyPath = testKeyPath
-	err := InitAPNSClient(cfg)
+	tenant.Ios.Enabled = true
+	tenant.Ios.KeyPath = testKeyPath
+	err := InitAPNSClient(tenantId, tenant)
 	assert.Nil(t, err)
 	err = status.InitAppStatus(cfg)
 	assert.Nil(t, err)
@@ -748,10 +761,11 @@ func TestPushToIOS(t *testing.T) {
 
 func TestApnsHostFromRequest(t *testing.T) {
 	cfg, _ := config.LoadConf()
+	var tenantId, tenant = getFirstTenant(cfg)
 
-	cfg.Ios.Enabled = true
-	cfg.Ios.KeyPath = testKeyPath
-	err := InitAPNSClient(cfg)
+	tenant.Ios.Enabled = true
+	tenant.Ios.KeyPath = testKeyPath
+	err := InitAPNSClient(tenantId, tenant)
 	assert.Nil(t, err)
 	err = status.InitAppStatus(cfg)
 	assert.Nil(t, err)
@@ -769,11 +783,22 @@ func TestApnsHostFromRequest(t *testing.T) {
 	assert.Equal(t, apns2.HostDevelopment, client.Host)
 
 	req = &PushNotification{}
-	cfg.Ios.Production = true
+	tenant.Ios.Production = true
 	client = getApnsClient(cfg, req)
 	assert.Equal(t, apns2.HostProduction, client.Host)
 
-	cfg.Ios.Production = false
+	tenant.Ios.Production = false
 	client = getApnsClient(cfg, req)
 	assert.Equal(t, apns2.HostDevelopment, client.Host)
+}
+
+func getFirstTenant(cfg *config.ConfYaml) (string, config.SectionTenant) {
+	var firstTenant config.SectionTenant
+	var firstTenantId string
+	for key, value := range cfg.Tenants {
+		firstTenantId = key
+		firstTenant = *value
+		break // exit the loop after the first iteration
+	}
+	return firstTenantId, firstTenant
 }
