@@ -6,13 +6,26 @@ import (
 	"errors"
 	"net"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/appleboy/gorush/logx"
 )
 
+// extractHeaders converts a slice of strings to a map of strings.
+func extractHeaders(headers []string) map[string]string {
+	result := make(map[string]string)
+	for _, header := range headers {
+		parts := strings.Split(header, ":")
+		if len(parts) == 2 {
+			result[parts[0]] = parts[1]
+		}
+	}
+	return result
+}
+
 // DispatchFeedback sends a feedback to the configured gateway.
-func DispatchFeedback(log logx.LogPushEntry, url string, timeout int64) error {
+func DispatchFeedback(log logx.LogPushEntry, url string, timeout int64, header []string) error {
 	if url == "" {
 		return errors.New("url can't be empty")
 	}
@@ -25,6 +38,11 @@ func DispatchFeedback(log logx.LogPushEntry, url string, timeout int64) error {
 	req, err := http.NewRequestWithContext(context.Background(), "POST", url, bytes.NewBuffer(payload))
 	if err != nil {
 		return err
+	}
+
+	headers := extractHeaders(header)
+	for k, v := range headers {
+		req.Header.Set(k, v)
 	}
 
 	req.Header.Set("Content-Type", "application/json; charset=utf-8")

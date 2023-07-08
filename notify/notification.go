@@ -255,7 +255,7 @@ func SendNotification(req qcore.QueuedMessage, cfg *config.ConfYaml) (resp *Resp
 
 	if cfg.Core.FeedbackURL != "" {
 		for _, l := range resp.Logs {
-			err := DispatchFeedback(l, cfg.Core.FeedbackURL, cfg.Core.FeedbackTimeout)
+			err := DispatchFeedback(l, cfg.Core.FeedbackURL, cfg.Core.FeedbackTimeout, cfg.Core.FeedbackHeader)
 			if err != nil {
 				logx.LogError.Error(err)
 			}
