@@ -101,9 +101,13 @@ core:
   worker_num: 0 # default worker number is runtime.NumCPU()
   queue_num: 0 # default queue number is 8192
   max_notification: 100
-  sync: false # set true if you need get error message from fail push notification in API response. It only works when the queue engine is local.
-  feedback_hook_url: "" # set a hook url if you need get error message asynchronously from fail push notification in API response.
+  # set true if you need get error message from fail push notification in API response.
+  # It only works when the queue engine is local.
+  sync: false
+  # set webhook url if you need get error message asynchronously from fail push notification in API response.
+  feedback_hook_url: ""
   feedback_timeout: 10 # default is 10 second
+  feedback_header:
   mode: "release"
   ssl: false
   cert_path: "cert.pem"
@@ -162,7 +166,7 @@ queue:
 
 ios:
   enabled: false
-  key_path: "key.pem"
+  key_path: ""
   key_base64: "" # load iOS key from base64 input
   key_type: "pem" # could be pem, p12 or p8 type
   password: "" # certificate password, default as empty string.
@@ -962,7 +966,7 @@ Success response:
 }
 ```
 
-If you need error logs from sending fail notifications, please set a `feedback_hook_url`. The server with send the failing logs asynchronously to your API as `POST` requests.
+If you need error logs from sending fail notifications, please set a `feedback_hook_url` and `feedback_header` for custom header. The server with send the failing logs asynchronously to your API as `POST` requests.
 
 ```diff
 core:
@@ -973,6 +977,8 @@ core:
   sync: false
 - feedback_hook_url: ""
 + feedback_hook_url: "https://exemple.com/api/hook"
++ feedback_header:
++   - x-gorush-token:4e989115e09680f44a645519fed6a976
 ```
 
 You can also switch to **sync** mode by setting the `sync` value as `true` on yaml config. It only works when the queue engine is local.
