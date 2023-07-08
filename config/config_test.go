@@ -55,6 +55,7 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 	assert.Equal(suite.T(), "release", suite.ConfGorushDefault.Core.Mode)
 	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Core.Sync)
 	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Core.FeedbackURL)
+	assert.Equal(suite.T(), 0, len(suite.ConfGorushDefault.Core.FeedbackHeader))
 	assert.Equal(suite.T(), int64(10), suite.ConfGorushDefault.Core.FeedbackTimeout)
 	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Core.SSL)
 	assert.Equal(suite.T(), "cert.pem", suite.ConfGorushDefault.Core.CertPath)
@@ -150,6 +151,8 @@ func (suite *ConfigTestSuite) TestValidateConf() {
 	assert.Equal(suite.T(), false, suite.ConfGorush.Core.Sync)
 	assert.Equal(suite.T(), "", suite.ConfGorush.Core.FeedbackURL)
 	assert.Equal(suite.T(), int64(10), suite.ConfGorush.Core.FeedbackTimeout)
+	assert.Equal(suite.T(), 1, len(suite.ConfGorush.Core.FeedbackHeader))
+	assert.Equal(suite.T(), "x-gorush-token:4e989115e09680f44a645519fed6a976", suite.ConfGorush.Core.FeedbackHeader[0])
 	assert.Equal(suite.T(), false, suite.ConfGorush.Core.SSL)
 	assert.Equal(suite.T(), "cert.pem", suite.ConfGorush.Core.CertPath)
 	assert.Equal(suite.T(), "key.pem", suite.ConfGorush.Core.KeyPath)
@@ -228,6 +231,8 @@ func TestLoadConfigFromEnv(t *testing.T) {
 	os.Setenv("GORUSH_IOS_KEY_ID", "ABC123DEFG")
 	os.Setenv("GORUSH_IOS_TEAM_ID", "DEF123GHIJ")
 	os.Setenv("GORUSH_API_HEALTH_URI", "/healthz")
+	os.Setenv("GORUSH_CORE_FEEDBACK_HOOK_URL", "http://example.com")
+	os.Setenv("GORUSH_CORE_FEEDBACK_HEADER", "x-api-key:1234567890 x-auth-key:0987654321")
 	ConfGorush, err := LoadConf("testdata/config.yml")
 	if err != nil {
 		panic("failed to load config.yml from file")
@@ -238,6 +243,9 @@ func TestLoadConfigFromEnv(t *testing.T) {
 	assert.Equal(t, "ABC123DEFG", ConfGorush.Ios.KeyID)
 	assert.Equal(t, "DEF123GHIJ", ConfGorush.Ios.TeamID)
 	assert.Equal(t, "/healthz", ConfGorush.API.HealthURI)
+	assert.Equal(t, "http://example.com", ConfGorush.Core.FeedbackURL)
+	assert.Equal(t, "x-api-key:1234567890", ConfGorush.Core.FeedbackHeader[0])
+	assert.Equal(t, "x-auth-key:0987654321", ConfGorush.Core.FeedbackHeader[1])
 }
 
 func TestLoadWrongDefaultYAMLConfig(t *testing.T) {
