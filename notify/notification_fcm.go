@@ -122,7 +122,7 @@ func PushToAndroid(req *PushNotification, cfg *config.ConfYaml) (resp *ResponseP
 	err = CheckMessage(req)
 	if err != nil {
 		logx.LogError.Error("request error: " + err.Error())
-		return
+		return nil, err
 	}
 
 	resp = &ResponsePush{}
@@ -139,7 +139,7 @@ Retry:
 	if err != nil {
 		// FCM server error
 		logx.LogError.Error("FCM server error: " + err.Error())
-		return
+		return resp, err
 	}
 
 	res, err := client.Send(notification)
@@ -158,7 +158,7 @@ Retry:
 			}
 			status.StatStorage.AddAndroidError(int64(len(req.Tokens)))
 		}
-		return
+		return resp, err
 	}
 
 	if !req.IsTopic() {

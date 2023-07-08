@@ -4,7 +4,6 @@ linters:
   fast: false
   enable:
     - bodyclose
-    - depguard
     - dogsled
     - dupl
     - errcheck

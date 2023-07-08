@@ -179,7 +179,7 @@ func PushToHuawei(req *PushNotification, cfg *config.ConfYaml) (resp *ResponsePu
 	err = CheckMessage(req)
 	if err != nil {
 		logx.LogError.Error("request error: " + err.Error())
-		return
+		return nil, err
 	}
 
 	client, err = InitHMSClient(cfg, cfg.Huawei.AppSecret, cfg.Huawei.AppID)
@@ -187,7 +187,7 @@ func PushToHuawei(req *PushNotification, cfg *config.ConfYaml) (resp *ResponsePu
 	if err != nil {
 		// HMS server error
 		logx.LogError.Error("HMS server error: " + err.Error())
-		return
+		return nil, err
 	}
 
 	resp = &ResponsePush{}
@@ -203,7 +203,7 @@ Retry:
 		errLog := logPush(cfg, core.FailedPush, req.To, req, err)
 		resp.Logs = append(resp.Logs, errLog)
 		logx.LogError.Error("HMS server send message error: " + err.Error())
-		return
+		return resp, err
 	}
 
 	// Huawei Push Send API does not support exact results for each token
