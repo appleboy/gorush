@@ -118,10 +118,11 @@ type PushNotification struct {
 
 	// live-activity support
 	// ref: https://developer.apple.com/documentation/activitykit/updating-and-ending-your-live-activity-with-activitykit-push-notifications
-	ContentState D      `json:"content-state,omitempty"`
-	StaleDate    int64  `json:"stale-date,omitempty"`
-	Event        string `json:"event,omitempty"`
-	Timestamp    int64  `json:"timestamp,omitempty"`
+	ContentState  D      `json:"content-state,omitempty"`
+	StaleDate     int64  `json:"stale-date,omitempty"`
+	DismissalDate int64  `json:"dismissal-date"`
+	Event         string `json:"event,omitempty"`
+	Timestamp     int64  `json:"timestamp,omitempty"`
 }
 
 // Bytes for queue message

@@ -304,6 +304,10 @@ func iosAlertDictionary(notificationPayload *payload.Payload, req *PushNotificat
 		notificationPayload.StaleDate(req.StaleDate)
 	}
 
+	if req.DismissalDate > 0 {
+		notificationPayload.DismissalDate(req.DismissalDate)
+	}
+
 	if len(req.Event) > 0 {
 		notificationPayload.Event(req.Event)
 	}

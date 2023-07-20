@@ -515,6 +515,7 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 	var dat map[string]interface{}
 	unix := time.Now().Unix()
 	stale_date := time.Now().Unix()
+	dismissal_date := stale_date + 5
 	timeStamp := time.Now().Unix()
 	itemId := float64(12345)
 
@@ -534,6 +535,7 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 		},
 		InterruptionLevel: testMessage,
 		StaleDate:         stale_date,
+		DismissalDate: 	   dismissal_date
 		Event:             testMessage,
 		Timestamp:         timeStamp,
 		ContentState: D{
@@ -586,7 +588,7 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 	assert.Equal(t, unix, staleDate)
 	assert.Equal(t, unix, timestamp)
 
-	// extensible contentState content
+	// dynamic contentState content
 	assert.Equal(t, contentSateItemId, itemId)
 	assert.Equal(t, contentSateItemName, testMessage)
 	assert.Contains(t, contentSate, "item_id")
