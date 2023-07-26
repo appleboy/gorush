@@ -2,14 +2,14 @@ package notify
 
 import (
 	"context"
-	"fmt"
-	"github.com/appleboy/gorush/config"
-	"github.com/appleboy/gorush/status"
 	"log"
 	"net/http"
 	"net/url"
 	"testing"
 	"time"
+
+	"github.com/appleboy/gorush/config"
+	"github.com/appleboy/gorush/status"
 
 	"github.com/buger/jsonparser"
 	"github.com/sideshow/apns2"
@@ -535,7 +535,7 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 		},
 		InterruptionLevel: testMessage,
 		StaleDate:         stale_date,
-		DismissalDate: 	   dismissal_date
+		DismissalDate:     dismissal_date,
 		Event:             testMessage,
 		Timestamp:         timeStamp,
 		ContentState: D{
@@ -548,7 +548,6 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 
 	dump, _ := json.Marshal(notification.Payload)
 	data := []byte(string(dump))
-	fmt.Println("data", string(dump))
 
 	if err := json.Unmarshal(data, &dat); err != nil {
 		log.Println(err)
@@ -571,9 +570,9 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 	alert := aps["alert"].(map[string]interface{})
 	titleLocArgs := alert["title-loc-args"].([]interface{})
 	locArgs := alert["loc-args"].([]interface{})
-	contentSate := aps["content-state"].(map[string]interface{})
-	contentSateItemId := contentSate["item_id"]
-	contentSateItemName := contentSate["item_name"]
+	contentState := aps["content-state"].(map[string]interface{})
+	contentStateItemId := contentState["item_id"]
+	contentStateItemName := contentState["item_name"]
 
 	assert.Equal(t, testMessage, action)
 	assert.Equal(t, testMessage, actionLocKey)
@@ -589,10 +588,10 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 	assert.Equal(t, unix, timestamp)
 
 	// dynamic contentState content
-	assert.Equal(t, contentSateItemId, itemId)
-	assert.Equal(t, contentSateItemName, testMessage)
-	assert.Contains(t, contentSate, "item_id")
-	assert.Contains(t, contentSate, "item_name")
+	assert.Equal(t, contentStateItemId, itemId)
+	assert.Equal(t, contentStateItemName, testMessage)
+	assert.Contains(t, contentState, "item_id")
+	assert.Contains(t, contentState, "item_name")
 
 	assert.Contains(t, titleLocArgs, "a")
 	assert.Contains(t, titleLocArgs, "b")
