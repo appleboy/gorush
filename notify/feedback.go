@@ -4,13 +4,30 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"github.com/appleboy/gorush/logx"
 	"net"
 	"net/http"
 	"strings"
 	"time"
-
-	"github.com/appleboy/gorush/logx"
 )
+
+var feedbackClient *http.Client
+
+func init() {
+	transport := &http.Transport{
+		Dial: (&net.Dialer{
+			Timeout: 5 * time.Second,
+		}).Dial,
+		TLSHandshakeTimeout: 5 * time.Second,
+		MaxIdleConns:        5,
+		MaxIdleConnsPerHost: 5,
+		MaxConnsPerHost:     20,
+	}
+
+	feedbackClient = &http.Client{
+		Transport: transport,
+	}
+}
 
 // extractHeaders converts a slice of strings to a map of strings.
 func extractHeaders(headers []string) map[string]string {
@@ -47,18 +64,8 @@ func DispatchFeedback(log logx.LogPushEntry, url string, timeout int64, header [
 
 	req.Header.Set("Content-Type", "application/json; charset=utf-8")
 
-	transport := &http.Transport{
-		Dial: (&net.Dialer{
-			Timeout: 5 * time.Second,
-		}).Dial,
-		TLSHandshakeTimeout: 5 * time.Second,
-	}
-	client := &http.Client{
-		Timeout:   time.Duration(timeout) * time.Second,
-		Transport: transport,
-	}
-
-	resp, err := client.Do(req)
+	feedbackClient.Timeout = time.Duration(timeout) * time.Second
+	resp, err := feedbackClient.Do(req)
 
 	if resp != nil {
 		defer resp.Body.Close()

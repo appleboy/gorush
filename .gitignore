@@ -38,3 +38,4 @@ coverage.txt
 node_modules
 config.yml
 dist/
+.idea
