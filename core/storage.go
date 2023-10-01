@@ -5,6 +5,7 @@ const (
 	TotalCountKey = "gorush-total-count"
 
 	// IosSuccessKey is key name or ios success count of storage
+	/* #nosec */
 	IosSuccessKey = "gorush-ios-success-count"
 
 	// IosErrorKey is key name or ios success error of storage

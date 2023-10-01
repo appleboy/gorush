@@ -4,31 +4,12 @@ import (
 	"bytes"
 	"context"
 	"errors"
-	"net"
 	"net/http"
 	"strings"
 	"time"
 
 	"github.com/appleboy/gorush/logx"
 )
-
-var feedbackClient *http.Client
-
-func init() {
-	transport := &http.Transport{
-		Dial: (&net.Dialer{
-			Timeout: 5 * time.Second,
-		}).Dial,
-		TLSHandshakeTimeout: 5 * time.Second,
-		MaxIdleConns:        5,
-		MaxIdleConnsPerHost: 5,
-		MaxConnsPerHost:     20,
-	}
-
-	feedbackClient = &http.Client{
-		Transport: transport,
-	}
-}
 
 // extractHeaders converts a slice of strings to a map of strings.
 func extractHeaders(headers []string) map[string]string {
