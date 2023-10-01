@@ -108,7 +108,7 @@ func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*prot
 	}
 
 	go func() {
-		_, err := notify.SendNotification(&notification, s.cfg)
+		_, err := notify.SendNotification(ctx, &notification, s.cfg)
 		if err != nil {
 			logx.LogError.Error(err)
 		}

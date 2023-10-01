@@ -235,12 +235,16 @@ func CheckPushConf(cfg *config.ConfYaml) error {
 	return nil
 }
 
-// SendNotification send notification
-func SendNotification(req qcore.QueuedMessage, cfg *config.ConfYaml) (resp *ResponsePush, err error) {
+// SendNotification provide send notification.
+func SendNotification(
+	ctx context.Context,
+	req qcore.QueuedMessage,
+	cfg *config.ConfYaml,
+) (resp *ResponsePush, err error) {
 	v, ok := req.(*PushNotification)
 	if !ok {
 		if err = json.Unmarshal(req.Bytes(), &v); err != nil {
-			return
+			return nil, err
 		}
 	}
 
@@ -262,13 +266,13 @@ func SendNotification(req qcore.QueuedMessage, cfg *config.ConfYaml) (resp *Resp
 		}
 	}
 
-	return
+	return resp, err
 }
 
 // Run send notification
 var Run = func(cfg *config.ConfYaml) func(ctx context.Context, msg qcore.QueuedMessage) error {
 	return func(ctx context.Context, msg qcore.QueuedMessage) error {
-		_, err := SendNotification(msg, cfg)
+		_, err := SendNotification(ctx, msg, cfg)
 		return err
 	}
 }

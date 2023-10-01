@@ -4,11 +4,12 @@ import (
 	"bytes"
 	"context"
 	"errors"
-	"github.com/appleboy/gorush/logx"
 	"net"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/appleboy/gorush/logx"
 )
 
 var feedbackClient *http.Client

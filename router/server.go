@@ -290,7 +290,7 @@ func handleNotification(
 			func(msg *notify.PushNotification, cfg *config.ConfYaml) {
 				if err := q.QueueTask(func(ctx context.Context) error {
 					defer wg.Done()
-					resp, err := notify.SendNotification(msg, cfg)
+					resp, err := notify.SendNotification(ctx, msg, cfg)
 					if err != nil {
 						return err
 					}
