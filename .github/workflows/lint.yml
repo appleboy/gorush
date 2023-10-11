@@ -10,12 +10,12 @@ jobs:
       - name: Setup go
         uses: actions/setup-go@v4
         with:
-          go-version: '^1'
+          go-version: "^1"
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: check documentation
-        run : make embedmd
+        run: make embedmd
 
       - name: check golangci-lint
         uses: golangci/golangci-lint-action@v3
@@ -48,15 +48,15 @@ jobs:
       - name: Setup go
         uses: actions/setup-go@v4
         with:
-          go-version: '^1'
+          go-version: "^1"
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: testing
         env:
           ANDROID_API_KEY: ${{ secrets.ANDROID_API_KEY }}
           ANDROID_TEST_TOKEN: ${{ secrets.ANDROID_TEST_TOKEN }}
-        run : make test
+        run: make test
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
