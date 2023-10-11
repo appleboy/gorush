@@ -19,13 +19,13 @@ spec:
     spec:
       containers:
       - name: master
-        image: redis
+        image: redis:7
         ports:
         - containerPort: 6379
         resources:
           requests:
             cpu: "250m"
-            memory: "200Mi"
+            memory: "256Mi"
           limits:
-            cpu: "250m"
-            memory: "200Mi"
+            cpu: "500m"
+            memory: "512Mi"

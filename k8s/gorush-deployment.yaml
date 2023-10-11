@@ -4,7 +4,7 @@ metadata:
   name: gorush
   namespace: gorush
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       app: gorush
@@ -16,7 +16,7 @@ spec:
         tier: frontend
     spec:
       containers:
-      - image: appleboy/gorush
+      - image: appleboy/gorush:1.16.3
         name: gorush
         imagePullPolicy: Always
         ports:
@@ -31,7 +31,7 @@ spec:
         livenessProbe:
           httpGet:
             path: /healthz
-            port: 8088
+            port: 8000
           initialDelaySeconds: 3
           periodSeconds: 3
         env:
@@ -45,3 +45,5 @@ spec:
             configMapKeyRef:
               name: gorush-config
               key: stat.redis.host
+        - name: GORUSH_CORE_PORT
+          value: "8000"
