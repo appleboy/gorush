@@ -19,6 +19,7 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
   - [Features](#features)
   - [Memory Usage](#memory-usage)
   - [Basic Usage](#basic-usage)
+    - [Install from homebrew](#install-from-homebrew)
     - [Download a binary](#download-a-binary)
     - [Install from source](#install-from-source)
       - [Prerequisite Tools](#prerequisite-tools)
@@ -218,6 +219,13 @@ for i in {1..9999999}; do bat -b.N=1000 -b.C=100 POST localhost:8088/api/push no
 ## Basic Usage
 
 How to send push notification using `gorush` command? (Android or iOS)
+
+### Install from homebrew
+
+```sh
+brew tap appleboy/tap
+brew install gorush
+```
 
 ### Download a binary
 
