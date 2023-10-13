@@ -1,6 +1,7 @@
 package notify
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -23,7 +24,13 @@ func TestEmptyFeedbackURL(t *testing.T) {
 		Error:    "",
 	}
 
-	err := DispatchFeedback(logEntry, cfg.Core.FeedbackURL, cfg.Core.FeedbackTimeout, cfg.Core.FeedbackHeader)
+	err := DispatchFeedback(
+		context.Background(),
+		logEntry,
+		cfg.Core.FeedbackURL,
+		cfg.Core.FeedbackTimeout,
+		cfg.Core.FeedbackHeader,
+	)
 	assert.NotNil(t, err)
 }
 
@@ -39,7 +46,13 @@ func TestHTTPErrorInFeedbackCall(t *testing.T) {
 		Error:    "",
 	}
 
-	err := DispatchFeedback(logEntry, cfg.Core.FeedbackURL, cfg.Core.FeedbackTimeout, cfg.Core.FeedbackHeader)
+	err := DispatchFeedback(
+		context.Background(),
+		logEntry,
+		cfg.Core.FeedbackURL,
+		cfg.Core.FeedbackTimeout,
+		cfg.Core.FeedbackHeader,
+	)
 	assert.NotNil(t, err)
 }
 
@@ -78,6 +91,12 @@ func TestSuccessfulFeedbackCall(t *testing.T) {
 		Error:    "",
 	}
 
-	err := DispatchFeedback(logEntry, cfg.Core.FeedbackURL, cfg.Core.FeedbackTimeout, cfg.Core.FeedbackHeader)
+	err := DispatchFeedback(
+		context.Background(),
+		logEntry,
+		cfg.Core.FeedbackURL,
+		cfg.Core.FeedbackTimeout,
+		cfg.Core.FeedbackHeader,
+	)
 	assert.Nil(t, err)
 }

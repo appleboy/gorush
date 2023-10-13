@@ -24,7 +24,7 @@ func extractHeaders(headers []string) map[string]string {
 }
 
 // DispatchFeedback sends a feedback to the configured gateway.
-func DispatchFeedback(log logx.LogPushEntry, url string, timeout int64, header []string) error {
+func DispatchFeedback(ctx context.Context, log logx.LogPushEntry, url string, timeout int64, header []string) error {
 	if url == "" {
 		return errors.New("url can't be empty")
 	}
@@ -34,7 +34,7 @@ func DispatchFeedback(log logx.LogPushEntry, url string, timeout int64, header [
 		return err
 	}
 
-	req, err := http.NewRequestWithContext(context.Background(), "POST", url, bytes.NewBuffer(payload))
+	req, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewBuffer(payload))
 	if err != nil {
 		return err
 	}

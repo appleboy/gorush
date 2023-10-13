@@ -259,7 +259,7 @@ func SendNotification(
 
 	if cfg.Core.FeedbackURL != "" {
 		for _, l := range resp.Logs {
-			err := DispatchFeedback(l, cfg.Core.FeedbackURL, cfg.Core.FeedbackTimeout, cfg.Core.FeedbackHeader)
+			err := DispatchFeedback(ctx, l, cfg.Core.FeedbackURL, cfg.Core.FeedbackTimeout, cfg.Core.FeedbackHeader)
 			if err != nil {
 				logx.LogError.Error(err)
 			}
