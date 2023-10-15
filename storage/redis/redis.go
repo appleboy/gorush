@@ -9,7 +9,7 @@ import (
 
 	"github.com/appleboy/gorush/config"
 
-	"github.com/go-redis/redis/v9"
+	"github.com/redis/go-redis/v9"
 )
 
 // New func implements the storage interface for gorush (https://github.com/appleboy/gorush)
