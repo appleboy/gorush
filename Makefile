@@ -143,5 +143,17 @@ generate_proto_go:
 
 generate_proto: generate_proto_go generate_proto_js
 
+# install air command
+.PHONY: air
+air:
+	@hash air > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
+		$(GO) install github.com/cosmtrek/air@latest; \
+	fi
+
+# run air
+.PHONY: dev
+dev: air
+	air --build.cmd "make" --build.bin release/gorush
+
 version:
 	@echo $(VERSION)
