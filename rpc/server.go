@@ -2,6 +2,7 @@ package rpc
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"net"
 	"runtime/debug"
@@ -20,6 +21,7 @@ import (
 	"go.opencensus.io/plugin/ocgrpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 )
@@ -139,10 +141,32 @@ func RunGRPCServer(ctx context.Context, cfg *config.ConfYaml) error {
 		grpc_recovery.UnaryServerInterceptor(recoveryOpt),
 	}
 
-	s := grpc.NewServer(
-		grpc.StatsHandler(&ocgrpc.ServerHandler{}),
-		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(unaryInterceptors...)),
-	)
+	var s *grpc.Server
+
+	if cfg.Core.SSL && cfg.Core.CertPath != "" && cfg.Core.KeyPath != "" {
+		tlsCert, err := tls.LoadX509KeyPair(cfg.Core.CertPath, cfg.Core.KeyPath)
+		if err != nil {
+			logx.LogError.Error("failed to load tls cert file: ", err)
+			return err
+		}
+
+		tlsConfig := &tls.Config{
+			Certificates: []tls.Certificate{tlsCert},
+			ClientAuth:   tls.NoClientCert,
+		}
+
+		s = grpc.NewServer(
+			grpc.Creds(credentials.NewTLS(tlsConfig)),
+			grpc.StatsHandler(&ocgrpc.ServerHandler{}),
+			grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(unaryInterceptors...)),
+		)
+	} else {
+		s = grpc.NewServer(
+			grpc.StatsHandler(&ocgrpc.ServerHandler{}),
+			grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(unaryInterceptors...)),
+		)
+	}
+
 	rpcSrv := NewServer(cfg)
 	proto.RegisterGorushServer(s, rpcSrv)
 	proto.RegisterHealthServer(s, rpcSrv)
