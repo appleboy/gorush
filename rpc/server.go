@@ -153,6 +153,7 @@ func RunGRPCServer(ctx context.Context, cfg *config.ConfYaml) error {
 		tlsConfig := &tls.Config{
 			Certificates: []tls.Certificate{tlsCert},
 			ClientAuth:   tls.NoClientCert,
+			MinVersion:   tls.VersionTLS12, // Set minimum TLS version to TLS 1.2
 		}
 
 		s = grpc.NewServer(
