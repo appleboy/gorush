@@ -274,7 +274,7 @@ cd gorush
 go install
 ```
 
-or you can use the `go get` command to install the latest or specific verison.
+or you can use the `go get` command to install the latest or specific version.
 
 **Note**: such go get installation aren't guaranteed to work. We recommend using binary installation.
 
@@ -1106,7 +1106,7 @@ func main() {
 }
 ```
 
-See the Node.js example and see more detail frome [README](rpc/example/node/README.md):
+See the Node.js example and see more detail from [README](rpc/example/node/README.md):
 
 ```js
 var messages = require('./gorush_pb');
