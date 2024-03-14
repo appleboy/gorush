@@ -100,6 +100,13 @@ func GetAndroidNotification(req *PushNotification) *fcm.Message {
 		notification.Apns = req.Apns
 	}
 
+	jsonMarshall, err := json.Marshal(notification)
+	if err != nil {
+		logx.LogError.Warnf("Failed to marshal the default message! Error: %v", err)
+	} else {
+		logx.LogAccess.Debugf("Default message going to FCM server is %s", string(jsonMarshall))
+	}
+
 	return notification
 }
 
