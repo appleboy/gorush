@@ -83,7 +83,6 @@ type PushNotification struct {
 	APIKey                string            `json:"api_key,omitempty"`
 	To                    string            `json:"to,omitempty"`
 	CollapseKey           string            `json:"collapse_key,omitempty"`
-	DelayWhileIdle        bool              `json:"delay_while_idle,omitempty"`
 	TimeToLive            *uint             `json:"time_to_live,omitempty"`
 	RestrictedPackageName string            `json:"restricted_package_name,omitempty"`
 	DryRun                bool              `json:"dry_run,omitempty"`

@@ -222,7 +222,6 @@ func TestAndroidNotificationStructure(t *testing.T) {
 		Priority:              HIGH,
 		CollapseKey:           "1",
 		ContentAvailable:      true,
-		DelayWhileIdle:        true,
 		TimeToLive:            &timeToLive,
 		RestrictedPackageName: test,
 		DryRun:                true,
@@ -245,7 +244,6 @@ func TestAndroidNotificationStructure(t *testing.T) {
 	assert.Equal(t, HIGH, notification.Priority)
 	assert.Equal(t, "1", notification.CollapseKey)
 	assert.True(t, notification.ContentAvailable)
-	assert.True(t, notification.DelayWhileIdle)
 	assert.Equal(t, uint(100), *notification.TimeToLive)
 	assert.Equal(t, test, notification.RestrictedPackageName)
 	assert.True(t, notification.DryRun)
