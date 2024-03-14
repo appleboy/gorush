@@ -32,7 +32,7 @@ jobs:
 
   testing:
     runs-on: ubuntu-latest
-    container: node:10.18-jessie
+    container: node:16-bullseye
 
     # Service containers to run with `container-job`
     services:
