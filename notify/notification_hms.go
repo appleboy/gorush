@@ -183,7 +183,6 @@ func PushToHuawei(req *PushNotification, cfg *config.ConfYaml) (resp *ResponsePu
 	}
 
 	client, err = InitHMSClient(cfg, cfg.Huawei.AppSecret, cfg.Huawei.AppID)
-
 	if err != nil {
 		// HMS server error
 		logx.LogError.Error("HMS server error: " + err.Error())
