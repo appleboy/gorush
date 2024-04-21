@@ -161,7 +161,6 @@ func main() {
 
 	if cfg.Core.HTTPProxy != "" {
 		err = notify.SetProxy(cfg.Core.HTTPProxy)
-
 		if err != nil {
 			logx.LogError.Fatalf("Set Proxy error: %v", err)
 		}
