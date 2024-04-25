@@ -45,8 +45,8 @@ api:
 
 android:
   enabled: true
-  apikey: "YOUR_API_KEY"
-  max_retry: 0 # resend fail notification, default value zero is disabled
+  project_id: "foo-123"
+  service_account_key: "/tmp/key.json"
 
 huawei:
   enabled: false

@@ -57,8 +57,8 @@ api:
 
 android:
   enabled: true
-  apikey: "YOUR_API_KEY"
-  max_retry: 0 # resend fail notification, default value zero is disabled
+  project_id: "foo-123"
+  service_account_key: "/tmp/key.json"
 
 huawei:
   enabled: false
@@ -182,7 +182,6 @@ type SectionAndroid struct {
 	Enabled           bool   `yaml:"enabled"`
 	ServiceAccountKey string `yaml:"service_account_key"`
 	ProjectID         string `yaml:"project_id"`
-	MaxRetry          int    `yaml:"max_retry"`
 }
 
 // SectionHuawei is sub section of config.
@@ -378,7 +377,6 @@ func LoadConf(confPath ...string) (*ConfYaml, error) {
 
 	// Android
 	conf.Android.Enabled = viper.GetBool("android.enabled")
-	conf.Android.MaxRetry = viper.GetInt("android.max_retry")
 	conf.Android.ProjectID = viper.GetString("android.project_id")
 	conf.Android.ServiceAccountKey = viper.GetString("android.service_account_key")
 
