@@ -6,13 +6,13 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/core"
 	"github.com/appleboy/gorush/logx"
 
-	"github.com/appleboy/go-fcm"
 	qcore "github.com/golang-queue/queue/core"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/msalihkarakasli/go-hms-push/push/model"
@@ -80,14 +80,14 @@ type PushNotification struct {
 	Retry            int         `json:"retry,omitempty"`
 
 	// Android
-	APIKey                string            `json:"api_key,omitempty"`
-	To                    string            `json:"to,omitempty"`
-	CollapseKey           string            `json:"collapse_key,omitempty"`
-	TimeToLive            *uint             `json:"time_to_live,omitempty"`
-	RestrictedPackageName string            `json:"restricted_package_name,omitempty"`
-	DryRun                bool              `json:"dry_run,omitempty"`
-	Condition             string            `json:"condition,omitempty"`
-	Notification          *fcm.Notification `json:"notification,omitempty"`
+	APIKey                string           `json:"api_key,omitempty"`
+	To                    string           `json:"to,omitempty"`
+	CollapseKey           string           `json:"collapse_key,omitempty"`
+	TimeToLive            *uint            `json:"time_to_live,omitempty"`
+	RestrictedPackageName string           `json:"restricted_package_name,omitempty"`
+	DryRun                bool             `json:"dry_run,omitempty"`
+	Condition             string           `json:"condition,omitempty"`
+	Notification          *FCMNotification `json:"notification,omitempty"`
 
 	// Huawei
 	AppID              string                     `json:"app_id,omitempty"`
@@ -143,9 +143,49 @@ func (p *PushNotification) IsTopic() bool {
 	return false
 }
 
+// FCMNotification specifies the predefined, user-visible key-value pairs of the
+// notification payload.
+// Copied as is from go-fcm (old FCM API) to keep backward compatibility in external contracts
+// Only TitleLockArgs and BodyLocArgs fixed to be an arrays according docs
+type FCMNotification struct {
+	Title        string   `json:"title,omitempty"`
+	Body         string   `json:"body,omitempty"`
+	ChannelID    string   `json:"android_channel_id,omitempty"`
+	Icon         string   `json:"icon,omitempty"`
+	Image        string   `json:"image,omitempty"`
+	Sound        string   `json:"sound,omitempty"`
+	Badge        string   `json:"badge,omitempty"`
+	Tag          string   `json:"tag,omitempty"`
+	Color        string   `json:"color,omitempty"`
+	ClickAction  string   `json:"click_action,omitempty"`
+	BodyLocKey   string   `json:"body_loc_key,omitempty"`
+	BodyLocArgs  []string `json:"body_loc_args,omitempty"`
+	TitleLocKey  string   `json:"title_loc_key,omitempty"`
+	TitleLocArgs []string `json:"title_loc_args,omitempty"`
+}
+
+func (f FCMNotification) NotificationCount() (*int, error) {
+	if f.Badge == "" {
+		return nil, nil
+	}
+
+	v, err := strconv.Atoi(f.Badge)
+	if err != nil {
+		return nil, err
+	}
+
+	return &v, nil
+}
+
 // CheckMessage for check request message
 func CheckMessage(req *PushNotification) error {
 	var msg string
+
+	if req.Platform == core.PlatFormAndroid && req.IsTopic() {
+		msg = "android topics not supported yet"
+		logx.LogAccess.Debug(msg)
+		return errors.New(msg)
+	}
 
 	// ignore send topic mesaage from FCM
 	if !req.IsTopic() && len(req.Tokens) == 0 && req.To == "" {
@@ -160,8 +200,8 @@ func CheckMessage(req *PushNotification) error {
 		return errors.New(msg)
 	}
 
-	if req.Platform == core.PlatFormAndroid && len(req.Tokens) > 1000 {
-		msg = "the message may specify at most 1000 registration IDs"
+	if req.Platform == core.PlatFormAndroid && len(req.Tokens) > 500 {
+		msg = "the message may specify at most 500 registration IDs"
 		logx.LogAccess.Debug(msg)
 		return errors.New(msg)
 	}
@@ -216,8 +256,12 @@ func CheckPushConf(cfg *config.ConfYaml) error {
 	}
 
 	if cfg.Android.Enabled {
-		if cfg.Android.APIKey == "" {
-			return errors.New("missing android api key")
+		if cfg.Android.ServiceAccountKey == "" {
+			return errors.New("missing service account key")
+		}
+
+		if cfg.Android.ProjectID == "" {
+			return errors.New("missing project id")
 		}
 	}
 
@@ -251,7 +295,7 @@ func SendNotification(
 	case core.PlatFormIos:
 		resp, err = PushToIOS(v, cfg)
 	case core.PlatFormAndroid:
-		resp, err = PushToAndroid(v, cfg)
+		resp, err = PushToAndroidV1(ctx, v, cfg)
 	case core.PlatFormHuawei:
 		resp, err = PushToHuawei(v, cfg)
 	}

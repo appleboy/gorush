@@ -53,8 +53,8 @@ func main() {
 	flag.StringVar(&opts.Ios.TeamID, "team-id", "", "iOS Team ID for P8 token")
 	flag.StringVar(&opts.Ios.Password, "P", "", "iOS certificate password for gorush")
 	flag.StringVar(&opts.Ios.Password, "password", "", "iOS certificate password for gorush")
-	flag.StringVar(&opts.Android.APIKey, "k", "", "Android api key configuration for gorush")
-	flag.StringVar(&opts.Android.APIKey, "apikey", "", "Android api key configuration for gorush")
+	flag.StringVar(&opts.Android.ServiceAccountKey, "firebase-account-key", "", "A path to firebase service account key")
+	flag.StringVar(&opts.Android.ProjectID, "firebase-project-id", "", "Firebase project ID")
 	flag.StringVar(&opts.Huawei.AppSecret, "hk", "", "Huawei api key configuration for gorush")
 	flag.StringVar(&opts.Huawei.AppSecret, "hmskey", "", "Huawei api key configuration for gorush")
 	flag.StringVar(&opts.Huawei.AppID, "hid", "", "HMS app id configuration for gorush")
@@ -118,8 +118,12 @@ func main() {
 		cfg.Ios.Password = opts.Ios.Password
 	}
 
-	if opts.Android.APIKey != "" {
-		cfg.Android.APIKey = opts.Android.APIKey
+	if opts.Android.ServiceAccountKey != "" {
+		cfg.Android.ServiceAccountKey = opts.Android.ServiceAccountKey
+	}
+
+	if opts.Android.ProjectID != "" {
+		cfg.Android.ProjectID = opts.Android.ProjectID
 	}
 
 	if opts.Huawei.AppSecret != "" {
@@ -201,7 +205,7 @@ func main() {
 			return
 		}
 
-		if _, err := notify.PushToAndroid(req, cfg); err != nil {
+		if _, err := notify.PushToAndroidV1(context.Background(), req, cfg); err != nil {
 			return
 		}
 
@@ -371,7 +375,7 @@ func main() {
 	}
 
 	if cfg.Android.Enabled {
-		if _, err = notify.InitFCMClient(cfg, cfg.Android.APIKey); err != nil {
+		if _, err = notify.InitiFCMV1Client(g.ShutdownContext(), cfg); err != nil {
 			logx.LogError.Fatal(err)
 		}
 	}

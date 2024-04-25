@@ -179,9 +179,10 @@ type SectionAPI struct {
 
 // SectionAndroid is sub section of config.
 type SectionAndroid struct {
-	Enabled  bool   `yaml:"enabled"`
-	APIKey   string `yaml:"apikey"`
-	MaxRetry int    `yaml:"max_retry"`
+	Enabled           bool   `yaml:"enabled"`
+	ServiceAccountKey string `yaml:"service_account_key"`
+	ProjectID         string `yaml:"project_id"`
+	MaxRetry          int    `yaml:"max_retry"`
 }
 
 // SectionHuawei is sub section of config.
@@ -377,8 +378,9 @@ func LoadConf(confPath ...string) (*ConfYaml, error) {
 
 	// Android
 	conf.Android.Enabled = viper.GetBool("android.enabled")
-	conf.Android.APIKey = viper.GetString("android.apikey")
 	conf.Android.MaxRetry = viper.GetInt("android.max_retry")
+	conf.Android.ProjectID = viper.GetString("android.project_id")
+	conf.Android.ServiceAccountKey = viper.GetString("android.service_account_key")
 
 	// Huawei
 	conf.Huawei.Enabled = viper.GetBool("huawei.enabled")

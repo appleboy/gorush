@@ -33,15 +33,11 @@ COMMIT ?= $(shell git rev-parse --short HEAD)
 all: build
 
 init:
-ifeq ($(ANDROID_API_KEY),)
-	@echo "Missing ANDROID_API_KEY Parameter"
-	@exit 1
-endif
-ifeq ($(ANDROID_TEST_TOKEN),)
-	@echo "Missing ANDROID_TEST_TOKEN Parameter"
-	@exit 1
-endif
-	@echo "Already set ANDROID_API_KEY and ANDROID_TEST_TOKEN globale variable."
+#ifeq ($(ANDROID_TEST_TOKEN),)
+#	@echo "Missing ANDROID_TEST_TOKEN Parameter"
+#	@exit 1
+#endif
+#	@echo "Already set ANDROID_API_KEY and ANDROID_TEST_TOKEN globale variable."
 
 vet:
 	$(GO) vet ./...
