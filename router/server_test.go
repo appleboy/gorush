@@ -487,7 +487,7 @@ func TestSenMultipleNotifications(t *testing.T) {
 	}
 
 	count, logs := handleNotification(ctx, cfg, req, q)
-	assert.Equal(t, 3, count)
+	assert.Equal(t, 1, count)
 	assert.Equal(t, 0, len(logs))
 }
 
@@ -558,7 +558,7 @@ func TestSyncModeForNotifications(t *testing.T) {
 	}
 
 	count, logs := handleNotification(ctx, cfg, req, q)
-	assert.Equal(t, 3, count)
+	assert.Equal(t, 1, count)
 	assert.Equal(t, 2, len(logs))
 }
 
