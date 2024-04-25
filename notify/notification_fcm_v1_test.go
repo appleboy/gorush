@@ -1,9 +1,10 @@
 package notify
 
 import (
+	"testing"
+
 	"github.com/appleboy/gorush/core"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestFCMMessage(t *testing.T) {

@@ -3,6 +3,8 @@ package notify
 import (
 	"context"
 	"errors"
+	"time"
+
 	firebase "firebase.google.com/go/v4"
 	"firebase.google.com/go/v4/messaging"
 	"github.com/appleboy/gorush/config"
@@ -10,7 +12,6 @@ import (
 	"github.com/appleboy/gorush/logx"
 	"github.com/appleboy/gorush/status"
 	"google.golang.org/api/option"
-	"time"
 )
 
 // Send messages and manage messaging subscriptions for your Firebase
@@ -31,7 +32,6 @@ func InitiFCMV1Client(ctx context.Context, cfg *config.ConfYaml) (*messaging.Cli
 		option.WithCredentialsFile(cfg.Android.ServiceAccountKey),
 		option.WithScopes(firebaseMessagingScope),
 	)
-
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +108,6 @@ func PushToAndroidV1(ctx context.Context, req *PushNotification, cfg *config.Con
 }
 
 func getAndroidNotificationV1(req *PushNotification) (*messaging.MulticastMessage, error) {
-
 	androidNotification := &messaging.AndroidNotification{}
 	if req.Notification != nil {
 		notificationCount, err := req.Notification.NotificationCount()
@@ -132,18 +131,18 @@ func getAndroidNotificationV1(req *PushNotification) (*messaging.MulticastMessag
 			BodyLocArgs:       req.Notification.BodyLocArgs,
 			TitleLocKey:       req.Notification.TitleLocKey,
 			TitleLocArgs:      req.Notification.TitleLocArgs,
-			//Ticker:                "",
-			//Sticky:                false,
-			//EventTimestamp:        nil,
-			//LocalOnly:             false,
-			//Priority:              0,
-			//VibrateTimingMillis:   nil,
-			//DefaultVibrateTimings: false,
-			//DefaultSound:          false,
-			//LightSettings:         nil,
-			//DefaultLightSettings:  false,
-			//Visibility:            0,
-			//NotificationCount:     nil,
+			// Ticker:                "",
+			// Sticky:                false,
+			// EventTimestamp:        nil,
+			// LocalOnly:             false,
+			// Priority:              0,
+			// VibrateTimingMillis:   nil,
+			// DefaultVibrateTimings: false,
+			// DefaultSound:          false,
+			// LightSettings:         nil,
+			// DefaultLightSettings:  false,
+			// Visibility:            0,
+			// NotificationCount:     nil,
 		}
 	}
 
@@ -182,7 +181,7 @@ func getAndroidNotificationV1(req *PushNotification) (*messaging.MulticastMessag
 		CollapseKey: req.CollapseKey,
 		Priority:    req.Priority,
 		TTL:         nil,
-		//RestrictedPackageName: "",
+		// RestrictedPackageName: "",
 		Data:         data,
 		Notification: androidNotification,
 		FCMOptions:   nil,

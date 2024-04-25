@@ -467,7 +467,7 @@ func TestSenMultipleNotifications(t *testing.T) {
 	err := notify.InitAPNSClient(cfg)
 	assert.Nil(t, err)
 
-	//androidToken := os.Getenv("ANDROID_TEST_TOKEN")
+	// androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
 	req := notify.RequestPush{
 		Notifications: []notify.PushNotification{
@@ -478,11 +478,11 @@ func TestSenMultipleNotifications(t *testing.T) {
 				Message:  "Welcome iOS",
 			},
 			// android
-			//{
+			// {
 			//	Tokens:   []string{androidToken, "bbbbb"},
 			//	Platform: core.PlatFormAndroid,
 			//	Message:  "Welcome Android",
-			//},
+			// },
 		},
 	}
 
@@ -500,7 +500,7 @@ func TestDisabledAndroidNotifications(t *testing.T) {
 	err := notify.InitAPNSClient(cfg)
 	assert.Nil(t, err)
 
-	//androidToken := os.Getenv("ANDROID_TEST_TOKEN")
+	// androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
 	req := notify.RequestPush{
 		Notifications: []notify.PushNotification{
@@ -511,11 +511,11 @@ func TestDisabledAndroidNotifications(t *testing.T) {
 				Message:  "Welcome iOS",
 			},
 			// android
-			//{
+			// {
 			//	Tokens:   []string{androidToken, "bbbbb"},
 			//	Platform: core.PlatFormAndroid,
 			//	Message:  "Welcome Android",
-			//},
+			// },
 		},
 	}
 
@@ -536,7 +536,7 @@ func TestSyncModeForNotifications(t *testing.T) {
 	// enable sync mode
 	cfg.Core.Sync = true
 
-	//androidToken := os.Getenv("ANDROID_TEST_TOKEN")
+	// androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
 	req := notify.RequestPush{
 		Notifications: []notify.PushNotification{
@@ -549,11 +549,11 @@ func TestSyncModeForNotifications(t *testing.T) {
 				Message:  "Welcome iOS Sync",
 			},
 			// android
-			//{
+			// {
 			//	Tokens:   []string{androidToken, "bbbbb"},
 			//	Platform: core.PlatFormAndroid,
 			//	Message:  "Welcome Android Sync",
-			//},
+			// },
 		},
 	}
 
@@ -641,7 +641,7 @@ func TestDisabledIosNotifications(t *testing.T) {
 	err := notify.InitAPNSClient(cfg)
 	assert.Nil(t, err)
 
-	//androidToken := os.Getenv("ANDROID_TEST_TOKEN")
+	// androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
 	req := notify.RequestPush{
 		Notifications: []notify.PushNotification{
@@ -656,7 +656,7 @@ func TestDisabledIosNotifications(t *testing.T) {
 			//	Tokens:   []string{androidToken, androidToken + "_"},
 			//	Platform: core.PlatFormAndroid,
 			//	Message:  "Welcome Android platform",
-			//},
+			// },
 		},
 	}
 
