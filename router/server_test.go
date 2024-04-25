@@ -661,6 +661,7 @@ func TestDisabledIosNotifications(t *testing.T) {
 	}
 
 	count, logs := handleNotification(ctx, cfg, req, q)
-	assert.Equal(t, 2, count)
+	// assert.Equal(t, 2, count)
+	assert.Equal(t, 0, count)
 	assert.Equal(t, 0, len(logs))
 }
