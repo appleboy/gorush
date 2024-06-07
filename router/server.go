@@ -312,7 +312,7 @@ func handleNotification(
 
 		count += len(notification.Tokens)
 		// Count topic message
-		if notification.To != "" {
+		if notification.Topic != "" {
 			count++
 		}
 	}

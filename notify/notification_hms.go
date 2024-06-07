@@ -79,10 +79,6 @@ func GetHuaweiNotification(req *PushNotification) (*model.MessageRequest, error)
 		msgRequest.Message.Topic = req.Topic
 	}
 
-	if len(req.To) > 0 {
-		msgRequest.Message.Topic = req.To
-	}
-
 	if len(req.Condition) > 0 {
 		msgRequest.Message.Condition = req.Condition
 	}
@@ -199,7 +195,7 @@ Retry:
 	res, err := client.SendMessage(context.Background(), notification)
 	if err != nil {
 		// Send Message error
-		errLog := logPush(cfg, core.FailedPush, req.To, req, err)
+		errLog := logPush(cfg, core.FailedPush, req.Topic, req, err)
 		resp.Logs = append(resp.Logs, errLog)
 		logx.LogError.Error("HMS server send message error: " + err.Error())
 		return resp, err
