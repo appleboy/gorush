@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
 
 	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/core"
@@ -14,6 +15,14 @@ import (
 	"github.com/appleboy/go-fcm"
 )
 
+func fileExists(filename string) bool {
+	info, err := os.Stat(filename)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return !info.IsDir()
+}
+
 // InitFCMClient use for initialize FCM Client.
 func InitFCMClient(cfg *config.ConfYaml) (*fcm.Client, error) {
 	var opts []fcm.Option
@@ -22,7 +31,7 @@ func InitFCMClient(cfg *config.ConfYaml) (*fcm.Client, error) {
 		return nil, errors.New("missing fcm credential data")
 	}
 
-	if cfg.Android.KeyPath != "" {
+	if cfg.Android.KeyPath != "" && fileExists(cfg.Android.KeyPath) {
 		opts = append(opts, fcm.WithCredentialsFile(cfg.Android.KeyPath))
 	}
 

@@ -140,13 +140,6 @@ func (p *PushNotification) IsTopic() bool {
 func CheckMessage(req *PushNotification) error {
 	var msg string
 
-	// ignore send topic mesaage from FCM
-	if !req.IsTopic() && len(req.Tokens) == 0 {
-		msg = "the message must specify at least one registration ID"
-		logx.LogAccess.Debug(msg)
-		return errors.New(msg)
-	}
-
 	if len(req.Tokens) == core.PlatFormIos && req.Tokens[0] == "" {
 		msg = "the token must not be empty"
 		logx.LogAccess.Debug(msg)

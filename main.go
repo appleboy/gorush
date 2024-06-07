@@ -188,7 +188,7 @@ func main() {
 
 		// send message to single device
 		if token != "" {
-			req.Tokens = []string{token}
+			req.To = token
 		}
 
 		// send topic message
@@ -431,7 +431,8 @@ iOS Options:
     --ios                            enabled iOS (default: false)
     --production                     iOS production mode (default: false)
 Android Options:
-    -k, --apikey <api_key>           Android API Key
+    --fcm-key <api_key_path>         FCM Key Path
+    --fcm-credential <credential>    FCM Credential
     --android                        enabled android (default: false)
 Huawei Options:
     -hk, --hmskey <hms_key>          HMS App Secret
