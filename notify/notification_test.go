@@ -12,7 +12,7 @@ func TestCorrectConf(t *testing.T) {
 	cfg, _ := config.LoadConf()
 
 	cfg.Android.Enabled = true
-	cfg.Android.APIKey = "xxxxx"
+	cfg.Android.Credential = "xxxxx"
 
 	cfg.Ios.Enabled = true
 	cfg.Ios.KeyPath = testKeyPath

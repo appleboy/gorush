@@ -57,7 +57,7 @@ api:
 
 android:
   enabled: true
-  apikey: "YOUR_API_KEY"
+  credential: "CREDENTIAL_JSON_DATA"
   max_retry: 0 # resend fail notification, default value zero is disabled
 
 huawei:
@@ -179,9 +179,9 @@ type SectionAPI struct {
 
 // SectionAndroid is sub section of config.
 type SectionAndroid struct {
-	Enabled  bool   `yaml:"enabled"`
-	APIKey   string `yaml:"apikey"`
-	MaxRetry int    `yaml:"max_retry"`
+	Enabled    bool   `yaml:"enabled"`
+	Credential string `yaml:"credential"`
+	MaxRetry   int    `yaml:"max_retry"`
 }
 
 // SectionHuawei is sub section of config.
@@ -377,7 +377,7 @@ func LoadConf(confPath ...string) (*ConfYaml, error) {
 
 	// Android
 	conf.Android.Enabled = viper.GetBool("android.enabled")
-	conf.Android.APIKey = viper.GetString("android.apikey")
+	conf.Android.Credential = viper.GetString("android.credential")
 	conf.Android.MaxRetry = viper.GetInt("android.max_retry")
 
 	// Huawei

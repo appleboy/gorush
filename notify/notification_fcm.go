@@ -1,6 +1,7 @@
 package notify
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
@@ -9,6 +10,7 @@ import (
 	"github.com/appleboy/gorush/logx"
 	"github.com/appleboy/gorush/status"
 
+	"firebase.google.com/go/v4/messaging"
 	"github.com/appleboy/go-fcm"
 )
 
@@ -16,16 +18,22 @@ import (
 func InitFCMClient(cfg *config.ConfYaml, key string) (*fcm.Client, error) {
 	var err error
 
-	if key == "" && cfg.Android.APIKey == "" {
+	if key == "" && cfg.Android.Credential == "" {
 		return nil, errors.New("missing android api key")
 	}
 
-	if key != "" && key != cfg.Android.APIKey {
-		return fcm.NewClient(key)
+	if key != "" && key != cfg.Android.Credential {
+		return fcm.NewClient(
+			context.Background(),
+			fcm.WithCredentialsJSON([]byte(key)),
+		)
 	}
 
 	if FCMClient == nil {
-		FCMClient, err = fcm.NewClient(cfg.Android.APIKey)
+		FCMClient, err = fcm.NewClient(
+			context.Background(),
+			fcm.WithCredentialsJSON([]byte(cfg.Android.Credential)),
+		)
 		return FCMClient, err
 	}
 
@@ -35,69 +43,38 @@ func InitFCMClient(cfg *config.ConfYaml, key string) (*fcm.Client, error) {
 // GetAndroidNotification use for define Android notification.
 // HTTP Connection Server Reference for Android
 // https://firebase.google.com/docs/cloud-messaging/http-server-ref
-func GetAndroidNotification(req *PushNotification) *fcm.Message {
-	notification := &fcm.Message{
-		To:                    req.To,
-		Condition:             req.Condition,
-		CollapseKey:           req.CollapseKey,
-		ContentAvailable:      req.ContentAvailable,
-		MutableContent:        req.MutableContent,
-		TimeToLive:            req.TimeToLive,
-		RestrictedPackageName: req.RestrictedPackageName,
-		DryRun:                req.DryRun,
-	}
-
-	if len(req.Tokens) > 0 {
-		notification.RegistrationIDs = req.Tokens
-	}
-
-	if req.Priority == HIGH || req.Priority == "normal" {
-		notification.Priority = req.Priority
+func GetAndroidNotification(req *PushNotification) *messaging.Message {
+	notification := &messaging.Message{
+		Token:        req.To,
+		Condition:    req.Condition,
+		Notification: req.Notification,
+		Android:      req.Android,
+		Webpush:      req.Webpush,
+		APNS:         req.APNS,
+		FCMOptions:   req.FCMOptions,
 	}
 
 	// Add another field
 	if len(req.Data) > 0 {
-		notification.Data = make(map[string]interface{})
+		notification.Data = make(map[string]string, len(req.Data))
 		for k, v := range req.Data {
-			notification.Data[k] = v
+			notification.Data[k] = fmt.Sprintf("%s", v)
 		}
 	}
 
-	n := &fcm.Notification{}
-	isNotificationSet := false
-	if req.Notification != nil {
-		isNotificationSet = true
-		n = req.Notification
-	}
-
-	if len(req.Message) > 0 {
-		isNotificationSet = true
-		n.Body = req.Message
-	}
-
-	if len(req.Title) > 0 {
-		isNotificationSet = true
-		n.Title = req.Title
-	}
-
-	if len(req.Image) > 0 {
-		isNotificationSet = true
-		n.Image = req.Image
-	}
-
-	if v, ok := req.Sound.(string); ok && len(v) > 0 {
-		isNotificationSet = true
-		n.Sound = v
-	}
-
-	if isNotificationSet {
-		notification.Notification = n
-	}
-
-	// handle iOS apns in fcm
-
-	if len(req.Apns) > 0 {
-		notification.Apns = req.Apns
+	if req.Title != "" || req.Message != "" || req.Image != "" {
+		if notification.Notification == nil {
+			notification.Notification = &messaging.Notification{}
+		}
+		if req.Title != "" {
+			notification.Notification.Title = req.Title
+		}
+		if req.Message != "" {
+			notification.Notification.Body = req.Message
+		}
+		if req.Image != "" {
+			notification.Notification.ImageURL = req.Image
+		}
 	}
 
 	return notification
@@ -125,23 +102,17 @@ func PushToAndroid(req *PushNotification, cfg *config.ConfYaml) (resp *ResponseP
 	}
 
 	resp = &ResponsePush{}
+	client, err = InitFCMClient(cfg, cfg.Android.Credential)
 
 Retry:
 	notification := GetAndroidNotification(req)
-
-	if req.APIKey != "" {
-		client, err = InitFCMClient(cfg, req.APIKey)
-	} else {
-		client, err = InitFCMClient(cfg, cfg.Android.APIKey)
-	}
-
 	if err != nil {
 		// FCM server error
 		logx.LogError.Error("FCM server error: " + err.Error())
 		return resp, err
 	}
 
-	res, err := client.Send(notification)
+	res, err := client.Send(context.Background(), notification)
 	if err != nil {
 		// Send Message error
 		logx.LogError.Error("FCM server send message error: " + err.Error())
@@ -161,15 +132,15 @@ Retry:
 	}
 
 	if !req.IsTopic() {
-		logx.LogAccess.Debug(fmt.Sprintf("Android Success count: %d, Failure count: %d", res.Success, res.Failure))
+		logx.LogAccess.Debug(fmt.Sprintf("Android Success count: %d, Failure count: %d", res.SuccessCount, res.FailureCount))
 	}
 
-	status.StatStorage.AddAndroidSuccess(int64(res.Success))
-	status.StatStorage.AddAndroidError(int64(res.Failure))
+	status.StatStorage.AddAndroidSuccess(int64(res.SuccessCount))
+	status.StatStorage.AddAndroidError(int64(res.FailureCount))
 
 	var newTokens []string
 	// result from Send messages to specific devices
-	for k, result := range res.Results {
+	for k, result := range res.Responses {
 		to := ""
 		if k < len(req.Tokens) {
 			to = req.Tokens[k]
@@ -178,12 +149,6 @@ Retry:
 		}
 
 		if result.Error != nil {
-			// We should retry only "retryable" statuses. More info about response:
-			// https://firebase.google.com/docs/cloud-messaging/http-server-ref#downstream-http-messages-plain-text
-			if !result.Unregistered() {
-				newTokens = append(newTokens, to)
-			}
-
 			errLog := logPush(cfg, core.FailedPush, to, req, result.Error)
 			resp.Logs = append(resp.Logs, errLog)
 			continue
@@ -195,29 +160,20 @@ Retry:
 	// result from Send messages to topics
 	if req.IsTopic() {
 		to := ""
-		if req.To != "" {
-			to = req.To
+		if req.Topic != "" {
+			to = req.Topic
 		} else {
 			to = req.Condition
 		}
 		logx.LogAccess.Debug("Send Topic Message: ", to)
 		// Success
-		if res.MessageID != 0 {
+		if res.SuccessCount == 1 {
 			logPush(cfg, core.SucceededPush, to, req, nil)
 		} else {
 			// failure
-			errLog := logPush(cfg, core.FailedPush, to, req, res.Error)
+			errLog := logPush(cfg, core.FailedPush, to, req, res.Responses[0].Error)
 			resp.Logs = append(resp.Logs, errLog)
 		}
-	}
-
-	// Device Group HTTP Response
-	if len(res.FailedRegistrationIDs) > 0 {
-		newTokens = append(newTokens, res.FailedRegistrationIDs...)
-
-		//nolint
-		errLog := logPush(cfg, core.FailedPush, notification.To, req, errors.New("device group: partial success or all fails"))
-		resp.Logs = append(resp.Logs, errLog)
 	}
 
 	if len(newTokens) > 0 && retryCount < maxRetry {

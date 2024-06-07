@@ -6,13 +6,12 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"strings"
 
 	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/core"
 	"github.com/appleboy/gorush/logx"
 
-	"github.com/appleboy/go-fcm"
+	"firebase.google.com/go/v4/messaging"
 	qcore "github.com/golang-queue/queue/core"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/msalihkarakasli/go-hms-push/push/model"
@@ -67,6 +66,7 @@ type ResponsePush struct {
 type PushNotification struct {
 	// Common
 	ID               string      `json:"notif_id,omitempty"`
+	To               string      `json:"to,omitempty"`
 	Tokens           []string    `json:"tokens" binding:"required"`
 	Platform         int         `json:"platform" binding:"required"`
 	Message          string      `json:"message,omitempty"`
@@ -80,14 +80,12 @@ type PushNotification struct {
 	Retry            int         `json:"retry,omitempty"`
 
 	// Android
-	APIKey                string            `json:"api_key,omitempty"`
-	To                    string            `json:"to,omitempty"`
-	CollapseKey           string            `json:"collapse_key,omitempty"`
-	TimeToLive            *uint             `json:"time_to_live,omitempty"`
-	RestrictedPackageName string            `json:"restricted_package_name,omitempty"`
-	DryRun                bool              `json:"dry_run,omitempty"`
-	Condition             string            `json:"condition,omitempty"`
-	Notification          *fcm.Notification `json:"notification,omitempty"`
+	Notification *messaging.Notification  `json:"notification,omitempty"`
+	Android      *messaging.AndroidConfig `json:"android,omitempty"`
+	Webpush      *messaging.WebpushConfig `json:"webpush,omitempty"`
+	APNS         *messaging.APNSConfig    `json:"apns,omitempty"`
+	FCMOptions   *messaging.FCMOptions    `json:"fcm_options,omitempty"`
+	Condition    string                   `json:"condition,omitempty"`
 
 	// Huawei
 	AppID              string                     `json:"app_id,omitempty"`
@@ -132,11 +130,7 @@ func (p *PushNotification) Bytes() []byte {
 // IsTopic check if message format is topic for FCM
 // ref: https://firebase.google.com/docs/cloud-messaging/send-message#topic-http-post-request
 func (p *PushNotification) IsTopic() bool {
-	if p.Platform == core.PlatFormAndroid {
-		return p.To != "" && strings.HasPrefix(p.To, "/topics/") || p.Condition != ""
-	}
-
-	if p.Platform == core.PlatFormHuawei {
+	if p.Platform == core.PlatFormHuawei || p.Platform == core.PlatFormAndroid {
 		return p.Topic != "" || p.Condition != ""
 	}
 
@@ -148,7 +142,7 @@ func CheckMessage(req *PushNotification) error {
 	var msg string
 
 	// ignore send topic mesaage from FCM
-	if !req.IsTopic() && len(req.Tokens) == 0 && req.To == "" {
+	if !req.IsTopic() && len(req.Tokens) == 0 {
 		msg = "the message must specify at least one registration ID"
 		logx.LogAccess.Debug(msg)
 		return errors.New(msg)
@@ -168,14 +162,6 @@ func CheckMessage(req *PushNotification) error {
 
 	if req.Platform == core.PlatFormHuawei && len(req.Tokens) > 500 {
 		msg = "the message may specify at most 500 registration IDs for Huawei"
-		logx.LogAccess.Debug(msg)
-		return errors.New(msg)
-	}
-
-	// ref: https://firebase.google.com/docs/cloud-messaging/http-server-ref
-	if req.Platform == core.PlatFormAndroid && req.TimeToLive != nil && *req.TimeToLive > uint(2419200) {
-		msg = "the message's TimeToLive field must be an integer " +
-			"between 0 and 2419200 (4 weeks)"
 		logx.LogAccess.Debug(msg)
 		return errors.New(msg)
 	}
@@ -216,8 +202,8 @@ func CheckPushConf(cfg *config.ConfYaml) error {
 	}
 
 	if cfg.Android.Enabled {
-		if cfg.Android.APIKey == "" {
-			return errors.New("missing android api key")
+		if cfg.Android.Credential == "" {
+			return errors.New("missing fcm credential data")
 		}
 	}
 

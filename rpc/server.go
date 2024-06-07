@@ -70,7 +70,6 @@ func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*prot
 		Message:          in.Message,
 		Title:            in.Title,
 		Topic:            in.Topic,
-		APIKey:           in.Key,
 		Category:         in.Category,
 		Sound:            in.Sound,
 		ContentAvailable: in.ContentAvailable,
@@ -87,7 +86,7 @@ func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*prot
 	}
 
 	if in.Topic != "" && in.Platform == core.PlatFormAndroid {
-		notification.To = in.Topic
+		notification.Topic = in.Topic
 	}
 
 	if in.Alert != nil {

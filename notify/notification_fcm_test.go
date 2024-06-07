@@ -4,40 +4,40 @@ import (
 	"os"
 	"testing"
 
+	"firebase.google.com/go/v4/messaging"
 	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/core"
 
-	"github.com/appleboy/go-fcm"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestMissingAndroidAPIKey(t *testing.T) {
+func TestMissingAndroidCredential(t *testing.T) {
 	cfg, _ := config.LoadConf()
 
 	cfg.Android.Enabled = true
-	cfg.Android.APIKey = ""
+	cfg.Android.Credential = ""
 
 	err := CheckPushConf(cfg)
 
 	assert.Error(t, err)
-	assert.Equal(t, "missing android api key", err.Error())
+	assert.Equal(t, "missing fcm credential data", err.Error())
 }
 
 func TestMissingKeyForInitFCMClient(t *testing.T) {
 	cfg, _ := config.LoadConf()
-	cfg.Android.APIKey = ""
+	cfg.Android.Credential = ""
 	client, err := InitFCMClient(cfg, "")
 
 	assert.Nil(t, client)
 	assert.Error(t, err)
-	assert.Equal(t, "missing android api key", err.Error())
+	assert.Equal(t, "missing fcm credential data", err.Error())
 }
 
 func TestPushToAndroidWrongToken(t *testing.T) {
 	cfg, _ := config.LoadConf()
 
 	cfg.Android.Enabled = true
-	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+	cfg.Android.Credential = os.Getenv("ANDROID_API_KEY")
 
 	req := &PushNotification{
 		Tokens:   []string{"aaaaaa", "bbbbb"},
@@ -55,7 +55,7 @@ func TestPushToAndroidRightTokenForJSONLog(t *testing.T) {
 	cfg, _ := config.LoadConf()
 
 	cfg.Android.Enabled = true
-	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+	cfg.Android.Credential = os.Getenv("ANDROID_API_KEY")
 	// log for json
 	cfg.Log.Format = "json"
 
@@ -76,7 +76,7 @@ func TestPushToAndroidRightTokenForStringLog(t *testing.T) {
 	cfg, _ := config.LoadConf()
 
 	cfg.Android.Enabled = true
-	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+	cfg.Android.Credential = os.Getenv("ANDROID_API_KEY")
 
 	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
 
@@ -89,30 +89,6 @@ func TestPushToAndroidRightTokenForStringLog(t *testing.T) {
 	resp, err := PushToAndroid(req, cfg)
 	assert.Nil(t, err)
 	assert.Len(t, resp.Logs, 0)
-}
-
-func TestOverwriteAndroidAPIKey(t *testing.T) {
-	cfg, _ := config.LoadConf()
-
-	cfg.Core.Sync = true
-	cfg.Android.Enabled = true
-	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
-
-	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
-
-	req := &PushNotification{
-		Tokens:   []string{androidToken, "bbbbb"},
-		Platform: core.PlatFormAndroid,
-		Message:  "Welcome",
-		// overwrite android api key
-		APIKey: "1234",
-	}
-
-	// FCM server error: 401 error: 401 Unauthorized (Wrong API Key)
-	resp, err := PushToAndroid(req, cfg)
-
-	assert.Error(t, err)
-	assert.Len(t, resp.Logs, 2)
 }
 
 func TestFCMMessage(t *testing.T) {
@@ -166,26 +142,20 @@ func TestFCMMessage(t *testing.T) {
 	err = CheckMessage(req)
 	assert.Error(t, err)
 
-	// the message's TimeToLive field must be an integer
-	// between 0 and 2419200 (4 weeks)
-	timeToLive := uint(2419201)
 	req = &PushNotification{
-		Message:    "Test",
-		Platform:   core.PlatFormAndroid,
-		Tokens:     []string{"XXXXXXXXX"},
-		TimeToLive: &timeToLive,
+		Message:  "Test",
+		Platform: core.PlatFormAndroid,
+		Tokens:   []string{"XXXXXXXXX"},
 	}
 
 	err = CheckMessage(req)
 	assert.Error(t, err)
 
 	// Pass
-	timeToLive = uint(86400)
 	req = &PushNotification{
-		Message:    "Test",
-		Platform:   core.PlatFormAndroid,
-		Tokens:     []string{"XXXXXXXXX"},
-		TimeToLive: &timeToLive,
+		Message:  "Test",
+		Platform: core.PlatFormAndroid,
+		Tokens:   []string{"XXXXXXXXX"},
 	}
 
 	err = CheckMessage(req)
@@ -196,14 +166,12 @@ func TestCheckAndroidMessage(t *testing.T) {
 	cfg, _ := config.LoadConf()
 
 	cfg.Android.Enabled = true
-	cfg.Android.APIKey = os.Getenv("ANDROID_API_KEY")
+	cfg.Android.Credential = os.Getenv("ANDROID_API_KEY")
 
-	timeToLive := uint(2419201)
 	req := &PushNotification{
-		Tokens:     []string{"aaaaaa", "bbbbb"},
-		Platform:   core.PlatFormAndroid,
-		Message:    "Welcome",
-		TimeToLive: &timeToLive,
+		Tokens:   []string{"aaaaaa", "bbbbb"},
+		Platform: core.PlatFormAndroid,
+		Message:  "Welcome",
 	}
 
 	// the message's TimeToLive field must be an integer between 0 and 2419200 (4 weeks)
@@ -214,43 +182,27 @@ func TestCheckAndroidMessage(t *testing.T) {
 
 func TestAndroidNotificationStructure(t *testing.T) {
 	test := "test"
-	timeToLive := uint(100)
 	req := &PushNotification{
-		Tokens:                []string{"a", "b"},
-		Message:               "Welcome",
-		To:                    test,
-		Priority:              HIGH,
-		CollapseKey:           "1",
-		ContentAvailable:      true,
-		TimeToLive:            &timeToLive,
-		RestrictedPackageName: test,
-		DryRun:                true,
-		Title:                 test,
-		Sound:                 test,
+		Tokens:           []string{"a", "b"},
+		Message:          "Welcome",
+		To:               test,
+		Priority:         HIGH,
+		ContentAvailable: true,
+		Title:            test,
+		Sound:            test,
 		Data: D{
 			"a": "1",
 			"b": 2,
 		},
-		Notification: &fcm.Notification{
-			Color: test,
-			Tag:   test,
+		Notification: &messaging.Notification{
+			Title: test,
 			Body:  "",
 		},
 	}
 
 	notification := GetAndroidNotification(req)
 
-	assert.Equal(t, test, notification.To)
-	assert.Equal(t, HIGH, notification.Priority)
-	assert.Equal(t, "1", notification.CollapseKey)
-	assert.True(t, notification.ContentAvailable)
-	assert.Equal(t, uint(100), *notification.TimeToLive)
-	assert.Equal(t, test, notification.RestrictedPackageName)
-	assert.True(t, notification.DryRun)
 	assert.Equal(t, test, notification.Notification.Title)
-	assert.Equal(t, test, notification.Notification.Sound)
-	assert.Equal(t, test, notification.Notification.Color)
-	assert.Equal(t, test, notification.Notification.Tag)
 	assert.Equal(t, "Welcome", notification.Notification.Body)
 	assert.Equal(t, "1", notification.Data["a"])
 	assert.Equal(t, 2, notification.Data["b"])
@@ -259,12 +211,11 @@ func TestAndroidNotificationStructure(t *testing.T) {
 	req = &PushNotification{
 		Tokens: []string{"a", "b"},
 		To:     test,
-		Notification: &fcm.Notification{
+		Notification: &messaging.Notification{
 			Body: "",
 		},
 	}
 	notification = GetAndroidNotification(req)
 
-	assert.Equal(t, test, notification.To)
 	assert.Equal(t, "", notification.Notification.Body)
 }
