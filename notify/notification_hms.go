@@ -66,7 +66,7 @@ func InitHMSClient(cfg *config.ConfYaml, appSecret, appID string) (*client.HMSCl
 // GetHuaweiNotification use for define HMS notification.
 // HTTP Connection Server Reference for HMS
 // https://developer.huawei.com/consumer/en/doc/development/HMS-References/push-sendapi
-func GetHuaweiNotification(req *PushNotification) (*model.MessageRequest, error) {
+func GetHuaweiNotification(req *PushNotification) *model.MessageRequest {
 	msgRequest := model.NewNotificationMsgRequest()
 
 	msgRequest.Message.Android = model.GetDefaultAndroid()
@@ -147,14 +147,14 @@ func GetHuaweiNotification(req *PushNotification) (*model.MessageRequest, error)
 		msgRequest.Message.Android.Notification.DefaultSound = true
 	}
 
-	b, err := json.Marshal(msgRequest)
+	jsonMarshall, err := json.Marshal(msgRequest)
 	if err != nil {
-		logx.LogError.Error("Failed to marshal the default message! Error is " + err.Error())
-		return nil, err
+		logx.LogError.Warnf("Failed to marshal the default message! Error: %v", err)
+	} else {
+		logx.LogAccess.Debugf("Default message going to Huawei Push server is %s", string(jsonMarshall))
 	}
 
-	logx.LogAccess.Debugf("Default message is %s", string(b))
-	return msgRequest, nil
+	return msgRequest
 }
 
 // PushToHuawei provide send notification to Android server.
@@ -190,7 +190,7 @@ func PushToHuawei(req *PushNotification, cfg *config.ConfYaml) (resp *ResponsePu
 Retry:
 	isError := false
 
-	notification, _ := GetHuaweiNotification(req)
+	notification := GetHuaweiNotification(req)
 
 	res, err := client.SendMessage(context.Background(), notification)
 	if err != nil {
