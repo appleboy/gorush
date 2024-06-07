@@ -83,8 +83,8 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 
 	// Android
 	assert.Equal(suite.T(), true, suite.ConfGorushDefault.Android.Enabled)
-	assert.Equal(suite.T(), "key.json", suite.ConfGorushDefault.Android.KeyPath)
-	assert.Equal(suite.T(), "CREDENTIAL_JSON_DATA", suite.ConfGorushDefault.Android.Credential)
+	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Android.KeyPath)
+	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Android.Credential)
 	assert.Equal(suite.T(), 0, suite.ConfGorushDefault.Android.MaxRetry)
 
 	// iOS

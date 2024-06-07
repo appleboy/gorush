@@ -57,8 +57,8 @@ api:
 
 android:
   enabled: true
-  key_path: "key.json"
-  credential: "CREDENTIAL_JSON_DATA"
+  key_path: ""
+  credential: ""
   max_retry: 0 # resend fail notification, default value zero is disabled
 
 huawei:
