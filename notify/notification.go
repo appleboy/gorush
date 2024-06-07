@@ -67,6 +67,7 @@ type PushNotification struct {
 	// Common
 	ID               string      `json:"notif_id,omitempty"`
 	To               string      `json:"to,omitempty"`
+	Topic            string      `json:"topic,omitempty"` // FCM and iOS only
 	Tokens           []string    `json:"tokens" binding:"required"`
 	Platform         int         `json:"platform" binding:"required"`
 	Message          string      `json:"message,omitempty"`
@@ -101,7 +102,6 @@ type PushNotification struct {
 	Expiration  *int64   `json:"expiration,omitempty"`
 	ApnsID      string   `json:"apns_id,omitempty"`
 	CollapseID  string   `json:"collapse_id,omitempty"`
-	Topic       string   `json:"topic,omitempty"`
 	PushType    string   `json:"push_type,omitempty"`
 	Badge       *int     `json:"badge,omitempty"`
 	Category    string   `json:"category,omitempty"`

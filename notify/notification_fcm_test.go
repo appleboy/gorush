@@ -26,7 +26,8 @@ func TestMissingAndroidCredential(t *testing.T) {
 func TestMissingKeyForInitFCMClient(t *testing.T) {
 	cfg, _ := config.LoadConf()
 	cfg.Android.Credential = ""
-	client, err := InitFCMClient(cfg, "")
+	cfg.Android.KeyPath = ""
+	client, err := InitFCMClient(cfg)
 
 	assert.Nil(t, client)
 	assert.Error(t, err)

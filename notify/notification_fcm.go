@@ -15,29 +15,29 @@ import (
 )
 
 // InitFCMClient use for initialize FCM Client.
-func InitFCMClient(cfg *config.ConfYaml, key string) (*fcm.Client, error) {
-	var err error
+func InitFCMClient(cfg *config.ConfYaml) (*fcm.Client, error) {
+	var opts []fcm.Option
 
-	if key == "" && cfg.Android.Credential == "" {
-		return nil, errors.New("missing android api key")
+	if cfg.Android.KeyPath == "" && cfg.Android.Credential == "" {
+		return nil, errors.New("missing fcm credential data")
 	}
 
-	if key != "" && key != cfg.Android.Credential {
-		return fcm.NewClient(
-			context.Background(),
-			fcm.WithCredentialsJSON([]byte(key)),
-		)
+	if cfg.Android.KeyPath != "" {
+		opts = append(opts, fcm.WithCredentialsFile(cfg.Android.KeyPath))
 	}
 
-	if FCMClient == nil {
-		FCMClient, err = fcm.NewClient(
-			context.Background(),
-			fcm.WithCredentialsJSON([]byte(cfg.Android.Credential)),
-		)
-		return FCMClient, err
+	if cfg.Android.Credential != "" {
+		opts = append(opts, fcm.WithCredentialsJSON([]byte(cfg.Android.Credential)))
 	}
 
-	return FCMClient, nil
+	if FCMClient != nil {
+		return FCMClient, nil
+	}
+
+	return fcm.NewClient(
+		context.Background(),
+		opts...,
+	)
 }
 
 // GetAndroidNotification use for define Android notification.
@@ -102,7 +102,7 @@ func PushToAndroid(req *PushNotification, cfg *config.ConfYaml) (resp *ResponseP
 	}
 
 	resp = &ResponsePush{}
-	client, err = InitFCMClient(cfg, cfg.Android.Credential)
+	client, err = InitFCMClient(cfg)
 
 Retry:
 	notification := GetAndroidNotification(req)

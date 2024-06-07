@@ -53,8 +53,8 @@ func main() {
 	flag.StringVar(&opts.Ios.TeamID, "team-id", "", "iOS Team ID for P8 token")
 	flag.StringVar(&opts.Ios.Password, "P", "", "iOS certificate password for gorush")
 	flag.StringVar(&opts.Ios.Password, "password", "", "iOS certificate password for gorush")
-	flag.StringVar(&opts.Android.Credential, "k", "", "FCM credential configuration for gorush")
-	flag.StringVar(&opts.Android.Credential, "apikey", "", "FCM credential configuration for gorush")
+	flag.StringVar(&opts.Android.KeyPath, "fcm-key", "", "FCM key path configuration for gorush")
+	flag.StringVar(&opts.Android.Credential, "fcm-credential", "", "FCM credential configuration for gorush")
 	flag.StringVar(&opts.Huawei.AppSecret, "hk", "", "Huawei api key configuration for gorush")
 	flag.StringVar(&opts.Huawei.AppSecret, "hmskey", "", "Huawei api key configuration for gorush")
 	flag.StringVar(&opts.Huawei.AppID, "hid", "", "HMS app id configuration for gorush")
@@ -116,6 +116,10 @@ func main() {
 
 	if opts.Ios.Password != "" {
 		cfg.Ios.Password = opts.Ios.Password
+	}
+
+	if opts.Android.KeyPath != "" {
+		cfg.Android.KeyPath = opts.Android.KeyPath
 	}
 
 	if opts.Android.Credential != "" {
@@ -189,7 +193,7 @@ func main() {
 
 		// send topic message
 		if topic != "" {
-			req.To = topic
+			req.Topic = topic
 		}
 
 		err := notify.CheckMessage(req)
@@ -371,7 +375,7 @@ func main() {
 	}
 
 	if cfg.Android.Enabled {
-		if _, err = notify.InitFCMClient(cfg, cfg.Android.Credential); err != nil {
+		if _, err = notify.InitFCMClient(cfg); err != nil {
 			logx.LogError.Fatal(err)
 		}
 	}
