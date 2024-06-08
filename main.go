@@ -54,7 +54,6 @@ func main() {
 	flag.StringVar(&opts.Ios.Password, "P", "", "iOS certificate password for gorush")
 	flag.StringVar(&opts.Ios.Password, "password", "", "iOS certificate password for gorush")
 	flag.StringVar(&opts.Android.KeyPath, "fcm-key", "", "FCM key path configuration for gorush")
-	flag.StringVar(&opts.Android.Credential, "fcm-credential", "", "FCM credential configuration for gorush")
 	flag.StringVar(&opts.Huawei.AppSecret, "hk", "", "Huawei api key configuration for gorush")
 	flag.StringVar(&opts.Huawei.AppSecret, "hmskey", "", "Huawei api key configuration for gorush")
 	flag.StringVar(&opts.Huawei.AppID, "hid", "", "HMS app id configuration for gorush")
@@ -120,10 +119,6 @@ func main() {
 
 	if opts.Android.KeyPath != "" {
 		cfg.Android.KeyPath = opts.Android.KeyPath
-	}
-
-	if opts.Android.Credential != "" {
-		cfg.Android.Credential = opts.Android.Credential
 	}
 
 	if opts.Huawei.AppSecret != "" {
