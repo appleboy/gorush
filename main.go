@@ -421,7 +421,7 @@ iOS Options:
     --ios                            enabled iOS (default: false)
     --production                     iOS production mode (default: false)
 Android Options:
-    --fcm-key <api_key_path>         FCM Credentials Key Path
+    --fcm-key <fcm_key_path>         FCM Credentials Key Path
     --android                        enabled android (default: false)
 Huawei Options:
     -hk, --hmskey <hms_key>          HMS App Secret
