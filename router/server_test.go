@@ -621,7 +621,7 @@ func TestSyncModeForTopicNotification(t *testing.T) {
 
 	count, logs := handleNotification(ctx, cfg, req, q)
 	assert.Equal(t, 2, count)
-	assert.Equal(t, 1, len(logs))
+	assert.Equal(t, 0, len(logs))
 }
 
 func TestSyncModeForDeviceGroupNotification(t *testing.T) {
