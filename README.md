@@ -261,7 +261,7 @@ wget -c https://github.com/appleboy/gorush/releases/download/v1.16.3/gorush-1.16
 #### Prerequisite Tools
 
 - [Git](http://git-scm.com/)
-- [Go (at least Go 1.11)](https://golang.org/dl/)
+- [Go (at least Go 1.21)](https://go.dev/dl/)
 
 #### Fetch from GitHub
 
@@ -280,11 +280,11 @@ or you can use the `go get` command to install the latest or specific version.
 **Note**: such go get installation aren't guaranteed to work. We recommend using binary installation.
 
 ```sh
-# Go 1.16+
-go install github.com/appleboy/gorush@latest
+# install stable version
+go install github.com/appleboy/gorush
 
-# Go version < 1.16
-go get -u github.com/appleboy/gorush@latest
+# install latest version
+go install github.com/appleboy/gorush@master
 ```
 
 ### Command Usage
@@ -307,23 +307,24 @@ Server Options:
     -t, --token <token>              Notification token
     -e, --engine <engine>            Storage engine (memory, redis ...)
     --title <title>                  Notification title
-    --proxy <proxy>                  Proxy URL (support http, https, or socks5)
+    --proxy <proxy>                  Proxy URL
     --pid <pid path>                 Process identifier path
     --redis-addr <redis addr>        Redis addr (default: localhost:6379)
+    --ping                           healthy check command for container
 iOS Options:
     -i, --key <file>                 certificate key file path
     -P, --password <password>        certificate key password
     --ios                            enabled iOS (default: false)
     --production                     iOS production mode (default: false)
 Android Options:
-    -k, --apikey <api_key>           Android API Key
+    --fcm-key <api_key_path>         FCM Key Path
     --android                        enabled android (default: false)
 Huawei Options:
     -hk, --hmskey <hms_key>          HMS App Secret
     -hid, --hmsid <hms_id>           HMS App ID
     --huawei                         enabled huawei (default: false)
 Common Options:
-    --topic <topic>                  iOS or Android topic message
+    --topic <topic>                  iOS, Android or Huawei topic message
     -h, --help                       Show this message
     -V, --version                    Show version
 ```
@@ -333,7 +334,7 @@ Common Options:
 Send single notification with the following command.
 
 ```bash
-gorush -android -m "your message" -k "API Key" -t "Device token"
+gorush -android -m "your message" --fcm-key "FCM Credentials Key Path" -t "device token"
 ```
 
 Send messages to topics.
@@ -341,11 +342,11 @@ Send messages to topics.
 ```bash
 gorush --android --topic "/topics/foo-bar" \
   -m "This is a Firebase Cloud Messaging Topic Message" \
-  -k your_api_key
+  --fcm-key "FCM Credentials Key Path"
 ```
 
 - `-m`: Notification message.
-- `-k`: [Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging) api key
+- `--fcm-key`: [Firebase Cloud Messaging Provide credentials manually](https://firebase.google.com/docs/cloud-messaging/auth-server#provide-credentials-manually)
 - `-t`: Device token.
 - `--title`: Notification title.
 - `--topic`: Send messages to topics. note: don't add device token.

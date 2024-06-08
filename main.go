@@ -426,7 +426,7 @@ Android Options:
     --android                        enabled android (default: false)
 Huawei Options:
     -hk, --hmskey <hms_key>          HMS App Secret
-    -hid, --hmsid <hms_id>			 HMS App ID
+    -hid, --hmsid <hms_id>           HMS App ID
     --huawei                         enabled huawei (default: false)
 Common Options:
     --topic <topic>                  iOS, Android or Huawei topic message
