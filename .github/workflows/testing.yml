@@ -58,8 +58,8 @@ jobs:
 
       - name: testing
         env:
-          ANDROID_API_KEY: ${{ secrets.ANDROID_API_KEY }}
-          ANDROID_TEST_TOKEN: ${{ secrets.ANDROID_TEST_TOKEN }}
+          FCM_CREDENTIAL: ${{ secrets.FCM_CREDENTIAL }}
+          FCM_TEST_TOKEN: ${{ secrets.FCM_TEST_TOKEN }}
         run: make test
 
       - name: Upload coverage to Codecov

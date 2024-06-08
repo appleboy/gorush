@@ -156,14 +156,15 @@ func CheckMessage(req *PushNotification) error {
 			logx.LogAccess.Debug(msg)
 			return errors.New(msg)
 		}
-	case core.PlatFormAndroid:
-	case core.PlatFormHuawei:
-	default:
+	case
+		core.PlatFormAndroid,
+		core.PlatFormHuawei:
 		if len(req.Tokens) > 500 {
 			msg = "tokens must not contain more than 500 elements"
 			logx.LogAccess.Debug(msg)
 			return errors.New(msg)
 		}
+	default:
 	}
 
 	return nil

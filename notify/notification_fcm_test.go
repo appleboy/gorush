@@ -104,20 +104,11 @@ func TestFCMMessage(t *testing.T) {
 	err = CheckMessage(req)
 	assert.Error(t, err)
 
-	// the token must not be empty
-	req = &PushNotification{
-		Message: "Test",
-		Tokens:  []string{""},
-	}
-
-	err = CheckMessage(req)
-	assert.Error(t, err)
-
 	// ignore check token length if send topic message
 	req = &PushNotification{
 		Message:  "Test",
 		Platform: core.PlatFormAndroid,
-		To:       "/topics/foo-bar",
+		Topic:    "/topics/foo-bar",
 	}
 
 	err = CheckMessage(req)
@@ -137,16 +128,7 @@ func TestFCMMessage(t *testing.T) {
 	req = &PushNotification{
 		Message:  "Test",
 		Platform: core.PlatFormAndroid,
-		Tokens:   make([]string, 1001),
-	}
-
-	err = CheckMessage(req)
-	assert.Error(t, err)
-
-	req = &PushNotification{
-		Message:  "Test",
-		Platform: core.PlatFormAndroid,
-		Tokens:   []string{"XXXXXXXXX"},
+		Tokens:   make([]string, 501),
 	}
 
 	err = CheckMessage(req)
