@@ -40,7 +40,7 @@ func TestMain(m *testing.M) {
 	cfg.Android.Enabled = true
 	cfg.Android.Credential = os.Getenv("FCM_CREDENTIAL")
 
-	if _, err := notify.InitFCMClient(cfg, ""); err != nil {
+	if _, err := notify.InitFCMClient(cfg); err != nil {
 		log.Fatal(err)
 	}
 
