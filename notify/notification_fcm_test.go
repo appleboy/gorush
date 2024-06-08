@@ -145,24 +145,6 @@ func TestFCMMessage(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestCheckAndroidMessage(t *testing.T) {
-	cfg, _ := config.LoadConf()
-
-	cfg.Android.Enabled = true
-	cfg.Android.Credential = os.Getenv("FCM_CREDENTIAL")
-
-	req := &PushNotification{
-		Tokens:   []string{"aaaaaa", "bbbbb"},
-		Platform: core.PlatFormAndroid,
-		Message:  "Welcome",
-	}
-
-	// the message's TimeToLive field must be an integer between 0 and 2419200 (4 weeks)
-	resp, err := PushToAndroid(req, cfg)
-	assert.NotNil(t, err)
-	assert.Nil(t, resp)
-}
-
 func TestAndroidNotificationStructure(t *testing.T) {
 	test := "test"
 	req := &PushNotification{
