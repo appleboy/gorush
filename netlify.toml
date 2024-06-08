@@ -1,13 +1,13 @@
 [build]
-  command = "make build_linux_lambda"
-  functions = "release/linux/lambda"
+command = "make build_linux_lambda"
+functions = "release/linux/lambda"
 
 [build.environment]
-  GO_VERSION = "1.20"
-  GO_IMPORT_PATH = "github.com/appleboy/gorush"
-  GO111MODULE = "on"
+GO111MODULE = "on"
+GO_IMPORT_PATH = "github.com/appleboy/gorush"
+GO_VERSION = "1.22"
 
 [[redirects]]
-  from = "/*"
-  to = "/.netlify/functions/gorush/:splat"
-  status = 200
+from = "/*"
+status = 200
+to = "/.netlify/functions/gorush/:splat"
