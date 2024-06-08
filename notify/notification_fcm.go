@@ -170,21 +170,15 @@ Retry:
 
 	var newTokens []string
 	// result from Send messages to specific devices
-	for k, result := range res.Responses {
-		to := ""
-		if k < len(req.Tokens) {
-			to = req.Tokens[k]
-		} else {
-			to = req.To
+	if !req.IsTopic() {
+		for k, result := range res.Responses {
+			if result.Error != nil {
+				errLog := logPush(cfg, core.FailedPush, req.Tokens[k], req, result.Error)
+				resp.Logs = append(resp.Logs, errLog)
+				continue
+			}
+			logPush(cfg, core.SucceededPush, req.Tokens[k], req, nil)
 		}
-
-		if result.Error != nil {
-			errLog := logPush(cfg, core.FailedPush, to, req, result.Error)
-			resp.Logs = append(resp.Logs, errLog)
-			continue
-		}
-
-		logPush(cfg, core.SucceededPush, to, req, nil)
 	}
 
 	// result from Send messages to topics
