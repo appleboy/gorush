@@ -379,7 +379,7 @@ func TestSuccessPushHandler(t *testing.T) {
 	cfg.Android.Enabled = true
 	cfg.Android.Credential = os.Getenv("FCM_CREDENTIAL")
 
-	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
+	androidToken := os.Getenv("FCM_TEST_TOKEN")
 
 	r := gofight.New()
 
@@ -480,7 +480,7 @@ func TestSenMultipleNotifications(t *testing.T) {
 	cfg.Android.Enabled = true
 	cfg.Android.Credential = os.Getenv("FCM_CREDENTIAL")
 
-	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
+	androidToken := os.Getenv("FCM_TEST_TOKEN")
 
 	req := notify.RequestPush{
 		Notifications: []notify.PushNotification{
@@ -516,7 +516,7 @@ func TestDisabledAndroidNotifications(t *testing.T) {
 	cfg.Android.Enabled = false
 	cfg.Android.Credential = os.Getenv("FCM_CREDENTIAL")
 
-	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
+	androidToken := os.Getenv("FCM_TEST_TOKEN")
 
 	req := notify.RequestPush{
 		Notifications: []notify.PushNotification{
@@ -555,7 +555,7 @@ func TestSyncModeForNotifications(t *testing.T) {
 	// enable sync mode
 	cfg.Core.Sync = true
 
-	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
+	androidToken := os.Getenv("FCM_TEST_TOKEN")
 
 	req := notify.RequestPush{
 		Notifications: []notify.PushNotification{
@@ -663,7 +663,7 @@ func TestDisabledIosNotifications(t *testing.T) {
 	cfg.Android.Enabled = true
 	cfg.Android.Credential = os.Getenv("FCM_CREDENTIAL")
 
-	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
+	androidToken := os.Getenv("FCM_TEST_TOKEN")
 
 	req := notify.RequestPush{
 		Notifications: []notify.PushNotification{

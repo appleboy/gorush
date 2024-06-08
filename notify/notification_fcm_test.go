@@ -38,7 +38,7 @@ func TestPushToAndroidWrongToken(t *testing.T) {
 	cfg, _ := config.LoadConf()
 
 	cfg.Android.Enabled = true
-	cfg.Android.Credential = os.Getenv("ANDROID_API_KEY")
+	cfg.Android.Credential = os.Getenv("FCM_CREDENTIAL")
 
 	req := &PushNotification{
 		Tokens:   []string{"aaaaaa", "bbbbb"},
@@ -56,11 +56,11 @@ func TestPushToAndroidRightTokenForJSONLog(t *testing.T) {
 	cfg, _ := config.LoadConf()
 
 	cfg.Android.Enabled = true
-	cfg.Android.Credential = os.Getenv("ANDROID_API_KEY")
+	cfg.Android.Credential = os.Getenv("FCM_CREDENTIAL")
 	// log for json
 	cfg.Log.Format = "json"
 
-	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
+	androidToken := os.Getenv("FCM_TEST_TOKEN")
 
 	req := &PushNotification{
 		Tokens:   []string{androidToken},
@@ -77,9 +77,9 @@ func TestPushToAndroidRightTokenForStringLog(t *testing.T) {
 	cfg, _ := config.LoadConf()
 
 	cfg.Android.Enabled = true
-	cfg.Android.Credential = os.Getenv("ANDROID_API_KEY")
+	cfg.Android.Credential = os.Getenv("FCM_CREDENTIAL")
 
-	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
+	androidToken := os.Getenv("FCM_TEST_TOKEN")
 
 	req := &PushNotification{
 		Tokens:   []string{androidToken},
@@ -167,7 +167,7 @@ func TestCheckAndroidMessage(t *testing.T) {
 	cfg, _ := config.LoadConf()
 
 	cfg.Android.Enabled = true
-	cfg.Android.Credential = os.Getenv("ANDROID_API_KEY")
+	cfg.Android.Credential = os.Getenv("FCM_CREDENTIAL")
 
 	req := &PushNotification{
 		Tokens:   []string{"aaaaaa", "bbbbb"},
