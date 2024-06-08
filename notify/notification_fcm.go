@@ -27,7 +27,10 @@ func fileExists(filename string) bool {
 func InitFCMClient(cfg *config.ConfYaml) (*fcm.Client, error) {
 	var opts []fcm.Option
 
-	if cfg.Android.KeyPath == "" && cfg.Android.Credential == "" {
+	credential := os.Getenv("GOOGLE_APPLICATION_CREDENTIALS")
+	if cfg.Android.Credential == "" &&
+		cfg.Android.KeyPath == "" &&
+		credential == "" {
 		return nil, errors.New("missing fcm credential data")
 	}
 

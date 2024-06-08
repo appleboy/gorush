@@ -202,7 +202,10 @@ func CheckPushConf(cfg *config.ConfYaml) error {
 	}
 
 	if cfg.Android.Enabled {
-		if cfg.Android.Credential == "" {
+		credential := os.Getenv("GOOGLE_APPLICATION_CREDENTIALS")
+		if cfg.Android.Credential == "" &&
+			cfg.Android.KeyPath == "" &&
+			credential == "" {
 			return errors.New("missing fcm credential data")
 		}
 	}

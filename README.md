@@ -331,10 +331,22 @@ Common Options:
 
 ### Send Android notification
 
+To authenticate a service account and authorize it to access Firebase services, you must generate a private key file in JSON format.
+
+1. In the Firebase console, open **Settings** > [Service Accounts](https://console.firebase.google.com/project/_/settings/serviceaccounts/adminsdk?_gl=1*1eqxjfp*_ga*MTQ0NjI5MTQ2MS4xNzA4NjA3MzU0*_ga_CW55HF8NVT*MTcxNzgxNDMyNi4xMS4xLjE3MTc4MTUyMzguNjAuMC4w).
+2. Click **Generate New Private Key**, then confirm by clicking **Generate Key**.
+3. Securely store the JSON file containing the key.
+
+When authorizing via a service account, you have two choices for providing the credentials to your application. You can either set the **GOOGLE_APPLICATION_CREDENTIALS** environment variable, or you can explicitly pass the path to the service account key in code. The first option is more secure and is strongly recommended.
+
 Send single notification with the following command.
 
 ```bash
 gorush -android -m "your message" --fcm-key "FCM Credentials Key Path" -t "device token"
+
+# or set GOOGLE_APPLICATION_CREDENTIALS environment variable
+export GOOGLE_APPLICATION_CREDENTIALS="FCM Credentials Key Path"
+gorush -android -m "your message" -t "device token"
 ```
 
 Send messages to topics.
