@@ -432,9 +432,12 @@ $ gorush
 $ gorush -c config.yml
 ```
 
-Get go status of api server using [httpie](https://github.com/jkbrzt/httpie) tool:
+Get go status of api server using [httpie](https://github.com/httpie/cli) tool:
 
 ```bash
+# install httpie
+brew install httpie
+# get go status
 http -v --verify=no --json GET http://localhost:8088/api/stat/go
 ```
 
