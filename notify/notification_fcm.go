@@ -73,6 +73,14 @@ func GetAndroidNotification(req *PushNotification) []*messaging.Message {
 		messages = append(messages, notification)
 	}
 
+	var data map[string]string
+	if len(req.Data) > 0 {
+		data = make(map[string]string, len(req.Data))
+		for k, v := range req.Data {
+			data[k] = fmt.Sprintf("%v", v)
+		}
+	}
+
 	// Loop through the tokens and create a message for each one
 	for _, token := range req.Tokens {
 		notification := &messaging.Message{
@@ -86,10 +94,7 @@ func GetAndroidNotification(req *PushNotification) []*messaging.Message {
 
 		// Add another field
 		if len(req.Data) > 0 {
-			notification.Data = make(map[string]string, len(req.Data))
-			for k, v := range req.Data {
-				notification.Data[k] = fmt.Sprintf("%v", v)
-			}
+			notification.Data = data
 		}
 
 		if req.Title != "" || req.Message != "" || req.Image != "" {
