@@ -652,7 +652,6 @@ The Request body must have a notifications array. The following is a parameter t
 | retry                   | int          | retry send notification if fail response from server. Value must be small than `max_retry` field. | -        |                                                               |
 | topic                   | string       | send messages to topics                                                                           |          |                                                               |
 | image                   | string       | image url to show in notification                                                                 | -        | only Android and Huawei                                       |
-| api_key                 | string       | api key for firebase cloud message                                                                | -        | only Android                                                  |
 | to                      | string       | The value must be a registration token, notification key, or topic.                               | -        | only Android                                                  |
 | collapse_key            | string       | a key for collapsing notifications                                                                | -        | only Android                                                  |
 | huawei_collapse_key     | int          | a key integer for collapsing notifications                                                        | -        | only Huawei  See the [detail](#huawei-notification)           |
@@ -892,13 +891,13 @@ Add other fields which user defined via `data` field.
 }
 ```
 
-Send messages to topics
+Send messages to topic
 
 ```json
 {
   "notifications": [
     {
-      "to": "/topics/foo-bar",
+      "topic": "highScores",
       "platform": 2,
       "message": "This is a Firebase Cloud Messaging Topic Message"
     }
@@ -1079,7 +1078,7 @@ const (
 
 func main() {
   // Set up a connection to the server.
-  conn, err := grpc.Dial(address, grpc.WithInsecure())
+  conn, err := grpc.NewClient(address, grpc.WithInsecure())
   if err != nil {
     log.Fatalf("did not connect: %v", err)
   }
@@ -1182,7 +1181,7 @@ const (
 
 func main() {
   // Set up a connection to the server.
-  conn, err := grpc.Dial(address, grpc.WithInsecure())
+  conn, err := grpc.NewClient(address, grpc.WithInsecure())
   if err != nil {
     log.Fatalf("did not connect: %v", err)
   }
@@ -1345,17 +1344,18 @@ Or you can deploy gorush to alternative solution like [netlify functions](https:
 
 ```toml
 [build]
-  command = "./build.sh"
-  functions = "release/linux/lambda"
+command = "make build_linux_lambda"
+functions = "release/linux/lambda"
 
 [build.environment]
-  GO_IMPORT_PATH = "github.com/appleboy/gorush"
-  GO111MODULE = "on"
+GO111MODULE = "on"
+GO_IMPORT_PATH = "github.com/appleboy/gorush"
+GO_VERSION = "1.21.11"
 
 [[redirects]]
-  from = "/*"
-  to = "/.netlify/functions/gorush/:splat"
-  status = 200
+from = "/*"
+status = 200
+to = "/.netlify/functions/gorush/:splat"
 ```
 
 ## Stargazers over time
