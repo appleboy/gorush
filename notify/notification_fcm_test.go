@@ -38,7 +38,7 @@ func TestPushToAndroidWrongToken(t *testing.T) {
 	cfg, _ := config.LoadConf()
 
 	cfg.Android.Enabled = true
-	cfg.Android.Credential = os.Getenv("ANDROID_API_KEY")
+	cfg.Android.Credential = os.Getenv("FCM_CREDENTIAL")
 
 	req := &PushNotification{
 		Tokens:   []string{"aaaaaa", "bbbbb"},
@@ -56,11 +56,11 @@ func TestPushToAndroidRightTokenForJSONLog(t *testing.T) {
 	cfg, _ := config.LoadConf()
 
 	cfg.Android.Enabled = true
-	cfg.Android.Credential = os.Getenv("ANDROID_API_KEY")
+	cfg.Android.Credential = os.Getenv("FCM_CREDENTIAL")
 	// log for json
 	cfg.Log.Format = "json"
 
-	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
+	androidToken := os.Getenv("FCM_TEST_TOKEN")
 
 	req := &PushNotification{
 		Tokens:   []string{androidToken},
@@ -77,9 +77,9 @@ func TestPushToAndroidRightTokenForStringLog(t *testing.T) {
 	cfg, _ := config.LoadConf()
 
 	cfg.Android.Enabled = true
-	cfg.Android.Credential = os.Getenv("ANDROID_API_KEY")
+	cfg.Android.Credential = os.Getenv("FCM_CREDENTIAL")
 
-	androidToken := os.Getenv("ANDROID_TEST_TOKEN")
+	androidToken := os.Getenv("FCM_TEST_TOKEN")
 
 	req := &PushNotification{
 		Tokens:   []string{androidToken},
@@ -104,20 +104,11 @@ func TestFCMMessage(t *testing.T) {
 	err = CheckMessage(req)
 	assert.Error(t, err)
 
-	// the token must not be empty
-	req = &PushNotification{
-		Message: "Test",
-		Tokens:  []string{""},
-	}
-
-	err = CheckMessage(req)
-	assert.Error(t, err)
-
 	// ignore check token length if send topic message
 	req = &PushNotification{
 		Message:  "Test",
 		Platform: core.PlatFormAndroid,
-		To:       "/topics/foo-bar",
+		Topic:    "/topics/foo-bar",
 	}
 
 	err = CheckMessage(req)
@@ -137,16 +128,7 @@ func TestFCMMessage(t *testing.T) {
 	req = &PushNotification{
 		Message:  "Test",
 		Platform: core.PlatFormAndroid,
-		Tokens:   make([]string, 1001),
-	}
-
-	err = CheckMessage(req)
-	assert.Error(t, err)
-
-	req = &PushNotification{
-		Message:  "Test",
-		Platform: core.PlatFormAndroid,
-		Tokens:   []string{"XXXXXXXXX"},
+		Tokens:   make([]string, 501),
 	}
 
 	err = CheckMessage(req)
@@ -161,24 +143,6 @@ func TestFCMMessage(t *testing.T) {
 
 	err = CheckMessage(req)
 	assert.NoError(t, err)
-}
-
-func TestCheckAndroidMessage(t *testing.T) {
-	cfg, _ := config.LoadConf()
-
-	cfg.Android.Enabled = true
-	cfg.Android.Credential = os.Getenv("ANDROID_API_KEY")
-
-	req := &PushNotification{
-		Tokens:   []string{"aaaaaa", "bbbbb"},
-		Platform: core.PlatFormAndroid,
-		Message:  "Welcome",
-	}
-
-	// the message's TimeToLive field must be an integer between 0 and 2419200 (4 weeks)
-	resp, err := PushToAndroid(req, cfg)
-	assert.NotNil(t, err)
-	assert.Nil(t, resp)
 }
 
 func TestAndroidNotificationStructure(t *testing.T) {

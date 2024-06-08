@@ -11,6 +11,7 @@ import (
 func TestMissingHuaweiAppSecret(t *testing.T) {
 	cfg, _ := config.LoadConf()
 
+	cfg.Android.Enabled = false
 	cfg.Huawei.Enabled = true
 	cfg.Huawei.AppSecret = ""
 
@@ -23,6 +24,7 @@ func TestMissingHuaweiAppSecret(t *testing.T) {
 func TestMissingHuaweiAppID(t *testing.T) {
 	cfg, _ := config.LoadConf()
 
+	cfg.Android.Enabled = false
 	cfg.Huawei.Enabled = true
 	cfg.Huawei.AppID = ""
 
