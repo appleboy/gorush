@@ -85,7 +85,7 @@ snapshot:
   name_template: "{{ incpatch .Version }}"
 
 changelog:
-  use: github
+  use: git
   groups:
     - title: Features
       regexp: "^.*feat[(\\w)]*:+.*$"
