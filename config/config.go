@@ -57,8 +57,8 @@ api:
 
 android:
   enabled: true
-  key_path: ""
-  credential: ""
+  key_path: "" # path to fcm key file
+  credential: "" # fcm credential data
   max_retry: 0 # resend fail notification, default value zero is disabled
 
 huawei:
