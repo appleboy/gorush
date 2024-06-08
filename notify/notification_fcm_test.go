@@ -201,12 +201,12 @@ func TestAndroidNotificationStructure(t *testing.T) {
 		},
 	}
 
-	notification := GetAndroidNotification(req)
+	messages := GetAndroidNotification(req)
 
-	assert.Equal(t, test, notification.Notification.Title)
-	assert.Equal(t, "Welcome", notification.Notification.Body)
-	assert.Equal(t, "1", notification.Data["a"])
-	assert.Equal(t, 2, notification.Data["b"])
+	assert.Equal(t, test, messages[0].Notification.Title)
+	assert.Equal(t, "Welcome", messages[0].Notification.Body)
+	assert.Equal(t, "1", messages[0].Data["a"])
+	assert.Equal(t, "2", messages[0].Data["b"])
 
 	// test empty body
 	req = &PushNotification{
@@ -216,7 +216,7 @@ func TestAndroidNotificationStructure(t *testing.T) {
 			Body: "",
 		},
 	}
-	notification = GetAndroidNotification(req)
+	messages = GetAndroidNotification(req)
 
-	assert.Equal(t, "", notification.Notification.Body)
+	assert.Equal(t, "", messages[0].Notification.Body)
 }

@@ -52,41 +52,62 @@ func InitFCMClient(cfg *config.ConfYaml) (*fcm.Client, error) {
 // GetAndroidNotification use for define Android notification.
 // HTTP Connection Server Reference for Android
 // https://firebase.google.com/docs/cloud-messaging/http-server-ref
-func GetAndroidNotification(req *PushNotification) *messaging.Message {
-	notification := &messaging.Message{
-		Token:        req.To,
-		Condition:    req.Condition,
-		Notification: req.Notification,
-		Android:      req.Android,
-		Webpush:      req.Webpush,
-		APNS:         req.APNS,
-		FCMOptions:   req.FCMOptions,
+func GetAndroidNotification(req *PushNotification) []*messaging.Message {
+	var messages []*messaging.Message
+
+	// Check if the notification is a topic
+	if req.IsTopic() {
+		notification := &messaging.Message{
+			Notification: req.Notification,
+			Android:      req.Android,
+			Webpush:      req.Webpush,
+			APNS:         req.APNS,
+			FCMOptions:   req.FCMOptions,
+			Topic:        req.Topic,
+			Condition:    req.Condition,
+		}
+
+		messages = append(messages, notification)
 	}
 
-	// Add another field
-	if len(req.Data) > 0 {
-		notification.Data = make(map[string]string, len(req.Data))
-		for k, v := range req.Data {
-			notification.Data[k] = fmt.Sprintf("%s", v)
+	// Loop through the tokens and create a message for each one
+	for _, token := range req.Tokens {
+		notification := &messaging.Message{
+			Token:        token,
+			Notification: req.Notification,
+			Android:      req.Android,
+			Webpush:      req.Webpush,
+			APNS:         req.APNS,
+			FCMOptions:   req.FCMOptions,
 		}
+
+		// Add another field
+		if len(req.Data) > 0 {
+			notification.Data = make(map[string]string, len(req.Data))
+			for k, v := range req.Data {
+				notification.Data[k] = fmt.Sprintf("%v", v)
+			}
+		}
+
+		if req.Title != "" || req.Message != "" || req.Image != "" {
+			if notification.Notification == nil {
+				notification.Notification = &messaging.Notification{}
+			}
+			if req.Title != "" {
+				notification.Notification.Title = req.Title
+			}
+			if req.Message != "" {
+				notification.Notification.Body = req.Message
+			}
+			if req.Image != "" {
+				notification.Notification.ImageURL = req.Image
+			}
+		}
+
+		messages = append(messages, notification)
 	}
 
-	if req.Title != "" || req.Message != "" || req.Image != "" {
-		if notification.Notification == nil {
-			notification.Notification = &messaging.Notification{}
-		}
-		if req.Title != "" {
-			notification.Notification.Title = req.Title
-		}
-		if req.Message != "" {
-			notification.Notification.Body = req.Message
-		}
-		if req.Image != "" {
-			notification.Notification.ImageURL = req.Image
-		}
-	}
-
-	return notification
+	return messages
 }
 
 // PushToAndroid provide send notification to Android server.
@@ -121,7 +142,7 @@ Retry:
 		return resp, err
 	}
 
-	res, err := client.Send(context.Background(), notification)
+	res, err := client.Send(context.Background(), notification...)
 	if err != nil {
 		// Send Message error
 		logx.LogError.Error("FCM server send message error: " + err.Error())

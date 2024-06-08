@@ -140,22 +140,30 @@ func (p *PushNotification) IsTopic() bool {
 func CheckMessage(req *PushNotification) error {
 	var msg string
 
-	if len(req.Tokens) == core.PlatFormIos && req.Tokens[0] == "" {
-		msg = "the token must not be empty"
-		logx.LogAccess.Debug(msg)
-		return errors.New(msg)
+	if req.To != "" {
+		req.Tokens = append(req.Tokens, req.To)
 	}
 
-	if req.Platform == core.PlatFormAndroid && len(req.Tokens) > 1000 {
-		msg = "the message may specify at most 1000 registration IDs"
-		logx.LogAccess.Debug(msg)
-		return errors.New(msg)
+	// if the message is a topic, the tokens field is not required
+	if !req.IsTopic() && len(req.Tokens) == 0 {
+		return errors.New("tokens must not be nil or empty")
 	}
 
-	if req.Platform == core.PlatFormHuawei && len(req.Tokens) > 500 {
-		msg = "the message may specify at most 500 registration IDs for Huawei"
-		logx.LogAccess.Debug(msg)
-		return errors.New(msg)
+	switch req.Platform {
+	case core.PlatFormIos:
+		if len(req.Tokens) == 1 && req.Tokens[0] == "" {
+			msg = "the token must not be empty"
+			logx.LogAccess.Debug(msg)
+			return errors.New(msg)
+		}
+	case core.PlatFormAndroid:
+	case core.PlatFormHuawei:
+	default:
+		if len(req.Tokens) > 500 {
+			msg = "tokens must not contain more than 500 elements"
+			logx.LogAccess.Debug(msg)
+			return errors.New(msg)
+		}
 	}
 
 	return nil

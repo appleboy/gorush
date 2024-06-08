@@ -196,11 +196,6 @@ func main() {
 			req.Topic = topic
 		}
 
-		err := notify.CheckMessage(req)
-		if err != nil {
-			logx.LogError.Fatal(err)
-		}
-
 		if err := status.InitAppStatus(cfg); err != nil {
 			return
 		}
