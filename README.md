@@ -438,7 +438,7 @@ Get go status of api server using [httpie](https://github.com/httpie/cli) tool:
 # install httpie
 brew install httpie
 # get go status
-http -v --verify=no --json GET http://localhost:8088/api/stat/go
+http -v --json GET http://localhost:8088/api/stat/go
 ```
 
 ## Web API
