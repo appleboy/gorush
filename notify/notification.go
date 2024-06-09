@@ -12,9 +12,9 @@ import (
 	"github.com/appleboy/gorush/logx"
 
 	"firebase.google.com/go/v4/messaging"
+	"github.com/appleboy/go-hms-push/push/model"
 	qcore "github.com/golang-queue/queue/core"
 	jsoniter "github.com/json-iterator/go"
-	"github.com/msalihkarakasli/go-hms-push/push/model"
 )
 
 var json = jsoniter.ConfigCompatibleWithStandardLibrary

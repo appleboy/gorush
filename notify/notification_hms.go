@@ -10,9 +10,9 @@ import (
 	"github.com/appleboy/gorush/logx"
 	"github.com/appleboy/gorush/status"
 
-	c "github.com/msalihkarakasli/go-hms-push/push/config"
-	client "github.com/msalihkarakasli/go-hms-push/push/core"
-	"github.com/msalihkarakasli/go-hms-push/push/model"
+	c "github.com/appleboy/go-hms-push/push/config"
+	client "github.com/appleboy/go-hms-push/push/core"
+	"github.com/appleboy/go-hms-push/push/model"
 )
 
 var (

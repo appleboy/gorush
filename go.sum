@@ -34,6 +34,8 @@ github.com/appleboy/gin-status-api v1.1.0 h1:zoXePlNxk/Aa3Jmh8TI2xX0KTF8iET/QwOM
 github.com/appleboy/gin-status-api v1.1.0/go.mod h1:qUmpFERWhlzRX4Hx+fEznIio8gXAXEDpEnb0Ald1d+g=
 github.com/appleboy/go-fcm v1.2.1 h1:NhpACabtRuAplYg6bTNfSr3LBwsSuutP55HsphzLU/g=
 github.com/appleboy/go-fcm v1.2.1/go.mod h1:5FzMN+9J2sxnkoys9h3y48GQH8HnI637Q/ro/uP2Qsk=
+github.com/appleboy/go-hms-push v1.0.0 h1:qy7/4cvK7PMY/BiHLpoId80Zyy7laY/RvwAt9EG2iWk=
+github.com/appleboy/go-hms-push v1.0.0/go.mod h1:JZzS7XUOFTUV8y+MAnDjOIv0LCZmLmVpJj//Q9t0XBw=
 github.com/appleboy/gofight/v2 v2.1.2 h1:VOy3jow4vIK8BRQJoC/I9muxyYlJ2yb9ht2hZoS3rf4=
 github.com/appleboy/gofight/v2 v2.1.2/go.mod h1:frW+U1QZEdDgixycTj4CygQ48yLTUhplt43+Wczp3rw=
 github.com/appleboy/graceful v1.1.1 h1:vYqfpBdyEFztXofmw9iL8aohnxbcE+2Nq2j67SCoMBo=
@@ -319,8 +321,6 @@ github.com/sourcegraph/conc v0.3.0/go.mod h1:Sdozi7LEKbFPqYX2/J+iBAM6HpqSLTASQIK
 github.com/spaolacci/murmur3 v0.0.0-20180118202830-f09979ecbc72/go.mod h1:JwIasOWyU6f++ZhiEuf87xNszmSA2myDM2Kzu9HwQUA=
 github.com/spaolacci/murmur3 v1.1.0 h1:7c1g84S4BPRrfL5Xrdp6fOJ206sU9y293DDHaoy0bLI=
 github.com/spaolacci/murmur3 v1.1.0/go.mod h1:JwIasOWyU6f++ZhiEuf87xNszmSA2myDM2Kzu9HwQUA=
-github.com/spawn2kill/go-hms-push v0.0.0-20211125124117-e20af53b1304 h1:NFx3I+/cQkqXlnrDzyOAXUDKWFjPQBcO0LSqowMn1Jo=
-github.com/spawn2kill/go-hms-push v0.0.0-20211125124117-e20af53b1304/go.mod h1:4X2lQHsWGt+e3uRK124A6ndq3IIVymTAzEI9A1kIQKc=
 github.com/spf13/afero v1.1.2/go.mod h1:j4pytiNVoe2o6bmDsKpLACNPDBIoEAkihy7loJ1B0CQ=
 github.com/spf13/afero v1.11.0 h1:WJQKhtpdm3v2IzqG8VMqrr6Rf3UYpEF239Jy9wNepM8=
 github.com/spf13/afero v1.11.0/go.mod h1:GH9Y3pIexgf1MTIWtNGyogA5MwRIDXGUr+hbWNoBjkY=
