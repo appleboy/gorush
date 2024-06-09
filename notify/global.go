@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/appleboy/go-fcm"
-	"github.com/msalihkarakasli/go-hms-push/push/core"
+	"github.com/appleboy/go-hms-push/push/core"
 	"github.com/sideshow/apns2"
 )
 

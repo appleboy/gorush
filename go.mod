@@ -7,6 +7,7 @@ require (
 	github.com/apex/gateway v1.1.2
 	github.com/appleboy/gin-status-api v1.1.0
 	github.com/appleboy/go-fcm v1.2.1
+	github.com/appleboy/go-hms-push v1.0.0
 	github.com/appleboy/gofight/v2 v2.1.2
 	github.com/appleboy/graceful v1.1.1
 	github.com/asdine/storm/v3 v3.2.1
@@ -24,7 +25,6 @@ require (
 	github.com/json-iterator/go v1.1.12
 	github.com/mattn/go-isatty v0.0.20
 	github.com/mitchellh/mapstructure v1.5.0
-	github.com/msalihkarakasli/go-hms-push v0.0.0-00010101000000-000000000000
 	github.com/prometheus/client_golang v1.19.0
 	github.com/redis/go-redis/v9 v9.5.1
 	github.com/rs/zerolog v1.32.0
