@@ -7,7 +7,7 @@ require (
 	github.com/apex/gateway v1.1.2
 	github.com/appleboy/gin-status-api v1.1.0
 	github.com/appleboy/go-fcm v1.2.1
-	github.com/appleboy/go-hms-push v1.0.0
+	github.com/appleboy/go-hms-push v1.0.1
 	github.com/appleboy/gofight/v2 v2.1.2
 	github.com/appleboy/graceful v1.1.1
 	github.com/asdine/storm/v3 v3.2.1
