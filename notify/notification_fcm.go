@@ -58,9 +58,24 @@ func InitFCMClient(cfg *config.ConfYaml) (*fcm.Client, error) {
 func GetAndroidNotification(req *PushNotification) []*messaging.Message {
 	var messages []*messaging.Message
 
+	if req.Title != "" || req.Message != "" || req.Image != "" {
+		if req.Notification == nil {
+			req.Notification = &messaging.Notification{}
+		}
+		if req.Title != "" {
+			req.Notification.Title = req.Title
+		}
+		if req.Message != "" {
+			req.Notification.Body = req.Message
+		}
+		if req.Image != "" {
+			req.Notification.ImageURL = req.Image
+		}
+	}
+
 	// Check if the notification is a topic
 	if req.IsTopic() {
-		notification := &messaging.Message{
+		message := &messaging.Message{
 			Notification: req.Notification,
 			Android:      req.Android,
 			Webpush:      req.Webpush,
@@ -70,7 +85,7 @@ func GetAndroidNotification(req *PushNotification) []*messaging.Message {
 			Condition:    req.Condition,
 		}
 
-		messages = append(messages, notification)
+		messages = append(messages, message)
 	}
 
 	var data map[string]string
@@ -83,7 +98,7 @@ func GetAndroidNotification(req *PushNotification) []*messaging.Message {
 
 	// Loop through the tokens and create a message for each one
 	for _, token := range req.Tokens {
-		notification := &messaging.Message{
+		message := &messaging.Message{
 			Token:        token,
 			Notification: req.Notification,
 			Android:      req.Android,
@@ -94,25 +109,10 @@ func GetAndroidNotification(req *PushNotification) []*messaging.Message {
 
 		// Add another field
 		if len(req.Data) > 0 {
-			notification.Data = data
+			message.Data = data
 		}
 
-		if req.Title != "" || req.Message != "" || req.Image != "" {
-			if notification.Notification == nil {
-				notification.Notification = &messaging.Notification{}
-			}
-			if req.Title != "" {
-				notification.Notification.Title = req.Title
-			}
-			if req.Message != "" {
-				notification.Notification.Body = req.Message
-			}
-			if req.Image != "" {
-				notification.Notification.ImageURL = req.Image
-			}
-		}
-
-		messages = append(messages, notification)
+		messages = append(messages, message)
 	}
 
 	return messages
