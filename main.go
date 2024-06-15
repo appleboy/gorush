@@ -234,7 +234,7 @@ func main() {
 			return
 		}
 
-		if _, err := notify.PushToHuawei(req, cfg); err != nil {
+		if _, err := notify.PushToHuawei(g.ShutdownContext(), req, cfg); err != nil {
 			return
 		}
 
