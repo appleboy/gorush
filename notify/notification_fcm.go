@@ -143,73 +143,74 @@ func PushToAndroid(ctx context.Context, req *PushNotification, cfg *config.ConfY
 	client, err = InitFCMClient(ctx, cfg)
 
 Retry:
-	notification := GetAndroidNotification(req)
+	messages := GetAndroidNotification(req)
 	if err != nil {
 		// FCM server error
 		logx.LogError.Error("FCM server error: " + err.Error())
 		return resp, err
 	}
 
-	res, err := client.Send(ctx, notification...)
+	res, err := client.Send(ctx, messages...)
 	if err != nil {
-		// Send Message error
-		logx.LogError.Error("FCM server send message error: " + err.Error())
+		newErr := fmt.Errorf("fcm service send message error: %v", err)
+		logx.LogError.Error(newErr)
+		errLog := logPush(cfg, core.FailedPush, "", req, newErr)
+		resp.Logs = append(resp.Logs, errLog)
+		status.StatStorage.AddAndroidError(1)
 
-		if req.IsTopic() {
-			errLog := logPush(cfg, core.FailedPush, req.To, req, err)
-			resp.Logs = append(resp.Logs, errLog)
-			status.StatStorage.AddAndroidError(1)
-		} else {
-			for _, token := range req.Tokens {
-				errLog := logPush(cfg, core.FailedPush, token, req, err)
-				resp.Logs = append(resp.Logs, errLog)
-			}
-			status.StatStorage.AddAndroidError(int64(len(req.Tokens)))
-		}
-		return resp, err
+		return resp, newErr
 	}
 
-	if !req.IsTopic() {
-		logx.LogAccess.Debug(fmt.Sprintf("Android Success count: %d, Failure count: %d", res.SuccessCount, res.FailureCount))
-	}
-
+	logx.LogAccess.Debug(fmt.Sprintf("Android Success count: %d, Failure count: %d", res.SuccessCount, res.FailureCount))
 	status.StatStorage.AddAndroidSuccess(int64(res.SuccessCount))
 	status.StatStorage.AddAndroidError(int64(res.FailureCount))
 
-	var newTokens []string
-	// result from Send messages to specific devices
-	if !req.IsTopic() {
-		for k, result := range res.Responses {
-			if result.Error != nil {
-				errLog := logPush(cfg, core.FailedPush, req.Tokens[k], req, result.Error)
-				resp.Logs = append(resp.Logs, errLog)
-				continue
-			}
-			logPush(cfg, core.SucceededPush, req.Tokens[k], req, nil)
-		}
-	}
-
 	// result from Send messages to topics
+	retryTopic := false
 	if req.IsTopic() {
 		to := ""
 		if req.Topic != "" {
 			to = req.Topic
-		} else {
+		}
+		if req.Condition != "" {
 			to = req.Condition
 		}
 		logx.LogAccess.Debug("Send Topic Message: ", to)
-		// Success
-		if res.SuccessCount == 1 {
+
+		newResp := res.Responses[0]
+		if newResp.Success {
 			logPush(cfg, core.SucceededPush, to, req, nil)
-		} else {
-			// failure
-			errLog := logPush(cfg, core.FailedPush, to, req, res.Responses[0].Error)
-			resp.Logs = append(resp.Logs, errLog)
 		}
+
+		if newResp.Error != nil {
+			// failure
+			errLog := logPush(cfg, core.FailedPush, to, req, newResp.Error)
+			resp.Logs = append(resp.Logs, errLog)
+			retryTopic = true
+		}
+
+		// remove the first response
+		res.Responses = res.Responses[1:]
+	}
+
+	var newTokens []string
+	for k, result := range res.Responses {
+		if result.Error != nil {
+			errLog := logPush(cfg, core.FailedPush, req.Tokens[k], req, result.Error)
+			resp.Logs = append(resp.Logs, errLog)
+			newTokens = append(newTokens, req.Tokens[k])
+			continue
+		}
+		logPush(cfg, core.SucceededPush, req.Tokens[k], req, nil)
 	}
 
 	if len(newTokens) > 0 && retryCount < maxRetry {
 		retryCount++
+
+		if req.IsTopic() && !retryTopic {
+			req.Topic = ""
+			req.Condition = ""
+		}
 
 		// resend fail token
 		req.Tokens = newTokens
