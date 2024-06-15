@@ -273,11 +273,11 @@ func main() {
 			return
 		}
 
-		if err := notify.InitAPNSClient(cfg); err != nil {
+		if err := notify.InitAPNSClient(g.ShutdownContext(), cfg); err != nil {
 			return
 		}
 
-		if _, err := notify.PushToIOS(req, cfg); err != nil {
+		if _, err := notify.PushToIOS(g.ShutdownContext(), req, cfg); err != nil {
 			return
 		}
 
@@ -359,7 +359,7 @@ func main() {
 	})
 
 	if cfg.Ios.Enabled {
-		if err = notify.InitAPNSClient(cfg); err != nil {
+		if err = notify.InitAPNSClient(g.ShutdownContext(), cfg); err != nil {
 			logx.LogError.Fatal(err)
 		}
 	}

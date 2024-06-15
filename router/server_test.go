@@ -40,7 +40,7 @@ func TestMain(m *testing.M) {
 	cfg.Android.Enabled = true
 	cfg.Android.Credential = os.Getenv("FCM_CREDENTIAL")
 
-	if _, err := notify.InitFCMClient(cfg); err != nil {
+	if _, err := notify.InitFCMClient(context.Background(), cfg); err != nil {
 		log.Fatal(err)
 	}
 
@@ -474,7 +474,7 @@ func TestSenMultipleNotifications(t *testing.T) {
 
 	cfg.Ios.Enabled = true
 	cfg.Ios.KeyPath = testKeyPath
-	err := notify.InitAPNSClient(cfg)
+	err := notify.InitAPNSClient(ctx, cfg)
 	assert.Nil(t, err)
 
 	cfg.Android.Enabled = true
@@ -510,7 +510,7 @@ func TestDisabledAndroidNotifications(t *testing.T) {
 
 	cfg.Ios.Enabled = true
 	cfg.Ios.KeyPath = testKeyPath
-	err := notify.InitAPNSClient(cfg)
+	err := notify.InitAPNSClient(ctx, cfg)
 	assert.Nil(t, err)
 
 	cfg.Android.Enabled = false
@@ -546,7 +546,7 @@ func TestSyncModeForNotifications(t *testing.T) {
 
 	cfg.Ios.Enabled = true
 	cfg.Ios.KeyPath = testKeyPath
-	err := notify.InitAPNSClient(cfg)
+	err := notify.InitAPNSClient(ctx, cfg)
 	assert.Nil(t, err)
 
 	cfg.Android.Enabled = true
@@ -658,7 +658,7 @@ func TestDisabledIosNotifications(t *testing.T) {
 
 	cfg.Ios.Enabled = false
 	cfg.Ios.KeyPath = testKeyPath
-	err := notify.InitAPNSClient(cfg)
+	err := notify.InitAPNSClient(ctx, cfg)
 	assert.Nil(t, err)
 
 	cfg.Android.Enabled = true

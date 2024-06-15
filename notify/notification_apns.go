@@ -1,6 +1,7 @@
 package notify
 
 import (
+	"context"
 	"crypto/ecdsa"
 	"crypto/tls"
 	"encoding/base64"
@@ -58,7 +59,7 @@ type Sound struct {
 }
 
 // InitAPNSClient use for initialize APNs Client.
-func InitAPNSClient(cfg *config.ConfYaml) error {
+func InitAPNSClient(ctx context.Context, cfg *config.ConfYaml) error {
 	if cfg.Ios.Enabled {
 		var err error
 		var authKey *ecdsa.PrivateKey
@@ -401,7 +402,7 @@ func getApnsClient(cfg *config.ConfYaml, req *PushNotification) (client *apns2.C
 }
 
 // PushToIOS provide send notification to APNs server.
-func PushToIOS(req *PushNotification, cfg *config.ConfYaml) (resp *ResponsePush, err error) {
+func PushToIOS(ctx context.Context, req *PushNotification, cfg *config.ConfYaml) (resp *ResponsePush, err error) {
 	logx.LogAccess.Debug("Start push notification for iOS")
 
 	var (
@@ -430,7 +431,7 @@ Retry:
 			notification.DeviceToken = token
 
 			// send ios notification
-			res, err := client.Push(&notification)
+			res, err := client.PushWithContext(ctx, &notification)
 			if err != nil || (res != nil && res.StatusCode != http.StatusOK) {
 				if err == nil {
 					// error message:
