@@ -24,7 +24,7 @@ func fileExists(filename string) bool {
 }
 
 // InitFCMClient use for initialize FCM Client.
-func InitFCMClient(cfg *config.ConfYaml) (*fcm.Client, error) {
+func InitFCMClient(ctx context.Context, cfg *config.ConfYaml) (*fcm.Client, error) {
 	var opts []fcm.Option
 
 	credential := os.Getenv("GOOGLE_APPLICATION_CREDENTIALS")
@@ -47,7 +47,7 @@ func InitFCMClient(cfg *config.ConfYaml) (*fcm.Client, error) {
 	}
 
 	return fcm.NewClient(
-		context.Background(),
+		ctx,
 		opts...,
 	)
 }
@@ -119,7 +119,7 @@ func GetAndroidNotification(req *PushNotification) []*messaging.Message {
 }
 
 // PushToAndroid provide send notification to Android server.
-func PushToAndroid(req *PushNotification, cfg *config.ConfYaml) (resp *ResponsePush, err error) {
+func PushToAndroid(ctx context.Context, req *PushNotification, cfg *config.ConfYaml) (resp *ResponsePush, err error) {
 	logx.LogAccess.Debug("Start push notification for Android")
 
 	var (
@@ -140,7 +140,7 @@ func PushToAndroid(req *PushNotification, cfg *config.ConfYaml) (resp *ResponseP
 	}
 
 	resp = &ResponsePush{}
-	client, err = InitFCMClient(cfg)
+	client, err = InitFCMClient(ctx, cfg)
 
 Retry:
 	notification := GetAndroidNotification(req)
@@ -150,7 +150,7 @@ Retry:
 		return resp, err
 	}
 
-	res, err := client.Send(context.Background(), notification...)
+	res, err := client.Send(ctx, notification...)
 	if err != nil {
 		// Send Message error
 		logx.LogError.Error("FCM server send message error: " + err.Error())

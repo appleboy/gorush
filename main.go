@@ -165,9 +165,13 @@ func main() {
 		}
 	}
 
+	g := graceful.NewManager(
+		graceful.WithLogger(logx.QueueLogger()),
+	)
+
 	if ping {
-		if err := pinger(cfg); err != nil {
-			logx.LogError.Warnf("ping server error: %v", err)
+		if err := pinger(g.ShutdownContext(), cfg); err != nil {
+			logx.LogError.Fatal(err)
 		}
 		return
 	}
@@ -195,7 +199,7 @@ func main() {
 			return
 		}
 
-		if _, err := notify.PushToAndroid(req, cfg); err != nil {
+		if _, err := notify.PushToAndroid(g.ShutdownContext(), req, cfg); err != nil {
 			return
 		}
 
@@ -342,10 +346,6 @@ func main() {
 		queue.WithLogger(logx.QueueLogger()),
 	)
 
-	g := graceful.NewManager(
-		graceful.WithLogger(logx.QueueLogger()),
-	)
-
 	g.AddShutdownJob(func() error {
 		// logx.LogAccess.Info("close the queue system, current queue usage: ", q.Usage())
 		// stop queue system and wait job completed
@@ -365,7 +365,7 @@ func main() {
 	}
 
 	if cfg.Android.Enabled {
-		if _, err = notify.InitFCMClient(cfg); err != nil {
+		if _, err = notify.InitFCMClient(g.ShutdownContext(), cfg); err != nil {
 			logx.LogError.Fatal(err)
 		}
 	}
@@ -440,7 +440,7 @@ func usage() {
 
 // handles pinging the endpoint and returns an error if the
 // agent is in an unhealthy state.
-func pinger(cfg *config.ConfYaml) error {
+func pinger(ctx context.Context, cfg *config.ConfYaml) error {
 	transport := &http.Transport{
 		Dial: (&net.Dialer{
 			Timeout: 5 * time.Second,
@@ -452,7 +452,7 @@ func pinger(cfg *config.ConfYaml) error {
 		Transport: transport,
 	}
 	req, _ := http.NewRequestWithContext(
-		context.Background(),
+		ctx,
 		http.MethodGet,
 		"http://localhost:"+cfg.Core.Port+cfg.API.HealthURI,
 		nil,

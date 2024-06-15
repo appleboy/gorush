@@ -1,6 +1,7 @@
 package notify
 
 import (
+	"context"
 	"os"
 	"testing"
 
@@ -27,7 +28,7 @@ func TestMissingKeyForInitFCMClient(t *testing.T) {
 	cfg, _ := config.LoadConf()
 	cfg.Android.Credential = ""
 	cfg.Android.KeyPath = ""
-	client, err := InitFCMClient(cfg)
+	client, err := InitFCMClient(context.Background(), cfg)
 
 	assert.Nil(t, client)
 	assert.Error(t, err)
@@ -47,7 +48,7 @@ func TestPushToAndroidWrongToken(t *testing.T) {
 	}
 
 	// Android Success count: 0, Failure count: 2
-	resp, err := PushToAndroid(req, cfg)
+	resp, err := PushToAndroid(context.Background(), req, cfg)
 	assert.Nil(t, err)
 	assert.Len(t, resp.Logs, 2)
 }
@@ -68,7 +69,7 @@ func TestPushToAndroidRightTokenForJSONLog(t *testing.T) {
 		Message:  "Welcome",
 	}
 
-	resp, err := PushToAndroid(req, cfg)
+	resp, err := PushToAndroid(context.Background(), req, cfg)
 	assert.Nil(t, err)
 	assert.Len(t, resp.Logs, 0)
 }
@@ -87,7 +88,7 @@ func TestPushToAndroidRightTokenForStringLog(t *testing.T) {
 		Message:  "Welcome",
 	}
 
-	resp, err := PushToAndroid(req, cfg)
+	resp, err := PushToAndroid(context.Background(), req, cfg)
 	assert.Nil(t, err)
 	assert.Len(t, resp.Logs, 0)
 }
