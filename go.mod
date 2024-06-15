@@ -12,7 +12,7 @@ require (
 	github.com/appleboy/graceful v1.1.1
 	github.com/asdine/storm/v3 v3.2.1
 	github.com/buger/jsonparser v1.1.1
-	github.com/dgraph-io/badger/v3 v3.2103.5
+	github.com/dgraph-io/badger/v4 v4.2.0
 	github.com/gin-contrib/logger v1.1.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/golang-queue/nats v0.0.8
@@ -57,7 +57,6 @@ require (
 	github.com/aws/aws-lambda-go v1.46.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bytedance/sonic v1.11.3 // indirect
-	github.com/cespare/xxhash v1.1.0 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20230717121745-296ad89f973d // indirect
 	github.com/chenzhuoyu/iasm v0.9.1 // indirect

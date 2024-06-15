@@ -71,7 +71,7 @@ func InitAppStatus(conf *config.ConfYaml) error {
 	case "leveldb":
 		store = leveldb.New(conf)
 	case "badger":
-		store = badger.New(conf)
+		store = badger.New(conf.Stat.BadgerDB.Path)
 	default:
 		logx.LogError.Error("storage error: can't find storage driver")
 		return errors.New("can't find storage driver")
