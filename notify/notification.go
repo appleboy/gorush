@@ -241,7 +241,7 @@ func SendNotification(
 	case core.PlatFormIos:
 		resp, err = PushToIOS(v, cfg)
 	case core.PlatFormAndroid:
-		resp, err = PushToAndroid(v, cfg)
+		resp, err = PushToAndroid(ctx, v, cfg)
 	case core.PlatFormHuawei:
 		resp, err = PushToHuawei(v, cfg)
 	}
