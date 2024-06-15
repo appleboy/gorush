@@ -243,7 +243,7 @@ func SendNotification(
 	case core.PlatFormAndroid:
 		resp, err = PushToAndroid(ctx, v, cfg)
 	case core.PlatFormHuawei:
-		resp, err = PushToHuawei(v, cfg)
+		resp, err = PushToHuawei(ctx, v, cfg)
 	}
 
 	if cfg.Core.FeedbackURL != "" {
