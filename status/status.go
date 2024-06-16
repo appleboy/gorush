@@ -70,7 +70,9 @@ func InitAppStatus(conf *config.ConfYaml) error {
 			conf.Stat.BoltDB.Bucket,
 		)
 	case "buntdb":
-		store = buntdb.New(conf)
+		store = buntdb.New(
+			conf.Stat.BuntDB.Path,
+		)
 	case "leveldb":
 		store = leveldb.New(conf)
 	case "badger":

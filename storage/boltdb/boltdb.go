@@ -21,24 +21,24 @@ type Storage struct {
 	dbPath string
 	bucket string
 	db     *storm.DB
-	lock   sync.RWMutex
+	sync.RWMutex
 }
 
 func (s *Storage) Add(key string, count int64) {
-	s.lock.Lock()
-	defer s.lock.Unlock()
+	s.Lock()
+	defer s.Unlock()
 	s.setBoltDB(key, s.getBoltDB(key)+count)
 }
 
 func (s *Storage) Set(key string, count int64) {
-	s.lock.Lock()
-	defer s.lock.Unlock()
+	s.Lock()
+	defer s.Unlock()
 	s.setBoltDB(key, count)
 }
 
 func (s *Storage) Get(key string) int64 {
-	s.lock.RLock()
-	defer s.lock.RUnlock()
+	s.RLock()
+	defer s.RUnlock()
 	return s.getBoltDB(key)
 }
 

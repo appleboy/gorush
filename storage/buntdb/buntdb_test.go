@@ -1,11 +1,9 @@
 package buntdb
 
 import (
-	"os"
 	"sync"
 	"testing"
 
-	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/core"
 
 	"github.com/stretchr/testify/assert"
@@ -14,16 +12,14 @@ import (
 func TestBuntDBEngine(t *testing.T) {
 	var val int64
 
-	cfg, _ := config.LoadConf()
-
-	if _, err := os.Stat(cfg.Stat.BuntDB.Path); os.IsNotExist(err) {
-		err := os.RemoveAll(cfg.Stat.BuntDB.Path)
-		assert.Nil(t, err)
-	}
-
-	buntDB := New(cfg)
+	buntDB := New("")
 	err := buntDB.Init()
 	assert.Nil(t, err)
+
+	// reset the value of the key to 0
+	buntDB.Set(core.HuaweiSuccessKey, 0)
+	val = buntDB.Get(core.HuaweiSuccessKey)
+	assert.Equal(t, int64(0), val)
 
 	buntDB.Add(core.HuaweiSuccessKey, 10)
 	val = buntDB.Get(core.HuaweiSuccessKey)
