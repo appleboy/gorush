@@ -16,6 +16,11 @@ func TestBadgerEngine(t *testing.T) {
 	err := badger.Init()
 	assert.Nil(t, err)
 
+	// reset the value of the key to 0
+	badger.Set(core.HuaweiSuccessKey, 0)
+	val = badger.Get(core.HuaweiSuccessKey)
+	assert.Equal(t, int64(0), val)
+
 	badger.Add(core.HuaweiSuccessKey, 10)
 	val = badger.Get(core.HuaweiSuccessKey)
 	assert.Equal(t, int64(10), val)

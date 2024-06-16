@@ -16,6 +16,11 @@ func TestBoltDBEngine(t *testing.T) {
 	err := boltDB.Init()
 	assert.Nil(t, err)
 
+	// reset the value of the key to 0
+	boltDB.Set(core.HuaweiSuccessKey, 0)
+	val = boltDB.Get(core.HuaweiSuccessKey)
+	assert.Equal(t, int64(0), val)
+
 	boltDB.Add(core.HuaweiSuccessKey, 10)
 	val = boltDB.Get(core.HuaweiSuccessKey)
 	assert.Equal(t, int64(10), val)

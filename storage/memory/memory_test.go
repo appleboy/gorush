@@ -16,6 +16,11 @@ func TestMemoryEngine(t *testing.T) {
 	err := memory.Init()
 	assert.Nil(t, err)
 
+	// reset the value of the key to 0
+	memory.Set(core.HuaweiSuccessKey, 0)
+	val = memory.Get(core.HuaweiSuccessKey)
+	assert.Equal(t, int64(0), val)
+
 	memory.Add(core.HuaweiSuccessKey, 10)
 	val = memory.Get(core.HuaweiSuccessKey)
 	assert.Equal(t, int64(10), val)
