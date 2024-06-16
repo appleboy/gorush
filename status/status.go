@@ -74,7 +74,9 @@ func InitAppStatus(conf *config.ConfYaml) error {
 			conf.Stat.BuntDB.Path,
 		)
 	case "leveldb":
-		store = leveldb.New(conf)
+		store = leveldb.New(
+			conf.Stat.LevelDB.Path,
+		)
 	case "badger":
 		store = badger.New(
 			conf.Stat.BadgerDB.Path,
