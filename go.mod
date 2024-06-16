@@ -34,7 +34,7 @@ require (
 	github.com/stretchr/testify v1.9.0
 	github.com/syndtr/goleveldb v1.0.0
 	github.com/thoas/stats v0.0.0-20190407194641-965cb2de1678
-	github.com/tidwall/buntdb v1.3.0
+	github.com/tidwall/buntdb v1.3.1
 	go.opencensus.io v0.24.0
 	go.uber.org/atomic v1.11.0
 	golang.org/x/crypto v0.24.0

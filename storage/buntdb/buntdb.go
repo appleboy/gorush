@@ -3,49 +3,52 @@ package buntdb
 import (
 	"fmt"
 	"log"
+	"os"
 	"strconv"
 	"sync"
 
-	"github.com/appleboy/gorush/config"
 	"github.com/tidwall/buntdb"
 )
 
 // New func implements the storage interface for gorush (https://github.com/appleboy/gorush)
-func New(config *config.ConfYaml) *Storage {
+func New(dbPath string) *Storage {
 	return &Storage{
-		config: config,
+		dbPath: dbPath,
 	}
 }
 
 // Storage is interface structure
 type Storage struct {
-	config *config.ConfYaml
+	dbPath string
 	db     *buntdb.DB
-	lock   sync.RWMutex
+	sync.RWMutex
 }
 
 func (s *Storage) Add(key string, count int64) {
-	s.lock.Lock()
-	defer s.lock.Unlock()
+	s.Lock()
+	defer s.Unlock()
 	s.setBuntDB(key, s.getBuntDB(key)+count)
 }
 
 func (s *Storage) Set(key string, count int64) {
-	s.lock.Lock()
-	defer s.lock.Unlock()
+	s.Lock()
+	defer s.Unlock()
 	s.setBuntDB(key, count)
 }
 
 func (s *Storage) Get(key string) int64 {
-	s.lock.RLock()
-	defer s.lock.RUnlock()
+	s.RLock()
+	defer s.RUnlock()
 	return s.getBuntDB(key)
 }
 
 // Init client storage.
 func (s *Storage) Init() error {
 	var err error
-	s.db, err = buntdb.Open(s.config.Stat.BuntDB.Path)
+	if s.dbPath == "" {
+		s.dbPath = os.TempDir() + "buntdb.db"
+	}
+	s.db, err = buntdb.Open(s.dbPath)
 	return err
 }
 
