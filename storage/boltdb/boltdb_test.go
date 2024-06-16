@@ -4,7 +4,6 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/core"
 
 	"github.com/stretchr/testify/assert"
@@ -13,9 +12,7 @@ import (
 func TestBoltDBEngine(t *testing.T) {
 	var val int64
 
-	cfg, _ := config.LoadConf()
-
-	boltDB := New(cfg)
+	boltDB := New("", "gorush")
 	err := boltDB.Init()
 	assert.Nil(t, err)
 
