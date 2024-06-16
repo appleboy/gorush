@@ -63,7 +63,12 @@ func InitAppStatus(conf *config.ConfYaml) error {
 	case "memory":
 		store = memory.New()
 	case "redis":
-		store = redis.New(conf)
+		store = redis.New(
+			conf.Stat.Redis.Addr,
+			conf.Stat.Redis.Password,
+			conf.Stat.Redis.DB,
+			conf.Stat.Redis.Cluster,
+		)
 	case "boltdb":
 		store = boltdb.New(
 			conf.Stat.BoltDB.Path,

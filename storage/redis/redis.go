@@ -7,24 +7,33 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/appleboy/gorush/config"
-
 	"github.com/redis/go-redis/v9"
 )
 
 // New func implements the storage interface for gorush (https://github.com/appleboy/gorush)
-func New(config *config.ConfYaml) *Storage {
+func New(
+	addr string,
+	password string,
+	db int,
+	isCluster bool,
+) *Storage {
 	return &Storage{
-		ctx:    context.Background(),
-		config: config,
+		ctx:       context.Background(),
+		addr:      addr,
+		password:  password,
+		db:        db,
+		isCluster: isCluster,
 	}
 }
 
 // Storage is interface structure
 type Storage struct {
-	ctx    context.Context
-	config *config.ConfYaml
-	client redis.Cmdable
+	ctx       context.Context
+	client    redis.Cmdable
+	addr      string
+	password  string
+	db        int
+	isCluster bool
 }
 
 func (s *Storage) Add(key string, count int64) {
@@ -43,16 +52,16 @@ func (s *Storage) Get(key string) int64 {
 
 // Init client storage.
 func (s *Storage) Init() error {
-	if s.config.Stat.Redis.Cluster {
+	if s.isCluster {
 		s.client = redis.NewClusterClient(&redis.ClusterOptions{
-			Addrs:    strings.Split(s.config.Stat.Redis.Addr, ","),
-			Password: s.config.Stat.Redis.Password,
+			Addrs:    strings.Split(s.addr, ","),
+			Password: s.password,
 		})
 	} else {
 		s.client = redis.NewClient(&redis.Options{
-			Addr:     s.config.Stat.Redis.Addr,
-			Password: s.config.Stat.Redis.Password,
-			DB:       s.config.Stat.Redis.DB,
+			Addr:     s.addr,
+			Password: s.password,
+			DB:       s.db,
 		})
 	}
 
