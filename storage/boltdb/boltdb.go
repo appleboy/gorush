@@ -2,22 +2,24 @@ package boltdb
 
 import (
 	"log"
+	"os"
 	"sync"
 
-	"github.com/appleboy/gorush/config"
 	"github.com/asdine/storm/v3"
 )
 
 // New func implements the storage interface for gorush (https://github.com/appleboy/gorush)
-func New(config *config.ConfYaml) *Storage {
+func New(dbPath, bucket string) *Storage {
 	return &Storage{
-		config: config,
+		dbPath: dbPath,
+		bucket: bucket,
 	}
 }
 
 // Storage is interface structure
 type Storage struct {
-	config *config.ConfYaml
+	dbPath string
+	bucket string
 	db     *storm.DB
 	lock   sync.RWMutex
 }
@@ -43,7 +45,10 @@ func (s *Storage) Get(key string) int64 {
 // Init client storage.
 func (s *Storage) Init() error {
 	var err error
-	s.db, err = storm.Open(s.config.Stat.BoltDB.Path)
+	if s.dbPath == "" {
+		s.dbPath = os.TempDir() + "boltdb.db"
+	}
+	s.db, err = storm.Open(s.dbPath)
 	return err
 }
 
@@ -57,7 +62,7 @@ func (s *Storage) Close() error {
 }
 
 func (s *Storage) setBoltDB(key string, count int64) {
-	err := s.db.Set(s.config.Stat.BoltDB.Bucket, key, count)
+	err := s.db.Set(s.bucket, key, count)
 	if err != nil {
 		log.Println("BoltDB set error:", err.Error())
 	}
@@ -65,7 +70,7 @@ func (s *Storage) setBoltDB(key string, count int64) {
 
 func (s *Storage) getBoltDB(key string) int64 {
 	var count int64
-	err := s.db.Get(s.config.Stat.BoltDB.Bucket, key, &count)
+	err := s.db.Get(s.bucket, key, &count)
 	if err != nil {
 		log.Println("BoltDB get error:", err.Error())
 	}

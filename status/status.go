@@ -65,13 +65,18 @@ func InitAppStatus(conf *config.ConfYaml) error {
 	case "redis":
 		store = redis.New(conf)
 	case "boltdb":
-		store = boltdb.New(conf)
+		store = boltdb.New(
+			conf.Stat.BoltDB.Path,
+			conf.Stat.BoltDB.Bucket,
+		)
 	case "buntdb":
 		store = buntdb.New(conf)
 	case "leveldb":
 		store = leveldb.New(conf)
 	case "badger":
-		store = badger.New(conf.Stat.BadgerDB.Path)
+		store = badger.New(
+			conf.Stat.BadgerDB.Path,
+		)
 	default:
 		logx.LogError.Error("storage error: can't find storage driver")
 		return errors.New("can't find storage driver")
