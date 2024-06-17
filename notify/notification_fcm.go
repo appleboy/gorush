@@ -92,7 +92,15 @@ func GetAndroidNotification(req *PushNotification) []*messaging.Message {
 	if len(req.Data) > 0 {
 		data = make(map[string]string, len(req.Data))
 		for k, v := range req.Data {
-			data[k] = fmt.Sprintf("%v", v)
+			switch v.(type) {
+			case string:
+				data[k] = fmt.Sprintf("%s", v)
+			default:
+				jsonValue, err := json.Marshal(v)
+				if err == nil {
+					data[k] = string(jsonValue)
+				}
+			}
 		}
 	}
 
