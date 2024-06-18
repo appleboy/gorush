@@ -96,9 +96,8 @@ func GetAndroidNotification(req *PushNotification) []*messaging.Message {
 			case string:
 				data[k] = fmt.Sprintf("%s", v)
 			default:
-				jsonValue, err := json.Marshal(v)
-				if err == nil {
-					data[k] = string(jsonValue)
+				if v, err := json.Marshal(v); err == nil {
+					data[k] = string(v)
 				}
 			}
 		}

@@ -159,6 +159,10 @@ func TestAndroidNotificationStructure(t *testing.T) {
 		Data: D{
 			"a": "1",
 			"b": 2,
+			"json": map[string]interface{}{
+				"c": "3",
+				"d": 4,
+			},
 		},
 		Notification: &messaging.Notification{
 			Title: test,
@@ -172,6 +176,7 @@ func TestAndroidNotificationStructure(t *testing.T) {
 	assert.Equal(t, "Welcome", messages[0].Notification.Body)
 	assert.Equal(t, "1", messages[0].Data["a"])
 	assert.Equal(t, "2", messages[0].Data["b"])
+	assert.Equal(t, "{\"c\":\"3\",\"d\":4}", messages[0].Data["json"])
 
 	// test empty body
 	req = &PushNotification{
