@@ -7,8 +7,12 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/appleboy/gorush/core"
+
 	"github.com/redis/go-redis/v9"
 )
+
+var _ core.Storage = (*Storage)(nil)
 
 // New func implements the storage interface for gorush (https://github.com/appleboy/gorush)
 func New(

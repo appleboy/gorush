@@ -6,8 +6,12 @@ import (
 	"strconv"
 	"sync"
 
+	"github.com/appleboy/gorush/core"
+
 	"github.com/syndtr/goleveldb/leveldb"
 )
+
+var _ core.Storage = (*Storage)(nil)
 
 func (s *Storage) setLevelDB(key string, count int64) {
 	value := fmt.Sprintf("%d", count)

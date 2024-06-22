@@ -5,8 +5,12 @@ import (
 	"os"
 	"sync"
 
+	"github.com/appleboy/gorush/core"
+
 	"github.com/asdine/storm/v3"
 )
+
+var _ core.Storage = (*Storage)(nil)
 
 // New func implements the storage interface for gorush (https://github.com/appleboy/gorush)
 func New(dbPath, bucket string) *Storage {

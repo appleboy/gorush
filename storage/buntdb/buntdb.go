@@ -7,8 +7,12 @@ import (
 	"strconv"
 	"sync"
 
+	"github.com/appleboy/gorush/core"
+
 	"github.com/tidwall/buntdb"
 )
+
+var _ core.Storage = (*Storage)(nil)
 
 // New func implements the storage interface for gorush (https://github.com/appleboy/gorush)
 func New(dbPath string) *Storage {
