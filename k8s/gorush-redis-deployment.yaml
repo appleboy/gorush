@@ -18,14 +18,14 @@ spec:
         tier: backend
     spec:
       containers:
-      - name: master
-        image: redis:7
-        ports:
-        - containerPort: 6379
-        resources:
-          requests:
-            cpu: "250m"
-            memory: "256Mi"
-          limits:
-            cpu: "500m"
-            memory: "512Mi"
+        - name: master
+          image: redis:7
+          ports:
+            - containerPort: 6379
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"

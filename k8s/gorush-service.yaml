@@ -20,6 +20,6 @@ spec:
   # if you want gorush to be accessible only within the cluster
   # type: ClusterIP
   ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 8088
+    - protocol: TCP
+      port: 80
+      targetPort: 8088

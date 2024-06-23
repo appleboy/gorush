@@ -16,34 +16,34 @@ spec:
         tier: frontend
     spec:
       containers:
-      - image: appleboy/gorush:1.16.3
-        name: gorush
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 8088
-        resources:
-          requests:
-            cpu: "250m"
-            memory: "256Mi"
-          limits:
-            cpu: "500m"
-            memory: "512Mi"
-        livenessProbe:
-          httpGet:
-            path: /healthz
-            port: 8000
-          initialDelaySeconds: 3
-          periodSeconds: 3
-        env:
-        - name: GORUSH_STAT_ENGINE
-          valueFrom:
-            configMapKeyRef:
-              name: gorush-config
-              key: stat.engine
-        - name: GORUSH_STAT_REDIS_ADDR
-          valueFrom:
-            configMapKeyRef:
-              name: gorush-config
-              key: stat.redis.host
-        - name: GORUSH_CORE_PORT
-          value: "8000"
+        - image: appleboy/gorush:1.18.4
+          name: gorush
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8088
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8000
+            initialDelaySeconds: 3
+            periodSeconds: 3
+          env:
+            - name: GORUSH_STAT_ENGINE
+              valueFrom:
+                configMapKeyRef:
+                  name: gorush-config
+                  key: stat.engine
+            - name: GORUSH_STAT_REDIS_ADDR
+              valueFrom:
+                configMapKeyRef:
+                  name: gorush-config
+                  key: stat.redis.host
+            - name: GORUSH_CORE_PORT
+              value: "8000"

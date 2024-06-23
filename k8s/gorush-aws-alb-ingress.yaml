@@ -11,10 +11,10 @@ metadata:
     alb.ingress.kubernetes.io/security-groups: sg-71069b17
 spec:
   rules:
-  - host: gorush.example.com
-    http:
-      paths:
-      - path: /
-        backend:
-          serviceName: gorush
-          servicePort: 8088
+    - host: gorush.example.com
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: gorush
+              servicePort: 8088
