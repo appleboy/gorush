@@ -8,7 +8,7 @@
 //
 // Send Android notification
 //
-//	$ gorush -android -m="your message" -k="API Key" -t="Device token"
+//	$ gorush -android -m="your message" --fcm-key="FCM Key Path" -t="Device token"
 //
 // Send iOS notification
 //
