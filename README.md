@@ -352,7 +352,7 @@ gorush -android -m "your message" -t "device token"
 Send messages to topics.
 
 ```bash
-gorush --android --topic "/topics/foo-bar" \
+gorush --android --topic "foo-bar" \
   -m "This is a Firebase Cloud Messaging Topic Message" \
   --fcm-key "FCM Credentials Key Path"
 ```
@@ -418,7 +418,9 @@ $ gorush -ios -m "your message" -i "your certificate path" \
 Send single notification with the following command:
 
 ```bash
-gorush -android -m "your message" -k "API key" -t "Device token"
+gorush -android -m "your message" \
+  --fcm-key "FCM Credentials Key Path" \
+  -t "Device token"
 ```
 
 ## Run gorush web server
