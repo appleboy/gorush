@@ -41,9 +41,8 @@ func RunHTTPServer(ctx context.Context, cfg *config.ConfYaml, q *queue.Queue, s 
 	if cfg.Core.AutoTLS.Enabled {
 		return startServer(ctx, autoTLSServer(cfg, q), cfg)
 	} else if cfg.Core.SSL {
-		//nolint
 		config := &tls.Config{
-			MinVersion: tls.VersionTLS10,
+			MinVersion: tls.VersionTLS12,
 		}
 
 		if config.NextProtos == nil {
