@@ -79,6 +79,7 @@ func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*prot
 		Priority:         strings.ToLower(in.GetPriority().String()),
 		PushType:         in.PushType,
 		Development:      in.Development,
+		IsGRPC:           true,
 	}
 
 	if badge > 0 {

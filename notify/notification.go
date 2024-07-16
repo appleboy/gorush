@@ -115,6 +115,7 @@ type PushNotification struct {
 
 	// ref: https://github.com/sideshow/apns2/blob/54928d6193dfe300b6b88dad72b7e2ae138d4f0a/payload/builder.go#L7-L24
 	InterruptionLevel string `json:"interruption_level,omitempty"`
+	IsGRPC            bool   `json:"is_grpc,omitempty"`
 }
 
 // Bytes for queue message
