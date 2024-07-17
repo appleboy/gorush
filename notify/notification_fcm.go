@@ -74,18 +74,23 @@ func GetAndroidNotification(req *PushNotification) []*messaging.Message {
 	}
 
 	// Check if the notification has a sound
-	if req.Sound != "" && req.IsGRPC {
-		req.APNS = &messaging.APNSConfig{
-			Payload: &messaging.APNSPayload{
-				Aps: &messaging.Aps{
+	if req.Sound != "" {
+		if req.APNS == nil {
+			req.APNS = &messaging.APNSConfig{
+				Payload: &messaging.APNSPayload{
+					Aps: &messaging.Aps{
+						Sound: req.Sound.(string),
+					},
+				},
+			}
+		}
+
+		if req.Android == nil {
+			req.Android = &messaging.AndroidConfig{
+				Notification: &messaging.AndroidNotification{
 					Sound: req.Sound.(string),
 				},
-			},
-		}
-		req.Android = &messaging.AndroidConfig{
-			Notification: &messaging.AndroidNotification{
-				Sound: req.Sound.(string),
-			},
+			}
 		}
 	}
 
