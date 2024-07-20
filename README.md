@@ -65,7 +65,25 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 - [FCM](https://firebase.google.com/)
 - [HMS](https://developer.huawei.com/consumer/en/hms/)
 
-[A live demo on Netlify](https://gorush.netlify.app/).
+[A live server on Netlify](https://gorush.netlify.app/) and get notification token on [Firebase Cloud Messaging web](https://fcm-demo-88b40.web.app/). You can use the token to send a notification to the device.
+
+```bash
+curl -X POST \
+     -H "Content-Type: application/json" \
+     -d '{
+  "notifications": [
+    {
+      "tokens": [
+        "your_device_token"
+      ],
+      "platform": 2,
+      "title": "Test Title",
+      "message": "Test Message"
+    }
+  ]
+}' \
+  https://gorush.netlify.app/api/push
+```
 
 ## Features
 
