@@ -149,13 +149,13 @@ func TestFCMMessage(t *testing.T) {
 func TestAndroidNotificationStructure(t *testing.T) {
 	test := "test"
 	req := &PushNotification{
-		Tokens:           []string{"a", "b"},
-		Message:          "Welcome",
-		To:               test,
-		Priority:         HIGH,
-		ContentAvailable: true,
-		Title:            test,
-		Sound:            test,
+		Tokens:         []string{"a", "b"},
+		Message:        "Welcome",
+		To:             test,
+		Priority:       HIGH,
+		MutableContent: true,
+		Title:          test,
+		Sound:          test,
 		Data: D{
 			"a": "1",
 			"b": 2,
@@ -177,6 +177,9 @@ func TestAndroidNotificationStructure(t *testing.T) {
 	assert.Equal(t, "1", messages[0].Data["a"])
 	assert.Equal(t, "2", messages[0].Data["b"])
 	assert.Equal(t, "{\"c\":\"3\",\"d\":4}", messages[0].Data["json"])
+	assert.NotNil(t, messages[0].APNS)
+	assert.Equal(t, req.Sound, messages[0].APNS.Payload.Aps.Sound)
+	assert.Equal(t, req.MutableContent, messages[0].APNS.Payload.Aps.MutableContent)
 
 	// test empty body
 	req = &PushNotification{
@@ -189,4 +192,28 @@ func TestAndroidNotificationStructure(t *testing.T) {
 	messages = GetAndroidNotification(req)
 
 	assert.Equal(t, "", messages[0].Notification.Body)
+}
+
+func TestAndroidBackgroundNotificationStructure(t *testing.T) {
+	req := &PushNotification{
+		Tokens:           []string{"a", "b"},
+		Priority:         HIGH,
+		ContentAvailable: true,
+		Data: D{
+			"a": "1",
+			"b": 2,
+			"json": map[string]interface{}{
+				"c": "3",
+				"d": 4,
+			},
+		},
+	}
+
+	messages := GetAndroidNotification(req)
+
+	assert.Equal(t, "1", messages[0].Data["a"])
+	assert.Equal(t, "2", messages[0].Data["b"])
+	assert.Equal(t, "{\"c\":\"3\",\"d\":4}", messages[0].Data["json"])
+	assert.NotNil(t, messages[0].APNS)
+	assert.Equal(t, req.ContentAvailable, messages[0].APNS.Payload.Aps.ContentAvailable)
 }
