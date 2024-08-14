@@ -291,8 +291,8 @@ github.com/sagikazarmark/locafero v0.4.0/go.mod h1:Pe1W6UlPYUk/+wc/6KFhbORCfqzgY
 github.com/sagikazarmark/slog-shim v0.1.0 h1:diDBnUNK9N/354PgrxMywXnAwEr1QZcOr6gto+ugjYE=
 github.com/sagikazarmark/slog-shim v0.1.0/go.mod h1:SrcSrq8aKtyuqEI1uvTDTK1arOWRIczQRv+GVI1AkeQ=
 github.com/shurcooL/sanitized_anchor_name v1.0.0/go.mod h1:1NzhyTcUVG4SuEtjjoZeVRXNmyL/1OwPU0+IJeTBvfc=
-github.com/sideshow/apns2 v0.23.0 h1:lpkikaZ995GIcKk6AFsYzHyezCrsrfEDvUWcWkEGErY=
-github.com/sideshow/apns2 v0.23.0/go.mod h1:7Fceu+sL0XscxrfLSkAoH6UtvKefq3Kq1n4W3ayQZqE=
+github.com/sideshow/apns2 v0.24.0 h1:syofL4rd8ZeqUVySgYyBSYr/oLMU/HzJi++r3FIp6Z4=
+github.com/sideshow/apns2 v0.24.0/go.mod h1:7Fceu+sL0XscxrfLSkAoH6UtvKefq3Kq1n4W3ayQZqE=
 github.com/sirupsen/logrus v1.4.2/go.mod h1:tLMulIdttU9McNUspp0xgXVQah82FyeX6MwdIuYE2rE=
 github.com/sirupsen/logrus v1.9.3 h1:dueUQJ1C2q9oE3F7wvmSGAaVtTmUizReu6fjN8uqzbQ=
 github.com/sirupsen/logrus v1.9.3/go.mod h1:naHLuLoDiP4jHNo9R0sCBMtWGeIprob74mVsIT4qYEQ=
