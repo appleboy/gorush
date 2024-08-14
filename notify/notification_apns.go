@@ -296,23 +296,23 @@ func iosAlertDictionary(notificationPayload *payload.Payload, req *PushNotificat
 	}
 
 	if len(req.ContentState) > 0 {
-		notificationPayload.ContentState(req.ContentState)
+		notificationPayload.SetContentState(req.ContentState)
 	}
 
 	if req.StaleDate > 0 {
-		notificationPayload.StaleDate(req.StaleDate)
+		notificationPayload.SetStaleDate(req.StaleDate)
 	}
 
 	if req.DismissalDate > 0 {
-		notificationPayload.DismissalDate(req.DismissalDate)
+		notificationPayload.SetDismissalDate(req.DismissalDate)
 	}
 
 	if len(req.Event) > 0 {
-		notificationPayload.Event(req.Event)
+		notificationPayload.SetEvent(payload.ELiveActivityEvent(req.Event))
 	}
 
 	if req.Timestamp > 0 {
-		notificationPayload.Timestamp(req.Timestamp)
+		notificationPayload.SetTimestamp(req.Timestamp)
 	}
 
 	return notificationPayload
