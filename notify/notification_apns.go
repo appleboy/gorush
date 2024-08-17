@@ -295,6 +295,26 @@ func iosAlertDictionary(notificationPayload *payload.Payload, req *PushNotificat
 		notificationPayload.AlertSummaryArgCount(req.Alert.SummaryArgCount)
 	}
 
+	if len(req.ContentState) > 0 {
+		notificationPayload.SetContentState(req.ContentState)
+	}
+
+	if req.StaleDate > 0 {
+		notificationPayload.SetStaleDate(req.StaleDate)
+	}
+
+	if req.DismissalDate > 0 {
+		notificationPayload.SetDismissalDate(req.DismissalDate)
+	}
+
+	if len(req.Event) > 0 {
+		notificationPayload.SetEvent(payload.ELiveActivityEvent(req.Event))
+	}
+
+	if req.Timestamp > 0 {
+		notificationPayload.SetTimestamp(req.Timestamp)
+	}
+
 	return notificationPayload
 }
 
