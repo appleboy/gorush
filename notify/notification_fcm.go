@@ -46,10 +46,13 @@ func InitFCMClient(ctx context.Context, cfg *config.ConfYaml) (*fcm.Client, erro
 		return FCMClient, nil
 	}
 
-	return fcm.NewClient(
+	var err error
+	FCMClient, err = fcm.NewClient(
 		ctx,
 		opts...,
 	)
+
+	return FCMClient, err
 }
 
 // GetAndroidNotification use for define Android notification.
