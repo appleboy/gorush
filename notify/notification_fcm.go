@@ -85,29 +85,17 @@ func GetAndroidNotification(req *PushNotification) []*messaging.Message {
 	// content-available is for background notifications and a badge, alert
 	// and sound keys should not be present.
 	// See: https://developer.apple.com/documentation/usernotifications/generating-a-remote-notification
-	if req.Badge == nil && req.Title == "" && req.Message == "" && req.ContentAvailable {
-		if req.Sound != nil {
-			_, ok := req.Sound.(string)
-			if !ok {
-				req.APNS = &messaging.APNSConfig{
-					Headers: map[string]string{
-						"apns-priority": "5",
-					},
-					Payload: &messaging.APNSPayload{
-						Aps: &messaging.Aps{
-							ContentAvailable: req.ContentAvailable,
-						},
-					},
-				}
-			}
-		} else {
-			req.APNS = &messaging.APNSConfig{
-				Payload: &messaging.APNSPayload{
-					Aps: &messaging.Aps{
-						ContentAvailable: req.ContentAvailable,
-					},
+	if req.ContentAvailable {
+		req.APNS = &messaging.APNSConfig{
+			Headers: map[string]string{
+				"apns-priority": "5",
+			},
+			Payload: &messaging.APNSPayload{
+				Aps: &messaging.Aps{
+					ContentAvailable: req.ContentAvailable,
+					CustomData:       req.Data,
 				},
-			}
+			},
 		}
 	}
 

@@ -3,6 +3,7 @@ package notify
 import (
 	"context"
 	"os"
+	"reflect"
 	"testing"
 
 	"firebase.google.com/go/v4/messaging"
@@ -195,18 +196,19 @@ func TestAndroidNotificationStructure(t *testing.T) {
 }
 
 func TestAndroidBackgroundNotificationStructure(t *testing.T) {
+	data := map[string]any{
+		"a": "1",
+		"b": 2,
+		"json": map[string]interface{}{
+			"c": "3",
+			"d": 4,
+		},
+	}
 	req := &PushNotification{
 		Tokens:           []string{"a", "b"},
 		Priority:         HIGH,
 		ContentAvailable: true,
-		Data: D{
-			"a": "1",
-			"b": 2,
-			"json": map[string]interface{}{
-				"c": "3",
-				"d": 4,
-			},
-		},
+		Data:             data,
 	}
 
 	messages := GetAndroidNotification(req)
@@ -216,4 +218,5 @@ func TestAndroidBackgroundNotificationStructure(t *testing.T) {
 	assert.Equal(t, "{\"c\":\"3\",\"d\":4}", messages[0].Data["json"])
 	assert.NotNil(t, messages[0].APNS)
 	assert.Equal(t, req.ContentAvailable, messages[0].APNS.Payload.Aps.ContentAvailable)
+	assert.True(t, reflect.DeepEqual(data, messages[0].APNS.Payload.Aps.CustomData))
 }
