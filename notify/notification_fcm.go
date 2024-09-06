@@ -90,6 +90,9 @@ func GetAndroidNotification(req *PushNotification) []*messaging.Message {
 			_, ok := req.Sound.(string)
 			if !ok {
 				req.APNS = &messaging.APNSConfig{
+					Headers: map[string]string{
+						"apns-priority": "5",
+					},
 					Payload: &messaging.APNSPayload{
 						Aps: &messaging.Aps{
 							ContentAvailable: req.ContentAvailable,
