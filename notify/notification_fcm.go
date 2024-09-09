@@ -223,6 +223,13 @@ Retry:
 		return resp, err
 	}
 
+	if req.Development {
+		for i, msg := range messages {
+			m, _ := json.Marshal(msg)
+			logx.LogAccess.Infof("message #%d - %s", i, m)
+		}
+	}
+
 	res, err := client.Send(ctx, messages...)
 	if err != nil {
 		newErr := fmt.Errorf("fcm service send message error: %v", err)
