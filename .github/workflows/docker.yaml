@@ -12,7 +12,13 @@ on:
 
 jobs:
   build-docker:
-    runs-on: ubuntu-latest
+    runs-on: ${{ fromJSON(vars.PUBLIC_RUNNER_TAGS) }}
+    permissions:
+      # This is required for requesting the JWT
+      id-token: write
+      # This is required for actions/checkout
+      contents: read
+      packages: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -49,6 +55,17 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Set up container registry credentials
+        uses: heetch/actions/setup-aws-ecr@main
+        with:
+          role-to-assume: ${{ secrets.role_to_assume }}
+          role-session-name: ${{ secrets.role_session_name }}
+
+      - name: Create ECR repository
+        uses: heetch/actions/create-ecr-repository@main
+        with:
+          repository-name: gorush
+
       - name: Docker meta
         id: docker-meta
         uses: docker/metadata-action@v5
@@ -56,6 +73,7 @@ jobs:
           images: |
             ${{ github.repository }}
             ghcr.io/${{ github.repository }}
+            ${{ secrets.ecr_registry }}/gorush
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
             type=semver,pattern={{version}}
