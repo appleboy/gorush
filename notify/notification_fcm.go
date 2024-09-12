@@ -74,29 +74,72 @@ func GetAndroidNotification(req *PushNotification) []*messaging.Message {
 		if req.Image != "" {
 			req.Notification.ImageURL = req.Image
 		}
+		if req.MutableContent {
+			req.APNS = &messaging.APNSConfig{
+				Payload: &messaging.APNSPayload{
+					Aps: &messaging.Aps{
+						MutableContent: req.MutableContent,
+					},
+				},
+			}
+		}
+	}
+
+	// content-available is for background notifications and a badge, alert
+	// and sound keys should not be present.
+	// See: https://developer.apple.com/documentation/usernotifications/generating-a-remote-notification
+	if req.ContentAvailable {
+		req.APNS = &messaging.APNSConfig{
+			Headers: map[string]string{
+				"apns-priority": "5",
+			},
+			Payload: &messaging.APNSPayload{
+				Aps: &messaging.Aps{
+					ContentAvailable: req.ContentAvailable,
+					CustomData:       req.Data,
+				},
+			},
+		}
 	}
 
 	// Check if the notification has a sound
 	if req.Sound != nil {
 		sound, ok := req.Sound.(string)
-
-		if req.APNS == nil && ok {
-			req.APNS = &messaging.APNSConfig{
-				Payload: &messaging.APNSPayload{
+		if ok {
+			switch {
+			case req.APNS == nil:
+				req.APNS = &messaging.APNSConfig{
+					Payload: &messaging.APNSPayload{
+						Aps: &messaging.Aps{
+							Sound: sound,
+						},
+					},
+				}
+			case req.APNS.Payload == nil:
+				req.APNS.Payload = &messaging.APNSPayload{
 					Aps: &messaging.Aps{
 						Sound: sound,
 					},
-				},
+				}
+
+			case req.APNS.Payload.Aps == nil:
+				req.APNS.Payload.Aps = &messaging.Aps{
+					Sound: sound,
+				}
+			default:
+				req.APNS.Payload.Aps.Sound = sound
+
+			}
+
+			if req.Android == nil {
+				req.Android = &messaging.AndroidConfig{
+					Notification: &messaging.AndroidNotification{
+						Sound: sound,
+					},
+				}
 			}
 		}
 
-		if req.Android == nil && ok {
-			req.Android = &messaging.AndroidConfig{
-				Notification: &messaging.AndroidNotification{
-					Sound: sound,
-				},
-			}
-		}
 	}
 
 	// Check if the notification is a topic
@@ -181,6 +224,13 @@ Retry:
 		// FCM server error
 		logx.LogError.Error("FCM server error: " + err.Error())
 		return resp, err
+	}
+
+	if req.Development {
+		for i, msg := range messages {
+			m, _ := json.Marshal(msg)
+			logx.LogAccess.Infof("message #%d - %s", i, m)
+		}
 	}
 
 	res, err := client.Send(ctx, messages...)
