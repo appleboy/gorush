@@ -514,10 +514,10 @@ func TestMessageAndTitle(t *testing.T) {
 func TestIOSAlertNotificationStructure(t *testing.T) {
 	var dat map[string]interface{}
 	unix := time.Now().Unix()
-	stale_date := time.Now().Unix()
-	dismissal_date := stale_date + 5
+	staleDate := time.Now().Unix()
+	dismissalDate := staleDate + 5
 	timeStamp := time.Now().Unix()
-	itemId := float64(12345)
+	itemID := float64(12345)
 
 	req := &PushNotification{
 		Message: "Welcome",
@@ -534,12 +534,12 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 			TitleLocKey:  testMessage,
 		},
 		InterruptionLevel: testMessage,
-		StaleDate:         stale_date,
-		DismissalDate:     dismissal_date,
+		StaleDate:         staleDate,
+		DismissalDate:     dismissalDate,
 		Event:             testMessage,
 		Timestamp:         timeStamp,
 		ContentState: D{
-			"item_id":   itemId,
+			"item_id":   itemID,
 			"item_name": testMessage,
 		},
 	}
@@ -563,7 +563,7 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 	subtitle, _ := jsonparser.GetString(data, "aps", "alert", "subtitle")
 	titleLocKey, _ := jsonparser.GetString(data, "aps", "alert", "title-loc-key")
 	interruptionLevel, _ := jsonparser.GetString(data, "aps", "interruption-level")
-	staleDate, _ := jsonparser.GetInt(data, "aps", "stale-date")
+	staleDate, _ = jsonparser.GetInt(data, "aps", "stale-date")
 	event, _ := jsonparser.GetString(data, "aps", "event")
 	timestamp, _ := jsonparser.GetInt(data, "aps", "timestamp")
 	aps := dat["aps"].(map[string]interface{})
@@ -571,7 +571,7 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 	titleLocArgs := alert["title-loc-args"].([]interface{})
 	locArgs := alert["loc-args"].([]interface{})
 	contentState := aps["content-state"].(map[string]interface{})
-	contentStateItemId := contentState["item_id"]
+	contentStateItemID := contentState["item_id"]
 	contentStateItemName := contentState["item_name"]
 
 	assert.Equal(t, testMessage, action)
@@ -588,7 +588,7 @@ func TestIOSAlertNotificationStructure(t *testing.T) {
 	assert.Equal(t, unix, timestamp)
 
 	// dynamic contentState content
-	assert.Equal(t, contentStateItemId, itemId)
+	assert.Equal(t, contentStateItemID, itemID)
 	assert.Equal(t, contentStateItemName, testMessage)
 	assert.Contains(t, contentState, "item_id")
 	assert.Contains(t, contentState, "item_name")

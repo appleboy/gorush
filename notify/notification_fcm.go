@@ -128,7 +128,6 @@ func GetAndroidNotification(req *PushNotification) []*messaging.Message {
 				}
 			default:
 				req.APNS.Payload.Aps.Sound = sound
-
 			}
 
 			if req.Android == nil {
@@ -139,7 +138,6 @@ func GetAndroidNotification(req *PushNotification) []*messaging.Message {
 				}
 			}
 		}
-
 	}
 
 	// Check if the notification is a topic
