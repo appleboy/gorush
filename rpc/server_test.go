@@ -1,5 +1,38 @@
 package rpc
 
+import (
+	"math"
+	"testing"
+)
+
+func TestSafeIntToInt32(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   int
+		want    int32
+		wantErr bool
+	}{
+		{"Valid int32", 123, 123, false},
+		{"Max int32", math.MaxInt32, math.MaxInt32, false},
+		{"Min int32", math.MinInt32, math.MinInt32, false},
+		{"Overflow int32", math.MaxInt32 + 1, 0, true},
+		{"Underflow int32", math.MinInt32 - 1, 0, true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := safeIntToInt32(tt.input)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("safeIntToInt32() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("safeIntToInt32() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 // const gRPCAddr = "localhost:9000"
 
 // func initTest() *config.ConfYaml {

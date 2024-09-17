@@ -3,7 +3,9 @@ package rpc
 import (
 	"context"
 	"crypto/tls"
+	"errors"
 	"fmt"
+	"math"
 	"net"
 	"runtime/debug"
 	"strings"
@@ -116,10 +118,23 @@ func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*prot
 		}
 	}()
 
+	counts, err := safeIntToInt32(len(notification.Tokens))
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+
 	return &proto.NotificationReply{
 		Success: true,
-		Counts:  int32(len(notification.Tokens)),
+		Counts:  counts,
 	}, nil
+}
+
+// safeIntToInt32 converts an int to an int32, returning an error if the int is out of range.
+func safeIntToInt32(n int) (int32, error) {
+	if n < math.MinInt32 || n > math.MaxInt32 {
+		return 0, errors.New("integer overflow: value out of int32 range")
+	}
+	return int32(n), nil
 }
 
 // RunGRPCServer run gorush grpc server
