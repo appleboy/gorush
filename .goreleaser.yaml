@@ -11,7 +11,7 @@ builds:
       - windows
       - freebsd
     goarch:
-      - i386
+      - "386"
       - amd64
       - arm
       - arm64
