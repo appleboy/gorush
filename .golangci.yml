@@ -7,7 +7,6 @@ linters:
     - dogsled
     - dupl
     - errcheck
-    - exportloopref
     - exhaustive
     - gochecknoinits
     - goconst
@@ -33,6 +32,7 @@ linters:
     - unused
     - whitespace
     - gofumpt
+    - copyloopvar
 
 run:
   timeout: 3m
