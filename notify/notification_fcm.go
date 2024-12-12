@@ -140,21 +140,6 @@ func GetAndroidNotification(req *PushNotification) []*messaging.Message {
 		}
 	}
 
-	// Check if the notification is a topic
-	if req.IsTopic() {
-		message := &messaging.Message{
-			Notification: req.Notification,
-			Android:      req.Android,
-			Webpush:      req.Webpush,
-			APNS:         req.APNS,
-			FCMOptions:   req.FCMOptions,
-			Topic:        req.Topic,
-			Condition:    req.Condition,
-		}
-
-		messages = append(messages, message)
-	}
-
 	var data map[string]string
 	if len(req.Data) > 0 {
 		data = make(map[string]string, len(req.Data))
@@ -168,6 +153,26 @@ func GetAndroidNotification(req *PushNotification) []*messaging.Message {
 				}
 			}
 		}
+	}
+
+	// Check if the notification is a topic
+	if req.IsTopic() {
+		message := &messaging.Message{
+			Notification: req.Notification,
+			Android:      req.Android,
+			Webpush:      req.Webpush,
+			APNS:         req.APNS,
+			FCMOptions:   req.FCMOptions,
+			Topic:        req.Topic,
+			Condition:    req.Condition,
+		}
+
+		// Add another field
+		if len(req.Data) > 0 {
+			message.Data = data
+		}
+
+		messages = append(messages, message)
 	}
 
 	// Loop through the tokens and create a message for each one
