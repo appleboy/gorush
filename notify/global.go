@@ -28,6 +28,7 @@ var (
 		MaxIdleConns:        5,
 		MaxIdleConnsPerHost: 5,
 		MaxConnsPerHost:     20,
+		Proxy:               http.ProxyFromEnvironment, // Support proxy
 	}
 	feedbackClient = &http.Client{
 		Transport: transport,

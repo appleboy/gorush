@@ -23,7 +23,17 @@ func extractHeaders(headers []string) map[string]string {
 	return result
 }
 
-// DispatchFeedback sends a feedback to the configured gateway.
+// DispatchFeedback sends a feedback log entry to a specified URL via an HTTP POST request.
+//
+// Parameters:
+//   - ctx: The context for the HTTP request.
+//   - log: The log entry to be sent as feedback.
+//   - url: The destination URL for the feedback.
+//   - timeout: The timeout duration for the HTTP request in seconds.
+//   - header: A slice of strings representing additional headers to be included in the request.
+//
+// Returns:
+//   - error: An error if the request fails or the response status is not OK.
 func DispatchFeedback(ctx context.Context, log logx.LogPushEntry, url string, timeout int64, header []string) error {
 	if url == "" {
 		return errors.New("url can't be empty")
@@ -34,6 +44,8 @@ func DispatchFeedback(ctx context.Context, log logx.LogPushEntry, url string, ti
 		return err
 	}
 
+	ctx, cancel := context.WithTimeout(ctx, time.Duration(timeout)*time.Second)
+	defer cancel()
 	req, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewBuffer(payload))
 	if err != nil {
 		return err
@@ -41,7 +53,7 @@ func DispatchFeedback(ctx context.Context, log logx.LogPushEntry, url string, ti
 
 	headers := extractHeaders(header)
 	for k, v := range headers {
-		req.Header.Set(k, v)
+		req.Header.Set(k, strings.TrimSpace(v))
 	}
 
 	req.Header.Set("Content-Type", "application/json; charset=utf-8")
@@ -55,6 +67,10 @@ func DispatchFeedback(ctx context.Context, log logx.LogPushEntry, url string, ti
 
 	if err != nil {
 		return err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return errors.New("failed to send feedback")
 	}
 
 	return nil
