@@ -109,7 +109,7 @@ stat:
   redis:
     cluster: false
     addr: "localhost:6379" # if cluster is true, you may set this to "localhost:6379,localhost:6380,localhost:6381"
-		username: ""
+    username: ""
     password: ""
     db: 0
   boltdb:

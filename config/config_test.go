@@ -208,6 +208,7 @@ func (suite *ConfigTestSuite) TestValidateConf() {
 	assert.Equal(suite.T(), "memory", suite.ConfGorush.Stat.Engine)
 	assert.Equal(suite.T(), false, suite.ConfGorush.Stat.Redis.Cluster)
 	assert.Equal(suite.T(), "localhost:6379", suite.ConfGorush.Stat.Redis.Addr)
+	assert.Equal(suite.T(), "", suite.ConfGorush.Stat.Redis.Username)
 	assert.Equal(suite.T(), "", suite.ConfGorush.Stat.Redis.Password)
 	assert.Equal(suite.T(), 0, suite.ConfGorush.Stat.Redis.DB)
 
