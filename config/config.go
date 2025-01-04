@@ -109,6 +109,7 @@ stat:
   redis:
     cluster: false
     addr: "localhost:6379" # if cluster is true, you may set this to "localhost:6379,localhost:6380,localhost:6381"
+		username: ""
     password: ""
     db: 0
   boltdb:
@@ -263,6 +264,7 @@ type SectionRedisQueue struct {
 type SectionRedis struct {
 	Cluster  bool   `yaml:"cluster"`
 	Addr     string `yaml:"addr"`
+	Username string `yaml:"username"`
 	Password string `yaml:"password"`
 	DB       int    `yaml:"db"`
 }
@@ -427,6 +429,7 @@ func LoadConf(confPath ...string) (*ConfYaml, error) {
 	conf.Stat.Engine = viper.GetString("stat.engine")
 	conf.Stat.Redis.Cluster = viper.GetBool("stat.redis.cluster")
 	conf.Stat.Redis.Addr = viper.GetString("stat.redis.addr")
+	conf.Stat.Redis.Username = viper.GetString("stat.redis.username")
 	conf.Stat.Redis.Password = viper.GetString("stat.redis.password")
 	conf.Stat.Redis.DB = viper.GetInt("stat.redis.db")
 	conf.Stat.BoltDB.Path = viper.GetString("stat.boltdb.path")

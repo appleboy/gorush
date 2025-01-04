@@ -210,6 +210,7 @@ stat:
   redis:
     cluster: false
     addr: "localhost:6379" # if cluster is true, you may set this to "localhost:6379,localhost:6380,localhost:6381"
+    username: ""
     password: ""
     db: 0
   boltdb:
@@ -465,9 +466,9 @@ http -v --json GET http://localhost:8088/api/stat/go
 
 Gorush support the following API.
 
-- **GET**  `/api/stat/go` Golang cpu, memory, gc, etc information. Thanks for [golang-stats-api-handler](https://github.com/fukata/golang-stats-api-handler).
-- **GET**  `/api/stat/app` show notification success and failure counts.
-- **GET**  `/api/config` show server yml config file.
+- **GET** `/api/stat/go` Golang cpu, memory, gc, etc information. Thanks for [golang-stats-api-handler](https://github.com/fukata/golang-stats-api-handler).
+- **GET** `/api/stat/app` show notification success and failure counts.
+- **GET** `/api/config` show server yml config file.
 - **POST** `/api/push` push ios, android or huawei notifications.
 
 ### GET /api/stat/go
@@ -502,10 +503,7 @@ Golang cpu, memory, gc, etc information. Response with `200` http status code.
   "gc_num": 2,
   "gc_per_second": 0,
   "gc_pause_per_second": 0,
-  "gc_pause": [
-    0.326576,
-    0.227096
-  ]
+  "gc_pause": [0.326576, 0.227096]
 }
 ```
 
@@ -547,7 +545,7 @@ Show response time, status code count, etc.
   "uptime_sec": 102.428010614,
   "time": "2016-06-26 12:27:11.675973571 +0800 CST",
   "unixtime": 1466915231,
-  "status_code_count": { },
+  "status_code_count": {},
   "total_status_code_count": {
     "200": 5
   },
@@ -684,7 +682,7 @@ See more example about [iOS](#ios-example), [Android](#android-example) or [Huaw
 The Request body must have a notifications array. The following is a parameter table for each notification.
 
 | name                    | type         | description                                                                                       | required | note                                                          |
-|-------------------------|--------------|---------------------------------------------------------------------------------------------------|----------|---------------------------------------------------------------|
+| ----------------------- | ------------ | ------------------------------------------------------------------------------------------------- | -------- | ------------------------------------------------------------- |
 | notif_id                | string       | A unique string that identifies the notification for async feedback                               | -        |                                                               |
 | tokens                  | string array | device tokens                                                                                     | o        |                                                               |
 | platform                | int          | platform(iOS,Android)                                                                             | o        | 1=iOS, 2=Android (Firebase), 3=Huawei (HMS)                   |
@@ -700,7 +698,7 @@ The Request body must have a notifications array. The following is a parameter t
 | image                   | string       | image url to show in notification                                                                 | -        | only Android and Huawei                                       |
 | to                      | string       | The value must be a registration token, notification key, or topic.                               | -        | only Android                                                  |
 | collapse_key            | string       | a key for collapsing notifications                                                                | -        | only Android                                                  |
-| huawei_collapse_key     | int          | a key integer for collapsing notifications                                                        | -        | only Huawei  See the [detail](#huawei-notification)           |
+| huawei_collapse_key     | int          | a key integer for collapsing notifications                                                        | -        | only Huawei See the [detail](#huawei-notification)            |
 | delay_while_idle        | bool         | a flag for device idling                                                                          | -        | only Android                                                  |
 | time_to_live            | uint         | expiration of message kept on FCM storage                                                         | -        | only Android                                                  |
 | huawei_ttl              | string       | expiration of message kept on HMS storage                                                         | -        | only Huawei See the [detail](#huawei-notification)            |
@@ -723,17 +721,17 @@ The Request body must have a notifications array. The following is a parameter t
 | volume                  | float32      | sets the volume value on the aps sound dictionary.                                                | -        | only iOS                                                      |
 | interruption_level      | string       | defines the interruption level for the push notification.                                         | -        | only iOS(15.0+)                                               |
 | content-state           | string array | dynamic and custom content for live-activity notification.                                        | -        | only iOS(16.1+)                                               |
-| timestamp               | int          | the UNIX time when sending the remote notification that updates or ends a Live Activity           | -        | only iOS(16.1+)                                               |                                            
-| event                   | string       | describes whether you update or end an ongoing Live Activity                                      | -        | only iOS(16.1+)                                               |     
+| timestamp               | int          | the UNIX time when sending the remote notification that updates or ends a Live Activity           | -        | only iOS(16.1+)                                               |
+| event                   | string       | describes whether you update or end an ongoing Live Activity                                      | -        | only iOS(16.1+)                                               |
 | stale-date              | int          | the date which a Live Activity becomes stale, or out of date                                      | -        | only iOS(16.1+)                                               |
 | dismissal-date          | int          | the UNIX time -timestamp- which a Live Activity will end and will be removed                      | -        | only iOS(16.1+)                                               |
 
 ### iOS alert payload
 
 | name           | type             | description                                                                                      | required | note |
-|----------------|------------------|--------------------------------------------------------------------------------------------------|----------|------|
+| -------------- | ---------------- | ------------------------------------------------------------------------------------------------ | -------- | ---- |
 | title          | string           | Apple Watch & Safari display this string as part of the notification interface.                  | -        |      |
-| body           | string           | The text of the alert message.                  | -        |      |
+| body           | string           | The text of the alert message.                                                                   | -        |      |
 | subtitle       | string           | Apple Watch & Safari display this string as part of the notification interface.                  | -        |      |
 | action         | string           | The label of the action button. This one is required for Safari Push Notifications.              | -        |      |
 | action-loc-key | string           | If a string is specified, the system displays an alert that includes the Close and View buttons. | -        |      |
@@ -747,11 +745,11 @@ See more detail about [APNs Remote Notification Payload](https://developer.apple
 
 ### iOS sound payload
 
-| name           | type             | description                                                                                      | required | note |
-|----------------|------------------|--------------------------------------------------------------------------------------------------|----------|------|
-| name           | string           | sets the name value on the aps sound dictionary.                                                 | -        |      |
-| volume         | float32          | sets the volume value on the aps sound dictionary.                                               | -        |      |
-| critical       | int              | sets the critical value on the aps sound dictionary.                                             | -        |      |
+| name     | type    | description                                          | required | note |
+| -------- | ------- | ---------------------------------------------------- | -------- | ---- |
+| name     | string  | sets the name value on the aps sound dictionary.     | -        |      |
+| volume   | float32 | sets the volume value on the aps sound dictionary.   | -        |      |
+| critical | int     | sets the critical value on the aps sound dictionary. | -        |      |
 
 request format:
 
@@ -768,7 +766,7 @@ request format:
 ### Android notification payload
 
 | name           | type   | description                                                                                               | required | note |
-|----------------|--------|-----------------------------------------------------------------------------------------------------------|----------|------|
+| -------------- | ------ | --------------------------------------------------------------------------------------------------------- | -------- | ---- |
 | icon           | string | Indicates notification icon.                                                                              | -        |      |
 | tag            | string | Indicates whether each notification message results in a new entry on the notification center on Android. | -        |      |
 | color          | string | Indicates color of the icon, expressed in #rrggbb format                                                  | -        |      |
@@ -818,9 +816,9 @@ The following payload asks the system to display an alert with a Close button an
       "platform": 1,
       "badge": 5,
       "alert": {
-        "title" : "Game Request",
-        "body" : "Bob wants to play poker",
-        "action-loc-key" : "PLAY"
+        "title": "Game Request",
+        "body": "Bob wants to play poker",
+        "action-loc-key": "PLAY"
       }
     }
   ]
@@ -913,7 +911,7 @@ Add `notification` payload.
       "platform": 2,
       "message": "Hello World Android!",
       "title": "You got message",
-      "notification" : {
+      "notification": {
         "icon": "myicon",
         "color": "#112244"
       }
@@ -933,9 +931,9 @@ Add other fields which user defined via `data` field.
       "message": "Hello World Android!",
       "title": "You got message",
       "data": {
-       "Nick" : "Mario",
-       "body" : "great match!",
-       "Room" : "PortugalVSDenmark"
+        "Nick": "Mario",
+        "body": "great match!",
+        "Room": "PortugalVSDenmark"
       }
     }
   ]
@@ -983,7 +981,7 @@ Add `notification` payload.
       "platform": 3,
       "message": "Hello World Huawei!",
       "title": "You got message",
-      "huawei_notification" : {
+      "huawei_notification": {
         "icon": "myicon",
         "color": "#112244"
       }
@@ -1026,7 +1024,7 @@ Send messages to topics
 Error response message table:
 
 | status code | message                                    |
-|-------------|--------------------------------------------|
+| ----------- | ------------------------------------------ |
 | 400         | Missing `notifications` field.             |
 | 400         | Notifications field is empty.              |
 | 400         | Number of notifications(50) over limit(10) |
@@ -1176,14 +1174,16 @@ func main() {
 See the Node.js example and see more detail from [README](rpc/example/node/README.md):
 
 ```js
-var messages = require('./gorush_pb');
-var services = require('./gorush_grpc_pb');
+var messages = require("./gorush_pb");
+var services = require("./gorush_grpc_pb");
 
-var grpc = require('grpc');
+var grpc = require("grpc");
 
 function main() {
-  var client = new services.GorushClient('localhost:9000',
-    grpc.credentials.createInsecure());
+  var client = new services.GorushClient(
+    "localhost:9000",
+    grpc.credentials.createInsecure()
+  );
   var request = new messages.NotificationRequest();
   var alert = new messages.Alert();
   request.setPlatform(2);
@@ -1192,14 +1192,14 @@ function main() {
   request.setTitle("hello2");
   request.setBadge(2);
   request.setCategory("mycategory");
-  request.setSound("sound")
+  request.setSound("sound");
   alert.setTitle("title");
   request.setAlert(alert);
   request.setThreadid("threadID");
   request.setContentavailable(false);
   request.setMutablecontent(false);
   client.send(request, function (err, response) {
-    if(err) {
+    if (err) {
       console.log(err);
     } else {
       console.log("Success:", response.getSuccess());
