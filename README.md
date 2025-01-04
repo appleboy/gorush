@@ -260,19 +260,19 @@ go install github.com/appleboy/gorush
 On linux
 
 ```sh
-wget https://github.com/appleboy/gorush/releases/download/v1.16.3/gorush-1.16.3-linux-amd64 -O gorush
+wget https://github.com/appleboy/gorush/releases/download/v1.18.9/gorush-1.18.9-linux-amd64 -O gorush
 ```
 
 On macOS (Intel amd64)
 
 ```sh
-wget -c https://github.com/appleboy/gorush/releases/download/v1.16.3/gorush-1.16.3-darwin-amd64 -O gorush
+wget -c https://github.com/appleboy/gorush/releases/download/v1.18.9/gorush-1.18.9-darwin-amd64 -O gorush
 ```
 
 On macOS (Apple arm64)
 
 ```sh
-wget -c https://github.com/appleboy/gorush/releases/download/v1.16.3/gorush-1.16.3-darwin-arm64 -O gorush
+wget -c https://github.com/appleboy/gorush/releases/download/v1.18.9/gorush-1.18.9-darwin-arm64 -O gorush
 ```
 
 ### Install from source
@@ -280,7 +280,7 @@ wget -c https://github.com/appleboy/gorush/releases/download/v1.16.3/gorush-1.16
 #### Prerequisite Tools
 
 - [Git](http://git-scm.com/)
-- [Go (at least Go 1.21)](https://go.dev/dl/)
+- [Go (at least Go 1.22)](https://go.dev/dl/)
 
 #### Fetch from GitHub
 
