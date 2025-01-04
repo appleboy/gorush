@@ -65,6 +65,7 @@ func InitAppStatus(conf *config.ConfYaml) error {
 	case "redis":
 		store = redis.New(
 			conf.Stat.Redis.Addr,
+			conf.Stat.Redis.Username,
 			conf.Stat.Redis.Password,
 			conf.Stat.Redis.DB,
 			conf.Stat.Redis.Cluster,

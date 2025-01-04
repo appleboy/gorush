@@ -17,6 +17,7 @@ var _ core.Storage = (*Storage)(nil)
 // New func implements the storage interface for gorush (https://github.com/appleboy/gorush)
 func New(
 	addr string,
+	username string,
 	password string,
 	db int,
 	isCluster bool,
@@ -24,6 +25,7 @@ func New(
 	return &Storage{
 		ctx:       context.Background(),
 		addr:      addr,
+		username:  username,
 		password:  password,
 		db:        db,
 		isCluster: isCluster,
@@ -35,6 +37,7 @@ type Storage struct {
 	ctx       context.Context
 	client    redis.Cmdable
 	addr      string
+	username  string
 	password  string
 	db        int
 	isCluster bool
@@ -59,6 +62,7 @@ func (s *Storage) Init() error {
 	if s.isCluster {
 		s.client = redis.NewClusterClient(&redis.ClusterOptions{
 			Addrs:    strings.Split(s.addr, ","),
+			Username: s.username,
 			Password: s.password,
 		})
 	} else {

@@ -12,6 +12,7 @@ import (
 func TestRedisServerError(t *testing.T) {
 	redis := New(
 		"redis:6370", // addr
+		"",           // username
 		"",           // password
 		0,            // db
 		false,        // cluster
@@ -26,6 +27,7 @@ func TestRedisEngine(t *testing.T) {
 
 	redis := New(
 		"redis:6379", // addr
+		"",           // username
 		"",           // password
 		0,            // db
 		false,        // cluster
