@@ -143,8 +143,8 @@ github.com/golang-queue/nsq v0.2.0 h1:l/QvA/PNWLE+ARpCTDgHjlXoxqqc/1z6F+Qj4y8+sM
 github.com/golang-queue/nsq v0.2.0/go.mod h1:mPORoiVbH63NnyrAtFlX3+peHbtb3oJm2LAnd5+9BKA=
 github.com/golang-queue/queue v0.1.4-0.20221230133718-0314ef173f98 h1:T2DoUcMWZr6uSUQAr5wCEzOiwHB1zJOiATAZ4BUAefg=
 github.com/golang-queue/queue v0.1.4-0.20221230133718-0314ef173f98/go.mod h1:8P7IgwdxwKh0/W1I9yCuQQGI8OHIuc7fIHi4OYr1COU=
-github.com/golang-queue/redisdb-stream v0.0.4 h1:7qdCqqdEUETxzq5DuWa/z02x2sW6DJhDd0NNeCR/vqU=
-github.com/golang-queue/redisdb-stream v0.0.4/go.mod h1:fNrufkoQlUbTF7DBwba6rUtCs380QjFUG1eVeQCazsU=
+github.com/golang-queue/redisdb-stream v0.1.0 h1:Qu+okTgPFOhN64WQDH+2+DeQp9LUQMGql6TLy6mM0q4=
+github.com/golang-queue/redisdb-stream v0.1.0/go.mod h1:fNrufkoQlUbTF7DBwba6rUtCs380QjFUG1eVeQCazsU=
 github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b/go.mod h1:SBH7ygxi8pfUlaOkMMuAQtPIUF8ecWP5IEl/CR7VP2Q=
 github.com/golang/glog v1.2.2 h1:1+mZ9upx1Dh6FmUTFR1naJ77miKiXgALjWOZ3NVFPmY=
 github.com/golang/glog v1.2.2/go.mod h1:6AhwSGph0fcJtXVM/PEHPqZlFeoLxhs7/t5UDAwmO+w=

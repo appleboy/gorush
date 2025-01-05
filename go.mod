@@ -18,7 +18,7 @@ require (
 	github.com/golang-queue/nats v0.1.0
 	github.com/golang-queue/nsq v0.2.0
 	github.com/golang-queue/queue v0.1.4-0.20221230133718-0314ef173f98
-	github.com/golang-queue/redisdb-stream v0.0.4
+	github.com/golang-queue/redisdb-stream v0.1.0
 	github.com/golang/protobuf v1.5.4
 	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
