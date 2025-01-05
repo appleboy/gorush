@@ -1,9 +1,14 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: frontend
+  name: gorush
+  namespace: gorush
 spec:
-  replicas: 3
+  replicas: 2
+  selector:
+    matchLabels:
+      app: gorush
+      tier: frontend
   template:
     metadata:
       labels:
@@ -11,17 +16,34 @@ spec:
         tier: frontend
     spec:
       containers:
-      - name: gorush
-        image: appleboy/gorush
-        command: ["/gorush"]
-        args: ["-c", "config.yml", "-e", "redis", "--redis-addr", "redis-master:6379"]
-        env:
-        - name: GET_HOSTS_FROM
-          # value: dns
-          # If your cluster config does not include a dns service, then to
-          # instead access environment variables to find service host
-          # info, comment out the 'value: dns' line above, and uncomment the
-          # line below:
-          value: env
-        ports:
-        - containerPort: 8088
+        - image: appleboy/gorush:1.18.4
+          name: gorush
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8088
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8000
+            initialDelaySeconds: 3
+            periodSeconds: 3
+          env:
+            - name: GORUSH_STAT_ENGINE
+              valueFrom:
+                configMapKeyRef:
+                  name: gorush-config
+                  key: stat.engine
+            - name: GORUSH_STAT_REDIS_ADDR
+              valueFrom:
+                configMapKeyRef:
+                  name: gorush-config
+                  key: stat.redis.host
+            - name: GORUSH_CORE_PORT
+              value: "8000"

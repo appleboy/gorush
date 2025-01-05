@@ -4,7 +4,7 @@ EXECUTABLE := gorush
 GO ?= go
 DEPLOY_ACCOUNT := appleboy
 DEPLOY_IMAGE := $(EXECUTABLE)
-GOFMT ?= gofmt "-s"
+GOFMT ?= gofumpt -l -s -extra
 
 TARGETS ?= linux darwin windows
 ARCHS ?= amd64 386
@@ -27,133 +27,64 @@ else
 	VERSION ?= $(shell git describe --tags --always || git rev-parse --short HEAD)
 endif
 
+COMMIT ?= $(shell git rev-parse --short HEAD)
+
 .PHONY: all
 all: build
 
 init:
-ifeq ($(ANDROID_API_KEY),)
-	@echo "Missing ANDROID_API_KEY Parameter"
+ifeq ($(FCM_CREDENTIAL),)
+	@echo "Missing FCM_CREDENTIAL Parameter"
 	@exit 1
 endif
-ifeq ($(ANDROID_TEST_TOKEN),)
-	@echo "Missing ANDROID_TEST_TOKEN Parameter"
+ifeq ($(FCM_TEST_TOKEN),)
+	@echo "Missing FCM_TEST_TOKEN Parameter"
 	@exit 1
 endif
-	@echo "Already set ANDROID_API_KEY and ANDROID_TEST_TOKEN globale variable."
-
-fmt:
-	$(GOFMT) -w $(GOFILES)
-
-.PHONY: fmt-check
-fmt-check:
-	@diff=$$($(GOFMT) -d $(GOFILES)); \
-	if [ -n "$$diff" ]; then \
-		echo "Please run 'make fmt' and commit the result:"; \
-		echo "$${diff}"; \
-		exit 1; \
-	fi;
+	@echo "Already set FCM_CREDENTIAL and endif global variable."
 
 vet:
-	$(GO) vet $(PACKAGES)
-
-deps:
-	$(GO) get github.com/campoy/embedmd
+	$(GO) vet ./...
 
 embedmd:
+	@hash embedmd > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
+		$(GO) install github.com/campoy/embedmd@master; \
+	fi
 	embedmd -d *.md
 
-errcheck:
-	@hash errcheck > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		$(GO) get -u github.com/kisielk/errcheck; \
-	fi
-	errcheck $(PACKAGES)
-
-lint:
-	@hash golint > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		$(GO) get -u github.com/golang/lint/golint; \
-	fi
-	for PKG in $(PACKAGES); do golint -set_exit_status $$PKG || exit 1; done;
-
-unconvert:
-	@hash unconvert > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		$(GO) get -u github.com/mdempsky/unconvert; \
-	fi
-	for PKG in $(PACKAGES); do unconvert -v $$PKG || exit 1; done;
-
-# Install from source.
-install: $(SOURCES)
-	$(GO) install -v -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)'
-	@echo "==> Installed gorush ${GOPATH}/bin/gorush"
 .PHONY: install
+install: $(GOFILES)
+	$(GO) install -v -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)'
+	@echo "\n==>\033[32m Installed gorush to ${GOPATH}/bin/gorush\033[m"
 
-# build from source
-build: $(EXECUTABLE)
 .PHONY: build
+build: $(EXECUTABLE)
 
-$(EXECUTABLE): $(SOURCES)
-	$(GO) build -v -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)' -o bin/$@
+.PHONY: $(EXECUTABLE)
+$(EXECUTABLE): $(GOFILES)
+	$(GO) build -v -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)' -o release/$@
 
-.PHONY: misspell-check
-misspell-check:
-	@hash misspell > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		$(GO) get -u github.com/client9/misspell/cmd/misspell; \
-	fi
-	misspell -error $(GOFILES)
+.PHONY: test
+test: init
+	@$(GO) test -v -cover -tags $(TAGS) -coverprofile coverage.txt ./... && echo "\n==>\033[32m Ok\033[m\n" || exit 1
 
-.PHONY: misspell
-misspell:
-	@hash misspell > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		$(GO) get -u github.com/client9/misspell/cmd/misspell; \
-	fi
-	misspell -w $(GOFILES)
-
-test: fmt-check
-	for PKG in $(PACKAGES); do $(GO) test -v -cover -coverprofile $$GOPATH/src/$$PKG/coverage.txt $$PKG || exit 1; done;
-
-.PHONY: test-vendor
-test-vendor:
-	@hash govendor > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		$(GO) get -u github.com/kardianos/govendor; \
-	fi
-	govendor list +unused | tee "$(TMPDIR)/wc-gitea-unused"
-	[ $$(cat "$(TMPDIR)/wc-gitea-unused" | wc -l) -eq 0 ] || echo "Warning: /!\\ Some vendor are not used /!\\"
-
-	govendor list +outside | tee "$(TMPDIR)/wc-gitea-outside"
-	[ $$(cat "$(TMPDIR)/wc-gitea-outside" | wc -l) -eq 0 ] || exit 1
-
-	govendor status || exit 1
-
-redis_test: init
-	$(GO) test -v -cover ./storage/redis/...
-
-boltdb_test: init
-	$(GO) test -v -cover ./storage/boltdb/...
-
-memory_test: init
-	$(GO) test -v -cover ./storage/memory/...
-
-buntdb_test: init
-	$(GO) test -v -cover ./storage/buntdb/...
-
-leveldb_test: init
-	$(GO) test -v -cover ./storage/leveldb/...
-
-config_test: init
-	$(GO) test -v -cover ./config/...
-
-html:
-	$(GO) tool cover -html=.cover/coverage.txt
-
-release: release-dirs release-build release-copy release-check
+release: release-dirs release-build release-copy release-compress release-check
 
 release-dirs:
 	mkdir -p $(DIST)/binaries $(DIST)/release
 
 release-build:
 	@hash gox > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		$(GO) get -u github.com/mitchellh/gox; \
+		$(GO) install github.com/mitchellh/gox@v1.0.1; \
 	fi
 	gox -os="$(TARGETS)" -arch="$(ARCHS)" -tags="$(TAGS)" -ldflags="$(EXTLDFLAGS)-s -w $(LDFLAGS)" -output="$(DIST)/binaries/$(EXECUTABLE)-$(VERSION)-{{.OS}}-{{.Arch}}"
+
+.PHONY: release-compress
+release-compress:
+	@hash gxz > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
+		$(GO) install github.com/ulikunitz/xz/cmd/gxz@v0.5.10; \
+	fi
+	cd $(DIST)/release/; for file in `find . -type f -name "*"`; do echo "compressing $${file}" && gxz -k -9 $${file}; done;
 
 release-copy:
 	$(foreach file,$(wildcard $(DIST)/binaries/$(EXECUTABLE)-*),cp $(file) $(DIST)/release/$(notdir $(file));)
@@ -186,20 +117,37 @@ endif
 	docker push $(DEPLOY_ACCOUNT)/$(EXECUTABLE):$(tag)
 
 clean:
-	$(GO) clean -x -i ./...
+	$(GO) clean -modcache -x -i ./...
 	find . -name coverage.txt -delete
 	find . -name *.tar.gz -delete
 	find . -name *.db -delete
-	-rm -rf bin/* \
-		.cover
+	-rm -rf release dist .cover
 
-rpc/example/node/gorush_*_pb.js: rpc/proto/gorush.proto
-	protoc -I rpc/proto rpc/proto/gorush.proto --js_out=import_style=commonjs,binary:rpc/example/node/ --grpc_out=rpc/example/node/ --plugin=protoc-gen-grpc=$(NODE_PROTOC_PLUGIN)
+.PHONY: proto_install
+proto_install:
+	$(GO) install google.golang.org/protobuf/cmd/protoc-gen-go@$(PROTOC_GEN_GO)
+	$(GO) install google.golang.org/grpc/cmd/protoc-gen-go-grpc@$(PROTOC_GEN_GO_GRPC)
 
-rpc/proto/gorush.pb.go: rpc/proto/gorush.proto
-	protoc -I rpc/proto rpc/proto/gorush.proto --go_out=plugins=grpc:rpc/proto
+generate_proto_js:
+	npm install grpc-tools
+	protoc -I rpc/proto rpc/proto/gorush.proto --js_out=import_style=commonjs,binary:rpc/example/node/ --grpc_out=rpc/example/node/ --plugin=protoc-gen-grpc="node_modules/.bin/grpc_tools_node_protoc_plugin"
 
-generate_proto: rpc/proto/gorush.pb.go rpc/example/node/gorush_*_pb.js
+generate_proto_go:
+	protoc -I rpc/proto rpc/proto/gorush.proto --go_out=rpc/proto --go-grpc_out=require_unimplemented_servers=false:rpc/proto
+
+generate_proto: generate_proto_go generate_proto_js
+
+# install air command
+.PHONY: air
+air:
+	@hash air > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
+		$(GO) install github.com/cosmtrek/air@latest; \
+	fi
+
+# run air
+.PHONY: dev
+dev: air
+	air --build.cmd "make" --build.bin release/gorush
 
 version:
 	@echo $(VERSION)

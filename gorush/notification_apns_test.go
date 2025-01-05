@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/eencloud/gorush/config"
 	"github.com/buger/jsonparser"
+	"github.com/eencloud/gorush/config"
 	"github.com/sideshow/apns2"
 	"github.com/stretchr/testify/assert"
 )
@@ -200,18 +200,19 @@ func TestCheckSilentNotification(t *testing.T) {
 
 // URL: https://goo.gl/5xFo3C
 // Example 2
-// {
-//     "aps" : {
-//         "alert" : {
-//             "title" : "Game Request",
-//             "body" : "Bob wants to play poker",
-//             "action-loc-key" : "PLAY"
-//         },
-//         "badge" : 5
-//     },
-//     "acme1" : "bar",
-//     "acme2" : [ "bang",  "whiz" ]
-// }
+//
+//	{
+//	    "aps" : {
+//	        "alert" : {
+//	            "title" : "Game Request",
+//	            "body" : "Bob wants to play poker",
+//	            "action-loc-key" : "PLAY"
+//	        },
+//	        "badge" : 5
+//	    },
+//	    "acme1" : "bar",
+//	    "acme2" : [ "bang",  "whiz" ]
+//	}
 func TestAlertStringExample2ForIos(t *testing.T) {
 	var dat map[string]interface{}
 
@@ -247,15 +248,16 @@ func TestAlertStringExample2ForIos(t *testing.T) {
 
 // URL: https://goo.gl/5xFo3C
 // Example 3
-// {
-//     "aps" : {
-//         "alert" : "You got your emails.",
-//         "badge" : 9,
-//         "sound" : "bingbong.aiff"
-//     },
-//     "acme1" : "bar",
-//     "acme2" : 42
-// }
+//
+//	{
+//	    "aps" : {
+//	        "alert" : "You got your emails.",
+//	        "badge" : 9,
+//	        "sound" : "bingbong.aiff"
+//	    },
+//	    "acme1" : "bar",
+//	    "acme2" : 42
+//	}
 func TestAlertStringExample3ForIos(t *testing.T) {
 	var dat map[string]interface{}
 

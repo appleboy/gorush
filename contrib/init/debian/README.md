@@ -27,7 +27,7 @@ create gorush configuration file.
 
 ```sh
 mkdir -p /etc/gorush
-cp config/config.yml /etc/gorush/
+cp config/testdata/config.yml /etc/gorush/
 ```
 
 start gorush service.

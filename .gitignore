@@ -25,13 +25,17 @@ _testmain.go
 
 gin-bin
 key.pem
-bin/*
 .DS_Store
 gorush/log/*.log
 gorush.db
-Dockerfile.tmp
 .cover
 *.db*
 coverage.txt
 dist
 custom
+release
+coverage.txt
+node_modules
+config.yml
+dist/
+.idea

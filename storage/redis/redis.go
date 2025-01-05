@@ -1,130 +1,96 @@
 package redis
 
 import (
-	"log"
+	"context"
+	"fmt"
+	"reflect"
 	"strconv"
+	"strings"
 
-	"github.com/eencloud/gorush/config"
-	"github.com/eencloud/gorush/storage"
+	"github.com/eencloud/gorush/core"
 
-	"gopkg.in/redis.v5"
+	"github.com/redis/go-redis/v9"
 )
 
-//
-var redisClient *redis.Client
+var _ core.Storage = (*Storage)(nil)
 
-// New func implements the storage interface for gorush (https://github.com/eencloud/gorush)
-func New(config config.ConfYaml) *Storage {
+// New func implements the storage interface for gorush (https://github.com/appleboy/gorush)
+func New(
+	addr string,
+	username string,
+	password string,
+	db int,
+	isCluster bool,
+) *Storage {
 	return &Storage{
-		config: config,
+		ctx:       context.Background(),
+		addr:      addr,
+		username:  username,
+		password:  password,
+		db:        db,
+		isCluster: isCluster,
 	}
-}
-
-func getInt64(key string, count *int64) {
-	val, _ := redisClient.Get(key).Result()
-	*count, _ = strconv.ParseInt(val, 10, 64)
 }
 
 // Storage is interface structure
 type Storage struct {
-	config config.ConfYaml
+	ctx       context.Context
+	client    redis.Cmdable
+	addr      string
+	username  string
+	password  string
+	db        int
+	isCluster bool
+}
+
+func (s *Storage) Add(key string, count int64) {
+	s.client.IncrBy(s.ctx, key, count)
+}
+
+func (s *Storage) Set(key string, count int64) {
+	s.client.Set(s.ctx, key, count, 0)
+}
+
+func (s *Storage) Get(key string) int64 {
+	val, _ := s.client.Get(s.ctx, key).Result()
+	count, _ := strconv.ParseInt(val, 10, 64)
+	return count
 }
 
 // Init client storage.
 func (s *Storage) Init() error {
-	redisClient = redis.NewClient(&redis.Options{
-		Addr:     s.config.Stat.Redis.Addr,
-		Password: s.config.Stat.Redis.Password,
-		DB:       s.config.Stat.Redis.DB,
-	})
+	if s.isCluster {
+		s.client = redis.NewClusterClient(&redis.ClusterOptions{
+			Addrs:    strings.Split(s.addr, ","),
+			Username: s.username,
+			Password: s.password,
+		})
+	} else {
+		s.client = redis.NewClient(&redis.Options{
+			Addr:     s.addr,
+			Password: s.password,
+			DB:       s.db,
+		})
+	}
 
-	_, err := redisClient.Ping().Result()
-
-	if err != nil {
-		// redis server error
-		log.Println("Can't connect redis server: " + err.Error())
-
+	if err := s.client.Ping(s.ctx).Err(); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-// Reset Client storage.
-func (s *Storage) Reset() {
-	redisClient.Set(storage.TotalCountKey, strconv.Itoa(0), 0)
-	redisClient.Set(storage.IosSuccessKey, strconv.Itoa(0), 0)
-	redisClient.Set(storage.IosErrorKey, strconv.Itoa(0), 0)
-	redisClient.Set(storage.AndroidSuccessKey, strconv.Itoa(0), 0)
-	redisClient.Set(storage.AndroidErrorKey, strconv.Itoa(0), 0)
-}
-
-// AddTotalCount record push notification count.
-func (s *Storage) AddTotalCount(count int64) {
-	total := s.GetTotalCount() + count
-	redisClient.Set(storage.TotalCountKey, strconv.Itoa(int(total)), 0)
-}
-
-// AddIosSuccess record counts of success iOS push notification.
-func (s *Storage) AddIosSuccess(count int64) {
-	total := s.GetIosSuccess() + count
-	redisClient.Set(storage.IosSuccessKey, strconv.Itoa(int(total)), 0)
-}
-
-// AddIosError record counts of error iOS push notification.
-func (s *Storage) AddIosError(count int64) {
-	total := s.GetIosError() + count
-	redisClient.Set(storage.IosErrorKey, strconv.Itoa(int(total)), 0)
-}
-
-// AddAndroidSuccess record counts of success Android push notification.
-func (s *Storage) AddAndroidSuccess(count int64) {
-	total := s.GetAndroidSuccess() + count
-	redisClient.Set(storage.AndroidSuccessKey, strconv.Itoa(int(total)), 0)
-}
-
-// AddAndroidError record counts of error Android push notification.
-func (s *Storage) AddAndroidError(count int64) {
-	total := s.GetAndroidError() + count
-	redisClient.Set(storage.AndroidErrorKey, strconv.Itoa(int(total)), 0)
-}
-
-// GetTotalCount show counts of all notification.
-func (s *Storage) GetTotalCount() int64 {
-	var count int64
-	getInt64(storage.TotalCountKey, &count)
-
-	return count
-}
-
-// GetIosSuccess show success counts of iOS notification.
-func (s *Storage) GetIosSuccess() int64 {
-	var count int64
-	getInt64(storage.IosSuccessKey, &count)
-
-	return count
-}
-
-// GetIosError show error counts of iOS notification.
-func (s *Storage) GetIosError() int64 {
-	var count int64
-	getInt64(storage.IosErrorKey, &count)
-
-	return count
-}
-
-// GetAndroidSuccess show success counts of Android notification.
-func (s *Storage) GetAndroidSuccess() int64 {
-	var count int64
-	getInt64(storage.AndroidSuccessKey, &count)
-
-	return count
-}
-
-// GetAndroidError show error counts of Android notification.
-func (s *Storage) GetAndroidError() int64 {
-	var count int64
-	getInt64(storage.AndroidErrorKey, &count)
-
-	return count
+// Close the storage connection
+func (s *Storage) Close() error {
+	switch v := s.client.(type) {
+	case *redis.Client:
+		return v.Close()
+	case *redis.ClusterClient:
+		return v.Close()
+	case nil:
+		return nil
+	default:
+		// this will not happen anyway, unless we mishandle it on `Init`
+		panic(fmt.Sprintf("invalid redis client: %v", reflect.TypeOf(v)))
+	}
 }

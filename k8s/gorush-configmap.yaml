@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gorush-config
+  namespace: gorush
+data:
+  # stat
+  stat.engine: redis
+  stat.redis.host: redis:6379

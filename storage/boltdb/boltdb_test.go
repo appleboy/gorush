@@ -1,47 +1,48 @@
 package boltdb
 
 import (
+	"sync"
 	"testing"
 
-	c "github.com/eencloud/gorush/config"
+	"github.com/eencloud/gorush/core"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestBoltDBEngine(t *testing.T) {
 	var val int64
 
-	config := c.BuildDefaultPushConf()
-
-	boltDB := New(config)
+	boltDB := New("", "gorush")
 	err := boltDB.Init()
 	assert.Nil(t, err)
-	boltDB.Reset()
 
-	boltDB.AddTotalCount(10)
-	val = boltDB.GetTotalCount()
-	assert.Equal(t, int64(10), val)
-	boltDB.AddTotalCount(10)
-	val = boltDB.GetTotalCount()
-	assert.Equal(t, int64(20), val)
-
-	boltDB.AddIosSuccess(20)
-	val = boltDB.GetIosSuccess()
-	assert.Equal(t, int64(20), val)
-
-	boltDB.AddIosError(30)
-	val = boltDB.GetIosError()
-	assert.Equal(t, int64(30), val)
-
-	boltDB.AddAndroidSuccess(40)
-	val = boltDB.GetAndroidSuccess()
-	assert.Equal(t, int64(40), val)
-
-	boltDB.AddAndroidError(50)
-	val = boltDB.GetAndroidError()
-	assert.Equal(t, int64(50), val)
-
-	// test reset db
-	boltDB.Reset()
-	val = boltDB.GetAndroidError()
+	// reset the value of the key to 0
+	boltDB.Set(core.HuaweiSuccessKey, 0)
+	val = boltDB.Get(core.HuaweiSuccessKey)
 	assert.Equal(t, int64(0), val)
+
+	boltDB.Add(core.HuaweiSuccessKey, 10)
+	val = boltDB.Get(core.HuaweiSuccessKey)
+	assert.Equal(t, int64(10), val)
+	boltDB.Add(core.HuaweiSuccessKey, 10)
+	val = boltDB.Get(core.HuaweiSuccessKey)
+	assert.Equal(t, int64(20), val)
+
+	boltDB.Set(core.HuaweiSuccessKey, 0)
+	val = boltDB.Get(core.HuaweiSuccessKey)
+	assert.Equal(t, int64(0), val)
+
+	// test concurrency issues
+	var wg sync.WaitGroup
+	for i := 0; i < 10; i++ {
+		wg.Add(1)
+		go func() {
+			boltDB.Add(core.HuaweiSuccessKey, 1)
+			wg.Done()
+		}()
+	}
+	wg.Wait()
+	val = boltDB.Get(core.HuaweiSuccessKey)
+	assert.Equal(t, int64(10), val)
+
+	assert.NoError(t, boltDB.Close())
 }

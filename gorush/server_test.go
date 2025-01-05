@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/eencloud/gorush/config"
 	"github.com/buger/jsonparser"
+	"github.com/eencloud/gorush/config"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/appleboy/gofight.v2"
