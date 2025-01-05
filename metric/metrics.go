@@ -1,7 +1,7 @@
 package metric
 
 import (
-	"github.com/eencloud/gorush/status"
+	"github.com/appleboy/gorush/status"
 
 	"github.com/golang-queue/queue"
 	"github.com/prometheus/client_golang/prometheus"

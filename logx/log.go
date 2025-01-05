@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/eencloud/gorush/core"
+	"github.com/appleboy/gorush/core"
 
 	"github.com/mattn/go-isatty"
 	"github.com/sirupsen/logrus"

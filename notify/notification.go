@@ -7,9 +7,9 @@ import (
 	"net/url"
 	"os"
 
-	"github.com/eencloud/gorush/config"
-	"github.com/eencloud/gorush/core"
-	"github.com/eencloud/gorush/logx"
+	"github.com/appleboy/gorush/config"
+	"github.com/appleboy/gorush/core"
+	"github.com/appleboy/gorush/logx"
 
 	"firebase.google.com/go/v4/messaging"
 	"github.com/appleboy/go-hms-push/push/model"

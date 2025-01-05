@@ -153,7 +153,6 @@ type SectionCore struct {
 	CertBase64      string         `yaml:"cert_base64"`
 	KeyBase64       string         `yaml:"key_base64"`
 	HTTPProxy       string         `yaml:"http_proxy"`
-	DhashServer     string         `yaml:"dhash_server"`
 	PID             SectionPID     `yaml:"pid"`
 	AutoTLS         SectionAutoTLS `yaml:"auto_tls"`
 
@@ -346,25 +345,30 @@ func LoadConf(confPath ...string) (*ConfYaml, error) {
 	}
 
 	// Core
-	conf.Core.Address = ""
-	conf.Core.Port = "8088"
-	conf.Core.Enabled = true
-	conf.Core.WorkerNum = int64(runtime.NumCPU())
-	conf.Core.QueueNum = int64(8192)
-	conf.Core.Mode = "release"
-	conf.Core.Sync = false
-	conf.Core.SSL = false
-	conf.Core.CertPath = "cert.pem"
-	conf.Core.KeyPath = "key.pem"
-	conf.Core.MaxNotification = int64(100)
-	conf.Core.HTTPProxy = ""
-	conf.Core.PID.Enabled = false
-	conf.Core.PID.Path = "gorush.pid"
-	conf.Core.PID.Override = false
-	conf.Core.AutoTLS.Enabled = false
-	conf.Core.AutoTLS.Folder = ".cache"
-	conf.Core.AutoTLS.Host = ""
-	conf.Core.DhashServer = ""
+	conf.Core.Address = viper.GetString("core.address")
+	conf.Core.Port = viper.GetString("core.port")
+	conf.Core.ShutdownTimeout = int64(viper.GetInt("core.shutdown_timeout"))
+	conf.Core.Enabled = viper.GetBool("core.enabled")
+	conf.Core.WorkerNum = int64(viper.GetInt("core.worker_num"))
+	conf.Core.QueueNum = int64(viper.GetInt("core.queue_num"))
+	conf.Core.Mode = viper.GetString("core.mode")
+	conf.Core.Sync = viper.GetBool("core.sync")
+	conf.Core.FeedbackURL = viper.GetString("core.feedback_hook_url")
+	conf.Core.FeedbackTimeout = int64(viper.GetInt("core.feedback_timeout"))
+	conf.Core.FeedbackHeader = viper.GetStringSlice("core.feedback_header")
+	conf.Core.SSL = viper.GetBool("core.ssl")
+	conf.Core.CertPath = viper.GetString("core.cert_path")
+	conf.Core.KeyPath = viper.GetString("core.key_path")
+	conf.Core.CertBase64 = viper.GetString("core.cert_base64")
+	conf.Core.KeyBase64 = viper.GetString("core.key_base64")
+	conf.Core.MaxNotification = int64(viper.GetInt("core.max_notification"))
+	conf.Core.HTTPProxy = viper.GetString("core.http_proxy")
+	conf.Core.PID.Enabled = viper.GetBool("core.pid.enabled")
+	conf.Core.PID.Path = viper.GetString("core.pid.path")
+	conf.Core.PID.Override = viper.GetBool("core.pid.override")
+	conf.Core.AutoTLS.Enabled = viper.GetBool("core.auto_tls.enabled")
+	conf.Core.AutoTLS.Folder = viper.GetString("core.auto_tls.folder")
+	conf.Core.AutoTLS.Host = viper.GetString("core.auto_tls.host")
 
 	// Api
 	conf.API.PushURI = viper.GetString("api.push_uri")

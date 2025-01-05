@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/eencloud/gorush/rpc"
+	"github.com/appleboy/gorush/rpc"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"

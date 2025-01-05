@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	"github.com/eencloud/gorush/rpc/proto"
+	"github.com/appleboy/gorush/rpc/proto"
 
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	"google.golang.org/grpc"

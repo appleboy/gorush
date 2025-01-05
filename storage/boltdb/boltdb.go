@@ -5,7 +5,7 @@ import (
 	"os"
 	"sync"
 
-	"github.com/eencloud/gorush/core"
+	"github.com/appleboy/gorush/core"
 
 	"github.com/asdine/storm/v3"
 )

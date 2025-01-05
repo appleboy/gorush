@@ -7,8 +7,8 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/eencloud/gorush/config"
-	"github.com/eencloud/gorush/logx"
+	"github.com/appleboy/gorush/config"
+	"github.com/appleboy/gorush/logx"
 
 	"github.com/apex/gateway"
 	"github.com/golang-queue/queue"

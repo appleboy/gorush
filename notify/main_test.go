@@ -5,8 +5,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/eencloud/gorush/config"
-	"github.com/eencloud/gorush/status"
+	"github.com/appleboy/gorush/config"
+	"github.com/appleboy/gorush/status"
 )
 
 func TestMain(m *testing.M) {

@@ -12,10 +12,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/eencloud/gorush/config"
-	"github.com/eencloud/gorush/core"
-	"github.com/eencloud/gorush/logx"
-	"github.com/eencloud/gorush/status"
+	"github.com/appleboy/gorush/config"
+	"github.com/appleboy/gorush/core"
+	"github.com/appleboy/gorush/logx"
+	"github.com/appleboy/gorush/status"
 
 	"github.com/mitchellh/mapstructure"
 	"github.com/sideshow/apns2"
