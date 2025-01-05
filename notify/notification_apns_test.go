@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/appleboy/gorush/config"
-	"github.com/appleboy/gorush/status"
+	"github.com/eencloud/gorush/config"
+	"github.com/eencloud/gorush/status"
 
 	"github.com/buger/jsonparser"
 	"github.com/sideshow/apns2"

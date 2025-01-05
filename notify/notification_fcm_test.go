@@ -7,8 +7,8 @@ import (
 	"testing"
 
 	"firebase.google.com/go/v4/messaging"
-	"github.com/appleboy/gorush/config"
-	"github.com/appleboy/gorush/core"
+	"github.com/eencloud/gorush/config"
+	"github.com/eencloud/gorush/core"
 
 	"github.com/stretchr/testify/assert"
 )

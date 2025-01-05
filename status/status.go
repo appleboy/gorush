@@ -3,15 +3,15 @@ package status
 import (
 	"errors"
 
-	"github.com/appleboy/gorush/config"
-	"github.com/appleboy/gorush/core"
-	"github.com/appleboy/gorush/logx"
-	"github.com/appleboy/gorush/storage/badger"
-	"github.com/appleboy/gorush/storage/boltdb"
-	"github.com/appleboy/gorush/storage/buntdb"
-	"github.com/appleboy/gorush/storage/leveldb"
-	"github.com/appleboy/gorush/storage/memory"
-	"github.com/appleboy/gorush/storage/redis"
+	"github.com/eencloud/gorush/config"
+	"github.com/eencloud/gorush/core"
+	"github.com/eencloud/gorush/logx"
+	"github.com/eencloud/gorush/storage/badger"
+	"github.com/eencloud/gorush/storage/boltdb"
+	"github.com/eencloud/gorush/storage/buntdb"
+	"github.com/eencloud/gorush/storage/leveldb"
+	"github.com/eencloud/gorush/storage/memory"
+	"github.com/eencloud/gorush/storage/redis"
 
 	"github.com/thoas/stats"
 )

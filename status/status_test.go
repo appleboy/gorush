@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/appleboy/gorush/config"
+	"github.com/eencloud/gorush/config"
 
 	"github.com/stretchr/testify/assert"
 )

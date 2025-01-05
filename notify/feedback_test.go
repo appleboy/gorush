@@ -7,8 +7,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/appleboy/gorush/config"
-	"github.com/appleboy/gorush/logx"
+	"github.com/eencloud/gorush/config"
+	"github.com/eencloud/gorush/logx"
 
 	"github.com/stretchr/testify/assert"
 )

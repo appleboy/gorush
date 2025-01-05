@@ -11,11 +11,11 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/appleboy/gorush/config"
-	"github.com/appleboy/gorush/core"
-	"github.com/appleboy/gorush/logx"
-	"github.com/appleboy/gorush/notify"
-	"github.com/appleboy/gorush/rpc/proto"
+	"github.com/eencloud/gorush/config"
+	"github.com/eencloud/gorush/core"
+	"github.com/eencloud/gorush/logx"
+	"github.com/eencloud/gorush/notify"
+	"github.com/eencloud/gorush/rpc/proto"
 
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"

@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/appleboy/gorush/core"
+	"github.com/eencloud/gorush/core"
 
 	"github.com/syndtr/goleveldb/leveldb"
 )

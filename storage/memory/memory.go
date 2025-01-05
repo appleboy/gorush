@@ -3,7 +3,7 @@ package memory
 import (
 	"sync"
 
-	"github.com/appleboy/gorush/core"
+	"github.com/eencloud/gorush/core"
 
 	"go.uber.org/atomic"
 )

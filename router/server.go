@@ -9,12 +9,12 @@ import (
 	"os"
 	"sync"
 
-	"github.com/appleboy/gorush/config"
-	"github.com/appleboy/gorush/core"
-	"github.com/appleboy/gorush/logx"
-	"github.com/appleboy/gorush/metric"
-	"github.com/appleboy/gorush/notify"
-	"github.com/appleboy/gorush/status"
+	"github.com/eencloud/gorush/config"
+	"github.com/eencloud/gorush/core"
+	"github.com/eencloud/gorush/logx"
+	"github.com/eencloud/gorush/metric"
+	"github.com/eencloud/gorush/notify"
+	"github.com/eencloud/gorush/status"
 
 	api "github.com/appleboy/gin-status-api"
 	"github.com/gin-contrib/logger"
