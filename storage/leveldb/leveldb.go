@@ -24,7 +24,7 @@ func (s *Storage) getLevelDB(key string) int64 {
 	return count
 }
 
-// New func implements the storage interface for gorush (https://github.com/appleboy/gorush)
+// New func implements the storage interface for gorush (https://github.com/eencloud/gorush)
 func New(dbPath string) *Storage {
 	return &Storage{
 		dbPath: dbPath,
