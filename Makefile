@@ -39,7 +39,7 @@ ifeq ($(ANDROID_TEST_TOKEN),)
 	@echo "Missing ANDROID_TEST_TOKEN Parameter"
 	@exit 1
 endif
-	@echo "Already set ANDROID_API_KEY and ANDROID_TEST_TOKEN globale variable."
+	@echo "Already set ANDROID_API_KEY and ANDROID_TEST_TOKEN global variable."
 
 fmt:
 	$(GOFMT) -w $(GOFILES)
