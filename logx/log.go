@@ -194,6 +194,7 @@ func GetLogPushEntry(input *InputLog) LogPushEntry {
 type InputLog struct {
 	ID          string
 	Status      string
+	UserId      string
 	Token       string
 	Message     string
 	Platform    int

@@ -10,9 +10,9 @@ import (
 	"github.com/eencloud/gorush/logx"
 	"github.com/eencloud/gorush/status"
 
-	c "github.com/appleboy/go-hms-push/push/config"
-	client "github.com/appleboy/go-hms-push/push/core"
-	"github.com/appleboy/go-hms-push/push/model"
+	c "github.com/eencloud/gorush/go-hms-push/push/config"
+	client "github.com/eencloud/gorush/go-hms-push/push/core"
+	"github.com/eencloud/gorush/go-hms-push/push/model"
 )
 
 var (
@@ -195,7 +195,7 @@ Retry:
 	res, err := client.SendMessage(ctx, notification)
 	if err != nil {
 		// Send Message error
-		errLog := logPush(cfg, core.FailedPush, req.Topic, req, err)
+		errLog := logPush(cfg, core.FailedPush, req.Topic, "", req, err)
 		resp.Logs = append(resp.Logs, errLog)
 		logx.LogError.Error("HMS server send message error: " + err.Error())
 		return resp, err

@@ -8,11 +8,11 @@ import (
 	"os"
 
 	"github.com/eencloud/gorush/config"
-	"github.com/eencloud/gorush/core"
-	"github.com/eencloud/gorush/logx"
+	"github.com/eencloud/gorush/gorush/core"
+	"github.com/eencloud/gorush/gorush/logx"
 
 	"firebase.google.com/go/v4/messaging"
-	"github.com/appleboy/go-hms-push/push/model"
+	"github.com/eencloud/gorush/go-hms-push/push/model"
 	qcore "github.com/golang-queue/queue/core"
 	jsoniter "github.com/json-iterator/go"
 )
@@ -66,6 +66,7 @@ type ResponsePush struct {
 type PushNotification struct {
 	// Common
 	ID               string      `json:"notif_id,omitempty"`
+	UserIds          []string    `json:"esns" binding:"required"`
 	To               string      `json:"to,omitempty"`
 	Topic            string      `json:"topic,omitempty"` // FCM and iOS only
 	Tokens           []string    `json:"tokens" binding:"required"`

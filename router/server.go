@@ -16,7 +16,7 @@ import (
 	"github.com/eencloud/gorush/notify"
 	"github.com/eencloud/gorush/status"
 
-	api "github.com/appleboy/gin-status-api"
+	api "github.com/eencloud/gorush/gin-status-api"
 	"github.com/gin-contrib/logger"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -100,7 +100,7 @@ func pushHandler(cfg *config.ConfYaml, q *queue.Queue) gin.HandlerFunc {
 
 		c.JSON(http.StatusOK, gin.H{
 			"success": "ok",
-			"counts":  counts,
+			"couns":   counts,
 			"logs":    logs,
 		})
 	}

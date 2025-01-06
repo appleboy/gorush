@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/appleboy/go-fcm"
-	"github.com/appleboy/go-hms-push/push/core"
+	"github.com/eencloud/gorush/go-fcm"
+	"github.com/eencloud/gorush/go-hms-push/push/core"
 	"github.com/sideshow/apns2"
 )
 

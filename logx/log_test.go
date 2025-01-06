@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/eencloud/gorush/config"
-	"github.com/eencloud/gorush/core"
+	"github.com/eencloud/gorush/gorush/core"
 
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"

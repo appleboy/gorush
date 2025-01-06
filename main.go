@@ -12,9 +12,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/appleboy/graceful"
 	"github.com/eencloud/gorush/config"
 	"github.com/eencloud/gorush/core"
+	"github.com/eencloud/gorush/graceful"
 	"github.com/eencloud/gorush/logx"
 	"github.com/eencloud/gorush/notify"
 	"github.com/eencloud/gorush/router"

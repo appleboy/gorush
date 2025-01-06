@@ -443,13 +443,14 @@ Retry:
 	client := getApnsClient(cfg, req)
 
 	var wg sync.WaitGroup
-	for _, token := range req.Tokens {
+	for i := 0; i < len(req.Tokens); i++ {
+		token := req.Tokens[i]
+		userId := req.UserIds[i]
 		// occupy push slot
 		MaxConcurrentIOSPushes <- struct{}{}
 		wg.Add(1)
 		go func(notification apns2.Notification, token string) {
 			notification.DeviceToken = token
-
 			// send ios notification
 			res, err := client.PushWithContext(ctx, &notification)
 			if err != nil || (res != nil && res.StatusCode != http.StatusOK) {
@@ -460,7 +461,7 @@ Retry:
 				}
 
 				// apns server error
-				errLog := logPush(cfg, core.FailedPush, token, req, err)
+				errLog := logPush(cfg, core.FailedPush, token, userId, req, err)
 				resp.Logs = append(resp.Logs, errLog)
 
 				status.StatStorage.AddIosError(1)
@@ -472,7 +473,7 @@ Retry:
 			}
 
 			if res != nil && res.Sent() {
-				logPush(cfg, core.SucceededPush, token, req, nil)
+				logPush(cfg, core.SucceededPush, token, userId, req, nil)
 				status.StatStorage.AddIosSuccess(1)
 			}
 
