@@ -8,8 +8,8 @@ import (
 	"os"
 
 	"github.com/eencloud/gorush/config"
-	"github.com/eencloud/gorush/gorush/core"
-	"github.com/eencloud/gorush/gorush/logx"
+	"github.com/eencloud/gorush/core"
+	"github.com/eencloud/gorush/logx"
 
 	"firebase.google.com/go/v4/messaging"
 	"github.com/eencloud/gorush/go-hms-push/push/model"
