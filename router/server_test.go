@@ -17,8 +17,8 @@ import (
 	"github.com/eencloud/gorush/notify"
 	"github.com/eencloud/gorush/status"
 
+	"github.com/appleboy/gofight/v2"
 	"github.com/buger/jsonparser"
-	"github.com/eencloud/gorush/gofight/v2"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-queue/queue"
 	qcore "github.com/golang-queue/queue/core"

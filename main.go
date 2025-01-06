@@ -14,14 +14,13 @@ import (
 
 	"github.com/eencloud/gorush/config"
 	"github.com/eencloud/gorush/core"
-	"github.com/eencloud/gorush/graceful"
 	"github.com/eencloud/gorush/logx"
 	"github.com/eencloud/gorush/notify"
 	"github.com/eencloud/gorush/router"
 	"github.com/eencloud/gorush/rpc"
 	"github.com/eencloud/gorush/status"
 
-	// "github.com/eencloud/graceful"
+	"github.com/appleboy/graceful"
 	"github.com/golang-queue/nats"
 	"github.com/golang-queue/nsq"
 	"github.com/golang-queue/queue"

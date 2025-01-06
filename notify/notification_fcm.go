@@ -12,7 +12,7 @@ import (
 	"github.com/eencloud/gorush/status"
 
 	"firebase.google.com/go/v4/messaging"
-	"github.com/eencloud/gorush/go-fcm"
+	"github.com/appleboy/go-fcm"
 )
 
 func fileExists(filename string) bool {

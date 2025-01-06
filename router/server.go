@@ -16,7 +16,7 @@ import (
 	"github.com/eencloud/gorush/notify"
 	"github.com/eencloud/gorush/status"
 
-	api "github.com/eencloud/gorush/gin-status-api"
+	api "github.com/appleboy/gin-status-api"
 	"github.com/gin-contrib/logger"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"

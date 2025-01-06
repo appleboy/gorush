@@ -12,7 +12,7 @@ import (
 	"github.com/eencloud/gorush/logx"
 
 	"firebase.google.com/go/v4/messaging"
-	"github.com/eencloud/gorush/go-hms-push/push/model"
+	"github.com/appleboy/go-hms-push/push/model"
 	qcore "github.com/golang-queue/queue/core"
 	jsoniter "github.com/json-iterator/go"
 )

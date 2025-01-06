@@ -13,7 +13,6 @@ require (
 	github.com/asdine/storm/v3 v3.2.1
 	github.com/buger/jsonparser v1.1.1
 	github.com/dgraph-io/badger/v4 v4.2.0
-	github.com/eencloud/gorush v1.9.0
 	github.com/gin-contrib/logger v1.1.0
 	github.com/gin-gonic/gin v1.10.0
 	github.com/golang-queue/nats v0.1.0
@@ -56,7 +55,6 @@ require (
 	cloud.google.com/go/storage v1.41.0 // indirect
 	github.com/MicahParks/keyfunc v1.9.0 // indirect
 	github.com/appleboy/com v0.2.1 // indirect
-	github.com/asdine/storm v2.1.2+incompatible // indirect
 	github.com/aws/aws-lambda-go v1.46.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bytedance/sonic v1.11.6 // indirect
@@ -144,8 +142,6 @@ require (
 	google.golang.org/genproto/googleapis/api v0.0.0-20240814211410-ddb44dafa142 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240814211410-ddb44dafa142 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
-	gopkg.in/redis.v5 v5.2.9 // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 

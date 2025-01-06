@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/appleboy/gorush/logx"
+	"github.com/eencloud/gorush/logx"
 )
 
 // extractHeaders converts a slice of strings to a map of strings.

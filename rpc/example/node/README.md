@@ -18,7 +18,7 @@ npm install -g grpc-tools
 $ cd $GOPATH/src/github.com/eencloud/gorush
 $ protoc -I rpc/proto rpc/proto/gorush.proto --js_out=import_style=commonjs,binary:rpc/example/node/ --grpc_out=rpc/example/node/ --plugin=protoc-gen-grpc=`which grpc_tools_node_protoc_plugin`
 =======
-cd $GOPATH/src/github.com/appleboy/gorush
+cd $GOPATH/src/github.com/eencloud/gorush
 protoc -I rpc/proto rpc/proto/gorush.proto --js_out=import_style=commonjs,binary:rpc/example/node/ --grpc_out=rpc/example/node/ --plugin=protoc-gen-grpc=`which grpc_tools_node_protoc_plugin`
 >>>>>>> upstream/master
 ```
