@@ -7,7 +7,7 @@ RUN apk update && apk add --no-cache git glib-dev libev-dev curl
 RUN curl -sSL https://dl.google.com/go/go1.23.4.linux-amd64.tar.gz | tar -C /usr/local -xz && \
     ln -s /usr/local/go/bin/* /usr/bin/
 
-WORKDIR /usr/src/app/go/src/github.com/eencloud/gorush/
+WORKDIR /usr/src/app/go/src/github.com/appleboy/gorush/
 COPY . .
 
 RUN go mod tidy
