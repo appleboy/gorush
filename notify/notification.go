@@ -154,13 +154,13 @@ func CheckMessage(req *PushNotification) error {
 
 	// if the message is a topic, the tokens field is not required
 	if !req.IsTopic() && len(req.Tokens) == 0 {
-		return errors.New("tokens must not be nil or empty")
+		return errors.New("please provide at least one device token")
 	}
 
 	switch req.Platform {
 	case core.PlatFormIos:
 		if len(req.Tokens) == 1 && req.Tokens[0] == "" {
-			msg = "the token must not be empty"
+			msg = "the device token cannot be empty"
 			logx.LogAccess.Debug(msg)
 			return errors.New(msg)
 		}
@@ -168,7 +168,8 @@ func CheckMessage(req *PushNotification) error {
 		core.PlatFormAndroid,
 		core.PlatFormHuawei:
 		if len(req.Tokens) > 500 {
-			msg = "tokens must not contain more than 500 elements"
+			// https://firebase.google.com/docs/cloud-messaging/send-message#send-messages-to-multiple-devices
+			msg = "you can specify up to 500 device registration tokens per invocation"
 			logx.LogAccess.Debug(msg)
 			return errors.New(msg)
 		}
