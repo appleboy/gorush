@@ -72,8 +72,8 @@ queue:
 
 ios:
   enabled: true
-  key_path: ""
-  key_base64: "ios_prod.p12" # load iOS key from base64 input
+  key_path: "ios_prod.p12"
+  key_base64: "" # load iOS key from base64 input
   key_type: "p12" # could be pem, p12 or p8 type
   password: "" # certificate password, default as empty string.
   production: true
