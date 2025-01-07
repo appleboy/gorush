@@ -6,16 +6,23 @@ import (
 	"crypto/tls"
 	"encoding/base64"
 	"errors"
+	"fmt"
+	"log"
 	"net"
 	"net/http"
+	"os"
 	"path/filepath"
 	"sync"
 	"time"
+
+	apns "github.com/sideshow/apns2"
 
 	"github.com/eencloud/gorush/config"
 	"github.com/eencloud/gorush/core"
 	"github.com/eencloud/gorush/logx"
 	"github.com/eencloud/gorush/status"
+
+	"github.com/eencloud/goeen/dhash"
 
 	"github.com/mitchellh/mapstructure"
 	"github.com/sideshow/apns2"
@@ -58,6 +65,65 @@ type Sound struct {
 	Volume   float32 `json:"volume,omitempty"`
 }
 
+type Watch struct {
+	*dhash.WatchValue
+	values []string
+}
+
+func RemoveToken(token string, esn string, device_type string) {
+
+	for i := 0; i < 5; i++ { // Try up to 5 times
+		ret := NewWatch(esn, device_type)
+		if ret == nil {
+			logx.LogError.Error("Could not get watch for %s", esn)
+		}
+
+		err := ret.Get()
+
+		if err == dhash.WatchEmpty {
+			logx.LogError.Error("Attempted to remove token from null list")
+		} else if err != nil {
+			logx.LogError.Error("Dhash Error: ", err.Error())
+			continue
+		} else {
+			b := ret.values[:0]
+			for i, x := range ret.values {
+				logx.LogError.Error("Scanning value %s", x)
+				if x == token {
+					ret.values = append(ret.values[:i], ret.values[i+1:]...)
+					break
+				}
+			}
+
+			ret.values = b
+
+			saveErr := ret.Save()
+
+			if saveErr != nil { // data most likely changed, retry the process
+				logx.LogError.Error("Save Error: ", saveErr.Error())
+				continue
+			} else {
+				log.Printf("Saved string array: %v", ret.values)
+				break
+			}
+		}
+	}
+}
+
+func NewWatch(esn string, device_type string) *Watch {
+	w := &Watch{}
+	str := fmt.Sprintf("com.eencloud.push_tokens.%s.%s", esn, device_type)
+	dh, err := dhash.Resolve(str)
+	log.Printf("dhash key: %s", str)
+	if err != nil {
+		logx.LogError.Error("Failed to resolve dhash token", err.Error())
+		return nil
+	}
+
+	w.WatchValue = dhash.NewWatchValue(dh, &w.values, str)
+	return w
+}
+
 // InitAPNSClient use for initialize APNs Client.
 func InitAPNSClient(ctx context.Context, cfg *config.ConfYaml) error {
 	if cfg.Ios.Enabled {
@@ -65,6 +131,11 @@ func InitAPNSClient(ctx context.Context, cfg *config.ConfYaml) error {
 		var authKey *ecdsa.PrivateKey
 		var certificateKey tls.Certificate
 		var ext string
+
+		var addr = os.Getenv("EEN_DHASH_ADDRESS")
+		log.Printf("Initializing dhash service at %s", addr)
+
+		dhash.Initialize(addr)
 
 		if cfg.Ios.KeyPath != "" {
 			ext = filepath.Ext(cfg.Ios.KeyPath)
@@ -469,6 +540,15 @@ Retry:
 				// See https://apple.co/3AdNane (Handling Notification Responses from APNs)
 				if res != nil && res.StatusCode >= http.StatusInternalServerError {
 					newTokens = append(newTokens, token)
+				}
+
+				reasons := []string{apns.ReasonBadDeviceToken, apns.ReasonDeviceTokenNotForTopic, apns.ReasonUnregistered}
+
+				for _, a := range reasons {
+					if a == res.Reason {
+						go RemoveToken(token, userId, "ios")
+						break
+					}
 				}
 			}
 

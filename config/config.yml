@@ -20,6 +20,7 @@ core:
   cert_base64: ""
   key_base64: ""
   http_proxy: ""
+  dhash_server: "192.40.4.26:6379"
   pid:
     enabled: false
     path: "gorush.pid"
