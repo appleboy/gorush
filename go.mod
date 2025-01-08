@@ -1,4 +1,4 @@
-module github.com/appleboy/gorush
+module github.com/eencloud/gorush
 
 go 1.22
 

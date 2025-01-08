@@ -7,10 +7,10 @@ import (
 	"os"
 	"strings"
 
-	"github.com/appleboy/gorush/config"
-	"github.com/appleboy/gorush/core"
-	"github.com/appleboy/gorush/logx"
-	"github.com/appleboy/gorush/status"
+	"github.com/eencloud/gorush/config"
+	"github.com/eencloud/gorush/core"
+	"github.com/eencloud/gorush/logx"
+	"github.com/eencloud/gorush/status"
 
 	"firebase.google.com/go/v4/messaging"
 	"github.com/appleboy/go-fcm"
