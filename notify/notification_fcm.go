@@ -5,11 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strings"
 
-	"github.com/eencloud/gorush/config"
-	"github.com/eencloud/gorush/core"
-	"github.com/eencloud/gorush/logx"
-	"github.com/eencloud/gorush/status"
+	"github.com/appleboy/gorush/config"
+	"github.com/appleboy/gorush/core"
+	"github.com/appleboy/gorush/logx"
+	"github.com/appleboy/gorush/status"
 
 	"firebase.google.com/go/v4/messaging"
 	"github.com/appleboy/go-fcm"
@@ -284,7 +285,7 @@ Retry:
 		userId := req.UserIds[k]
 		token := req.Tokens[k]
 		if result.Error != nil {
-			if result.Error.Error() == "messaging/registration-token-not-registered" {
+			if !result.Success && isUnregisteredError(result.Error) {
 				RemoveToken(token, userId, "android")
 			}
 			errLog := logPush(cfg, core.FailedPush, token, userId, req, result.Error)
@@ -309,6 +310,34 @@ Retry:
 	}
 
 	return resp, nil
+}
+
+// isUnregisteredError checks if the given error indicates an unregistered token.
+func isUnregisteredError(err error) bool {
+	if err == nil {
+		return false
+	}
+
+	// List of known error messages that indicate an unregistered token
+	unregisteredErrorMessages := []string{
+		"invalid registration token",                  // Common library error message
+		"unregistered device",                         // go-fcm library specific
+		"requested entity was not found",              // Observed error message
+		"token is not a valid FCM registration token", // General FCM error
+		"unregistered registration token",             // General phrasing
+	}
+
+	// Convert the error message to lowercase
+	errMessage := strings.ToLower(err.Error())
+
+	// Check if the error message matches any known unregistered token error
+	for _, msg := range unregisteredErrorMessages {
+		if strings.Contains(errMessage, strings.ToLower(msg)) {
+			return true
+		}
+	}
+
+	return false
 }
 
 func logPush(cfg *config.ConfYaml, status, token string, userId string, req *PushNotification, err error) logx.LogPushEntry {
