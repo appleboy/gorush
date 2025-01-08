@@ -2,15 +2,13 @@ module github.com/appleboy/gorush
 
 go 1.22.7
 
-toolchain go1.23.1
-
 require (
 	firebase.google.com/go/v4 v4.15.1
 	github.com/apex/gateway v1.1.2
 	github.com/appleboy/gin-status-api v1.1.0
 	github.com/appleboy/go-fcm v1.2.2
 	github.com/appleboy/go-hms-push v1.0.1
-	github.com/appleboy/gofight/v2 v2.1.2
+	github.com/appleboy/gofight/v2 v2.2.0
 	github.com/appleboy/graceful v1.1.1
 	github.com/asdine/storm/v3 v3.2.1
 	github.com/buger/jsonparser v1.1.1
@@ -30,7 +28,7 @@ require (
 	github.com/prometheus/client_golang v1.19.0
 	github.com/redis/go-redis/v9 v9.7.0
 	github.com/rs/zerolog v1.32.0
-	github.com/sideshow/apns2 v0.24.0
+	github.com/sideshow/apns2 v0.25.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/viper v1.18.2
 	github.com/stretchr/testify v1.10.0

@@ -52,8 +52,9 @@ github.com/appleboy/go-fcm v1.2.2 h1:8BUNgMQ26aXLVe/z8LPIB6n8QOIiEwOhsXl8eUfn8tY
 github.com/appleboy/go-fcm v1.2.2/go.mod h1:5DjSZiFvZeFVpCEKjDRlzACcc8eBzHz+5wAznZCYJjw=
 github.com/appleboy/go-hms-push v1.0.1 h1:55v173UvjgZgmaj/D+X+y82WLuA+xl4SYHCF8Zb5WtM=
 github.com/appleboy/go-hms-push v1.0.1/go.mod h1:JZzS7XUOFTUV8y+MAnDjOIv0LCZmLmVpJj//Q9t0XBw=
-github.com/appleboy/gofight/v2 v2.1.2 h1:VOy3jow4vIK8BRQJoC/I9muxyYlJ2yb9ht2hZoS3rf4=
 github.com/appleboy/gofight/v2 v2.1.2/go.mod h1:frW+U1QZEdDgixycTj4CygQ48yLTUhplt43+Wczp3rw=
+github.com/appleboy/gofight/v2 v2.2.0 h1:uqQ3wzTlF1ma+r4jRCQ4cygCjrGZyZEBMBCjT/t9zRw=
+github.com/appleboy/gofight/v2 v2.2.0/go.mod h1:USTV3UbA5kHBs4I91EsPi+6PIVZAx3KLorYjvtON91A=
 github.com/appleboy/graceful v1.1.1 h1:vYqfpBdyEFztXofmw9iL8aohnxbcE+2Nq2j67SCoMBo=
 github.com/appleboy/graceful v1.1.1/go.mod h1:gjCrWFsKhOX2N6jNY0QyQhK+WE8Z3TFSen4fExHg3wk=
 github.com/asdine/storm/v3 v3.2.1 h1:I5AqhkPK6nBZ/qJXySdI7ot5BlXSZ7qvDY1zAn5ZJac=
@@ -321,8 +322,8 @@ github.com/sagikazarmark/locafero v0.4.0/go.mod h1:Pe1W6UlPYUk/+wc/6KFhbORCfqzgY
 github.com/sagikazarmark/slog-shim v0.1.0 h1:diDBnUNK9N/354PgrxMywXnAwEr1QZcOr6gto+ugjYE=
 github.com/sagikazarmark/slog-shim v0.1.0/go.mod h1:SrcSrq8aKtyuqEI1uvTDTK1arOWRIczQRv+GVI1AkeQ=
 github.com/shurcooL/sanitized_anchor_name v1.0.0/go.mod h1:1NzhyTcUVG4SuEtjjoZeVRXNmyL/1OwPU0+IJeTBvfc=
-github.com/sideshow/apns2 v0.24.0 h1:syofL4rd8ZeqUVySgYyBSYr/oLMU/HzJi++r3FIp6Z4=
-github.com/sideshow/apns2 v0.24.0/go.mod h1:7Fceu+sL0XscxrfLSkAoH6UtvKefq3Kq1n4W3ayQZqE=
+github.com/sideshow/apns2 v0.25.0 h1:XOzanncO9MQxkb03T/2uU2KcdVjYiIf0TMLzec0FTW4=
+github.com/sideshow/apns2 v0.25.0/go.mod h1:7Fceu+sL0XscxrfLSkAoH6UtvKefq3Kq1n4W3ayQZqE=
 github.com/sirupsen/logrus v1.4.2/go.mod h1:tLMulIdttU9McNUspp0xgXVQah82FyeX6MwdIuYE2rE=
 github.com/sirupsen/logrus v1.9.3 h1:dueUQJ1C2q9oE3F7wvmSGAaVtTmUizReu6fjN8uqzbQ=
 github.com/sirupsen/logrus v1.9.3/go.mod h1:naHLuLoDiP4jHNo9R0sCBMtWGeIprob74mVsIT4qYEQ=
