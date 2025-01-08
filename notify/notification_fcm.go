@@ -311,13 +311,6 @@ Retry:
 	return resp, nil
 }
 
-func isUnregisteredError(err error) bool {
-	if fcmErr, ok := err.(*fcm.Error); ok {
-		return fcmErr.Code == "messaging/registration-token-not-registered"
-	}
-	return false
-}
-
 func logPush(cfg *config.ConfYaml, status, token string, userId string, req *PushNotification, err error) logx.LogPushEntry {
 	return logx.LogPush(&logx.InputLog{
 		ID:          req.ID,
