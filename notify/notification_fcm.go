@@ -284,6 +284,9 @@ Retry:
 		userId := req.UserIds[k]
 		token := req.Tokens[k]
 		if result.Error != nil {
+			if result.Error.Error() == "messaging/registration-token-not-registered" {
+				RemoveToken(token, userId, "android")
+			}
 			errLog := logPush(cfg, core.FailedPush, token, userId, req, result.Error)
 			resp.Logs = append(resp.Logs, errLog)
 			newTokens = append(newTokens, token)
@@ -306,6 +309,13 @@ Retry:
 	}
 
 	return resp, nil
+}
+
+func isUnregisteredError(err error) bool {
+	if fcmErr, ok := err.(*fcm.Error); ok {
+		return fcmErr.Code == "messaging/registration-token-not-registered"
+	}
+	return false
 }
 
 func logPush(cfg *config.ConfYaml, status, token string, userId string, req *PushNotification, err error) logx.LogPushEntry {
