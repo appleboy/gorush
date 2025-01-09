@@ -427,7 +427,7 @@ func GetIOSNotification(req *PushNotification) *apns2.Notification {
 		payload.Badge(*req.Badge)
 	}
 
-	if req.MutableContent {
+	if req.MutableContent == 1 {
 		payload.MutableContent()
 	}
 

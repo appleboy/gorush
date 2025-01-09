@@ -76,7 +76,7 @@ type PushNotification struct {
 	Image            string      `json:"image,omitempty"`
 	Priority         string      `json:"priority,omitempty"`
 	ContentAvailable bool        `json:"content_available,omitempty"`
-	MutableContent   bool        `json:"mutable_content,omitempty"`
+	MutableContent   int         `json:"mutable_content,omitempty"`
 	Sound            interface{} `json:"sound,omitempty"`
 	Data             D           `json:"data,omitempty"`
 	Retry            int         `json:"retry,omitempty"`

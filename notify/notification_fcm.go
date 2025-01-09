@@ -75,11 +75,11 @@ func GetAndroidNotification(req *PushNotification) []*messaging.Message {
 		if req.Image != "" {
 			req.Notification.ImageURL = req.Image
 		}
-		if req.MutableContent {
+		if req.MutableContent == 1 {
 			req.APNS = &messaging.APNSConfig{
 				Payload: &messaging.APNSPayload{
 					Aps: &messaging.Aps{
-						MutableContent: req.MutableContent,
+						MutableContent: req.MutableContent == 1,
 					},
 				},
 			}

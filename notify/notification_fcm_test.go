@@ -154,7 +154,7 @@ func TestAndroidNotificationStructure(t *testing.T) {
 		Message:        "Welcome",
 		To:             test,
 		Priority:       HIGH,
-		MutableContent: true,
+		MutableContent: 1,
 		Title:          test,
 		Sound:          test,
 		Data: D{

@@ -276,7 +276,7 @@ func TestSendZeroValueForBadgeKey(t *testing.T) {
 		Message:          message,
 		Sound:            testMessage,
 		ContentAvailable: true,
-		MutableContent:   true,
+		MutableContent:   1,
 		ThreadID:         testMessage,
 	}
 

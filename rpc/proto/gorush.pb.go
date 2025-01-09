@@ -252,7 +252,7 @@ type NotificationRequest struct {
 	Sound            string                       `protobuf:"bytes,10,opt,name=sound,proto3" json:"sound,omitempty"`
 	ContentAvailable bool                         `protobuf:"varint,11,opt,name=contentAvailable,proto3" json:"contentAvailable,omitempty"`
 	ThreadID         string                       `protobuf:"bytes,12,opt,name=threadID,proto3" json:"threadID,omitempty"`
-	MutableContent   bool                         `protobuf:"varint,13,opt,name=mutableContent,proto3" json:"mutableContent,omitempty"`
+	MutableContent   int                         `protobuf:"varint,13,opt,name=mutableContent,proto3" json:"mutableContent,omitempty"`
 	Data             *structpb.Struct             `protobuf:"bytes,14,opt,name=data,proto3" json:"data,omitempty"`
 	Image            string                       `protobuf:"bytes,15,opt,name=image,proto3" json:"image,omitempty"`
 	Priority         NotificationRequest_Priority `protobuf:"varint,16,opt,name=priority,proto3,enum=proto.NotificationRequest_Priority" json:"priority,omitempty"`
@@ -378,11 +378,11 @@ func (x *NotificationRequest) GetThreadID() string {
 	return ""
 }
 
-func (x *NotificationRequest) GetMutableContent() bool {
+func (x *NotificationRequest) GetMutableContent() int {
 	if x != nil {
 		return x.MutableContent
 	}
-	return false
+	return 0
 }
 
 func (x *NotificationRequest) GetData() *structpb.Struct {
