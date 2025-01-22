@@ -25,10 +25,10 @@ var StatStorage *StateStorage
 // App is status structure
 type App struct {
 	Version        string        `json:"version"`
-	BusyWorkers    int           `json:"busy_workers"`
-	SuccessTasks   int           `json:"success_tasks"`
-	FailureTasks   int           `json:"failure_tasks"`
-	SubmittedTasks int           `json:"submitted_tasks"`
+	BusyWorkers    int64         `json:"busy_workers"`
+	SuccessTasks   uint64        `json:"success_tasks"`
+	FailureTasks   uint64        `json:"failure_tasks"`
+	SubmittedTasks uint64        `json:"submitted_tasks"`
 	TotalCount     int64         `json:"total_count"`
 	Ios            IosStatus     `json:"ios"`
 	Android        AndroidStatus `json:"android"`

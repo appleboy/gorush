@@ -134,6 +134,11 @@ func (p *PushNotification) Bytes() []byte {
 	return b
 }
 
+// Payload for queue message
+func (p *PushNotification) Payload() []byte {
+	return nil
+}
+
 // IsTopic check if message format is topic for FCM
 // ref: https://firebase.google.com/docs/cloud-messaging/send-message#topic-http-post-request
 func (p *PushNotification) IsTopic() bool {
@@ -236,12 +241,12 @@ func CheckPushConf(cfg *config.ConfYaml) error {
 // SendNotification provide send notification.
 func SendNotification(
 	ctx context.Context,
-	req qcore.QueuedMessage,
+	req qcore.TaskMessage,
 	cfg *config.ConfYaml,
 ) (resp *ResponsePush, err error) {
 	v, ok := req.(*PushNotification)
 	if !ok {
-		if err = json.Unmarshal(req.Bytes(), &v); err != nil {
+		if err = json.Unmarshal(req.Payload(), &v); err != nil {
 			return nil, err
 		}
 	}
@@ -268,8 +273,8 @@ func SendNotification(
 }
 
 // Run send notification
-var Run = func(cfg *config.ConfYaml) func(ctx context.Context, msg qcore.QueuedMessage) error {
-	return func(ctx context.Context, msg qcore.QueuedMessage) error {
+var Run = func(cfg *config.ConfYaml) func(ctx context.Context, msg qcore.TaskMessage) error {
+	return func(ctx context.Context, msg qcore.TaskMessage) error {
 		_, err := SendNotification(ctx, msg, cfg)
 		return err
 	}

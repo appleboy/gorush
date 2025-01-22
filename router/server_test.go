@@ -45,8 +45,8 @@ func TestMain(m *testing.M) {
 	}
 
 	q = queue.NewPool(
-		int(cfg.Core.WorkerNum),
-		queue.WithFn(func(ctx context.Context, msg qcore.QueuedMessage) error {
+		cfg.Core.WorkerNum,
+		queue.WithFn(func(ctx context.Context, msg qcore.TaskMessage) error {
 			_, err := notify.SendNotification(ctx, msg, cfg)
 			return err
 		}),
