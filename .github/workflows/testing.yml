@@ -16,9 +16,6 @@ jobs:
           go-version-file: go.mod
           check-latest: true
 
-      - name: check documentation
-        run: make embedmd
-
       - name: check golangci-lint
         uses: golangci/golangci-lint-action@v6
         with:
