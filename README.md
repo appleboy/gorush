@@ -901,6 +901,24 @@ Send normal notification.
 }
 ```
 
+Label associated with the message's analytics data.
+
+```json
+{
+  "notifications": [
+    {
+      "tokens": ["token_a", "token_b"],
+      "platform": 2,
+      "message": "Hello World Android!",
+      "title": "You got message",
+      "fcm_options": {
+        "analytics_label": "example"
+      }
+    }
+  ]
+}
+```
+
 Add `notification` payload.
 
 ```json
