@@ -15,10 +15,10 @@ require (
 	github.com/dgraph-io/badger/v4 v4.2.0
 	github.com/gin-contrib/logger v1.1.0
 	github.com/gin-gonic/gin v1.10.0
-	github.com/golang-queue/nats v0.1.0
-	github.com/golang-queue/nsq v0.2.0
-	github.com/golang-queue/queue v0.1.4-0.20221230133718-0314ef173f98
-	github.com/golang-queue/redisdb-stream v0.1.0
+	github.com/golang-queue/nats v0.2.0
+	github.com/golang-queue/nsq v0.3.0
+	github.com/golang-queue/queue v0.3.0
+	github.com/golang-queue/redisdb-stream v0.3.0
 	github.com/golang/protobuf v1.5.4
 	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
@@ -97,6 +97,7 @@ require (
 	github.com/googleapis/enterprise-certificate-proxy v0.3.4 // indirect
 	github.com/googleapis/gax-go/v2 v2.14.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
+	github.com/jpillora/backoff v1.0.0 // indirect
 	github.com/klauspost/compress v1.17.11 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.7 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect

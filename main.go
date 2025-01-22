@@ -305,7 +305,7 @@ func main() {
 	var w qcore.Worker
 	switch core.Queue(cfg.Queue.Engine) {
 	case core.LocalQueue:
-		w = queue.NewConsumer(
+		w = queue.NewRing(
 			queue.WithQueueSize(int(cfg.Core.QueueNum)),
 			queue.WithFn(notify.Run(cfg)),
 			queue.WithLogger(logx.QueueLogger()),
@@ -342,7 +342,7 @@ func main() {
 	}
 
 	q := queue.NewPool(
-		int(cfg.Core.WorkerNum),
+		cfg.Core.WorkerNum,
 		queue.WithWorker(w),
 		queue.WithLogger(logx.QueueLogger()),
 	)

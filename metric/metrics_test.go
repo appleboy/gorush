@@ -18,6 +18,6 @@ func TestNewMetrics(t *testing.T) {
 	time.Sleep(10 * time.Millisecond)
 	defer q.Release()
 	m := NewMetrics(q)
-	assert.Equal(t, 2, m.q.SubmittedTasks())
-	assert.Equal(t, 2, m.q.SuccessTasks())
+	assert.Equal(t, uint64(2), m.q.SubmittedTasks())
+	assert.Equal(t, uint64(2), m.q.SuccessTasks())
 }
