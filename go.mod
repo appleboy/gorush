@@ -2,6 +2,8 @@ module github.com/eencloud/gorush
 
 go 1.22
 
+replace github.com/eencloud/goeen => ../goeen
+
 require (
 	firebase.google.com/go/v4 v4.14.1
 	github.com/apex/gateway v1.1.2
