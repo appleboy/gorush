@@ -9,6 +9,7 @@ RUN curl -sSL https://dl.google.com/go/go1.23.4.linux-amd64.tar.gz | tar -C /usr
 
 WORKDIR /usr/src/app/go/src/github.com/eencloud/gorush/
 COPY . .
+RUN chmod +x ./start.sh
 
 RUN go mod tidy
 RUN go build -o bin/gorush
