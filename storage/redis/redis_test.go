@@ -1,17 +1,22 @@
 package redis
 
 import (
+	"sync"
 	"testing"
 
-	c "github.com/eencloud/gorush/config"
+	"github.com/eencloud/gorush/core"
+
 	"github.com/stretchr/testify/assert"
 )
 
 func TestRedisServerError(t *testing.T) {
-	config := c.BuildDefaultPushConf()
-	config.Stat.Redis.Addr = "redis:6370"
-
-	redis := New(config)
+	redis := New(
+		"redis:6370", // addr
+		"",           // username
+		"",           // password
+		0,            // db
+		false,        // cluster
+	)
 	err := redis.Init()
 
 	assert.Error(t, err)
@@ -20,39 +25,44 @@ func TestRedisServerError(t *testing.T) {
 func TestRedisEngine(t *testing.T) {
 	var val int64
 
-	config := c.BuildDefaultPushConf()
-	config.Stat.Redis.Addr = "redis:6379"
-
-	redis := New(config)
+	redis := New(
+		"redis:6379", // addr
+		"",           // username
+		"",           // password
+		0,            // db
+		false,        // cluster
+	)
 	err := redis.Init()
 	assert.Nil(t, err)
-	redis.Reset()
 
-	redis.AddTotalCount(10)
-	val = redis.GetTotalCount()
-	assert.Equal(t, int64(10), val)
-	redis.AddTotalCount(10)
-	val = redis.GetTotalCount()
-	assert.Equal(t, int64(20), val)
-
-	redis.AddIosSuccess(20)
-	val = redis.GetIosSuccess()
-	assert.Equal(t, int64(20), val)
-
-	redis.AddIosError(30)
-	val = redis.GetIosError()
-	assert.Equal(t, int64(30), val)
-
-	redis.AddAndroidSuccess(40)
-	val = redis.GetAndroidSuccess()
-	assert.Equal(t, int64(40), val)
-
-	redis.AddAndroidError(50)
-	val = redis.GetAndroidError()
-	assert.Equal(t, int64(50), val)
-
-	// test reset db
-	redis.Reset()
-	val = redis.GetAndroidError()
+	// reset the value of the key to 0
+	redis.Set(core.HuaweiSuccessKey, 0)
+	val = redis.Get(core.HuaweiSuccessKey)
 	assert.Equal(t, int64(0), val)
+
+	redis.Add(core.HuaweiSuccessKey, 10)
+	val = redis.Get(core.HuaweiSuccessKey)
+	assert.Equal(t, int64(10), val)
+	redis.Add(core.HuaweiSuccessKey, 10)
+	val = redis.Get(core.HuaweiSuccessKey)
+	assert.Equal(t, int64(20), val)
+
+	redis.Set(core.HuaweiSuccessKey, 0)
+	val = redis.Get(core.HuaweiSuccessKey)
+	assert.Equal(t, int64(0), val)
+
+	// test concurrency issues
+	var wg sync.WaitGroup
+	for i := 0; i < 10; i++ {
+		wg.Add(1)
+		go func() {
+			redis.Add(core.HuaweiSuccessKey, 1)
+			wg.Done()
+		}()
+	}
+	wg.Wait()
+	val = redis.Get(core.HuaweiSuccessKey)
+	assert.Equal(t, int64(10), val)
+
+	assert.NoError(t, redis.Close())
 }

@@ -30,7 +30,7 @@ spec:
           value: {{ .Values.eenDhashAddress }}
         - name: EEN_IOS_PROD_CERT
           value: {{ .Values.secret.iosProdCert }}
-        - name: EEN_ANDROID_API_KEY
+        - name: EEN_ANDROID_PROD_KEY
           value: {{ .Values.secret.androidApiKey}}
         image: {{ .Values.image.repository }}:{{ tpl .Values.image.tag . }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}

@@ -2,135 +2,81 @@ package boltdb
 
 import (
 	"log"
+	"os"
+	"sync"
 
-	"github.com/eencloud/gorush/config"
-	"github.com/eencloud/gorush/storage"
+	"github.com/eencloud/gorush/core"
 
-	"github.com/asdine/storm"
+	"github.com/asdine/storm/v3"
 )
 
+var _ core.Storage = (*Storage)(nil)
+
 // New func implements the storage interface for gorush (https://github.com/eencloud/gorush)
-func New(config config.ConfYaml) *Storage {
+func New(dbPath, bucket string) *Storage {
 	return &Storage{
-		config: config,
+		dbPath: dbPath,
+		bucket: bucket,
 	}
 }
 
 // Storage is interface structure
 type Storage struct {
-	config config.ConfYaml
+	dbPath string
+	bucket string
+	db     *storm.DB
+	sync.RWMutex
+}
+
+func (s *Storage) Add(key string, count int64) {
+	s.Lock()
+	defer s.Unlock()
+	s.setBoltDB(key, s.getBoltDB(key)+count)
+}
+
+func (s *Storage) Set(key string, count int64) {
+	s.Lock()
+	defer s.Unlock()
+	s.setBoltDB(key, count)
+}
+
+func (s *Storage) Get(key string) int64 {
+	s.RLock()
+	defer s.RUnlock()
+	return s.getBoltDB(key)
 }
 
 // Init client storage.
 func (s *Storage) Init() error {
-	return nil
+	var err error
+	if s.dbPath == "" {
+		s.dbPath = os.TempDir() + "boltdb.db"
+	}
+	s.db, err = storm.Open(s.dbPath)
+	return err
 }
 
-// Reset Client storage.
-func (s *Storage) Reset() {
-	s.setBoltDB(storage.TotalCountKey, 0)
-	s.setBoltDB(storage.IosSuccessKey, 0)
-	s.setBoltDB(storage.IosErrorKey, 0)
-	s.setBoltDB(storage.AndroidSuccessKey, 0)
-	s.setBoltDB(storage.AndroidErrorKey, 0)
+// Close the storage connection
+func (s *Storage) Close() error {
+	if s.db == nil {
+		return nil
+	}
+
+	return s.db.Close()
 }
 
 func (s *Storage) setBoltDB(key string, count int64) {
-	db, _ := storm.Open(s.config.Stat.BoltDB.Path)
-	err := db.Set(s.config.Stat.BoltDB.Bucket, key, count)
+	err := s.db.Set(s.bucket, key, count)
 	if err != nil {
 		log.Println("BoltDB set error:", err.Error())
 	}
-
-	defer func() {
-		err := db.Close()
-		if err != nil {
-			log.Println("BoltDB error:", err.Error())
-		}
-	}()
 }
 
-func (s *Storage) getBoltDB(key string, count *int64) {
-	db, _ := storm.Open(s.config.Stat.BoltDB.Path)
-	err := db.Get(s.config.Stat.BoltDB.Bucket, key, count)
+func (s *Storage) getBoltDB(key string) int64 {
+	var count int64
+	err := s.db.Get(s.bucket, key, &count)
 	if err != nil {
 		log.Println("BoltDB get error:", err.Error())
 	}
-
-	defer func() {
-		err := db.Close()
-		if err != nil {
-			log.Println("BoltDB error:", err.Error())
-		}
-	}()
-}
-
-// AddTotalCount record push notification count.
-func (s *Storage) AddTotalCount(count int64) {
-	total := s.GetTotalCount() + count
-	s.setBoltDB(storage.TotalCountKey, total)
-}
-
-// AddIosSuccess record counts of success iOS push notification.
-func (s *Storage) AddIosSuccess(count int64) {
-	total := s.GetIosSuccess() + count
-	s.setBoltDB(storage.IosSuccessKey, total)
-}
-
-// AddIosError record counts of error iOS push notification.
-func (s *Storage) AddIosError(count int64) {
-	total := s.GetIosError() + count
-	s.setBoltDB(storage.IosErrorKey, total)
-}
-
-// AddAndroidSuccess record counts of success Android push notification.
-func (s *Storage) AddAndroidSuccess(count int64) {
-	total := s.GetAndroidSuccess() + count
-	s.setBoltDB(storage.AndroidSuccessKey, total)
-}
-
-// AddAndroidError record counts of error Android push notification.
-func (s *Storage) AddAndroidError(count int64) {
-	total := s.GetAndroidError() + count
-	s.setBoltDB(storage.AndroidErrorKey, total)
-}
-
-// GetTotalCount show counts of all notification.
-func (s *Storage) GetTotalCount() int64 {
-	var count int64
-	s.getBoltDB(storage.TotalCountKey, &count)
-
-	return count
-}
-
-// GetIosSuccess show success counts of iOS notification.
-func (s *Storage) GetIosSuccess() int64 {
-	var count int64
-	s.getBoltDB(storage.IosSuccessKey, &count)
-
-	return count
-}
-
-// GetIosError show error counts of iOS notification.
-func (s *Storage) GetIosError() int64 {
-	var count int64
-	s.getBoltDB(storage.IosErrorKey, &count)
-
-	return count
-}
-
-// GetAndroidSuccess show success counts of Android notification.
-func (s *Storage) GetAndroidSuccess() int64 {
-	var count int64
-	s.getBoltDB(storage.AndroidSuccessKey, &count)
-
-	return count
-}
-
-// GetAndroidError show error counts of Android notification.
-func (s *Storage) GetAndroidError() int64 {
-	var count int64
-	s.getBoltDB(storage.AndroidErrorKey, &count)
-
 	return count
 }

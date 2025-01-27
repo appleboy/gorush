@@ -3,12 +3,35 @@
 'use strict';
 var grpc = require('grpc');
 var gorush_pb = require('./gorush_pb.js');
+var google_protobuf_struct_pb = require('google-protobuf/google/protobuf/struct_pb.js');
+
+function serialize_proto_HealthCheckRequest(arg) {
+  if (!(arg instanceof gorush_pb.HealthCheckRequest)) {
+    throw new Error('Expected argument of type proto.HealthCheckRequest');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_proto_HealthCheckRequest(buffer_arg) {
+  return gorush_pb.HealthCheckRequest.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_proto_HealthCheckResponse(arg) {
+  if (!(arg instanceof gorush_pb.HealthCheckResponse)) {
+    throw new Error('Expected argument of type proto.HealthCheckResponse');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_proto_HealthCheckResponse(buffer_arg) {
+  return gorush_pb.HealthCheckResponse.deserializeBinary(new Uint8Array(buffer_arg));
+}
 
 function serialize_proto_NotificationReply(arg) {
   if (!(arg instanceof gorush_pb.NotificationReply)) {
     throw new Error('Expected argument of type proto.NotificationReply');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_proto_NotificationReply(buffer_arg) {
@@ -19,7 +42,7 @@ function serialize_proto_NotificationRequest(arg) {
   if (!(arg instanceof gorush_pb.NotificationRequest)) {
     throw new Error('Expected argument of type proto.NotificationRequest');
   }
-  return new Buffer(arg.serializeBinary());
+  return Buffer.from(arg.serializeBinary());
 }
 
 function deserialize_proto_NotificationRequest(buffer_arg) {
@@ -42,3 +65,18 @@ var GorushService = exports.GorushService = {
 };
 
 exports.GorushClient = grpc.makeGenericClientConstructor(GorushService);
+var HealthService = exports.HealthService = {
+  check: {
+    path: '/proto.Health/Check',
+    requestStream: false,
+    responseStream: false,
+    requestType: gorush_pb.HealthCheckRequest,
+    responseType: gorush_pb.HealthCheckResponse,
+    requestSerialize: serialize_proto_HealthCheckRequest,
+    requestDeserialize: deserialize_proto_HealthCheckRequest,
+    responseSerialize: serialize_proto_HealthCheckResponse,
+    responseDeserialize: deserialize_proto_HealthCheckResponse,
+  },
+};
+
+exports.HealthClient = grpc.makeGenericClientConstructor(HealthService);

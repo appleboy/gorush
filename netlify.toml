@@ -1,0 +1,13 @@
+[build]
+command = "make build_linux_lambda"
+functions = "release/linux/lambda"
+
+[build.environment]
+GO111MODULE = "on"
+GO_IMPORT_PATH = "github.com/eencloud/gorush"
+GO_VERSION = "1.21.11"
+
+[[redirects]]
+from = "/*"
+status = 200
+to = "/.netlify/functions/gorush/:splat"
