@@ -70,6 +70,9 @@ queue:
     group: gorush
     consumer: gorush
     stream_name: gorush
+    username: ""
+    password: ""
+    with_tls: false
 
 ios:
   enabled: false

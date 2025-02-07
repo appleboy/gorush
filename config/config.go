@@ -82,6 +82,9 @@ queue:
     group: gorush
     consumer: gorush
     stream_name: gorush
+    with_tls: false
+    username: ""
+    password: ""
 
 ios:
   enabled: false
@@ -255,9 +258,12 @@ type SectionNATS struct {
 // SectionRedisQueue is sub section of config.
 type SectionRedisQueue struct {
 	Addr       string `yaml:"addr"`
+	Username   string `yaml:"username"`
+	Password   string `yaml:"password"`
 	StreamName string `yaml:"stream_name"`
 	Group      string `yaml:"group"`
 	Consumer   string `yaml:"consumer"`
+	WithTLS    bool   `yaml:"with_tls"`
 }
 
 // SectionRedis is sub section of config.
@@ -424,6 +430,9 @@ func LoadConf(confPath ...string) (*ConfYaml, error) {
 	conf.Queue.Redis.StreamName = viper.GetString("queue.redis.stream_name")
 	conf.Queue.Redis.Group = viper.GetString("queue.redis.group")
 	conf.Queue.Redis.Consumer = viper.GetString("queue.redis.consumer")
+	conf.Queue.Redis.WithTLS = viper.GetBool("queue.redis.with_tls")
+	conf.Queue.Redis.Username = viper.GetString("queue.redis.username")
+	conf.Queue.Redis.Password = viper.GetString("queue.redis.password")
 
 	// Stat Engine
 	conf.Stat.Engine = viper.GetString("stat.engine")
