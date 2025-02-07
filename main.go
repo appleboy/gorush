@@ -328,14 +328,22 @@ func main() {
 			nats.WithLogger(logx.QueueLogger()),
 		)
 	case core.Redis:
-		w = redisdb.NewWorker(
+		opts := []redisdb.Option{
 			redisdb.WithAddr(cfg.Queue.Redis.Addr),
+			redisdb.WithUsername(cfg.Queue.Redis.Username),
+			redisdb.WithPassword(cfg.Queue.Redis.Password),
 			redisdb.WithStreamName(cfg.Queue.Redis.StreamName),
 			redisdb.WithGroup(cfg.Queue.Redis.Group),
 			redisdb.WithConsumer(cfg.Queue.Redis.Consumer),
 			redisdb.WithMaxLength(cfg.Core.QueueNum),
 			redisdb.WithRunFunc(notify.Run(cfg)),
 			redisdb.WithLogger(logx.QueueLogger()),
+		}
+		if cfg.Queue.Redis.WithTLS {
+			opts = append(opts, redisdb.WithTLS())
+		}
+		w = redisdb.NewWorker(
+			opts...,
 		)
 	default:
 		logx.LogError.Fatalf("we don't support queue engine: %s", cfg.Queue.Engine)

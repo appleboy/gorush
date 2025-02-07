@@ -113,6 +113,9 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 	assert.Equal(suite.T(), "gorush", suite.ConfGorushDefault.Queue.Redis.StreamName)
 	assert.Equal(suite.T(), "gorush", suite.ConfGorushDefault.Queue.Redis.Group)
 	assert.Equal(suite.T(), "gorush", suite.ConfGorushDefault.Queue.Redis.Consumer)
+	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Queue.Redis.Username)
+	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Queue.Redis.Password)
+	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Queue.Redis.WithTLS)
 
 	// log
 	assert.Equal(suite.T(), "string", suite.ConfGorushDefault.Log.Format)
