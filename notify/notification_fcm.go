@@ -132,6 +132,7 @@ func GetAndroidNotification(req *PushNotification) []*messaging.Message {
 
 			if req.Android == nil {
 				req.Android = &messaging.AndroidConfig{
+					Priority: req.Priority,
 					Notification: &messaging.AndroidNotification{
 						Sound: sound,
 					},
