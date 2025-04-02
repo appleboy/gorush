@@ -42,6 +42,11 @@ message NotificationRequest {
   string pushType = 18;
   // default is production
   bool development = 19;
+  FCMOptions fcmOptions = 20;
+}
+
+message FCMOptions {
+  string analyticsLabel = 1;
 }
 
 message NotificationReply {
