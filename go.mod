@@ -26,7 +26,7 @@ require (
 	github.com/mattn/go-isatty v0.0.20
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/prometheus/client_golang v1.19.0
-	github.com/redis/go-redis/v9 v9.7.0
+	github.com/redis/go-redis/v9 v9.7.3
 	github.com/rs/zerolog v1.32.0
 	github.com/sideshow/apns2 v0.25.0
 	github.com/sirupsen/logrus v1.9.3
