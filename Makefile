@@ -5,8 +5,8 @@ GOFILES := $(shell find . -name "*.go" -type f)
 TAGS ?= sqlite
 LDFLAGS ?= -X main.version=$(VERSION) -X main.commit=$(COMMIT)
 
-PROTOC_GEN_GO=v1.28
-PROTOC_GEN_GO_GRPC=v1.2
+PROTOC_GEN_GO=v1.36.6
+PROTOC_GEN_GO_GRPC=v1.5.1
 
 ifneq ($(shell uname), Darwin)
 	EXTLDFLAGS = -extldflags "-static" $(null)
