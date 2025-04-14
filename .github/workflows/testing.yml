@@ -17,9 +17,9 @@ jobs:
           check-latest: true
 
       - name: check golangci-lint
-        uses: golangci/golangci-lint-action@v6
+        uses: golangci/golangci-lint-action@v7
         with:
-          version: latest
+          version: v2.0
           args: --verbose
 
       - uses: hadolint/hadolint-action@v3.1.0
