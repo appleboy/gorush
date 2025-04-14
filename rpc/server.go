@@ -11,6 +11,7 @@ import (
 	"strings"
 	"sync"
 
+	"firebase.google.com/go/v4/messaging"
 	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/core"
 	"github.com/appleboy/gorush/logx"
@@ -108,6 +109,12 @@ func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*prot
 
 	if in.Data != nil {
 		notification.Data = in.Data.AsMap()
+	}
+
+	if in.FcmOptions != nil {
+		notification.FCMOptions = &messaging.FCMOptions{
+			AnalyticsLabel: in.FcmOptions.AnalyticsLabel,
+		}
 	}
 
 	go func() {
