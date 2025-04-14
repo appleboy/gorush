@@ -1,9 +1,9 @@
+version: "2"
 linters:
-  enable-all: false
-  disable-all: true
-  fast: false
+  default: none
   enable:
     - bodyclose
+    - copyloopvar
     - dogsled
     - dupl
     - errcheck
@@ -12,11 +12,8 @@ linters:
     - goconst
     - gocritic
     - gocyclo
-    - gofmt
-    - goimports
     - goprintffuncname
     - gosec
-    - gosimple
     - govet
     - ineffassign
     - lll
@@ -25,14 +22,29 @@ linters:
     - noctx
     - nolintlint
     - staticcheck
-    - stylecheck
-    - typecheck
     - unconvert
     - unparam
     - unused
     - whitespace
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gofmt
     - gofumpt
-    - copyloopvar
-
-run:
-  timeout: 3m
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
