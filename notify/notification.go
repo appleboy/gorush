@@ -261,7 +261,15 @@ func SendNotification(
 	}
 
 	if cfg.Core.FeedbackURL != "" {
-		for _, l := range resp.Logs {
+		var logs []logx.LogPushEntry
+
+		if resp != nil {
+			logs = resp.Logs
+		} else {
+			logs = makeErrorLogs(cfg, v, err)
+		}
+
+		for _, l := range logs {
 			err := DispatchFeedback(ctx, l, cfg.Core.FeedbackURL, cfg.Core.FeedbackTimeout, cfg.Core.FeedbackHeader)
 			if err != nil {
 				logx.LogError.Error(err)
@@ -270,6 +278,28 @@ func SendNotification(
 	}
 
 	return resp, err
+}
+
+// makeErrorLogs creates a list of LogPushEntries for each token in notification
+// in case when logs are not returned from PushToXYZ() and error err is not nil
+func makeErrorLogs(
+	cfg *config.ConfYaml,
+	notification *PushNotification,
+	err error,
+) []logx.LogPushEntry {
+	if err == nil {
+		return []logx.LogPushEntry{}
+	}
+
+	logs := make([]logx.LogPushEntry, 0, len(notification.Tokens))
+
+	for _, token := range notification.Tokens {
+		log := logPush(cfg, core.FailedPush, token, notification, err)
+
+		logs = append(logs, log)
+	}
+
+	return logs
 }
 
 // Run send notification
