@@ -1384,7 +1384,7 @@ kubectl delete -f k8s
 
 ![lambda](./screenshot/lambda.png)
 
-AWS excited to [announce Go as a supported language for AWS Lambda](https://aws.amazon.com/blogs/compute/announcing-go-support-for-aws-lambda/). You’re going to create an application that uses an [API Gateway](https://aws.amazon.com/apigateway) event source to create a simple Hello World RESTful API.
+AWS is excited to [announce Go as a supported language for AWS Lambda](https://aws.amazon.com/blogs/compute/announcing-go-support-for-aws-lambda/). You’re going to create an application that uses an [API Gateway](https://aws.amazon.com/apigateway) event source to create a simple Hello World RESTful API.
 
 ### Build gorush binary
 
@@ -1395,17 +1395,17 @@ git clone https://github.com/appleboy/gorush.git
 cd gorush && make build_linux_lambda
 ```
 
-you can see the binary file in `release/linux/lambda/` folder
+You can see the binary file in `release/linux/lambda/` folder
 
 ### Deploy gorush application
 
-we need to build a binary that will run on Linux, and ZIP it up into a deployment package.
+We need to build a binary that will run on Linux, and ZIP it up into a deployment package.
 
 ```sh
 zip deployment.zip release/linux/lambda/gorush
 ```
 
-Upload the `deployment.zip` via web UI or you can try the [drone-lambda](https://github.com/appleboy/drone-lambda) as the following command. it will zip your binary file and upload to AWS Lambda automatically.
+Upload the `deployment.zip` via web UI or you can try the [drone-lambda](https://github.com/appleboy/drone-lambda) as the following command. It will zip your binary file and upload to AWS Lambda automatically.
 
 ```sh
 $ AWS_ACCESS_KEY_ID=YOUR_AWS_ACCESS_KEY_ID \
