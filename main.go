@@ -44,8 +44,8 @@ func main() {
 
 	flag.BoolVar(&showVersion, "version", false, "Print version information.")
 	flag.BoolVar(&showVersion, "V", false, "Print version information.")
-	flag.StringVar(&configFile, "c", "", "Configuration file path.")
-	flag.StringVar(&configFile, "config", "", "Configuration file path.")
+	//flag.StringVar(&configFile, "c", "", "Configuration file path.")
+	//flag.StringVar(&configFile, "config", "", "Configuration file path.")
 	flag.StringVar(&opts.Core.PID.Path, "pid", "", "PID file path.")
 	flag.StringVar(&opts.Ios.KeyPath, "i", "", "iOS certificate key file path")
 	flag.StringVar(&opts.Ios.KeyPath, "key", "", "iOS certificate key file path")
@@ -83,6 +83,8 @@ func main() {
 
 	router.SetVersion(version)
 	router.SetCommit(commit)
+
+	configFile = "./config.yml"
 
 	// Show version and exit
 	if showVersion {
