@@ -1,6 +1,6 @@
 module github.com/appleboy/gorush
 
-go 1.23.0
+go 1.24
 
 require (
 	firebase.google.com/go/v4 v4.15.1
@@ -19,7 +19,6 @@ require (
 	github.com/golang-queue/nsq v0.3.0
 	github.com/golang-queue/queue v0.3.0
 	github.com/golang-queue/redisdb-stream v0.3.0
-	github.com/golang/protobuf v1.5.4
 	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
 	github.com/json-iterator/go v1.1.12
@@ -41,7 +40,7 @@ require (
 	golang.org/x/net v0.39.0
 	golang.org/x/sync v0.13.0
 	google.golang.org/grpc v1.68.0
-	google.golang.org/protobuf v1.35.2
+	google.golang.org/protobuf v1.36.8
 )
 
 require (
@@ -90,6 +89,7 @@ require (
 	github.com/golang-jwt/jwt/v4 v4.5.2 // indirect
 	github.com/golang/glog v1.2.4 // indirect
 	github.com/golang/groupcache v0.0.0-20241129210726-2c02b8208cf8 // indirect
+	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/flatbuffers v24.3.7+incompatible // indirect
 	github.com/google/s2a-go v0.1.8 // indirect
