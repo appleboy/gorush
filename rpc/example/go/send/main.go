@@ -6,9 +6,9 @@ import (
 
 	"github.com/appleboy/gorush/rpc/proto"
 
-	structpb "github.com/golang/protobuf/ptypes/struct"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	structpb "google.golang.org/protobuf/types/known/structpb"
 )
 
 const (

@@ -1143,7 +1143,7 @@ import (
 
   "github.com/appleboy/gorush/rpc/proto"
 
-  structpb "github.com/golang/protobuf/ptypes/struct"
+  structpb "google.golang.org/protobuf/types/known/structpb"
   "google.golang.org/grpc"
 )
 
@@ -1248,7 +1248,7 @@ import (
 
   "github.com/appleboy/gorush/rpc/proto"
 
-  structpb "github.com/golang/protobuf/ptypes/struct"
+  structpb "google.golang.org/protobuf/types/known/structpb"
   "google.golang.org/grpc"
 )
 
