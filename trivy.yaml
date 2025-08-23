@@ -1,0 +1,8 @@
+# Trivy configuration file for gorush project
+# Docs: https://aquasecurity.github.io/trivy/latest/configuration/config-file/
+
+scan:
+  skip-dirs:
+    - certificate
+
+# You can add more config options below as needed.
