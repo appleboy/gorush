@@ -29,7 +29,7 @@ func TestInvalidYAMLFile(t *testing.T) {
 	content := []byte("invalid: yaml: content: [unclosed")
 
 	// Write invalid content to a temporary file
-	err := os.WriteFile(tmpFile, content, 0o644)
+	err := os.WriteFile(tmpFile, content, 0o600)
 	assert.NoError(t, err)
 	defer os.Remove(tmpFile) // Clean up
 
