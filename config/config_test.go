@@ -67,7 +67,7 @@ func TestEmptyConfig(t *testing.T) {
 		panic("failed to load config.yml from file")
 	}
 
-	assert.Equal(t, uint(100), conf.Ios.MaxConcurrentPushes)
+	assert.Equal(t, uint(DefaultMaxConcurrentPush), conf.Ios.MaxConcurrentPushes)
 }
 
 type ConfigTestSuite struct {
@@ -91,22 +91,22 @@ func (suite *ConfigTestSuite) SetupTest() {
 func (suite *ConfigTestSuite) TestValidateConfDefault() {
 	// Core
 	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Core.Address)
-	assert.Equal(suite.T(), "8088", suite.ConfGorushDefault.Core.Port)
-	assert.Equal(suite.T(), int64(30), suite.ConfGorushDefault.Core.ShutdownTimeout)
+	assert.Equal(suite.T(), DefaultPort, suite.ConfGorushDefault.Core.Port)
+	assert.Equal(suite.T(), int64(DefaultShutdownTimeout), suite.ConfGorushDefault.Core.ShutdownTimeout)
 	assert.Equal(suite.T(), true, suite.ConfGorushDefault.Core.Enabled)
 	assert.Equal(suite.T(), int64(runtime.NumCPU()), suite.ConfGorushDefault.Core.WorkerNum)
-	assert.Equal(suite.T(), int64(8192), suite.ConfGorushDefault.Core.QueueNum)
+	assert.Equal(suite.T(), int64(DefaultQueueNum), suite.ConfGorushDefault.Core.QueueNum)
 	assert.Equal(suite.T(), "release", suite.ConfGorushDefault.Core.Mode)
 	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Core.Sync)
 	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Core.FeedbackURL)
 	assert.Equal(suite.T(), 0, len(suite.ConfGorushDefault.Core.FeedbackHeader))
-	assert.Equal(suite.T(), int64(10), suite.ConfGorushDefault.Core.FeedbackTimeout)
+	assert.Equal(suite.T(), int64(DefaultFeedbackTimeout), suite.ConfGorushDefault.Core.FeedbackTimeout)
 	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Core.SSL)
 	assert.Equal(suite.T(), "cert.pem", suite.ConfGorushDefault.Core.CertPath)
 	assert.Equal(suite.T(), "key.pem", suite.ConfGorushDefault.Core.KeyPath)
 	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Core.KeyBase64)
 	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Core.CertBase64)
-	assert.Equal(suite.T(), int64(100), suite.ConfGorushDefault.Core.MaxNotification)
+	assert.Equal(suite.T(), int64(DefaultMaxNotification), suite.ConfGorushDefault.Core.MaxNotification)
 	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Core.HTTPProxy)
 	// Pid
 	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Core.PID.Enabled)
@@ -138,7 +138,7 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 	assert.Equal(suite.T(), "pem", suite.ConfGorushDefault.Ios.KeyType)
 	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Ios.Password)
 	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Ios.Production)
-	assert.Equal(suite.T(), uint(100), suite.ConfGorushDefault.Ios.MaxConcurrentPushes)
+	assert.Equal(suite.T(), uint(DefaultMaxConcurrentPush), suite.ConfGorushDefault.Ios.MaxConcurrentPushes)
 	assert.Equal(suite.T(), 0, suite.ConfGorushDefault.Ios.MaxRetry)
 	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Ios.KeyID)
 	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Ios.TeamID)
@@ -186,20 +186,20 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 
 	// gRPC
 	assert.Equal(suite.T(), false, suite.ConfGorushDefault.GRPC.Enabled)
-	assert.Equal(suite.T(), "9000", suite.ConfGorushDefault.GRPC.Port)
+	assert.Equal(suite.T(), DefaultGRPCPort, suite.ConfGorushDefault.GRPC.Port)
 }
 
 func (suite *ConfigTestSuite) TestValidateConf() {
 	// Core
-	assert.Equal(suite.T(), "8088", suite.ConfGorush.Core.Port)
-	assert.Equal(suite.T(), int64(30), suite.ConfGorush.Core.ShutdownTimeout)
+	assert.Equal(suite.T(), DefaultPort, suite.ConfGorush.Core.Port)
+	assert.Equal(suite.T(), int64(DefaultShutdownTimeout), suite.ConfGorush.Core.ShutdownTimeout)
 	assert.Equal(suite.T(), true, suite.ConfGorush.Core.Enabled)
 	assert.Equal(suite.T(), int64(runtime.NumCPU()), suite.ConfGorush.Core.WorkerNum)
-	assert.Equal(suite.T(), int64(8192), suite.ConfGorush.Core.QueueNum)
+	assert.Equal(suite.T(), int64(DefaultQueueNum), suite.ConfGorush.Core.QueueNum)
 	assert.Equal(suite.T(), "release", suite.ConfGorush.Core.Mode)
 	assert.Equal(suite.T(), false, suite.ConfGorush.Core.Sync)
 	assert.Equal(suite.T(), "", suite.ConfGorush.Core.FeedbackURL)
-	assert.Equal(suite.T(), int64(10), suite.ConfGorush.Core.FeedbackTimeout)
+	assert.Equal(suite.T(), int64(DefaultFeedbackTimeout), suite.ConfGorush.Core.FeedbackTimeout)
 	assert.Equal(suite.T(), 1, len(suite.ConfGorush.Core.FeedbackHeader))
 	assert.Equal(suite.T(), "x-gorush-token:4e989115e09680f44a645519fed6a976", suite.ConfGorush.Core.FeedbackHeader[0])
 	assert.Equal(suite.T(), false, suite.ConfGorush.Core.SSL)
@@ -207,7 +207,7 @@ func (suite *ConfigTestSuite) TestValidateConf() {
 	assert.Equal(suite.T(), "key.pem", suite.ConfGorush.Core.KeyPath)
 	assert.Equal(suite.T(), "", suite.ConfGorush.Core.CertBase64)
 	assert.Equal(suite.T(), "", suite.ConfGorush.Core.KeyBase64)
-	assert.Equal(suite.T(), int64(100), suite.ConfGorush.Core.MaxNotification)
+	assert.Equal(suite.T(), int64(DefaultMaxNotification), suite.ConfGorush.Core.MaxNotification)
 	assert.Equal(suite.T(), "", suite.ConfGorush.Core.HTTPProxy)
 	// Pid
 	assert.Equal(suite.T(), false, suite.ConfGorush.Core.PID.Enabled)
@@ -239,7 +239,7 @@ func (suite *ConfigTestSuite) TestValidateConf() {
 	assert.Equal(suite.T(), "pem", suite.ConfGorush.Ios.KeyType)
 	assert.Equal(suite.T(), "", suite.ConfGorush.Ios.Password)
 	assert.Equal(suite.T(), false, suite.ConfGorush.Ios.Production)
-	assert.Equal(suite.T(), uint(100), suite.ConfGorush.Ios.MaxConcurrentPushes)
+	assert.Equal(suite.T(), uint(DefaultMaxConcurrentPush), suite.ConfGorush.Ios.MaxConcurrentPushes)
 	assert.Equal(suite.T(), 0, suite.ConfGorush.Ios.MaxRetry)
 	assert.Equal(suite.T(), "", suite.ConfGorush.Ios.KeyID)
 	assert.Equal(suite.T(), "", suite.ConfGorush.Ios.TeamID)
@@ -268,7 +268,7 @@ func (suite *ConfigTestSuite) TestValidateConf() {
 
 	// gRPC
 	assert.Equal(suite.T(), false, suite.ConfGorush.GRPC.Enabled)
-	assert.Equal(suite.T(), "9000", suite.ConfGorush.GRPC.Port)
+	assert.Equal(suite.T(), DefaultGRPCPort, suite.ConfGorush.GRPC.Port)
 }
 
 func TestConfigTestSuite(t *testing.T) {
@@ -556,7 +556,7 @@ func TestValidateConfig(t *testing.T) {
 			name: "valid config",
 			cfg: &ConfYaml{
 				Core: SectionCore{
-					Port:    "8088",
+					Port:    DefaultPort,
 					Address: "0.0.0.0",
 				},
 				Stat: SectionStat{
@@ -620,7 +620,7 @@ func TestSecurityValidationIntegration(t *testing.T) {
 	// Test that all validation functions work together
 	t.Run("complete security validation", func(t *testing.T) {
 		// Test valid inputs
-		if err := ValidatePort("8088"); err != nil {
+		if err := ValidatePort(DefaultPort); err != nil {
 			t.Errorf("Valid port should not error: %v", err)
 		}
 
