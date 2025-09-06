@@ -3,8 +3,11 @@ package config
 import (
 	"bytes"
 	"fmt"
+	"net"
 	"os"
+	"path/filepath"
 	"runtime"
+	"strconv"
 	"strings"
 
 	"github.com/spf13/viper"
@@ -460,4 +463,90 @@ func LoadConf(confPath ...string) (*ConfYaml, error) {
 	}
 
 	return conf, nil
+}
+
+// ValidatePort validates that a port string is within valid range
+func ValidatePort(port string) error {
+	if port == "" {
+		return nil // empty port is allowed, will use default
+	}
+	p, err := strconv.Atoi(port)
+	if err != nil {
+		return fmt.Errorf("invalid port format: %s", port)
+	}
+	if p < 1 || p > 65535 {
+		return fmt.Errorf("port out of range (1-65535): %d", p)
+	}
+	return nil
+}
+
+// ValidateAddress validates that an address is not empty and contains valid characters
+func ValidateAddress(addr string) error {
+	if addr == "" {
+		return nil // empty address is allowed, will bind to all interfaces
+	}
+	// Basic validation - check if it's a valid IP or hostname format
+	if net.ParseIP(addr) == nil {
+		// If not a valid IP, check if it could be a hostname (basic check)
+		if len(addr) > 253 || strings.Contains(addr, "..") {
+			return fmt.Errorf("invalid address format: %s", addr)
+		}
+	}
+	return nil
+}
+
+// ValidatePIDPath validates and sanitizes PID file path to prevent path traversal
+func ValidatePIDPath(pidPath string) error {
+	if pidPath == "" {
+		return nil
+	}
+
+	// Clean the path to resolve any . or .. elements
+	cleanPath := filepath.Clean(pidPath)
+
+	// Check for path traversal attempts
+	if strings.Contains(pidPath, "..") {
+		return fmt.Errorf("path traversal detected in PID path: %s", pidPath)
+	}
+
+	// Ensure the path is not trying to write to sensitive system directories
+	sensitive := []string{"/etc/", "/usr/", "/var/", "/sys/", "/proc/"}
+	for _, prefix := range sensitive {
+		if strings.HasPrefix(cleanPath, prefix) {
+			return fmt.Errorf("cannot write PID file to sensitive directory: %s", cleanPath)
+		}
+	}
+
+	return nil
+}
+
+// ValidateConfig validates critical configuration parameters
+func ValidateConfig(cfg *ConfYaml) error {
+	if err := ValidatePort(cfg.Core.Port); err != nil {
+		return fmt.Errorf("invalid core port: %w", err)
+	}
+
+	if err := ValidateAddress(cfg.Core.Address); err != nil {
+		return fmt.Errorf("invalid core address: %w", err)
+	}
+
+	if err := ValidatePIDPath(cfg.Core.PID.Path); err != nil {
+		return fmt.Errorf("invalid PID path: %w", err)
+	}
+
+	// Validate Redis address if Redis is enabled
+	if cfg.Stat.Engine == "redis" && cfg.Stat.Redis.Addr != "" {
+		host, port, err := net.SplitHostPort(cfg.Stat.Redis.Addr)
+		if err != nil {
+			return fmt.Errorf("invalid Redis address format: %s", cfg.Stat.Redis.Addr)
+		}
+		if err := ValidateAddress(host); err != nil {
+			return fmt.Errorf("invalid Redis host: %w", err)
+		}
+		if err := ValidatePort(port); err != nil {
+			return fmt.Errorf("invalid Redis port: %w", err)
+		}
+	}
+
+	return nil
 }
