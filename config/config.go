@@ -312,14 +312,53 @@ type SectionGRPC struct {
 	Port    string `yaml:"port"`
 }
 
-func setDefault() {
+func setDefaults() {
+	// Core defaults
+	viper.SetDefault("core.enabled", true)
+	viper.SetDefault("core.address", "")
+	viper.SetDefault("core.shutdown_timeout", 30)
+	viper.SetDefault("core.port", "8088")
+	viper.SetDefault("core.worker_num", 0)
+	viper.SetDefault("core.queue_num", 0)
+	viper.SetDefault("core.max_notification", 100)
+	viper.SetDefault("core.sync", false)
+	viper.SetDefault("core.feedback_timeout", 10)
+	viper.SetDefault("core.mode", "release")
+	viper.SetDefault("core.ssl", false)
+	viper.SetDefault("core.cert_path", "cert.pem")
+	viper.SetDefault("core.key_path", "key.pem")
+	viper.SetDefault("core.pid.enabled", false)
+	viper.SetDefault("core.pid.path", "gorush.pid")
+	viper.SetDefault("core.pid.override", true)
+	viper.SetDefault("core.auto_tls.enabled", false)
+	viper.SetDefault("core.auto_tls.folder", ".cache")
+
+	// iOS defaults
+	viper.SetDefault("ios.enabled", false)
+	viper.SetDefault("ios.key_type", "pem")
+	viper.SetDefault("ios.production", false)
 	viper.SetDefault("ios.max_concurrent_pushes", uint(100))
+	viper.SetDefault("ios.max_retry", 0)
+
+	// Android defaults
+	viper.SetDefault("android.enabled", true)
+	viper.SetDefault("android.max_retry", 0)
+
+	// gRPC defaults
+	viper.SetDefault("grpc.enabled", false)
+	viper.SetDefault("grpc.port", "9000")
+
+	// Queue defaults
+	viper.SetDefault("queue.engine", "local")
+
+	// Stat defaults
+	viper.SetDefault("stat.engine", "memory")
 }
 
 // LoadConf load config from file and read in environment variables that match
 func LoadConf(confPath ...string) (*ConfYaml, error) {
 	// load default values
-	setDefault()
+	setDefaults()
 
 	viper.SetConfigType("yaml")
 	viper.AutomaticEnv()         // read in environment variables that match
