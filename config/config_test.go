@@ -12,10 +12,53 @@ import (
 
 // Test file is missing
 func TestMissingFile(t *testing.T) {
-	filename := "test"
-	_, err := LoadConf(filename)
+	filename := "nonexistent_file.yml"
+	conf, err := LoadConf(filename)
 
+	assert.Nil(t, conf)
 	assert.NotNil(t, err)
+	// Check that the error message includes the filename and describes the issue
+	assert.Contains(t, err.Error(), "failed to read config file")
+	assert.Contains(t, err.Error(), filename)
+}
+
+// Test invalid YAML content
+func TestInvalidYAMLFile(t *testing.T) {
+	// Create a temporary file with invalid YAML
+	tmpFile := "test_invalid.yml"
+	content := []byte("invalid: yaml: content: [unclosed")
+
+	// Write invalid content to a temporary file
+	err := os.WriteFile(tmpFile, content, 0o644)
+	assert.NoError(t, err)
+	defer os.Remove(tmpFile) // Clean up
+
+	conf, err := LoadConf(tmpFile)
+
+	assert.Nil(t, conf)
+	assert.NotNil(t, err)
+	// Check that the error message includes the filename and describes parsing failure
+	assert.Contains(t, err.Error(), "failed to parse config file")
+	assert.Contains(t, err.Error(), tmpFile)
+}
+
+// Test improved error messages for default config loading
+func TestDefaultConfigLoadFailure(t *testing.T) {
+	// Backup original defaultConf
+	originalDefaultConf := defaultConf
+	defer func() {
+		defaultConf = originalDefaultConf
+	}()
+
+	// Set invalid default config
+	defaultConf = []byte(`invalid: yaml: [unclosed`)
+
+	conf, err := LoadConf()
+
+	assert.Nil(t, conf)
+	assert.NotNil(t, err)
+	// Check that the error message describes the default config loading failure
+	assert.Contains(t, err.Error(), "failed to load default config and no config file found")
 }
 
 func TestEmptyConfig(t *testing.T) {

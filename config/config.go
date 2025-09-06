@@ -318,8 +318,6 @@ func setDefault() {
 
 // LoadConf load config from file and read in environment variables that match
 func LoadConf(confPath ...string) (*ConfYaml, error) {
-	conf := &ConfYaml{}
-
 	// load default values
 	setDefault()
 
@@ -328,30 +326,44 @@ func LoadConf(confPath ...string) (*ConfYaml, error) {
 	viper.SetEnvPrefix("gorush") // will be uppercased automatically
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
+	// If config path is provided, load from file
 	if len(confPath) > 0 && confPath[0] != "" {
 		content, err := os.ReadFile(confPath[0])
 		if err != nil {
-			return conf, err
+			return nil, fmt.Errorf("failed to read config file %s: %w", confPath[0], err)
 		}
 
 		if err := viper.ReadConfig(bytes.NewBuffer(content)); err != nil {
-			return conf, err
+			return nil, fmt.Errorf("failed to parse config file %s: %w", confPath[0], err)
 		}
-	} else {
-		// Search config in home directory with name ".gorush" (without extension).
-		viper.AddConfigPath("/etc/gorush/")
-		viper.AddConfigPath("$HOME/.gorush")
-		viper.AddConfigPath(".")
-		viper.SetConfigName("config")
 
-		// If a config file is found, read it in.
-		if err := viper.ReadInConfig(); err == nil {
-			fmt.Println("Using config file:", viper.ConfigFileUsed())
-		} else if err := viper.ReadConfig(bytes.NewBuffer(defaultConf)); err != nil {
-			// load default config
-			return conf, err
-		}
+		// Early return after successfully loading config from file
+		return loadConfigFromViper()
 	}
+
+	// Search config in home directory with name ".gorush" (without extension).
+	viper.AddConfigPath("/etc/gorush/")
+	viper.AddConfigPath("$HOME/.gorush")
+	viper.AddConfigPath(".")
+	viper.SetConfigName("config")
+
+	// If a config file is found, read it in.
+	if err := viper.ReadInConfig(); err == nil {
+		fmt.Println("Using config file:", viper.ConfigFileUsed())
+		return loadConfigFromViper()
+	}
+
+	// Try to load default config as fallback
+	if err := viper.ReadConfig(bytes.NewBuffer(defaultConf)); err != nil {
+		return nil, fmt.Errorf("failed to load default config and no config file found: %w", err)
+	}
+
+	return loadConfigFromViper()
+}
+
+// loadConfigFromViper extracts config loading logic to avoid code duplication
+func loadConfigFromViper() (*ConfYaml, error) {
+	conf := &ConfYaml{}
 
 	// Core
 	conf.Core.Address = viper.GetString("core.address")
