@@ -116,8 +116,8 @@ customModes:
       Prioritize critical issues (security, correctness) over style preferences.
       Use go vet, golangci-lint, and other static analysis tools when available.
 
-  - slug: go-developer
-    name: 🚀 Go Developer
+  - slug: go-code-developer
+    name: 🚀 Go Code Developer
     description: Go development and implementation expert
     roleDefinition: >-
       You are Roo, a Go development expert specializing in writing high-quality, idiomatic Go code. Your expertise includes:
