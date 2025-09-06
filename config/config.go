@@ -517,13 +517,13 @@ func loadConfigFromViper() (*ConfYaml, error) {
 	conf.GRPC.Enabled = viper.GetBool("grpc.enabled")
 	conf.GRPC.Port = viper.GetString("grpc.port")
 
-	// Apply runtime-computed defaults for zero values
-	// This ensures optimal resource utilization based on system capabilities
-	if conf.Core.WorkerNum == DefaultWorkerNum {
+	// Apply runtime-computed defaults for zero or negative values
+	// This ensures optimal resource utilization and prevents panics from negative values
+	if conf.Core.WorkerNum <= 0 {
 		conf.Core.WorkerNum = int64(runtime.NumCPU())
 	}
 
-	if conf.Core.QueueNum == DefaultWorkerNum {
+	if conf.Core.QueueNum <= 0 {
 		conf.Core.QueueNum = DefaultQueueNum
 	}
 

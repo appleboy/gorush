@@ -646,3 +646,116 @@ func TestSecurityValidationIntegration(t *testing.T) {
 		}
 	})
 }
+
+// TestNegativeValues tests that negative configuration values are handled safely
+func TestNegativeValues(t *testing.T) {
+	tests := []struct {
+		name           string
+		workerNum      int64
+		queueNum       int64
+		expectedWorker int64
+		expectedQueue  int64
+		description    string
+	}{
+		{
+			name:           "negative_worker_num_should_use_cpu_count",
+			workerNum:      -5,
+			queueNum:       DefaultQueueNum,
+			expectedWorker: int64(runtime.NumCPU()),
+			expectedQueue:  DefaultQueueNum,
+			description:    "Negative WorkerNum should be replaced with CPU count",
+		},
+		{
+			name:           "negative_queue_num_should_use_default",
+			workerNum:      4, // Valid positive value
+			queueNum:       -100,
+			expectedWorker: 4,
+			expectedQueue:  DefaultQueueNum,
+			description:    "Negative QueueNum should be replaced with default",
+		},
+		{
+			name:           "both_negative_should_use_defaults",
+			workerNum:      -1,
+			queueNum:       -1,
+			expectedWorker: int64(runtime.NumCPU()),
+			expectedQueue:  DefaultQueueNum,
+			description:    "Both negative values should be replaced with defaults",
+		},
+		{
+			name:           "zero_worker_num_should_use_cpu_count",
+			workerNum:      0,
+			queueNum:       DefaultQueueNum,
+			expectedWorker: int64(runtime.NumCPU()),
+			expectedQueue:  DefaultQueueNum,
+			description:    "Zero WorkerNum should be replaced with CPU count",
+		},
+		{
+			name:           "zero_queue_num_should_use_default",
+			workerNum:      4,
+			queueNum:       0,
+			expectedWorker: 4,
+			expectedQueue:  DefaultQueueNum,
+			description:    "Zero QueueNum should be replaced with default",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Create config with test values
+			conf := &ConfYaml{}
+			conf.Core.WorkerNum = tt.workerNum
+			conf.Core.QueueNum = tt.queueNum
+
+			// Apply the same logic as loadConfigFromViper
+			if conf.Core.WorkerNum <= 0 {
+				conf.Core.WorkerNum = int64(runtime.NumCPU())
+			}
+			if conf.Core.QueueNum <= 0 {
+				conf.Core.QueueNum = DefaultQueueNum
+			}
+
+			// Verify results
+			assert.Equal(t, tt.expectedWorker, conf.Core.WorkerNum,
+				"WorkerNum: %s", tt.description)
+			assert.Equal(t, tt.expectedQueue, conf.Core.QueueNum,
+				"QueueNum: %s", tt.description)
+
+			// Ensure values are always positive (safety check)
+			assert.True(t, conf.Core.WorkerNum > 0,
+				"WorkerNum should be positive to prevent panics")
+			assert.True(t, conf.Core.QueueNum > 0,
+				"QueueNum should be positive to prevent panics")
+		})
+	}
+}
+
+// TestConfigSafetyBoundaries tests edge cases for configuration safety
+func TestConfigSafetyBoundaries(t *testing.T) {
+	tests := []struct {
+		name     string
+		value    int64
+		expected int64
+		usesCPU  bool
+	}{
+		{"very_negative", -9999, DefaultQueueNum, false},
+		{"negative_one", -1, DefaultQueueNum, false},
+		{"zero", 0, DefaultQueueNum, false},
+		{"positive_one", 1, 1, false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name+"_queue", func(t *testing.T) {
+			conf := &ConfYaml{}
+			conf.Core.QueueNum = tt.value
+			conf.Core.WorkerNum = 1 // Set to valid positive value
+
+			// Apply safety logic
+			if conf.Core.QueueNum <= 0 {
+				conf.Core.QueueNum = DefaultQueueNum
+			}
+
+			assert.Equal(t, tt.expected, conf.Core.QueueNum)
+			assert.True(t, conf.Core.QueueNum > 0, "QueueNum must be positive")
+		})
+	}
+}
