@@ -135,12 +135,23 @@ func main() {
 		cfg.Stat.Redis.Addr = opts.Stat.Redis.Addr
 	}
 
-	// overwrite server port and address
+	// overwrite server port and address with validation
 	if opts.Core.Port != "" {
+		if err := config.ValidatePort(opts.Core.Port); err != nil {
+			log.Fatalf("Invalid port from command line: %v", err)
+		}
 		cfg.Core.Port = opts.Core.Port
 	}
 	if opts.Core.Address != "" {
+		if err := config.ValidateAddress(opts.Core.Address); err != nil {
+			log.Fatalf("Invalid address from command line: %v", err)
+		}
 		cfg.Core.Address = opts.Core.Address
+	}
+
+	// Validate configuration for security issues
+	if err := config.ValidateConfig(cfg); err != nil {
+		log.Fatalf("Configuration validation failed: %v", err)
 	}
 
 	if err = logx.InitLog(
@@ -287,6 +298,9 @@ func main() {
 	}
 
 	if opts.Core.PID.Path != "" {
+		if err := config.ValidatePIDPath(opts.Core.PID.Path); err != nil {
+			log.Fatalf("Invalid PID path from command line: %v", err)
+		}
 		cfg.Core.PID.Path = opts.Core.PID.Path
 		cfg.Core.PID.Enabled = true
 		cfg.Core.PID.Override = true
@@ -481,6 +495,11 @@ func createPIDFile(cfg *config.ConfYaml) error {
 	}
 
 	pidPath := cfg.Core.PID.Path
+
+	// Additional validation before creating PID file
+	if err := config.ValidatePIDPath(pidPath); err != nil {
+		return err
+	}
 	_, err := os.Stat(pidPath)
 	if os.IsNotExist(err) || cfg.Core.PID.Override {
 		currentPid := os.Getpid()

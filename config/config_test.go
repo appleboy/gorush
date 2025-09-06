@@ -3,6 +3,7 @@ package config
 import (
 	"os"
 	"runtime"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -259,4 +260,346 @@ func TestLoadWrongDefaultYAMLConfig(t *testing.T) {
 	defaultConf = []byte(`a`)
 	_, err := LoadConf()
 	assert.Error(t, err)
+}
+
+func TestValidatePort(t *testing.T) {
+	tests := []struct {
+		name    string
+		port    string
+		wantErr bool
+		errMsg  string
+	}{
+		{
+			name:    "empty port should be valid",
+			port:    "",
+			wantErr: false,
+		},
+		{
+			name:    "valid port 80",
+			port:    "80",
+			wantErr: false,
+		},
+		{
+			name:    "valid port 8080",
+			port:    "8080",
+			wantErr: false,
+		},
+		{
+			name:    "valid port 65535",
+			port:    "65535",
+			wantErr: false,
+		},
+		{
+			name:    "valid port 1",
+			port:    "1",
+			wantErr: false,
+		},
+		{
+			name:    "invalid port 0",
+			port:    "0",
+			wantErr: true,
+			errMsg:  "port out of range",
+		},
+		{
+			name:    "invalid port 65536",
+			port:    "65536",
+			wantErr: true,
+			errMsg:  "port out of range",
+		},
+		{
+			name:    "invalid port format",
+			port:    "abc",
+			wantErr: true,
+			errMsg:  "invalid port format",
+		},
+		{
+			name:    "invalid port with injection",
+			port:    "80;rm -rf /",
+			wantErr: true,
+			errMsg:  "invalid port format",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := ValidatePort(tt.port)
+			if tt.wantErr {
+				if err == nil {
+					t.Errorf("ValidatePort() expected error but got none")
+					return
+				}
+				if tt.errMsg != "" && !strings.Contains(err.Error(), tt.errMsg) {
+					t.Errorf("ValidatePort() error = %v, want error containing %v", err, tt.errMsg)
+				}
+			} else if err != nil {
+				t.Errorf("ValidatePort() error = %v, want nil", err)
+			}
+		})
+	}
+}
+
+func TestValidateAddress(t *testing.T) {
+	tests := []struct {
+		name    string
+		addr    string
+		wantErr bool
+		errMsg  string
+	}{
+		{
+			name:    "empty address should be valid",
+			addr:    "",
+			wantErr: false,
+		},
+		{
+			name:    "valid IPv4 localhost",
+			addr:    "127.0.0.1",
+			wantErr: false,
+		},
+		{
+			name:    "valid IPv4 all interfaces",
+			addr:    "0.0.0.0",
+			wantErr: false,
+		},
+		{
+			name:    "valid IPv6 localhost",
+			addr:    "::1",
+			wantErr: false,
+		},
+		{
+			name:    "valid hostname",
+			addr:    "localhost",
+			wantErr: false,
+		},
+		{
+			name:    "invalid address too long",
+			addr:    strings.Repeat("a", 254),
+			wantErr: true,
+			errMsg:  "invalid address format",
+		},
+		{
+			name:    "invalid address with double dots",
+			addr:    "test..example.com",
+			wantErr: true,
+			errMsg:  "invalid address format",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := ValidateAddress(tt.addr)
+			if tt.wantErr {
+				if err == nil {
+					t.Errorf("ValidateAddress() expected error but got none")
+					return
+				}
+				if tt.errMsg != "" && !strings.Contains(err.Error(), tt.errMsg) {
+					t.Errorf("ValidateAddress() error = %v, want error containing %v", err, tt.errMsg)
+				}
+			} else if err != nil {
+				t.Errorf("ValidateAddress() error = %v, want nil", err)
+			}
+		})
+	}
+}
+
+func TestValidatePIDPath(t *testing.T) {
+	tests := []struct {
+		name    string
+		pidPath string
+		wantErr bool
+		errMsg  string
+	}{
+		{
+			name:    "empty path should be valid",
+			pidPath: "",
+			wantErr: false,
+		},
+		{
+			name:    "valid relative path",
+			pidPath: "gorush.pid",
+			wantErr: false,
+		},
+		{
+			name:    "valid absolute path in tmp",
+			pidPath: "/tmp/gorush.pid",
+			wantErr: false,
+		},
+		{
+			name:    "valid absolute path with .. components (cleaned)",
+			pidPath: "/tmp/foo/../gorush.pid",
+			wantErr: false,
+		},
+		{
+			name:    "valid absolute path with multiple .. components",
+			pidPath: "/home/user/subdir/../gorush.pid",
+			wantErr: false,
+		},
+		{
+			name:    "relative path traversal attack",
+			pidPath: "../../../etc/passwd",
+			wantErr: true,
+			errMsg:  "path traversal detected",
+		},
+		{
+			name:    "simple relative traversal",
+			pidPath: "../gorush.pid",
+			wantErr: true,
+			errMsg:  "path traversal detected",
+		},
+		{
+			name:    "complex relative traversal",
+			pidPath: "subdir/../../gorush.pid",
+			wantErr: true,
+			errMsg:  "path traversal detected",
+		},
+		{
+			name:    "attempt to write to /etc",
+			pidPath: "/etc/gorush.pid",
+			wantErr: true,
+			errMsg:  "sensitive directory",
+		},
+		{
+			name:    "attempt to write to /usr",
+			pidPath: "/usr/bin/gorush.pid",
+			wantErr: true,
+			errMsg:  "sensitive directory",
+		},
+		{
+			name:    "attempt to write to /var",
+			pidPath: "/var/log/gorush.pid",
+			wantErr: true,
+			errMsg:  "sensitive directory",
+		},
+		{
+			name:    "attempt to write to /sys",
+			pidPath: "/sys/gorush.pid",
+			wantErr: true,
+			errMsg:  "sensitive directory",
+		},
+		{
+			name:    "attempt to write to /proc",
+			pidPath: "/proc/gorush.pid",
+			wantErr: true,
+			errMsg:  "sensitive directory",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := ValidatePIDPath(tt.pidPath)
+			if tt.wantErr {
+				if err == nil {
+					t.Errorf("ValidatePIDPath() expected error but got none")
+					return
+				}
+				if tt.errMsg != "" && !strings.Contains(err.Error(), tt.errMsg) {
+					t.Errorf("ValidatePIDPath() error = %v, want error containing %v", err, tt.errMsg)
+				}
+			} else if err != nil {
+				t.Errorf("ValidatePIDPath() error = %v, want nil", err)
+			}
+		})
+	}
+}
+
+func TestValidateConfig(t *testing.T) {
+	tests := []struct {
+		name    string
+		cfg     *ConfYaml
+		wantErr bool
+		errMsg  string
+	}{
+		{
+			name: "valid config",
+			cfg: &ConfYaml{
+				Core: SectionCore{
+					Port:    "8088",
+					Address: "0.0.0.0",
+				},
+				Stat: SectionStat{
+					Engine: "memory",
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "invalid port in config",
+			cfg: &ConfYaml{
+				Core: SectionCore{
+					Port: "99999",
+				},
+			},
+			wantErr: true,
+			errMsg:  "invalid core port",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := ValidateConfig(tt.cfg)
+			if tt.wantErr {
+				if err == nil {
+					t.Errorf("ValidateConfig() expected error but got none")
+					return
+				}
+
+				if tt.errMsg != "" && !strings.Contains(err.Error(), tt.errMsg) {
+					t.Errorf("ValidateConfig() error = %v, want error containing %v", err, tt.errMsg)
+				}
+			} else if err != nil {
+				t.Errorf("ValidateConfig() error = %v, want nil", err)
+			}
+		})
+	}
+}
+
+// Benchmark tests for security validation functions
+func BenchmarkValidatePort(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		_ = ValidatePort("8080")
+	}
+}
+
+func BenchmarkValidateAddress(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		_ = ValidateAddress("127.0.0.1")
+	}
+}
+
+func BenchmarkValidatePIDPath(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		_ = ValidatePIDPath("/tmp/gorush.pid")
+	}
+}
+
+// Integration test for security validation
+func TestSecurityValidationIntegration(t *testing.T) {
+	// Test that all validation functions work together
+	t.Run("complete security validation", func(t *testing.T) {
+		// Test valid inputs
+		if err := ValidatePort("8088"); err != nil {
+			t.Errorf("Valid port should not error: %v", err)
+		}
+
+		if err := ValidateAddress("127.0.0.1"); err != nil {
+			t.Errorf("Valid address should not error: %v", err)
+		}
+
+		if err := ValidatePIDPath("/tmp/test.pid"); err != nil {
+			t.Errorf("Valid PID path should not error: %v", err)
+		}
+
+		// Test malicious inputs
+		if err := ValidatePort("8080; rm -rf /"); err == nil {
+			t.Error("Malicious port should error")
+		}
+
+		if err := ValidatePIDPath("../../../etc/passwd"); err == nil {
+			t.Error("Path traversal should error")
+		}
+
+		if err := ValidatePIDPath("/etc/malicious.pid"); err == nil {
+			t.Error("Sensitive directory write should error")
+		}
+	})
 }
