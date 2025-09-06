@@ -425,8 +425,30 @@ func TestValidatePIDPath(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name:    "path traversal attack",
+			name:    "valid absolute path with .. components (cleaned)",
+			pidPath: "/tmp/foo/../gorush.pid",
+			wantErr: false,
+		},
+		{
+			name:    "valid absolute path with multiple .. components",
+			pidPath: "/home/user/subdir/../gorush.pid",
+			wantErr: false,
+		},
+		{
+			name:    "relative path traversal attack",
 			pidPath: "../../../etc/passwd",
+			wantErr: true,
+			errMsg:  "path traversal detected",
+		},
+		{
+			name:    "simple relative traversal",
+			pidPath: "../gorush.pid",
+			wantErr: true,
+			errMsg:  "path traversal detected",
+		},
+		{
+			name:    "complex relative traversal",
+			pidPath: "subdir/../../gorush.pid",
 			wantErr: true,
 			errMsg:  "path traversal detected",
 		},
@@ -439,6 +461,24 @@ func TestValidatePIDPath(t *testing.T) {
 		{
 			name:    "attempt to write to /usr",
 			pidPath: "/usr/bin/gorush.pid",
+			wantErr: true,
+			errMsg:  "sensitive directory",
+		},
+		{
+			name:    "attempt to write to /var",
+			pidPath: "/var/log/gorush.pid",
+			wantErr: true,
+			errMsg:  "sensitive directory",
+		},
+		{
+			name:    "attempt to write to /sys",
+			pidPath: "/sys/gorush.pid",
+			wantErr: true,
+			errMsg:  "sensitive directory",
+		},
+		{
+			name:    "attempt to write to /proc",
+			pidPath: "/proc/gorush.pid",
 			wantErr: true,
 			errMsg:  "sensitive directory",
 		},

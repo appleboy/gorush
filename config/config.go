@@ -504,8 +504,9 @@ func ValidatePIDPath(pidPath string) error {
 	// Clean the path to resolve any . or .. elements
 	cleanPath := filepath.Clean(pidPath)
 
-	// Check for path traversal attempts
-	if strings.Contains(pidPath, "..") {
+	// Check for path traversal attempts by looking for ".." in the cleaned path
+	// If a relative path attempts to traverse upwards, it will still have a ".." prefix after cleaning
+	if !filepath.IsAbs(cleanPath) && strings.HasPrefix(cleanPath, "..") {
 		return fmt.Errorf("path traversal detected in PID path: %s", pidPath)
 	}
 
