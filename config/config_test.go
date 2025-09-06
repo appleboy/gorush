@@ -331,10 +331,8 @@ func TestValidatePort(t *testing.T) {
 				if tt.errMsg != "" && !strings.Contains(err.Error(), tt.errMsg) {
 					t.Errorf("ValidatePort() error = %v, want error containing %v", err, tt.errMsg)
 				}
-			} else {
-				if err != nil {
-					t.Errorf("ValidatePort() error = %v, want nil", err)
-				}
+			} else if err != nil {
+				t.Errorf("ValidatePort() error = %v, want nil", err)
 			}
 		})
 	}
@@ -397,10 +395,8 @@ func TestValidateAddress(t *testing.T) {
 				if tt.errMsg != "" && !strings.Contains(err.Error(), tt.errMsg) {
 					t.Errorf("ValidateAddress() error = %v, want error containing %v", err, tt.errMsg)
 				}
-			} else {
-				if err != nil {
-					t.Errorf("ValidateAddress() error = %v, want nil", err)
-				}
+			} else if err != nil {
+				t.Errorf("ValidateAddress() error = %v, want nil", err)
 			}
 		})
 	}
@@ -459,10 +455,8 @@ func TestValidatePIDPath(t *testing.T) {
 				if tt.errMsg != "" && !strings.Contains(err.Error(), tt.errMsg) {
 					t.Errorf("ValidatePIDPath() error = %v, want error containing %v", err, tt.errMsg)
 				}
-			} else {
-				if err != nil {
-					t.Errorf("ValidatePIDPath() error = %v, want nil", err)
-				}
+			} else if err != nil {
+				t.Errorf("ValidatePIDPath() error = %v, want nil", err)
 			}
 		})
 	}
@@ -512,10 +506,8 @@ func TestValidateConfig(t *testing.T) {
 				if tt.errMsg != "" && !strings.Contains(err.Error(), tt.errMsg) {
 					t.Errorf("ValidateConfig() error = %v, want error containing %v", err, tt.errMsg)
 				}
-			} else {
-				if err != nil {
-					t.Errorf("ValidateConfig() error = %v, want nil", err)
-				}
+			} else if err != nil {
+				t.Errorf("ValidateConfig() error = %v, want nil", err)
 			}
 		})
 	}
@@ -524,19 +516,19 @@ func TestValidateConfig(t *testing.T) {
 // Benchmark tests for security validation functions
 func BenchmarkValidatePort(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		ValidatePort("8080")
+		_ = ValidatePort("8080")
 	}
 }
 
 func BenchmarkValidateAddress(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		ValidateAddress("127.0.0.1")
+		_ = ValidateAddress("127.0.0.1")
 	}
 }
 
 func BenchmarkValidatePIDPath(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		ValidatePIDPath("/tmp/gorush.pid")
+		_ = ValidatePIDPath("/tmp/gorush.pid")
 	}
 }
 
