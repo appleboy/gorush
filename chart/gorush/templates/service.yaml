@@ -11,9 +11,9 @@ spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.port }}
-      targetPort: {{ .Values.service.port }}
+      targetPort: {{ .Values.ports.containerPort }}
       protocol: {{ .Values.service.protocol }}
-      name: {{ .Release.Name }}
+      name: http
   selector:
     app: {{ template "gorush.name" . }}
     release: {{ .Release.Name }}

@@ -1,8 +1,9 @@
-apiVersion: v1
-appVersion: "latest"
-description: A Helm chart for Kubernetes gorush
+apiVersion: v2
 name: gorush
+description: A Helm chart for Kubernetes gorush
+type: application
 version: 1.0.0
+appVersion: "latest"
 sources:
   - https://github.com/EENCloud/gorush
 maintainers:
