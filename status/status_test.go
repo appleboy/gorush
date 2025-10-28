@@ -10,6 +10,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+const redisEngine = "redis"
+
 func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
@@ -51,7 +53,7 @@ func TestStatForMemoryEngine(t *testing.T) {
 
 func TestRedisServerSuccess(t *testing.T) {
 	cfg, _ := config.LoadConf()
-	cfg.Stat.Engine = "redis"
+	cfg.Stat.Engine = redisEngine
 	cfg.Stat.Redis.Addr = "redis:6379"
 
 	err := InitAppStatus(cfg)
@@ -61,7 +63,7 @@ func TestRedisServerSuccess(t *testing.T) {
 
 func TestRedisServerError(t *testing.T) {
 	cfg, _ := config.LoadConf()
-	cfg.Stat.Engine = "redis"
+	cfg.Stat.Engine = redisEngine
 	cfg.Stat.Redis.Addr = "redis:6370"
 
 	err := InitAppStatus(cfg)
@@ -72,7 +74,7 @@ func TestRedisServerError(t *testing.T) {
 func TestStatForRedisEngine(t *testing.T) {
 	var val int64
 	cfg, _ := config.LoadConf()
-	cfg.Stat.Engine = "redis"
+	cfg.Stat.Engine = redisEngine
 	cfg.Stat.Redis.Addr = "redis:6379"
 	err := InitAppStatus(cfg)
 	assert.Nil(t, err)

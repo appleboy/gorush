@@ -418,7 +418,6 @@ func getApnsClient(cfg *config.ConfYaml, req *PushNotification) (client *apns2.C
 			client = ApnsClient.Development()
 		}
 	}
-
 	return
 }
 

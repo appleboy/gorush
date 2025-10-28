@@ -190,7 +190,8 @@ func RunGRPCServer(ctx context.Context, cfg *config.ConfYaml) error {
 	// Register reflection service on gRPC server.
 	reflection.Register(s)
 
-	lis, err := net.Listen("tcp", ":"+cfg.GRPC.Port)
+	lc := &net.ListenConfig{}
+	lis, err := lc.Listen(context.Background(), "tcp", ":"+cfg.GRPC.Port)
 	if err != nil {
 		logx.LogError.Fatalln(err)
 		return err
