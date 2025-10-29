@@ -88,6 +88,7 @@ queue:
     with_tls: false
     username: ""
     password: ""
+    db: 0
 
 ios:
   enabled: false
@@ -263,6 +264,7 @@ type SectionRedisQueue struct {
 	Addr       string `yaml:"addr"`
 	Username   string `yaml:"username"`
 	Password   string `yaml:"password"`
+	DB         int    `yaml:"db"`
 	StreamName string `yaml:"stream_name"`
 	Group      string `yaml:"group"`
 	Consumer   string `yaml:"consumer"`
@@ -487,6 +489,7 @@ func loadConfigFromViper() (*ConfYaml, error) {
 	conf.Queue.Redis.WithTLS = viper.GetBool("queue.redis.with_tls")
 	conf.Queue.Redis.Username = viper.GetString("queue.redis.username")
 	conf.Queue.Redis.Password = viper.GetString("queue.redis.password")
+	conf.Queue.Redis.DB = viper.GetInt("queue.redis.db")
 
 	// Stat Engine
 	conf.Stat.Engine = viper.GetString("stat.engine")

@@ -344,6 +344,7 @@ func main() {
 			redisdb.WithAddr(cfg.Queue.Redis.Addr),
 			redisdb.WithUsername(cfg.Queue.Redis.Username),
 			redisdb.WithPassword(cfg.Queue.Redis.Password),
+			redisdb.WithDB(cfg.Queue.Redis.DB),
 			redisdb.WithStreamName(cfg.Queue.Redis.StreamName),
 			redisdb.WithGroup(cfg.Queue.Redis.Group),
 			redisdb.WithConsumer(cfg.Queue.Redis.Consumer),
