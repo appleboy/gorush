@@ -1,0 +1,69 @@
+name: Daily Trivy Security Scan
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # Run daily at 2 AM UTC
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  trivy-scan-dockerhub:
+    name: Scan Docker Hub Image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scanner (Docker Hub)
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          image-ref: 'appleboy/gorush:latest'
+          format: 'sarif'
+          output: 'trivy-dockerhub-results.sarif'
+
+      - name: Upload Trivy scan results to GitHub Security tab (Docker Hub)
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-dockerhub-results.sarif'
+
+      - name: Run Trivy vulnerability scanner (Docker Hub Table format)
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          image-ref: 'appleboy/gorush:latest'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
+  trivy-scan-ghcr:
+    name: Scan GHCR Image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scanner (GHCR)
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          image-ref: 'ghcr.io/appleboy/gorush:latest'
+          format: 'sarif'
+          output: 'trivy-ghcr-results.sarif'
+
+      - name: Upload Trivy scan results to GitHub Security tab (GHCR)
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-ghcr-results.sarif'
+
+      - name: Run Trivy vulnerability scanner (GHCR Table format)
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          image-ref: 'ghcr.io/appleboy/gorush:latest'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
