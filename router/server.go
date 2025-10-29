@@ -116,11 +116,19 @@ func metricsHandler(c *gin.Context) {
 	promhttp.Handler().ServeHTTP(c.Writer, c.Request)
 }
 
-func appStatusHandler(q *queue.Queue) gin.HandlerFunc {
+func appStatusHandler(cfg *config.ConfYaml, q *queue.Queue) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		result := status.App{}
 
 		result.Version = GetVersion()
+		result.QueueMax = cfg.Core.QueueNum
+		// Calculate queue usage as pending tasks (submitted - completed)
+		completedTasks := q.SuccessTasks() + q.FailureTasks()
+		if q.SubmittedTasks() >= completedTasks {
+			result.QueueUsage = q.SubmittedTasks() - completedTasks
+		} else {
+			result.QueueUsage = 0
+		}
 		result.BusyWorkers = q.BusyWorkers()
 		result.SuccessTasks = q.SuccessTasks()
 		result.FailureTasks = q.FailureTasks()
@@ -209,7 +217,7 @@ func routerEngine(cfg *config.ConfYaml, q *queue.Queue) *gin.Engine {
 	r.Use(StatMiddleware())
 
 	r.GET(cfg.API.StatGoURI, api.GinHandler)
-	r.GET(cfg.API.StatAppURI, appStatusHandler(q))
+	r.GET(cfg.API.StatAppURI, appStatusHandler(cfg, q))
 	r.GET(cfg.API.ConfigURI, configHandler(cfg))
 	r.GET(cfg.API.SysStatURI, sysStatsHandler())
 	r.POST(cfg.API.PushURI, pushHandler(cfg, q))

@@ -25,6 +25,8 @@ var StatStorage *StateStorage
 // App is status structure
 type App struct {
 	Version        string        `json:"version"`
+	QueueMax       int64         `json:"queue_max"`
+	QueueUsage     uint64        `json:"queue_usage"`
 	BusyWorkers    int64         `json:"busy_workers"`
 	SuccessTasks   uint64        `json:"success_tasks"`
 	FailureTasks   uint64        `json:"failure_tasks"`

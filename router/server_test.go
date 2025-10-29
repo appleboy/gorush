@@ -270,10 +270,15 @@ func TestAPIStatusAppHandler(t *testing.T) {
 		Run(routerEngine(cfg, q), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 			data := r.Body.Bytes()
 
-			value, _ := jsonparser.GetString(data, "version")
+			version, _ := jsonparser.GetString(data, "version")
+			queueMax, _ := jsonparser.GetInt(data, "queue_max")
+			queueUsage, err := jsonparser.GetInt(data, "queue_usage")
 
-			assert.Equal(t, appVersion, value)
+			assert.Equal(t, appVersion, version)
 			assert.Equal(t, http.StatusOK, r.Code)
+			assert.Equal(t, cfg.Core.QueueNum, queueMax)
+			assert.Nil(t, err)
+			assert.GreaterOrEqual(t, uint64(queueUsage), uint64(0))
 		})
 }
 
