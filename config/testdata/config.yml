@@ -73,6 +73,7 @@ queue:
     username: ""
     password: ""
     with_tls: false
+    db: 0
 
 ios:
   enabled: false

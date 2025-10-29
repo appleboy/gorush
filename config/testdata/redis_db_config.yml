@@ -1,0 +1,20 @@
+queue:
+  engine: "redis"
+  redis:
+    addr: 127.0.0.1:6379
+    group: gorush
+    consumer: gorush
+    stream_name: gorush
+    username: ""
+    password: ""
+    with_tls: false
+    db: 5
+
+stat:
+  engine: "redis"
+  redis:
+    cluster: false
+    addr: "localhost:6379"
+    username: ""
+    password: ""
+    db: 3
