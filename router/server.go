@@ -125,7 +125,7 @@ func appStatusHandler(cfg *config.ConfYaml, q *queue.Queue) gin.HandlerFunc {
 		// Calculate queue usage as pending tasks (submitted - completed)
 		completedTasks := q.SuccessTasks() + q.FailureTasks()
 		if q.SubmittedTasks() >= completedTasks {
-			result.QueueUsage = int64(q.SubmittedTasks() - completedTasks)
+			result.QueueUsage = q.SubmittedTasks() - completedTasks
 		} else {
 			result.QueueUsage = 0
 		}

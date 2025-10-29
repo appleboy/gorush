@@ -278,7 +278,7 @@ func TestAPIStatusAppHandler(t *testing.T) {
 			assert.Equal(t, http.StatusOK, r.Code)
 			assert.Equal(t, cfg.Core.QueueNum, queueMax)
 			assert.Nil(t, err)
-			assert.GreaterOrEqual(t, queueUsage, int64(0))
+			assert.GreaterOrEqual(t, uint64(queueUsage), uint64(0))
 		})
 }
 

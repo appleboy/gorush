@@ -26,7 +26,7 @@ var StatStorage *StateStorage
 type App struct {
 	Version        string        `json:"version"`
 	QueueMax       int64         `json:"queue_max"`
-	QueueUsage     int64         `json:"queue_usage"`
+	QueueUsage     uint64        `json:"queue_usage"`
 	BusyWorkers    int64         `json:"busy_workers"`
 	SuccessTasks   uint64        `json:"success_tasks"`
 	FailureTasks   uint64        `json:"failure_tasks"`
