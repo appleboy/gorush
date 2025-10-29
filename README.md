@@ -295,7 +295,7 @@ go install github.com/appleboy/gorush@master
 
 ### Build from Source
 
-**Requirements**: [Go 1.22+](https://go.dev/dl/), [Git](http://git-scm.com/)
+**Requirements**: [Go 1.24+](https://go.dev/dl/), [Git](http://git-scm.com/)
 
 ```bash
 git clone https://github.com/appleboy/gorush.git
@@ -1165,7 +1165,7 @@ command = "make build_linux_lambda"
 functions = "release/linux/lambda"
 
 [build.environment]
-GO_VERSION = "1.22"
+GO_VERSION = "1.24"
 
 [[redirects]]
 from = "/*"
