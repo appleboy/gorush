@@ -160,6 +160,7 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Queue.Redis.Username)
 	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Queue.Redis.Password)
 	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Queue.Redis.WithTLS)
+	assert.Equal(suite.T(), 0, suite.ConfGorushDefault.Queue.Redis.DB)
 
 	// log
 	assert.Equal(suite.T(), "string", suite.ConfGorushDefault.Log.Format)
@@ -297,6 +298,43 @@ func TestLoadConfigFromEnv(t *testing.T) {
 	assert.Equal(t, "http://example.com", ConfGorush.Core.FeedbackURL)
 	assert.Equal(t, "x-api-key:1234567890", ConfGorush.Core.FeedbackHeader[0])
 	assert.Equal(t, "x-auth-key:0987654321", ConfGorush.Core.FeedbackHeader[1])
+}
+
+func TestRedisDBConfiguration(t *testing.T) {
+	// Test loading Redis DB configuration from file
+	conf, err := LoadConf("testdata/redis_db_config.yml")
+	if err != nil {
+		t.Fatalf("failed to load redis_db_config.yml: %v", err)
+	}
+
+	// Test queue.redis.db is properly loaded
+	assert.Equal(t, "redis", conf.Queue.Engine)
+	assert.Equal(t, 5, conf.Queue.Redis.DB)
+
+	// Test stat.redis.db is properly loaded
+	assert.Equal(t, "redis", conf.Stat.Engine)
+	assert.Equal(t, 3, conf.Stat.Redis.DB)
+}
+
+func TestRedisDBConfigurationFromEnv(t *testing.T) {
+	// Test loading Redis DB configuration from environment variables
+	os.Setenv("GORUSH_QUEUE_REDIS_DB", "7")
+	os.Setenv("GORUSH_STAT_REDIS_DB", "9")
+
+	conf, err := LoadConf()
+	if err != nil {
+		t.Fatalf("failed to load config: %v", err)
+	}
+
+	// Test queue.redis.db is properly loaded from env
+	assert.Equal(t, 7, conf.Queue.Redis.DB)
+
+	// Test stat.redis.db is properly loaded from env
+	assert.Equal(t, 9, conf.Stat.Redis.DB)
+
+	// Clean up
+	os.Unsetenv("GORUSH_QUEUE_REDIS_DB")
+	os.Unsetenv("GORUSH_STAT_REDIS_DB")
 }
 
 func TestLoadWrongDefaultYAMLConfig(t *testing.T) {
