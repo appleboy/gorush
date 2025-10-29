@@ -182,14 +182,10 @@ queue:
     group: gorush
     consumer: gorush
     stream_name: gorush
-  redis:
-    addr: 127.0.0.1:6379
-    group: gorush
-    consumer: gorush
-    stream_name: gorush
     with_tls: false
     username: ""
     password: ""
+    db: 0
 
 ios:
   enabled: false
