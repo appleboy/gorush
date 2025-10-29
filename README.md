@@ -11,53 +11,45 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 [![Netlify Status](https://api.netlify.com/api/v1/badges/8ab14c9f-44fd-4d9a-8bba-f73f76d253b1/deploy-status)](https://app.netlify.com/sites/gorush/deploys)
 [![Financial Contributors on Open Collective](https://opencollective.com/gorush/all/badge.svg?label=financial+contributors)](https://opencollective.com/gorush)
 
+## Quick Start
+
+Get started with gorush in 3 simple steps:
+
+```bash
+# 1. Download the latest binary
+wget https://github.com/appleboy/gorush/releases/download/v1.18.9/gorush-1.18.9-linux-amd64 -O gorush
+chmod +x gorush
+
+# 2. Start the server (default port 8088)
+./gorush
+
+# 3. Send your first notification
+curl -X POST http://localhost:8088/api/push \
+  -H "Content-Type: application/json" \
+  -d '{
+    "notifications": [{
+      "tokens": ["your_device_token"],
+      "platform": 2,
+      "title": "Hello World",
+      "message": "Your first notification!"
+    }]
+  }'
+```
+
+📱 **Platform codes**: `1` = iOS (APNS), `2` = Android (FCM), `3` = Huawei (HMS)
+
 ## Contents
 
-- [gorush](#gorush)
-  - [Contents](#contents)
-  - [Support Platform](#support-platform)
-  - [Features](#features)
-  - [Memory Usage](#memory-usage)
-  - [Basic Usage](#basic-usage)
-    - [Install from homebrew](#install-from-homebrew)
-    - [Download a binary](#download-a-binary)
-    - [Install from source](#install-from-source)
-      - [Prerequisite Tools](#prerequisite-tools)
-      - [Fetch from GitHub](#fetch-from-github)
-    - [Command Usage](#command-usage)
-    - [Send Android notification](#send-android-notification)
-    - [Send Huawei (HMS) notification](#send-huawei-hms-notification)
-    - [Send iOS notification](#send-ios-notification)
-    - [Send Android or iOS notifications using Firebase Cloud Messaging](#send-android-or-ios-notifications-using-firebase-cloud-messaging)
-  - [Run gorush web server](#run-gorush-web-server)
-  - [Web API](#web-api)
-    - [GET /api/stat/go](#get-apistatgo)
-    - [GET /api/stat/app](#get-apistatapp)
-    - [GET /sys/stats](#get-sysstats)
-    - [GET /metrics](#get-metrics)
-    - [POST /api/push](#post-apipush)
-    - [Request body](#request-body)
-    - [iOS alert payload](#ios-alert-payload)
-    - [iOS sound payload](#ios-sound-payload)
-    - [Android notification payload](#android-notification-payload)
-    - [Huawei notification](#huawei-notification)
-    - [iOS Example](#ios-example)
-    - [Android Example](#android-example)
-    - [Huawei Example](#huawei-example)
-    - [Response body](#response-body)
-  - [Run gRPC service](#run-grpc-service)
-  - [Run gorush in Docker](#run-gorush-in-docker)
-  - [Run gorush in Kubernetes](#run-gorush-in-kubernetes)
-    - [Quick Start](#quick-start)
-    - [Create the Service Controller for AWS ELB](#create-the-service-controller-for-aws-elb)
-    - [Ingress Controller for AWS ALB](#ingress-controller-for-aws-alb)
-    - [Clean up the gorush](#clean-up-the-gorush)
-  - [Run gorush in AWS Lambda](#run-gorush-in-aws-lambda)
-    - [Build gorush binary](#build-gorush-binary)
-    - [Deploy gorush application](#deploy-gorush-application)
-    - [Without an AWS account](#without-an-aws-account)
-  - [Stargazers over time](#stargazers-over-time)
-  - [License](#license)
+- [Quick Start](#quick-start) - Get up and running in 3 steps
+- [Support Platform](#support-platform) - iOS, Android, Huawei
+- [Features](#features) - What gorush can do
+- [Installation](#installation) - Binary, package managers, Docker, source
+- [Configuration](#configuration) - YAML config and options
+- [Usage](#usage) - CLI commands and REST API examples
+- [Web API](#web-api) - Complete API reference
+- [Deployment](#deployment) - Docker, Kubernetes, AWS Lambda, gRPC
+- [FAQ](#faq) - Common issues and best practices
+- [License](#license)
 
 ## Support Platform
 
@@ -109,23 +101,54 @@ curl -X POST \
 - Support graceful shutdown that workers and queue have been sent to APNs/FCM before shutdown service.
 - Support different Queue as backend like [NSQ](https://nsq.io/), [NATS](https://nats.io/) or [Redis streams](https://redis.io/docs/manual/data-types/streams/), defaut engine is local [Channel](https://tour.golang.org/concurrency/2).
 
-See the default [YAML config example](config/testdata/config.yml):
+**Performance**: Average memory usage ~28MB. Supports high-throughput notification delivery with configurable workers and queue systems.
+
+## Configuration
+
+Gorush uses YAML configuration. Create a `config.yml` file with your settings:
+
+### Basic Configuration
 
 ```yaml
 core:
-  enabled: true # enable httpd server
-  address: "" # ip address to bind (default: any)
-  shutdown_timeout: 30 # default is 30 second
-  port: "8088" # ignore this port number if auto_tls is enabled (listen 443).
-  worker_num: 0 # default worker number is runtime.NumCPU()
-  queue_num: 0 # default queue number is 8192
+  port: "8088"              # HTTP server port
+  worker_num: 0             # Workers (0 = CPU cores)
+  queue_num: 8192           # Queue size
+  mode: "release"           # or "debug"
+
+# Enable platforms you need
+android:
+  enabled: true
+  key_path: "fcm-key.json"  # FCM service account key
+
+ios:
+  enabled: true
+  key_path: "apns-key.pem"  # APNS certificate
+  production: true          # Use production APNS
+
+huawei:
+  enabled: false
+  appid: "YOUR_APP_ID"
+  appsecret: "YOUR_APP_SECRET"
+```
+
+### Advanced Configuration
+
+<details>
+<summary>Click to expand full configuration options</summary>
+
+```yaml
+core:
+  enabled: true
+  address: ""
+  shutdown_timeout: 30
+  port: "8088"
+  worker_num: 0
+  queue_num: 0
   max_notification: 100
-  # set true if you need get error message from fail push notification in API response.
-  # It only works when the queue engine is local.
   sync: false
-  # set webhook url if you need get error message asynchronously from fail push notification in API response.
   feedback_hook_url: ""
-  feedback_timeout: 10 # default is 10 second
+  feedback_timeout: 10
   feedback_header:
   mode: "release"
   ssl: false
@@ -139,12 +162,12 @@ core:
     path: "gorush.pid"
     override: true
   auto_tls:
-    enabled: false # Automatically install TLS certificates from Let's Encrypt.
-    folder: ".cache" # folder for storing TLS certificates
-    host: "" # which domains the Let's Encrypt will attempt
+    enabled: false
+    folder: ".cache"
+    host: ""
 
 grpc:
-  enabled: false # enable gRPC server
+  enabled: false
   port: 9000
 
 api:
@@ -158,18 +181,18 @@ api:
 
 android:
   enabled: true
-  key_path: "" # path to fcm key file
-  credential: "" # fcm credential data
-  max_retry: 0 # resend fail notification, default value zero is disabled
+  key_path: ""
+  credential: ""
+  max_retry: 0
 
 huawei:
   enabled: false
   appsecret: "YOUR_APP_SECRET"
   appid: "YOUR_APP_ID"
-  max_retry: 0 # resend fail notification, default value zero is disabled
+  max_retry: 0
 
 queue:
-  engine: "local" # support "local", "nsq", "nats" and "redis" default value is "local"
+  engine: "local"
   nsq:
     addr: 127.0.0.1:4150
     topic: gorush
@@ -191,29 +214,29 @@ queue:
 ios:
   enabled: false
   key_path: ""
-  key_base64: "" # load iOS key from base64 input
-  key_type: "pem" # could be pem, p12 or p8 type
-  password: "" # certificate password, default as empty string.
+  key_base64: ""
+  key_type: "pem"
+  password: ""
   production: false
-  max_concurrent_pushes: 100 # just for push ios notification
-  max_retry: 0 # resend fail notification, default value zero is disabled
-  key_id: "" # KeyID from developer account (Certificates, Identifiers & Profiles -> Keys)
-  team_id: "" # TeamID from developer account (View Account -> Membership)
+  max_concurrent_pushes: 100
+  max_retry: 0
+  key_id: ""
+  team_id: ""
 
 log:
-  format: "string" # string or json
-  access_log: "stdout" # stdout: output to console, or define log path like "log/access_log"
+  format: "string"
+  access_log: "stdout"
   access_level: "debug"
-  error_log: "stderr" # stderr: output to console, or define log path like "log/error_log"
+  error_log: "stderr"
   error_level: "error"
   hide_token: true
   hide_messages: false
 
 stat:
-  engine: "memory" # support memory, redis, boltdb, buntdb or leveldb
+  engine: "memory"
   redis:
     cluster: false
-    addr: "localhost:6379" # if cluster is true, you may set this to "localhost:6379,localhost:6380,localhost:6381"
+    addr: "localhost:6379"
     username: ""
     password: ""
     db: 0
@@ -228,100 +251,170 @@ stat:
     path: "badger.db"
 ```
 
-## Memory Usage
+See the complete [example config file](config/testdata/config.yml).
+</details>
 
-Memory average usage: **28Mb** (the total bytes of memory obtained from the OS.)
+## Installation
 
-![memory usage](screenshot/memory.png)
+### Recommended: Pre-built Binaries
 
-Test Command (We use [bat](https://github.com/astaxie/bat) as default cli tool.):
+Download from [releases page](https://github.com/appleboy/gorush/releases) (recommended for production):
 
-```sh
-for i in {1..9999999}; do bat -b.N=1000 -b.C=100 POST localhost:8088/api/push notifications:=@notification.json; sleep 1;  done
+```bash
+# Linux
+wget https://github.com/appleboy/gorush/releases/download/v1.18.9/gorush-1.18.9-linux-amd64 -O gorush
+chmod +x gorush
+
+# macOS (Intel)
+wget https://github.com/appleboy/gorush/releases/download/v1.18.9/gorush-1.18.9-darwin-amd64 -O gorush
+chmod +x gorush
+
+# macOS (Apple Silicon)
+wget https://github.com/appleboy/gorush/releases/download/v1.18.9/gorush-1.18.9-darwin-arm64 -O gorush
+chmod +x gorush
 ```
 
-## Basic Usage
+### Package Managers
 
-How to send push notification using `gorush` command? (Android or iOS)
+#### Homebrew (macOS/Linux)
 
-### Install from homebrew
-
-```sh
+```bash
 brew tap appleboy/tap
 brew install gorush
 ```
 
-### Download a binary
+#### Go Install
 
-The pre-compiled binaries can be downloaded from [release page](https://github.com/appleboy/gorush/releases).
+```bash
+# Latest stable version
+go install github.com/appleboy/gorush@latest
 
-With `Go` installed
-
-```sh
-go install github.com/appleboy/gorush
-```
-
-On linux
-
-```sh
-wget https://github.com/appleboy/gorush/releases/download/v1.18.9/gorush-1.18.9-linux-amd64 -O gorush
-```
-
-On macOS (Intel amd64)
-
-```sh
-wget -c https://github.com/appleboy/gorush/releases/download/v1.18.9/gorush-1.18.9-darwin-amd64 -O gorush
-```
-
-On macOS (Apple arm64)
-
-```sh
-wget -c https://github.com/appleboy/gorush/releases/download/v1.18.9/gorush-1.18.9-darwin-arm64 -O gorush
-```
-
-### Install from source
-
-#### Prerequisite Tools
-
-- [Git](http://git-scm.com/)
-- [Go (at least Go 1.22)](https://go.dev/dl/)
-
-#### Fetch from GitHub
-
-Gorush uses the Go Modules support built into Go 1.11 to build. The easiest way to get started is to clone Gorush in a directory outside of the GOPATH, as in the following example:
-
-```sh
-mkdir $HOME/src
-cd $HOME/src
-git clone https://github.com/appleboy/gorush.git
-cd gorush
-go install
-```
-
-or you can use the `go get` command to install the latest or specific version.
-
-**Note**: such go get installation aren't guaranteed to work. We recommend using binary installation.
-
-```sh
-# install stable version
-go install github.com/appleboy/gorush
-
-# install latest version
+# Development version
 go install github.com/appleboy/gorush@master
 ```
 
-### Command Usage
+### Build from Source
 
-```sh
-  ________                              .__
- /  _____/   ____ _______  __ __  ______|  |__
-/   \  ___  /  _ \\_  __ \|  |  \/  ___/|  |  \
-\    \_\  \(  <_> )|  | \/|  |  /\___ \ |   Y  \
- \______  / \____/ |__|   |____//____  >|___|  /
-        \/                           \/      \/
+**Requirements**: [Go 1.22+](https://go.dev/dl/), [Git](http://git-scm.com/)
 
-Usage: gorush [options]
+```bash
+git clone https://github.com/appleboy/gorush.git
+cd gorush
+make build
+# Binary will be in the root directory
+```
 
+### Docker
+
+```bash
+# Run directly
+docker run --rm -p 8088:8088 appleboy/gorush
+
+# With custom config
+docker run --rm -p 8088:8088 -v $(pwd)/config.yml:/home/gorush/config.yml appleboy/gorush
+```
+
+## Usage
+
+### Starting the Server
+
+```bash
+# Use default config (port 8088)
+./gorush
+
+# Use custom config file
+./gorush -c config.yml
+
+# Set specific options
+./gorush -p 9000 -c config.yml
+```
+
+### Command Line Notifications
+
+#### Android (FCM)
+
+**Prerequisites**: Generate FCM service account key from [Firebase Console](https://console.firebase.google.com/project/_/settings/serviceaccounts/adminsdk) → Settings → Service Accounts → Generate New Private Key.
+
+```bash
+# Single notification
+gorush -android -m "Hello Android!" --fcm-key "path/to/fcm-key.json" -t "device_token"
+
+# Using environment variable (recommended)
+export GOOGLE_APPLICATION_CREDENTIALS="path/to/fcm-key.json"
+gorush -android -m "Hello Android!" -t "device_token"
+
+# Topic message
+gorush --android --topic "news" -m "Breaking News!" --fcm-key "path/to/fcm-key.json"
+```
+
+#### iOS (APNS)
+
+```bash
+# Development environment
+gorush -ios -m "Hello iOS!" -i "cert.pem" -t "device_token" --topic "com.example.app"
+
+# Production environment
+gorush -ios -m "Hello iOS!" -i "cert.pem" -t "device_token" --topic "com.example.app" -production
+
+# With password-protected certificate
+gorush -ios -m "Hello iOS!" -i "cert.p12" -P "cert_password" -t "device_token"
+```
+
+#### Huawei (HMS)
+
+```bash
+# Single notification
+gorush -huawei -title "Hello" -m "Hello Huawei!" -hk "APP_SECRET" -hid "APP_ID" -t "device_token"
+
+# Topic message
+gorush --huawei --topic "updates" -title "Update" -m "New version available" -hk "APP_SECRET" -hid "APP_ID"
+```
+
+### REST API Usage
+
+#### Health Check
+
+```bash
+curl http://localhost:8088/healthz
+```
+
+#### Send Notifications
+
+```bash
+curl -X POST http://localhost:8088/api/push \
+  -H "Content-Type: application/json" \
+  -d '{
+    "notifications": [{
+      "tokens": ["device_token_1", "device_token_2"],
+      "platform": 2,
+      "title": "Hello World",
+      "message": "This is a test notification"
+    }]
+  }'
+```
+
+#### Get Statistics
+
+```bash
+# Application stats
+curl http://localhost:8088/api/stat/app
+
+# Go runtime stats
+curl http://localhost:8088/api/stat/go
+
+# System stats
+curl http://localhost:8088/sys/stats
+
+# Prometheus metrics
+curl http://localhost:8088/metrics
+```
+
+### CLI Options Reference
+
+<details>
+<summary>Click to expand all CLI options</summary>
+
+```bash
 Server Options:
     -A, --address <address>          Address to bind (default: any)
     -p, --port <port>                Use port for clients (default: 8088)
@@ -334,352 +427,180 @@ Server Options:
     --pid <pid path>                 Process identifier path
     --redis-addr <redis addr>        Redis addr (default: localhost:6379)
     --ping                           healthy check command for container
+
 iOS Options:
     -i, --key <file>                 certificate key file path
     -P, --password <password>        certificate key password
     --ios                            enabled iOS (default: false)
     --production                     iOS production mode (default: false)
+
 Android Options:
     --fcm-key <fcm_key_path>         FCM Key Path
     --android                        enabled android (default: false)
+
 Huawei Options:
     -hk, --hmskey <hms_key>          HMS App Secret
     -hid, --hmsid <hms_id>           HMS App ID
     --huawei                         enabled huawei (default: false)
+
 Common Options:
     --topic <topic>                  iOS, Android or Huawei topic message
     -h, --help                       Show this message
     -V, --version                    Show version
 ```
-
-### Send Android notification
-
-To authenticate a service account and authorize it to access Firebase services, you must generate a private key file in JSON format.
-
-1. In the Firebase console, open **Settings** > [Service Accounts](https://console.firebase.google.com/project/_/settings/serviceaccounts/adminsdk?_gl=1*1eqxjfp*_ga*MTQ0NjI5MTQ2MS4xNzA4NjA3MzU0*_ga_CW55HF8NVT*MTcxNzgxNDMyNi4xMS4xLjE3MTc4MTUyMzguNjAuMC4w).
-2. Click **Generate New Private Key**, then confirm by clicking **Generate Key**.
-3. Securely store the JSON file containing the key.
-
-When authorizing via a service account, you have two choices for providing the credentials to your application. You can either set the **GOOGLE_APPLICATION_CREDENTIALS** environment variable, or you can explicitly pass the path to the service account key in code. The first option is more secure and is strongly recommended.
-
-Send single notification with the following command.
-
-```bash
-gorush -android -m "your message" --fcm-key "FCM Credentials Key Path" -t "device token"
-
-# or set GOOGLE_APPLICATION_CREDENTIALS environment variable
-export GOOGLE_APPLICATION_CREDENTIALS="FCM Credentials Key Path"
-gorush -android -m "your message" -t "device token"
-```
-
-Send messages to topics.
-
-```bash
-gorush --android --topic "foo-bar" \
-  -m "This is a Firebase Cloud Messaging Topic Message" \
-  --fcm-key "FCM Credentials Key Path"
-```
-
-- `-m`: Notification message.
-- `--fcm-key`: [Firebase Cloud Messaging Provide credentials manually](https://firebase.google.com/docs/cloud-messaging/auth-server#provide-credentials-manually)
-- `-t`: Device token.
-- `--title`: Notification title.
-- `--topic`: Send messages to topics. note: don't add device token.
-- `--proxy`: Set `http`, `https` or `socks5` proxy url.
-
-### Send Huawei (HMS) notification
-
-Send single notification with the following command.
-
-```bash
-gorush -huawei -title "Gorush with HMS" -m "your message" -hk "API Key" -hid "App ID" -t "Device token"
-```
-
-Send messages to topics.
-
-```bash
-gorush --huawei --topic "foo-bar" \
-  -title "Gorush with HMS" \
-  -m "This is a Huawei Mobile Services Topic Message" \
-  -hk "API Key" \
-  -hid "App ID"
-```
-
-- `-m`: Notification message.
-- `-hk`: [Huawei Mobile Services](https://developer.huawei.com/consumer/en/doc/development/HMS-Guides/Preparations) api secret key
-- `-t`: Device token.
-- `--title`: Notification title.
-- `--topic`: Send messages to topics. note: don't add device token.
-- `--proxy`: Set `http`, `https` or `socks5` proxy url.
-
-### Send iOS notification
-
-Send single notification with the following command.
-
-```bash
-$ gorush -ios -m "your message" -i "your certificate path" \
-  -t "device token" --topic "apns topic"
-```
-
-- `-m`: Notification message.
-- `-i`: Apple Push Notification Certificate path (`pem` or `p12` file).
-- `-t`: Device token.
-- `--title`: Notification title.
-- `--topic`: The topic of the remote notification.
-- `--password`: The certificate password.
-
-The default endpoint is APNs development. Please add `-production` flag for APNs production push endpoint.
-
-```bash
-$ gorush -ios -m "your message" -i "your certificate path" \
-  -t "device token" \
-  -production
-```
-
-### Send Android or iOS notifications using Firebase Cloud Messaging
-
-Send single notification with the following command:
-
-```bash
-gorush -android -m "your message" \
-  --fcm-key "FCM Credentials Key Path" \
-  -t "Device token"
-```
-
-## Run gorush web server
-
-Please make sure your [config.yml](config/testdata/config.yml) exist. Default port is `8088`.
-
-```bash
-# for default config
-$ gorush
-# for custom config file
-$ gorush -c config.yml
-```
-
-Get go status of api server using [httpie](https://github.com/httpie/cli) tool:
-
-```bash
-# install httpie
-brew install httpie
-# get go status
-http -v --json GET http://localhost:8088/api/stat/go
-```
+</details>
 
 ## Web API
 
-Gorush support the following API.
+### Overview
 
-- **GET** `/api/stat/go` Golang cpu, memory, gc, etc information. Thanks for [golang-stats-api-handler](https://github.com/fukata/golang-stats-api-handler).
-- **GET** `/api/stat/app` show notification success and failure counts.
-- **GET** `/api/config` show server yml config file.
-- **POST** `/api/push` push ios, android or huawei notifications.
+Gorush provides RESTful APIs for sending notifications and monitoring system status:
 
-### GET /api/stat/go
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/push` | POST | Send push notifications |
+| `/api/stat/app` | GET | Application statistics |
+| `/api/stat/go` | GET | Go runtime statistics |
+| `/sys/stats` | GET | System performance metrics |
+| `/metrics` | GET | Prometheus metrics |
+| `/healthz` | GET | Health check |
+| `/api/config` | GET | Current configuration |
 
-Golang cpu, memory, gc, etc information. Response with `200` http status code.
+### Send Notifications - `POST /api/push`
+
+#### Basic Examples
+
+**iOS (APNS)**
 
 ```json
 {
-  "time": 1460686815848046600,
-  "go_version": "go1.6.1",
-  "go_os": "darwin",
-  "go_arch": "amd64",
-  "cpu_num": 4,
-  "goroutine_num": 15,
-  "gomaxprocs": 4,
-  "cgo_call_num": 1,
-  "memory_alloc": 7455192,
-  "memory_total_alloc": 8935464,
-  "memory_sys": 12560632,
-  "memory_lookups": 17,
-  "memory_mallocs": 31426,
-  "memory_frees": 11772,
-  "memory_stack": 524288,
-  "heap_alloc": 7455192,
-  "heap_sys": 8912896,
-  "heap_idle": 909312,
-  "heap_inuse": 8003584,
-  "heap_released": 0,
-  "heap_objects": 19654,
-  "gc_next": 9754725,
-  "gc_last": 1460686815762559700,
-  "gc_num": 2,
-  "gc_per_second": 0,
-  "gc_pause_per_second": 0,
-  "gc_pause": [0.326576, 0.227096]
+  "notifications": [{
+    "tokens": ["ios_device_token"],
+    "platform": 1,
+    "title": "Hello iOS",
+    "message": "Hello World iOS!"
+  }]
 }
 ```
 
-### GET /api/stat/app
-
-Show success or failure counts information of notification.
+**Android (FCM)**
 
 ```json
 {
-  "version": "v1.6.2",
-  "busy_workers": 0,
-  "success_tasks": 32,
-  "failure_tasks": 49,
-  "submitted_tasks": 81,
-  "total_count": 81,
-  "ios": {
-    "push_success": 19,
-    "push_error": 38
-  },
-  "android": {
-    "push_success": 10,
-    "push_error": 10
-  },
-  "huawei": {
-    "push_success": 3,
-    "push_error": 1
-  }
+  "notifications": [{
+    "tokens": ["android_device_token"],
+    "platform": 2,
+    "title": "Hello Android",
+    "message": "Hello World Android!"
+  }]
 }
 ```
 
-### GET /sys/stats
-
-Show response time, status code count, etc.
+**Huawei (HMS)**
 
 ```json
 {
-  "pid": 80332,
-  "uptime": "1m42.428010614s",
-  "uptime_sec": 102.428010614,
-  "time": "2016-06-26 12:27:11.675973571 +0800 CST",
-  "unixtime": 1466915231,
-  "status_code_count": {},
-  "total_status_code_count": {
-    "200": 5
-  },
-  "count": 0,
-  "total_count": 5,
-  "total_response_time": "10.422441ms",
-  "total_response_time_sec": 0.010422441000000001,
-  "average_response_time": "2.084488ms",
-  "average_response_time_sec": 0.0020844880000000002
+  "notifications": [{
+    "tokens": ["huawei_device_token"],
+    "platform": 3,
+    "title": "Hello Huawei",
+    "message": "Hello World Huawei!"
+  }]
 }
 ```
 
-### GET /metrics
+#### Advanced Examples
 
-Support expose [prometheus](https://prometheus.io/) metrics.
-
-![metrics screenshot](screenshot/metrics.png)
-
-### POST /api/push
-
-Simple send iOS notification example, the `platform` value is `1`:
+**iOS with Custom Sound**
 
 ```json
 {
-  "notifications": [
-    {
-      "tokens": ["token_a", "token_b"],
-      "platform": 1,
-      "message": "Hello World iOS!"
-    }
-  ]
-}
-```
-
-Simple send Android notification example, the `platform` value is `2`:
-
-```json
-{
-  "notifications": [
-    {
-      "tokens": ["token_a", "token_b"],
-      "platform": 2,
-      "message": "Hello World Android!"
-    }
-  ]
-}
-```
-
-Simple send Huawei notification example, the `platform` value is `3`:
-
-```json
-{
-  "notifications": [
-    {
-      "tokens": ["token_a", "token_b"],
-      "platform": 3,
-      "title": "Gorush with HMS",
-      "message": "Hello World Huawei!"
-    }
-  ]
-}
-```
-
-Simple send notification on Android and iOS devices using Firebase, the `platform` value is `2`:
-
-```json
-{
-  "notifications": [
-    {
-      "tokens": ["token_a", "token_b"],
-      "platform": 2,
-      "message": "This notification will go to iOS and Android platform via Firebase!"
-    }
-  ]
-}
-```
-
-Send notification with custom sound on iOS devices, **volume must be in the interval [0, 1]**:
-
-```json
-{
-  "notifications": [
-    {
-      "tokens": ["token_a", "token_b"],
-      "title": "Hello World iOS!",
-      "message": "Hello World iOS!",
-      "platform": 2,
-      "apns": {
-        "payload": {
-          "aps": {
-            "sound": {
-              "name": "default",
-              "critical": 1,
-              "volume": 0.1
-            }
+  "notifications": [{
+    "tokens": ["ios_device_token"],
+    "platform": 1,
+    "title": "Important Alert",
+    "message": "Critical notification",
+    "apns": {
+      "payload": {
+        "aps": {
+          "sound": {
+            "name": "custom.wav",
+            "critical": 1,
+            "volume": 0.8
           }
         }
       }
     }
-  ]
+  }]
 }
 ```
 
-Send multiple notifications as below:
+**Multiple Platforms**
 
 ```json
 {
   "notifications": [
     {
-      "tokens": ["token_a", "token_b"],
+      "tokens": ["ios_token"],
       "platform": 1,
-      "message": "Hello World iOS!"
+      "message": "Hello iOS!"
     },
     {
-      "tokens": ["token_a", "token_b"],
+      "tokens": ["android_token"],
       "platform": 2,
-      "message": "Hello World Android!"
-    },
-    {
-      "tokens": ["token_a", "token_b"],
-      "platform": 3,
-      "message": "Hello World Huawei!",
-      "title": "Gorush with HMS"
-    },
-    .....
+      "message": "Hello Android!"
+    }
   ]
 }
 ```
 
-See more example about [iOS](#ios-example), [Android](#android-example) or [Huawei](#huawei-example)
+### Statistics APIs
+
+#### Application Stats - `GET /api/stat/app`
+
+```json
+{
+  "version": "v1.18.9",
+  "busy_workers": 0,
+  "success_tasks": 150,
+  "failure_tasks": 5,
+  "submitted_tasks": 155,
+  "total_count": 155,
+  "ios": {
+    "push_success": 80,
+    "push_error": 2
+  },
+  "android": {
+    "push_success": 65,
+    "push_error": 3
+  },
+  "huawei": {
+    "push_success": 5,
+    "push_error": 0
+  }
+}
+```
+
+#### System Performance - `GET /sys/stats`
+
+```json
+{
+  "pid": 12345,
+  "uptime": "2h30m15s",
+  "total_response_time": "45.2ms",
+  "average_response_time": "1.2ms",
+  "total_status_code_count": {
+    "200": 1450,
+    "400": 12,
+    "500": 3
+  }
+}
+```
+
+### Advanced Configuration
+
+<details>
+<summary>Complete API request parameters</summary>
 
 ### Request body
 
@@ -1120,316 +1041,259 @@ See the following error format.
 }
 ```
 
-## Run gRPC service
+## Deployment
 
-Gorush support [gRPC](https://grpc.io/) service. You can enable the gRPC in `config.yml`, default as disabled. Enable the gRPC server:
+### Docker
 
-```sh
-GORUSH_GRPC_ENABLED=true GORUSH_GRPC_PORT=3000 gorush
-```
-
-The following example code to send single notification in Go.
-
-```go
-package main
-
-import (
-  "context"
-  "log"
-
-  "github.com/appleboy/gorush/rpc/proto"
-
-  structpb "google.golang.org/protobuf/types/known/structpb"
-  "google.golang.org/grpc"
-)
-
-const (
-  address = "localhost:9000"
-)
-
-func main() {
-  // Set up a connection to the server.
-  conn, err := grpc.NewClient(address, grpc.WithInsecure())
-  if err != nil {
-    log.Fatalf("did not connect: %v", err)
-  }
-  defer conn.Close()
-  c := proto.NewGorushClient(conn)
-
-  r, err := c.Send(context.Background(), &proto.NotificationRequest{
-    Platform: 2,
-    Tokens:   []string{"1234567890"},
-    Message:  "test message",
-    Badge:    1,
-    Category: "test",
-    Sound:    "test",
-    Priority: proto.NotificationRequest_HIGH,
-    Alert: &proto.Alert{
-      Title:    "Test Title",
-      Body:     "Test Alert Body",
-      Subtitle: "Test Alert Sub Title",
-      LocKey:   "Test loc key",
-      LocArgs:  []string{"test", "test"},
-    },
-    Data: &structpb.Struct{
-      Fields: map[string]*structpb.Value{
-        "key1": {
-          Kind: &structpb.Value_StringValue{StringValue: "welcome"},
-        },
-        "key2": {
-          Kind: &structpb.Value_NumberValue{NumberValue: 2},
-        },
-      },
-    },
-  })
-  if err != nil {
-    log.Println("could not greet: ", err)
-  }
-
-  if r != nil {
-    log.Printf("Success: %t\n", r.Success)
-    log.Printf("Count: %d\n", r.Counts)
-  }
-}
-```
-
-See the Node.js example and see more detail from [README](rpc/example/node/README.md):
-
-```js
-var messages = require("./gorush_pb");
-var services = require("./gorush_grpc_pb");
-
-var grpc = require("grpc");
-
-function main() {
-  var client = new services.GorushClient(
-    "localhost:9000",
-    grpc.credentials.createInsecure()
-  );
-  var request = new messages.NotificationRequest();
-  var alert = new messages.Alert();
-  request.setPlatform(2);
-  request.setTokensList(["1234567890"]);
-  request.setMessage("Hello!!");
-  request.setTitle("hello2");
-  request.setBadge(2);
-  request.setCategory("mycategory");
-  request.setSound("sound");
-  alert.setTitle("title");
-  request.setAlert(alert);
-  request.setThreadid("threadID");
-  request.setContentavailable(false);
-  request.setMutablecontent(false);
-  client.send(request, function (err, response) {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log("Success:", response.getSuccess());
-      console.log("Counts:", response.getCounts());
-    }
-  });
-}
-
-main();
-```
-
-GRPC Health Checking example: See [document](https://github.com/grpc/grpc/blob/master/doc/health-checking.md).
-
-```go
-package main
-
-import (
-  "context"
-  "log"
-
-  "github.com/appleboy/gorush/rpc/proto"
-
-  structpb "google.golang.org/protobuf/types/known/structpb"
-  "google.golang.org/grpc"
-)
-
-const (
-  address = "localhost:9000"
-)
-
-func main() {
-  // Set up a connection to the server.
-  conn, err := grpc.NewClient(address, grpc.WithInsecure())
-  if err != nil {
-    log.Fatalf("did not connect: %v", err)
-  }
-  defer conn.Close()
-  c := proto.NewGorushClient(conn)
-
-  r, err := c.Send(context.Background(), &proto.NotificationRequest{
-    Platform: 2,
-    Tokens:   []string{"1234567890"},
-    Message:  "test message",
-    Badge:    1,
-    Category: "test",
-    Sound:    "test",
-    Priority: proto.NotificationRequest_HIGH,
-    Alert: &proto.Alert{
-      Title:    "Test Title",
-      Body:     "Test Alert Body",
-      Subtitle: "Test Alert Sub Title",
-      LocKey:   "Test loc key",
-      LocArgs:  []string{"test", "test"},
-    },
-    Data: &structpb.Struct{
-      Fields: map[string]*structpb.Value{
-        "key1": {
-          Kind: &structpb.Value_StringValue{StringValue: "welcome"},
-        },
-        "key2": {
-          Kind: &structpb.Value_NumberValue{NumberValue: 2},
-        },
-      },
-    },
-  })
-  if err != nil {
-    log.Println("could not greet: ", err)
-  }
-
-  if r != nil {
-    log.Printf("Success: %t\n", r.Success)
-    log.Printf("Count: %d\n", r.Counts)
-  }
-}
-```
-
-## Run gorush in Docker
-
-Set up `gorush` in the cloud in under 5 minutes with zero knowledge of Golang or Linux shell using our [gorush Docker image](https://hub.docker.com/r/appleboy/gorush/).
+#### Quick Start
 
 ```bash
-docker pull appleboy/gorush
-docker run --name gorush -p 80:8088 appleboy/gorush
+# Run with default config
+docker run --rm -p 8088:8088 appleboy/gorush
+
+# Run with custom config
+docker run --rm -p 8088:8088 \
+  -v $(pwd)/config.yml:/home/gorush/config.yml \
+  appleboy/gorush
+
+# Run in background
+docker run -d --name gorush -p 8088:8088 appleboy/gorush
 ```
 
-Run `gorush` with your own config file.
+#### Docker Compose
+
+```yaml
+version: '3'
+services:
+  gorush:
+    image: appleboy/gorush
+    ports:
+      - "8088:8088"
+    volumes:
+      - ./config.yml:/home/gorush/config.yml
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+```
+
+### Kubernetes
+
+#### Quick Deploy
 
 ```bash
-docker pull appleboy/gorush
-docker run --name gorush -v ${PWD}/config.yml:/home/gorush/config.yml -p 80:8088 appleboy/gorush
-```
-
-Testing your gorush server using [httpie](https://github.com/jkbrzt/httpie) command.
-
-```bash
-http -v --verify=no --json GET http://your.docker.host/api/stat/go
-```
-
-![statue screenshot](screenshot/status.png)
-
-## Run gorush in Kubernetes
-
-### Quick Start
-
-Create namespace as `gorush` as `gorush` and then your configuration map:
-
-```sh
+# Create namespace and config
 kubectl create -f k8s/gorush-namespace.yaml
 kubectl create -f k8s/gorush-configmap.yaml
-```
 
-Create redis service:
-
-```sh
+# Deploy Redis (optional, for queue/stats)
 kubectl create -f k8s/gorush-redis-deployment.yaml
 kubectl create -f k8s/gorush-redis-service.yaml
-```
 
-Create gorush deployment controller provides declarative updates for Pods and ReplicaSets:
-
-```sh
+# Deploy Gorush
 kubectl create -f k8s/gorush-deployment.yaml
-```
-
-### Create the Service Controller for AWS ELB
-
-```sh
 kubectl create -f k8s/gorush-service.yaml
 ```
 
-### Ingress Controller for AWS ALB
+#### AWS Load Balancer
 
-Update the following in `k8s/gorush-service.yaml`
+For AWS ELB:
 
-```diff
--  type: LoadBalancer
--  # type: NodePort
-+  # type: LoadBalancer
-+  type: NodePort
+```bash
+kubectl create -f k8s/gorush-service.yaml
 ```
 
-Then start the AWS ALB by the follwong command.
+For AWS ALB, modify service type:
 
-```sh
-kubectl create -f k8s/gorush-service.yaml
+```yaml
+# k8s/gorush-service.yaml
+spec:
+  type: NodePort  # Change from LoadBalancer
+```
+
+Then deploy ingress:
+
+```bash
 kubectl create -f k8s/gorush-aws-alb-ingress.yaml
 ```
 
-### Clean up the gorush
+#### Cleanup
 
-```sh
-kubectl delete -f k8s
+```bash
+kubectl delete -f k8s/
 ```
 
-## Run gorush in AWS Lambda
+### AWS Lambda
 
-![lambda](./screenshot/lambda.png)
+#### Build and Deploy
 
-AWS is excited to [announce Go as a supported language for AWS Lambda](https://aws.amazon.com/blogs/compute/announcing-go-support-for-aws-lambda/). You’re going to create an application that uses an [API Gateway](https://aws.amazon.com/apigateway) event source to create a simple Hello World RESTful API.
-
-### Build gorush binary
-
-Download source code first.
-
-```sh
+```bash
+# Build Lambda binary
 git clone https://github.com/appleboy/gorush.git
-cd gorush && make build_linux_lambda
-```
+cd gorush
+make build_linux_lambda
 
-You can see the binary file in `release/linux/lambda/` folder
-
-### Deploy gorush application
-
-We need to build a binary that will run on Linux, and ZIP it up into a deployment package.
-
-```sh
+# Create deployment package
 zip deployment.zip release/linux/lambda/gorush
+
+# Deploy with AWS CLI
+aws lambda update-function-code \
+  --function-name gorush \
+  --zip-file fileb://deployment.zip
 ```
 
-Upload the `deployment.zip` via web UI or you can try the [drone-lambda](https://github.com/appleboy/drone-lambda) as the following command. It will zip your binary file and upload to AWS Lambda automatically.
+#### Automated Deployment
 
-```sh
-$ AWS_ACCESS_KEY_ID=YOUR_AWS_ACCESS_KEY_ID \
-  AWS_SECRET_ACCESS_KEY=YOUR_AWS_SECRET_ACCESS_KEY \
-  drone-lambda --region ap-southeast-1 \
+Using [drone-lambda](https://github.com/appleboy/drone-lambda):
+
+```bash
+AWS_ACCESS_KEY_ID=your_key \
+AWS_SECRET_ACCESS_KEY=your_secret \
+drone-lambda --region us-west-2 \
   --function-name gorush \
   --source release/linux/lambda/gorush
 ```
 
-### Without an AWS account
+### Netlify Functions
 
-Or you can deploy gorush to alternative solution like [netlify functions](https://docs.netlify.com/functions/overview/). [Netlify](https://www.netlify.com/) lets you deploy serverless Lambda functions without an AWS account, and with function management handled directly within Netlify. Please see the netlify.toml file:
+Alternative serverless deployment without AWS:
 
 ```toml
+# netlify.toml
 [build]
 command = "make build_linux_lambda"
 functions = "release/linux/lambda"
 
 [build.environment]
-GO111MODULE = "on"
-GO_IMPORT_PATH = "github.com/appleboy/gorush"
-GO_VERSION = "1.21.11"
+GO_VERSION = "1.22"
 
 [[redirects]]
 from = "/*"
 status = 200
 to = "/.netlify/functions/gorush/:splat"
 ```
+
+### gRPC Service
+
+Enable gRPC server for high-performance applications:
+
+```yaml
+# config.yml
+grpc:
+  enabled: true
+  port: 9000
+```
+
+Or via environment:
+
+```bash
+GORUSH_GRPC_ENABLED=true GORUSH_GRPC_PORT=9000 gorush
+```
+
+#### gRPC Client Example (Go)
+
+```go
+package main
+
+import (
+    "context"
+    "log"
+    "github.com/appleboy/gorush/rpc/proto"
+    "google.golang.org/grpc"
+)
+
+func main() {
+    conn, err := grpc.NewClient("localhost:9000", grpc.WithInsecure())
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer conn.Close()
+
+    client := proto.NewGorushClient(conn)
+    resp, err := client.Send(context.Background(), &proto.NotificationRequest{
+        Platform: 2,
+        Tokens:   []string{"device_token"},
+        Message:  "Hello gRPC!",
+        Title:    "Test Notification",
+    })
+
+    if err != nil {
+        log.Fatal(err)
+    }
+    log.Printf("Success: %v, Count: %d", resp.Success, resp.Counts)
+}
+```
+
+## FAQ
+
+### Common Issues
+
+**Q: How do I get FCM credentials?**
+A: Go to [Firebase Console](https://console.firebase.google.com/) → Project Settings → Service Accounts → Generate New Private Key. Download the JSON file.
+
+**Q: iOS notifications not working in production?**
+A: Make sure you:
+
+1. Use production APNS certificates (`production: true`)
+2. Set correct bundle ID in certificate
+3. Test with production app build
+
+**Q: Getting "certificate verify failed" error?**
+A: This usually means:
+
+- Wrong certificate format (use `.pem` or `.p12`)
+- Certificate expired
+- Wrong environment (dev vs production)
+
+**Q: How to handle large notification volumes?**
+A: Configure workers and queue settings:
+
+```yaml
+core:
+  worker_num: 8        # Increase workers
+  queue_num: 16384     # Increase queue size
+queue:
+  engine: "redis"      # Use external queue
+```
+
+**Q: Can I send to multiple platforms at once?**
+A: Yes, include multiple notification objects in the request:
+
+```json
+{
+  "notifications": [
+    {"platform": 1, "tokens": ["ios_token"], "message": "iOS"},
+    {"platform": 2, "tokens": ["android_token"], "message": "Android"}
+  ]
+}
+```
+
+**Q: How to monitor notification failures?**
+A: Enable sync mode or feedback webhook:
+
+```yaml
+core:
+  sync: true                              # Get immediate response
+  feedback_hook_url: "https://your-api"   # Async webhook
+```
+
+**Q: What's the difference between platforms?**
+A: Platform codes: `1` = iOS (APNS), `2` = Android (FCM), `3` = Huawei (HMS)
+
+### Performance Tips
+
+- Use Redis for queue and stats storage in production
+- Enable gRPC for better performance
+- Set appropriate worker numbers based on CPU cores
+- Use connection pooling for high-volume scenarios
+
+### Security Best Practices
+
+- Store credentials as files, not in config
+- Use environment variables for sensitive data
+- Enable SSL/TLS in production
+- Rotate certificates before expiration
+- Monitor failed notifications for security issues
 
 ## Stargazers over time
 
