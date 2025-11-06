@@ -22,6 +22,14 @@ spec:
           image: redis:7
           ports:
             - containerPort: 6379
+          securityContext:
+            capabilities:
+              drop:
+                - ALL
+            runAsNonRoot: true
+            runAsUser: 999
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
           resources:
             requests:
               cpu: "250m"
