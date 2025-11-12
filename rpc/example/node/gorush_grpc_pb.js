@@ -64,7 +64,7 @@ var GorushService = exports.GorushService = {
   },
 };
 
-exports.GorushClient = grpc.makeGenericClientConstructor(GorushService);
+exports.GorushClient = grpc.makeGenericClientConstructor(GorushService, 'Gorush');
 var HealthService = exports.HealthService = {
   check: {
     path: '/proto.Health/Check',
@@ -79,4 +79,4 @@ var HealthService = exports.HealthService = {
   },
 };
 
-exports.HealthClient = grpc.makeGenericClientConstructor(HealthService);
+exports.HealthClient = grpc.makeGenericClientConstructor(HealthService, 'Health');
