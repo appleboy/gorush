@@ -13,6 +13,18 @@ import (
 	"github.com/spf13/viper"
 )
 
+// Configuration constants
+const (
+	DefaultWorkerNum         = 0 // 0 means use runtime.NumCPU()
+	DefaultQueueNum          = 8192
+	DefaultMaxNotification   = 100
+	DefaultShutdownTimeout   = 30
+	DefaultFeedbackTimeout   = 10
+	DefaultPort              = "8088"
+	DefaultGRPCPort          = "9000"
+	DefaultMaxConcurrentPush = 100
+)
+
 var defaultConf = []byte(`
 core:
   enabled: true # enable httpd server
@@ -318,13 +330,13 @@ func setDefaults() {
 	// Core defaults
 	viper.SetDefault("core.enabled", true)
 	viper.SetDefault("core.address", "")
-	viper.SetDefault("core.shutdown_timeout", 30)
-	viper.SetDefault("core.port", "8088")
-	viper.SetDefault("core.worker_num", 0)
-	viper.SetDefault("core.queue_num", 0)
-	viper.SetDefault("core.max_notification", 100)
+	viper.SetDefault("core.shutdown_timeout", DefaultShutdownTimeout)
+	viper.SetDefault("core.port", DefaultPort)
+	viper.SetDefault("core.worker_num", DefaultWorkerNum)
+	viper.SetDefault("core.queue_num", DefaultWorkerNum) // 0, will be set to DefaultQueueNum at runtime if still 0
+	viper.SetDefault("core.max_notification", DefaultMaxNotification)
 	viper.SetDefault("core.sync", false)
-	viper.SetDefault("core.feedback_timeout", 10)
+	viper.SetDefault("core.feedback_timeout", DefaultFeedbackTimeout)
 	viper.SetDefault("core.mode", "release")
 	viper.SetDefault("core.ssl", false)
 	viper.SetDefault("core.cert_path", "cert.pem")
@@ -339,7 +351,7 @@ func setDefaults() {
 	viper.SetDefault("ios.enabled", false)
 	viper.SetDefault("ios.key_type", "pem")
 	viper.SetDefault("ios.production", false)
-	viper.SetDefault("ios.max_concurrent_pushes", uint(100))
+	viper.SetDefault("ios.max_concurrent_pushes", uint(DefaultMaxConcurrentPush))
 	viper.SetDefault("ios.max_retry", 0)
 
 	// Android defaults
@@ -348,7 +360,7 @@ func setDefaults() {
 
 	// gRPC defaults
 	viper.SetDefault("grpc.enabled", false)
-	viper.SetDefault("grpc.port", "9000")
+	viper.SetDefault("grpc.port", DefaultGRPCPort)
 
 	// Queue defaults
 	viper.SetDefault("queue.engine", "local")
@@ -508,12 +520,14 @@ func loadConfigFromViper() (*ConfYaml, error) {
 	conf.GRPC.Enabled = viper.GetBool("grpc.enabled")
 	conf.GRPC.Port = viper.GetString("grpc.port")
 
-	if conf.Core.WorkerNum == int64(0) {
+	// Apply runtime-computed defaults for zero or negative values
+	// This ensures optimal resource utilization and prevents panics from negative values
+	if conf.Core.WorkerNum <= 0 {
 		conf.Core.WorkerNum = int64(runtime.NumCPU())
 	}
 
-	if conf.Core.QueueNum == int64(0) {
-		conf.Core.QueueNum = int64(8192)
+	if conf.Core.QueueNum <= 0 {
+		conf.Core.QueueNum = DefaultQueueNum
 	}
 
 	return conf, nil
