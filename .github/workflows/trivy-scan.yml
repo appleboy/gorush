@@ -1,14 +1,40 @@
-name: Daily Trivy Security Scan
+name: Trivy Security Scan
 
 on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
   schedule:
     - cron: '0 2 * * *'  # Run daily at 2 AM UTC
   workflow_dispatch:  # Allow manual triggering
 
 jobs:
+  trivy-scan-repo:
+    name: Scan Repository (Filesystem)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Trivy vulnerability scanner in repo mode
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          scan-type: 'fs'
+          ignore-unfixed: true
+          format: 'table'
+          exit-code: '1'
+          severity: 'CRITICAL,HIGH,MEDIUM'
+
   trivy-scan-dockerhub:
     name: Scan Docker Hub Image
     runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
 
     steps:
       - name: Checkout code
@@ -40,6 +66,7 @@ jobs:
   trivy-scan-ghcr:
     name: Scan GHCR Image
     runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
 
     steps:
       - name: Checkout code
