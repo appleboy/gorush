@@ -34,6 +34,11 @@ var (
 	welcomeMessage = "Welcome notification Server"
 )
 
+const (
+	testKeyID  = "key-id"
+	testTeamID = "team-id"
+)
+
 func TestDisabledAndroidIosConf(t *testing.T) {
 	cfg, _ := config.LoadConf()
 	cfg.Android.Enabled = false
@@ -673,13 +678,13 @@ func TestAPNSClientInvaildToken(t *testing.T) {
 	err = InitAPNSClient(context.Background(), cfg)
 	assert.Error(t, err)
 
-	cfg.Ios.KeyID = "key-id"
+	cfg.Ios.KeyID = testKeyID
 	cfg.Ios.TeamID = ""
 	err = InitAPNSClient(context.Background(), cfg)
 	assert.Error(t, err)
 
 	cfg.Ios.KeyID = ""
-	cfg.Ios.TeamID = "team-id"
+	cfg.Ios.TeamID = testTeamID
 	err = InitAPNSClient(context.Background(), cfg)
 	assert.Error(t, err)
 }
@@ -689,8 +694,8 @@ func TestAPNSClientVaildToken(t *testing.T) {
 
 	cfg.Ios.Enabled = true
 	cfg.Ios.KeyPath = testKeyPathP8
-	cfg.Ios.KeyID = "key-id"
-	cfg.Ios.TeamID = "team-id"
+	cfg.Ios.KeyID = testKeyID
+	cfg.Ios.TeamID = testTeamID
 	err := InitAPNSClient(context.Background(), cfg)
 	assert.NoError(t, err)
 	assert.Equal(t, apns2.HostDevelopment, ApnsClient.Host)
@@ -805,4 +810,342 @@ func TestApnsHostFromRequest(t *testing.T) {
 	cfg.Ios.Production = false
 	client = getApnsClient(cfg, req)
 	assert.Equal(t, apns2.HostDevelopment, client.Host)
+}
+
+// Tests for refactored helper functions
+
+func TestSetAlertTitleAndBody(t *testing.T) {
+	tests := []struct {
+		name      string
+		req       *PushNotification
+		wantBody  string
+		wantTitle string
+	}{
+		{
+			name: "title and message set",
+			req: &PushNotification{
+				Title:   "Test Title",
+				Message: "Test Message",
+			},
+			wantTitle: "Test Title",
+			wantBody:  "Test Message",
+		},
+		{
+			name: "alert title overrides req title",
+			req: &PushNotification{
+				Title: "Original Title",
+				Alert: Alert{
+					Title: "Alert Title",
+				},
+			},
+			wantTitle: "Alert Title",
+		},
+		{
+			name: "alert body overrides req message",
+			req: &PushNotification{
+				Title:   "Title",
+				Message: "Original Message",
+				Alert: Alert{
+					Body: "Alert Body",
+				},
+			},
+			wantBody: "Alert Body",
+		},
+		{
+			name: "subtitle is set",
+			req: &PushNotification{
+				Alert: Alert{
+					Subtitle: "Test Subtitle",
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			notification := GetIOSNotification(tt.req)
+			dump, _ := json.Marshal(notification.Payload)
+			data := []byte(string(dump))
+
+			if tt.wantTitle != "" {
+				title, _ := jsonparser.GetString(data, "aps", "alert", "title")
+				assert.Equal(t, tt.wantTitle, title)
+			}
+			if tt.wantBody != "" {
+				body, _ := jsonparser.GetString(data, "aps", "alert", "body")
+				assert.Equal(t, tt.wantBody, body)
+			}
+		})
+	}
+}
+
+func TestSetAlertLocalization(t *testing.T) {
+	req := &PushNotification{
+		Alert: Alert{
+			TitleLocKey:  "TITLE_LOC_KEY",
+			TitleLocArgs: []string{"arg1", "arg2"},
+			LocKey:       "LOC_KEY",
+			LocArgs:      []string{"locarg1"},
+			ActionLocKey: "ACTION_LOC_KEY",
+		},
+	}
+
+	notification := GetIOSNotification(req)
+	dump, _ := json.Marshal(notification.Payload)
+	data := []byte(string(dump))
+
+	titleLocKey, _ := jsonparser.GetString(data, "aps", "alert", "title-loc-key")
+	locKey, _ := jsonparser.GetString(data, "aps", "alert", "loc-key")
+	actionLocKey, _ := jsonparser.GetString(data, "aps", "alert", "action-loc-key")
+
+	assert.Equal(t, "TITLE_LOC_KEY", titleLocKey)
+	assert.Equal(t, "LOC_KEY", locKey)
+	assert.Equal(t, "ACTION_LOC_KEY", actionLocKey)
+}
+
+func TestSetAlertActions(t *testing.T) {
+	req := &PushNotification{
+		Alert: Alert{
+			LaunchImage:     "launch.png",
+			Action:          "View",
+			SummaryArg:      "summary",
+			SummaryArgCount: 5,
+		},
+	}
+
+	notification := GetIOSNotification(req)
+	dump, _ := json.Marshal(notification.Payload)
+	data := []byte(string(dump))
+
+	launchImage, _ := jsonparser.GetString(data, "aps", "alert", "launch-image")
+	action, _ := jsonparser.GetString(data, "aps", "alert", "action")
+	summaryArg, _ := jsonparser.GetString(data, "aps", "alert", "summary-arg")
+	summaryArgCount, _ := jsonparser.GetInt(data, "aps", "alert", "summary-arg-count")
+
+	assert.Equal(t, "launch.png", launchImage)
+	assert.Equal(t, "View", action)
+	assert.Equal(t, "summary", summaryArg)
+	assert.Equal(t, int64(5), summaryArgCount)
+}
+
+func TestSetLiveActivityFields(t *testing.T) {
+	staleDate := time.Now().Unix()
+	dismissalDate := staleDate + 100
+	timestamp := time.Now().Unix()
+
+	req := &PushNotification{
+		ContentState: D{
+			"score": 10,
+		},
+		StaleDate:     staleDate,
+		DismissalDate: dismissalDate,
+		Event:         "update",
+		Timestamp:     timestamp,
+	}
+
+	notification := GetIOSNotification(req)
+	dump, _ := json.Marshal(notification.Payload)
+	data := []byte(string(dump))
+
+	gotStaleDate, _ := jsonparser.GetInt(data, "aps", "stale-date")
+	gotEvent, _ := jsonparser.GetString(data, "aps", "event")
+	gotTimestamp, _ := jsonparser.GetInt(data, "aps", "timestamp")
+
+	assert.Equal(t, staleDate, gotStaleDate)
+	assert.Equal(t, "update", gotEvent)
+	assert.Equal(t, timestamp, gotTimestamp)
+}
+
+func TestSetNotificationPriority(t *testing.T) {
+	tests := []struct {
+		name         string
+		priority     string
+		wantPriority int
+	}{
+		{
+			name:         "normal priority",
+			priority:     "normal",
+			wantPriority: apns2.PriorityLow,
+		},
+		{
+			name:         "high priority",
+			priority:     "high",
+			wantPriority: apns2.PriorityHigh,
+		},
+		{
+			name:         "empty priority",
+			priority:     "",
+			wantPriority: 0,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			req := &PushNotification{
+				Priority: tt.priority,
+				Message:  "test",
+			}
+			notification := GetIOSNotification(req)
+			assert.Equal(t, tt.wantPriority, notification.Priority)
+		})
+	}
+}
+
+func TestSetPayloadSound(t *testing.T) {
+	tests := []struct {
+		name      string
+		req       *PushNotification
+		wantSound string
+	}{
+		{
+			name: "string sound",
+			req: &PushNotification{
+				Message: "test",
+				Sound:   "default",
+			},
+			wantSound: "default",
+		},
+		{
+			name: "sound name override",
+			req: &PushNotification{
+				Message:   "test",
+				SoundName: "custom.aiff",
+			},
+			wantSound: "custom.aiff",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			notification := GetIOSNotification(tt.req)
+			dump, _ := json.Marshal(notification.Payload)
+			data := []byte(string(dump))
+
+			if tt.req.SoundName != "" {
+				soundName, _ := jsonparser.GetString(data, "aps", "sound", "name")
+				assert.Equal(t, tt.wantSound, soundName)
+			} else {
+				sound, _ := jsonparser.GetString(data, "aps", "sound")
+				assert.Equal(t, tt.wantSound, sound)
+			}
+		})
+	}
+}
+
+func TestBuildIOSPayload(t *testing.T) {
+	badge := 5
+	req := &PushNotification{
+		Message:          "Hello World",
+		Badge:            &badge,
+		MutableContent:   true,
+		ContentAvailable: true,
+		URLArgs:          []string{"foo", "bar"},
+		ThreadID:         "thread-123",
+		Data: D{
+			"custom_key": "custom_value",
+		},
+	}
+
+	notification := GetIOSNotification(req)
+	dump, _ := json.Marshal(notification.Payload)
+	data := []byte(string(dump))
+
+	alert, _ := jsonparser.GetString(data, "aps", "alert")
+	gotBadge, _ := jsonparser.GetInt(data, "aps", "badge")
+	mutableContent, _ := jsonparser.GetInt(data, "aps", "mutable-content")
+	contentAvailable, _ := jsonparser.GetInt(data, "aps", "content-available")
+	threadID, _ := jsonparser.GetString(data, "aps", "thread-id")
+	customKey, _ := jsonparser.GetString(data, "custom_key")
+
+	assert.Equal(t, "Hello World", alert)
+	assert.Equal(t, int64(5), gotBadge)
+	assert.Equal(t, int64(1), mutableContent)
+	assert.Equal(t, int64(1), contentAvailable)
+	assert.Equal(t, "thread-123", threadID)
+	assert.Equal(t, "custom_value", customKey)
+}
+
+func TestLoadCertFromFile(t *testing.T) {
+	// Test valid p12 file
+	cert, authKey, ext, err := loadCertFromFile("../certificate/certificate-valid.p12", "")
+	assert.NoError(t, err)
+	assert.Equal(t, dotP12, ext)
+	assert.NotNil(t, cert.Certificate)
+	assert.Nil(t, authKey)
+
+	// Test valid pem file
+	cert, authKey, ext, err = loadCertFromFile("../certificate/certificate-valid.pem", "")
+	assert.NoError(t, err)
+	assert.Equal(t, dotPEM, ext)
+	assert.NotNil(t, cert.Certificate)
+	assert.Nil(t, authKey)
+
+	// Test valid p8 file
+	cert, authKey, ext, err = loadCertFromFile("../certificate/authkey-valid.p8", "")
+	assert.NoError(t, err)
+	assert.Equal(t, dotP8, ext)
+	assert.NotNil(t, authKey)
+
+	// Test invalid extension
+	invalidCert, invalidAuthKey, invalidExt, err := loadCertFromFile("test.invalid", "")
+	assert.Error(t, err)
+	assert.Equal(t, "wrong certificate key extension", err.Error())
+	assert.Empty(t, invalidCert.Certificate)
+	assert.Nil(t, invalidAuthKey)
+	assert.Equal(t, ".invalid", invalidExt)
+}
+
+func TestLoadCertFromBase64(t *testing.T) {
+	// Test valid p12 base64
+	cert, authKey, ext, err := loadCertFromBase64(certificateValidP12, "p12", "")
+	assert.NoError(t, err)
+	assert.Equal(t, dotP12, ext)
+	assert.NotNil(t, cert.Certificate)
+	assert.Nil(t, authKey)
+
+	// Test valid pem base64
+	cert, authKey, ext, err = loadCertFromBase64(certificateValidPEM, "pem", "")
+	assert.NoError(t, err)
+	assert.Equal(t, dotPEM, ext)
+	assert.NotNil(t, cert.Certificate)
+	assert.Nil(t, authKey)
+
+	// Test valid p8 base64
+	cert, authKey, ext, err = loadCertFromBase64(authkeyValidP8, "p8", "")
+	assert.NoError(t, err)
+	assert.Equal(t, dotP8, ext)
+	assert.NotNil(t, authKey)
+
+	// Test invalid key type
+	invalidCert, invalidAuthKey, invalidExt, err := loadCertFromBase64("test", "invalid", "")
+	assert.Error(t, err)
+	assert.Equal(t, "wrong certificate key type", err.Error())
+	assert.Empty(t, invalidCert.Certificate)
+	assert.Nil(t, invalidAuthKey)
+	assert.Equal(t, ".invalid", invalidExt)
+
+	// Test invalid base64
+	badBase64Cert, badBase64AuthKey, badBase64Ext, err := loadCertFromBase64("not-valid-base64!!!", "p12", "")
+	assert.Error(t, err)
+	assert.Empty(t, badBase64Cert.Certificate)
+	assert.Nil(t, badBase64AuthKey)
+	assert.Equal(t, ".p12", badBase64Ext)
+}
+
+func TestCreateAPNSClientWithToken(t *testing.T) {
+	cfg, _ := config.LoadConf()
+
+	// Test missing KeyID
+	cfg.Ios.KeyID = ""
+	cfg.Ios.TeamID = testTeamID
+	_, err := createAPNSClientWithToken(cfg, nil)
+	assert.Error(t, err)
+	assert.Equal(t, "you should provide ios.KeyID and ios.TeamID for p8 token", err.Error())
+
+	// Test missing TeamID
+	cfg.Ios.KeyID = testKeyID
+	cfg.Ios.TeamID = ""
+	_, err = createAPNSClientWithToken(cfg, nil)
+	assert.Error(t, err)
+	assert.Equal(t, "you should provide ios.KeyID and ios.TeamID for p8 token", err.Error())
 }

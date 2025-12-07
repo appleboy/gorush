@@ -197,45 +197,61 @@ func SetProxy(proxy string) error {
 	return nil
 }
 
+// checkIOSConf validates iOS configuration.
+func checkIOSConf(cfg *config.ConfYaml) error {
+	if !cfg.Ios.Enabled {
+		return nil
+	}
+	if cfg.Ios.KeyPath == "" && cfg.Ios.KeyBase64 == "" {
+		return errors.New("missing iOS certificate key")
+	}
+	if cfg.Ios.KeyPath != "" {
+		if _, err := os.Stat(cfg.Ios.KeyPath); os.IsNotExist(err) {
+			return errors.New("certificate file does not exist")
+		}
+	}
+	return nil
+}
+
+// checkAndroidConf validates Android/FCM configuration.
+func checkAndroidConf(cfg *config.ConfYaml) error {
+	if !cfg.Android.Enabled {
+		return nil
+	}
+	credential := os.Getenv("GOOGLE_APPLICATION_CREDENTIALS")
+	if cfg.Android.Credential == "" && cfg.Android.KeyPath == "" && credential == "" {
+		return errors.New("missing fcm credential data")
+	}
+	return nil
+}
+
+// checkHuaweiConf validates Huawei/HMS configuration.
+func checkHuaweiConf(cfg *config.ConfYaml) error {
+	if !cfg.Huawei.Enabled {
+		return nil
+	}
+	if cfg.Huawei.AppSecret == "" {
+		return errors.New("missing huawei app secret")
+	}
+	if cfg.Huawei.AppID == "" {
+		return errors.New("missing huawei app id")
+	}
+	return nil
+}
+
 // CheckPushConf provide check your yml config.
 func CheckPushConf(cfg *config.ConfYaml) error {
 	if !cfg.Ios.Enabled && !cfg.Android.Enabled && !cfg.Huawei.Enabled {
 		return errors.New("please enable iOS, Android or Huawei config in yml config")
 	}
 
-	if cfg.Ios.Enabled {
-		if cfg.Ios.KeyPath == "" && cfg.Ios.KeyBase64 == "" {
-			return errors.New("missing iOS certificate key")
-		}
-
-		// check certificate file exist
-		if cfg.Ios.KeyPath != "" {
-			if _, err := os.Stat(cfg.Ios.KeyPath); os.IsNotExist(err) {
-				return errors.New("certificate file does not exist")
-			}
-		}
+	if err := checkIOSConf(cfg); err != nil {
+		return err
 	}
-
-	if cfg.Android.Enabled {
-		credential := os.Getenv("GOOGLE_APPLICATION_CREDENTIALS")
-		if cfg.Android.Credential == "" &&
-			cfg.Android.KeyPath == "" &&
-			credential == "" {
-			return errors.New("missing fcm credential data")
-		}
+	if err := checkAndroidConf(cfg); err != nil {
+		return err
 	}
-
-	if cfg.Huawei.Enabled {
-		if cfg.Huawei.AppSecret == "" {
-			return errors.New("missing huawei app secret")
-		}
-
-		if cfg.Huawei.AppID == "" {
-			return errors.New("missing huawei app id")
-		}
-	}
-
-	return nil
+	return checkHuaweiConf(cfg)
 }
 
 // SendNotification provide send notification.
