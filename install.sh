@@ -55,7 +55,7 @@ function download_and_install() {
   # Use temp dir for download
   TARGET="${TMPDIR}/${CLIENT_BINARY}"
 
-  curl -# -fSL --retry 5 --keepalive-time 2 ${INSECURE_ARG} "${DOWNLOAD_URL_PREFIX}/${CLIENT_BINARY}" -o "${TARGET}"
+  curl -# -fSL --retry 5 --keepalive-time 2 ${INSECURE_ARG} "${DOWNLOAD_URL_PREFIX}/${CLIENT_BINARY}" -o "${TARGET}" || log_error "Failed to download ${CLIENT_BINARY}" 6
   chmod +x "${TARGET}" || log_error "Failed to set executable permission on: ${TARGET}" 7
   # Move the binary to install dir and rename to gorush
   mv "${TARGET}" "${INSTALL_DIR}/gorush" || log_error "Failed to move ${TARGET} to ${INSTALL_DIR}/gorush" 8
