@@ -64,7 +64,7 @@ function download_and_install() {
   print_message info "Run ${ORANGE}gorush version${NC} to show the version"
   print_message info ""
   print_message info "==============================="
-  "${INSTALL_DIR}/gorush" version
+  "${INSTALL_DIR}/gorush" --version
   print_message info "==============================="
   print_message info ""
   print_message info "✅ Installation completed successfully!"

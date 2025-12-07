@@ -3,6 +3,7 @@ package router
 import (
 	"fmt"
 	"runtime"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -33,11 +34,12 @@ func PrintGoRushVersion() {
 		commit = commit[:7]
 	}
 
-	fmt.Printf(`GoRush %s, Commit: %s, Compiler: %s %s, Copyright (C) 2023 Bo-Yi Wu, Inc.`,
+	fmt.Printf(`GoRush %s, Commit: %s, Compiler: %s %s, Copyright (C) %d Bo-Yi Wu, Inc.`,
 		version,
 		commit,
 		runtime.Compiler,
-		runtime.Version())
+		runtime.Version(),
+		time.Now().Year())
 	fmt.Println()
 }
 
