@@ -687,3 +687,151 @@ func TestDisabledIosNotifications(t *testing.T) {
 	assert.Equal(t, 2, count)
 	assert.Equal(t, 0, len(logs))
 }
+
+// Tests for refactored helper functions
+
+func TestIsPlatformEnabled(t *testing.T) {
+	cfg := initTest()
+
+	tests := []struct {
+		name           string
+		platform       int
+		iosEnabled     bool
+		androidEnabled bool
+		huaweiEnabled  bool
+		want           bool
+	}{
+		{
+			name:       "iOS enabled",
+			platform:   core.PlatFormIos,
+			iosEnabled: true,
+			want:       true,
+		},
+		{
+			name:       "iOS disabled",
+			platform:   core.PlatFormIos,
+			iosEnabled: false,
+			want:       false,
+		},
+		{
+			name:           "Android enabled",
+			platform:       core.PlatFormAndroid,
+			androidEnabled: true,
+			want:           true,
+		},
+		{
+			name:           "Android disabled",
+			platform:       core.PlatFormAndroid,
+			androidEnabled: false,
+			want:           false,
+		},
+		{
+			name:          "Huawei enabled",
+			platform:      core.PlatFormHuawei,
+			huaweiEnabled: true,
+			want:          true,
+		},
+		{
+			name:          "Huawei disabled",
+			platform:      core.PlatFormHuawei,
+			huaweiEnabled: false,
+			want:          false,
+		},
+		{
+			name:     "Unknown platform",
+			platform: 99,
+			want:     false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cfg.Ios.Enabled = tt.iosEnabled
+			cfg.Android.Enabled = tt.androidEnabled
+			cfg.Huawei.Enabled = tt.huaweiEnabled
+
+			got := isPlatformEnabled(cfg, tt.platform)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestFilterEnabledNotifications(t *testing.T) {
+	cfg := initTest()
+	cfg.Ios.Enabled = true
+	cfg.Android.Enabled = true
+	cfg.Huawei.Enabled = false
+
+	notifications := []notify.PushNotification{
+		{Platform: core.PlatFormIos, Message: "iOS message"},
+		{Platform: core.PlatFormAndroid, Message: "Android message"},
+		{Platform: core.PlatFormHuawei, Message: "Huawei message"},
+		{Platform: core.PlatFormIos, Message: "iOS message 2"},
+	}
+
+	result := filterEnabledNotifications(cfg, notifications)
+
+	assert.Len(t, result, 3)
+	assert.Equal(t, "iOS message", result[0].Message)
+	assert.Equal(t, "Android message", result[1].Message)
+	assert.Equal(t, "iOS message 2", result[2].Message)
+}
+
+func TestFilterEnabledNotificationsAllDisabled(t *testing.T) {
+	cfg := initTest()
+	cfg.Ios.Enabled = false
+	cfg.Android.Enabled = false
+	cfg.Huawei.Enabled = false
+
+	notifications := []notify.PushNotification{
+		{Platform: core.PlatFormIos, Message: "iOS message"},
+		{Platform: core.PlatFormAndroid, Message: "Android message"},
+	}
+
+	result := filterEnabledNotifications(cfg, notifications)
+
+	assert.Len(t, result, 0)
+}
+
+func TestCountNotificationTargets(t *testing.T) {
+	tests := []struct {
+		name         string
+		notification *notify.PushNotification
+		want         int
+	}{
+		{
+			name: "tokens only",
+			notification: &notify.PushNotification{
+				Tokens: []string{"token1", "token2", "token3"},
+			},
+			want: 3,
+		},
+		{
+			name: "topic only",
+			notification: &notify.PushNotification{
+				Topic: "test-topic",
+			},
+			want: 1,
+		},
+		{
+			name: "tokens and topic",
+			notification: &notify.PushNotification{
+				Tokens: []string{"token1", "token2"},
+				Topic:  "test-topic",
+			},
+			want: 3,
+		},
+		{
+			name:         "empty notification",
+			notification: &notify.PushNotification{},
+			want:         0,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := countNotificationTargets(tt.notification)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
