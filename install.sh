@@ -53,15 +53,15 @@ function download_and_install() {
   mkdir -p "$INSTALL_DIR" || log_error "Failed to create directory: $INSTALL_DIR" 5
 
   # Use temp dir for download
-  TARGET="${TMPDIR}/${CLIENT_BINARY}"
+  TARGET="${GORUSH_TMPDIR}/${CLIENT_BINARY}"
 
-  curl -# -fSL --retry 5 --keepalive-time 2 ${INSECURE_ARG} "${DOWNLOAD_URL_PREFIX}/${CLIENT_BINARY}" -o "${TARGET}" || log_error "Failed to download ${CLIENT_BINARY}" 6
+  curl -# -fSL --retry 5 --keepalive-time 2 "$INSECURE_ARG" "${DOWNLOAD_URL_PREFIX}/${CLIENT_BINARY}" -o "${TARGET}" || log_error "Failed to download ${CLIENT_BINARY}" 6
   chmod +x "${TARGET}" || log_error "Failed to set executable permission on: ${TARGET}" 7
   # Move the binary to install dir and rename to gorush
   mv "${TARGET}" "${INSTALL_DIR}/gorush" || log_error "Failed to move ${TARGET} to ${INSTALL_DIR}/gorush" 8
   # show the version
-  print_message info "Installed ${ORANGE}${CLIENT_BINARY}${NC} to ${GREEN}${INSTALL_DIR}${NC}"
-  print_message info "Run ${ORANGE}gorush version${NC} to show the version"
+  printf "%b\\n" "Installed ${ORANGE}${CLIENT_BINARY}${NC} to ${GREEN}${INSTALL_DIR}${NC}"
+  printf "%b\\n" "Run ${ORANGE}gorush version${NC} to show the version"
   print_message info ""
   print_message info "==============================="
   "${INSTALL_DIR}/gorush" --version
@@ -92,10 +92,12 @@ function add_to_path() {
 # Fetch latest release version from GitHub if VERSION is not set
 function get_latest_version() {
   local latest
+  local response
+  response=$(curl "$INSECURE_ARG" -# --retry 5 -fSL https://api.github.com/repos/appleboy/gorush/releases/latest) || log_error "Failed to fetch release info from GitHub API" 6
   if command -v jq >/dev/null 2>&1; then
-    latest=$(curl $INSECURE_ARG -# --retry 5 -fSL https://api.github.com/repos/appleboy/gorush/releases/latest | jq -r .tag_name)
+    latest=$(echo "$response" | jq -r .tag_name)
   else
-    latest=$(curl $INSECURE_ARG -# --retry 5 -fSL https://api.github.com/repos/appleboy/gorush/releases/latest | grep '"tag_name":' | sed -E 's/.*"tag_name": ?"v?([^"]+)".*/\1/')
+    latest=$(echo "$response" | grep '"tag_name":' | sed -E 's/.*"tag_name": ?"v?([^"]+)".*/\1/')
   fi
   # Remove leading 'v' if present
   latest="${latest#v}"
@@ -110,10 +112,10 @@ for cmd in curl mktemp; do
 done
 
 # Create temp directory for downloads.
-TMPDIR="$(mktemp -d)"
+GORUSH_TMPDIR="$(mktemp -d)"
 function cleanup() {
-  if [ -n "${TMPDIR:-}" ] && [ -d "$TMPDIR" ]; then
-    rm -rf "$TMPDIR"
+  if [ -n "${GORUSH_TMPDIR:-}" ] && [ -d "$GORUSH_TMPDIR" ]; then
+    rm -rf "$GORUSH_TMPDIR"
   fi
 }
 trap cleanup EXIT INT TERM
@@ -181,7 +183,7 @@ for file in $config_files; do
 done
 
 if [[ -z $config_file ]]; then
-  log_error "No config file found for $current_shell. Checked files: ${config_files[*]}" 1
+  log_error "No config file found for $current_shell. Checked files: $config_files" 1
 fi
 
 if [[ ":$PATH:" != *":$INSTALL_DIR:"* ]]; then
@@ -189,16 +191,7 @@ if [[ ":$PATH:" != *":$INSTALL_DIR:"* ]]; then
   fish)
     add_to_path "$config_file" "fish_add_path $INSTALL_DIR"
     ;;
-  zsh)
-    add_to_path "$config_file" "export PATH=$INSTALL_DIR:\$PATH"
-    ;;
-  bash)
-    add_to_path "$config_file" "export PATH=$INSTALL_DIR:\$PATH"
-    ;;
-  ash)
-    add_to_path "$config_file" "export PATH=$INSTALL_DIR:\$PATH"
-    ;;
-  sh)
+  zsh | bash | ash | sh)
     add_to_path "$config_file" "export PATH=$INSTALL_DIR:\$PATH"
     ;;
   *)
