@@ -118,7 +118,12 @@ func SendIOSNotification(ctx context.Context, cfg *config.ConfYaml, opts CLISend
 }
 
 // SendNotification sends a notification based on platform type.
-func SendNotification(ctx context.Context, platform int, cfg *config.ConfYaml, opts CLISendOptions) error {
+func SendNotification(
+	ctx context.Context,
+	platform int,
+	cfg *config.ConfYaml,
+	opts CLISendOptions,
+) error {
 	switch platform {
 	case core.PlatFormAndroid:
 		return SendAndroidNotification(ctx, cfg, opts)

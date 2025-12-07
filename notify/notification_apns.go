@@ -59,7 +59,9 @@ type Sound struct {
 }
 
 // loadCertFromFile loads certificate or auth key from a file path.
-func loadCertFromFile(keyPath, password string) (tls.Certificate, *ecdsa.PrivateKey, string, error) {
+func loadCertFromFile(
+	keyPath, password string,
+) (tls.Certificate, *ecdsa.PrivateKey, string, error) {
 	var cert tls.Certificate
 	var authKey *ecdsa.PrivateKey
 	var err error
@@ -80,7 +82,9 @@ func loadCertFromFile(keyPath, password string) (tls.Certificate, *ecdsa.Private
 }
 
 // loadCertFromBase64 loads certificate or auth key from base64 encoded data.
-func loadCertFromBase64(keyBase64, keyType, password string) (tls.Certificate, *ecdsa.PrivateKey, string, error) {
+func loadCertFromBase64(
+	keyBase64, keyType, password string,
+) (tls.Certificate, *ecdsa.PrivateKey, string, error) {
 	var cert tls.Certificate
 	var authKey *ecdsa.PrivateKey
 
@@ -105,7 +109,10 @@ func loadCertFromBase64(keyBase64, keyType, password string) (tls.Certificate, *
 }
 
 // createAPNSClientWithToken creates an APNS client using a p8 token.
-func createAPNSClientWithToken(cfg *config.ConfYaml, authKey *ecdsa.PrivateKey) (*apns2.Client, error) {
+func createAPNSClientWithToken(
+	cfg *config.ConfYaml,
+	authKey *ecdsa.PrivateKey,
+) (*apns2.Client, error) {
 	if cfg.Ios.KeyID == "" || cfg.Ios.TeamID == "" {
 		return nil, errors.New("you should provide ios.KeyID and ios.TeamID for p8 token")
 	}
@@ -134,7 +141,11 @@ func InitAPNSClient(ctx context.Context, cfg *config.ConfYaml) error {
 	case cfg.Ios.KeyPath != "":
 		certificateKey, authKey, ext, err = loadCertFromFile(cfg.Ios.KeyPath, cfg.Ios.Password)
 	case cfg.Ios.KeyBase64 != "":
-		certificateKey, authKey, ext, err = loadCertFromBase64(cfg.Ios.KeyBase64, cfg.Ios.KeyType, cfg.Ios.Password)
+		certificateKey, authKey, ext, err = loadCertFromBase64(
+			cfg.Ios.KeyBase64,
+			cfg.Ios.KeyType,
+			cfg.Ios.Password,
+		)
 	}
 
 	if err != nil {
@@ -316,7 +327,10 @@ func setLiveActivityFields(p *payload.Payload, req *PushNotification) {
 	}
 }
 
-func iosAlertDictionary(notificationPayload *payload.Payload, req *PushNotification) *payload.Payload {
+func iosAlertDictionary(
+	notificationPayload *payload.Payload,
+	req *PushNotification,
+) *payload.Payload {
 	if len(req.InterruptionLevel) > 0 {
 		notificationPayload.InterruptionLevel(payload.EInterruptionLevel(req.InterruptionLevel))
 	}
@@ -446,7 +460,11 @@ func getApnsClient(cfg *config.ConfYaml, req *PushNotification) (client *apns2.C
 }
 
 // PushToIOS provide send notification to APNs server.
-func PushToIOS(ctx context.Context, req *PushNotification, cfg *config.ConfYaml) (resp *ResponsePush, err error) {
+func PushToIOS(
+	ctx context.Context,
+	req *PushNotification,
+	cfg *config.ConfYaml,
+) (resp *ResponsePush, err error) {
 	logx.LogAccess.Debug("Start push notification for iOS")
 
 	var (

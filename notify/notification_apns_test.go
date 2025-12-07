@@ -264,8 +264,16 @@ func TestIOSSummaryArg(t *testing.T) {
 	assert.Equal(t, testMessage, notification.ApnsID)
 	assert.Equal(t, testMessage, notification.Topic)
 	assert.Equal(t, ApnsPriorityLow, notification.Priority)
-	assert.Equal(t, "test", dat["aps"].(map[string]interface{})["alert"].(map[string]interface{})["summary-arg"])
-	assert.Equal(t, float64(3), dat["aps"].(map[string]interface{})["alert"].(map[string]interface{})["summary-arg-count"])
+	assert.Equal(
+		t,
+		"test",
+		dat["aps"].(map[string]interface{})["alert"].(map[string]interface{})["summary-arg"],
+	)
+	assert.Equal(
+		t,
+		float64(3),
+		dat["aps"].(map[string]interface{})["alert"].(map[string]interface{})["summary-arg-count"],
+	)
 }
 
 // Silent Notification which payload’s aps dictionary must not contain the alert, sound, or badge keys.
@@ -414,9 +422,21 @@ func TestAlertStringExample2ForIos(t *testing.T) {
 		panic(err)
 	}
 
-	assert.Equal(t, title, dat["aps"].(map[string]interface{})["alert"].(map[string]interface{})["title"])
-	assert.Equal(t, body, dat["aps"].(map[string]interface{})["alert"].(map[string]interface{})["body"])
-	assert.Equal(t, actionLocKey, dat["aps"].(map[string]interface{})["alert"].(map[string]interface{})["action-loc-key"])
+	assert.Equal(
+		t,
+		title,
+		dat["aps"].(map[string]interface{})["alert"].(map[string]interface{})["title"],
+	)
+	assert.Equal(
+		t,
+		body,
+		dat["aps"].(map[string]interface{})["alert"].(map[string]interface{})["body"],
+	)
+	assert.Equal(
+		t,
+		actionLocKey,
+		dat["aps"].(map[string]interface{})["alert"].(map[string]interface{})["action-loc-key"],
+	)
 }
 
 // URL: https://goo.gl/5xFo3C
@@ -769,7 +789,10 @@ func TestPushToIOS(t *testing.T) {
 
 	req := &PushNotification{
 		//nolint
-		Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7", "11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef1"},
+		Tokens: []string{
+			"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7",
+			"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef1",
+		},
 		Platform: 1,
 		Message:  "Welcome",
 	}
@@ -1125,7 +1148,11 @@ func TestLoadCertFromBase64(t *testing.T) {
 	assert.Equal(t, ".invalid", invalidExt)
 
 	// Test invalid base64
-	badBase64Cert, badBase64AuthKey, badBase64Ext, err := loadCertFromBase64("not-valid-base64!!!", "p12", "")
+	badBase64Cert, badBase64AuthKey, badBase64Ext, err := loadCertFromBase64(
+		"not-valid-base64!!!",
+		"p12",
+		"",
+	)
 	assert.Error(t, err)
 	assert.Empty(t, badBase64Cert.Certificate)
 	assert.Nil(t, badBase64AuthKey)

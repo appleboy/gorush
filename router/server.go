@@ -76,7 +76,11 @@ func pushHandler(cfg *config.ConfYaml, q *queue.Queue) gin.HandlerFunc {
 		}
 
 		if int64(len(form.Notifications)) > cfg.Core.MaxNotification {
-			msg = fmt.Sprintf("Number of notifications(%d) over limit(%d)", len(form.Notifications), cfg.Core.MaxNotification)
+			msg = fmt.Sprintf(
+				"Number of notifications(%d) over limit(%d)",
+				len(form.Notifications),
+				cfg.Core.MaxNotification,
+			)
 			logx.LogAccess.Debug(msg)
 			abortWithError(c, http.StatusBadRequest, msg)
 			return

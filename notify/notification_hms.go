@@ -156,7 +156,11 @@ func GetHuaweiNotification(req *PushNotification) (*model.MessageRequest, error)
 }
 
 // PushToHuawei provide send notification to Android server.
-func PushToHuawei(ctx context.Context, req *PushNotification, cfg *config.ConfYaml) (resp *ResponsePush, err error) {
+func PushToHuawei(
+	ctx context.Context,
+	req *PushNotification,
+	cfg *config.ConfYaml,
+) (resp *ResponsePush, err error) {
 	logx.LogAccess.Debug("Start push notification for Huawei")
 
 	var (

@@ -486,7 +486,9 @@ func TestSenMultipleNotifications(t *testing.T) {
 		Notifications: []notify.PushNotification{
 			// ios
 			{
-				Tokens:   []string{"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
+				Tokens: []string{
+					"11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7",
+				},
 				Platform: core.PlatFormIos,
 				Message:  "Welcome iOS",
 			},
@@ -522,7 +524,9 @@ func TestDisabledAndroidNotifications(t *testing.T) {
 		Notifications: []notify.PushNotification{
 			// ios
 			{
-				Tokens:   []string{"11aa01229f15f0f0c5209d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"},
+				Tokens: []string{
+					"11aa01229f15f0f0c5209d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7",
+				},
 				Platform: core.PlatFormIos,
 				Message:  "Welcome iOS",
 			},
@@ -670,7 +674,9 @@ func TestDisabledIosNotifications(t *testing.T) {
 		Notifications: []notify.PushNotification{
 			// ios
 			{
-				Tokens:   []string{"11aa01229f15f0f0c52021d8cf3cd0ae1f2365fe4cebc4af26cd6d76b7919ef7"},
+				Tokens: []string{
+					"11aa01229f15f0f0c52021d8cf3cd0ae1f2365fe4cebc4af26cd6d76b7919ef7",
+				},
 				Platform: core.PlatFormIos,
 				Message:  "Welcome iOS platform",
 			},

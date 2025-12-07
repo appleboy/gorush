@@ -259,7 +259,11 @@ func logDevMessages(messages []*messaging.Message) {
 }
 
 // PushToAndroid provide send notification to Android server.
-func PushToAndroid(ctx context.Context, req *PushNotification, cfg *config.ConfYaml) (resp *ResponsePush, err error) {
+func PushToAndroid(
+	ctx context.Context,
+	req *PushNotification,
+	cfg *config.ConfYaml,
+) (resp *ResponsePush, err error) {
 	logx.LogAccess.Debug("Start push notification for Android")
 
 	if err = CheckMessage(req); err != nil {
@@ -298,7 +302,13 @@ Retry:
 		return resp, newErr
 	}
 
-	logx.LogAccess.Debug(fmt.Sprintf("Android Success count: %d, Failure count: %d", res.SuccessCount, res.FailureCount))
+	logx.LogAccess.Debug(
+		fmt.Sprintf(
+			"Android Success count: %d, Failure count: %d",
+			res.SuccessCount,
+			res.FailureCount,
+		),
+	)
 	status.StatStorage.AddAndroidSuccess(int64(res.SuccessCount))
 	status.StatStorage.AddAndroidError(int64(res.FailureCount))
 
@@ -318,7 +328,12 @@ Retry:
 	return resp, nil
 }
 
-func logPush(cfg *config.ConfYaml, status, token string, req *PushNotification, err error) logx.LogPushEntry {
+func logPush(
+	cfg *config.ConfYaml,
+	status, token string,
+	req *PushNotification,
+	err error,
+) logx.LogPushEntry {
 	return logx.LogPush(&logx.InputLog{
 		ID:          req.ID,
 		Status:      status,

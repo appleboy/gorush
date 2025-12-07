@@ -68,8 +68,8 @@ type PushNotification struct {
 	ID               string      `json:"notif_id,omitempty"`
 	To               string      `json:"to,omitempty"`
 	Topic            string      `json:"topic,omitempty"` // FCM and iOS only
-	Tokens           []string    `json:"tokens" binding:"required"`
-	Platform         int         `json:"platform" binding:"required"`
+	Tokens           []string    `json:"tokens"                      binding:"required"`
+	Platform         int         `json:"platform"                    binding:"required"`
 	Message          string      `json:"message,omitempty"`
 	Title            string      `json:"title,omitempty"`
 	Image            string      `json:"image,omitempty"`
@@ -286,7 +286,13 @@ func SendNotification(
 		}
 
 		for _, l := range logs {
-			err := DispatchFeedback(ctx, l, cfg.Core.FeedbackURL, cfg.Core.FeedbackTimeout, cfg.Core.FeedbackHeader)
+			err := DispatchFeedback(
+				ctx,
+				l,
+				cfg.Core.FeedbackURL,
+				cfg.Core.FeedbackTimeout,
+				cfg.Core.FeedbackHeader,
+			)
 			if err != nil {
 				logx.LogError.Error(err)
 			}

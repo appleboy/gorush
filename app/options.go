@@ -57,7 +57,12 @@ func (o *Options) BindFlags() {
 
 	// Huawei options
 	flag.StringVar(&o.Conf.Huawei.AppSecret, "hk", "", "Huawei api key configuration for gorush")
-	flag.StringVar(&o.Conf.Huawei.AppSecret, "hmskey", "", "Huawei api key configuration for gorush")
+	flag.StringVar(
+		&o.Conf.Huawei.AppSecret,
+		"hmskey",
+		"",
+		"Huawei api key configuration for gorush",
+	)
 	flag.StringVar(&o.Conf.Huawei.AppID, "hid", "", "HMS app id configuration for gorush")
 	flag.StringVar(&o.Conf.Huawei.AppID, "hmsid", "", "HMS app id configuration for gorush")
 	flag.BoolVar(&o.Conf.Huawei.Enabled, "huawei", false, "send huawei notification")

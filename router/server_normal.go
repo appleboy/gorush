@@ -18,7 +18,12 @@ import (
 )
 
 // RunHTTPServer provide run http or https protocol.
-func RunHTTPServer(ctx context.Context, cfg *config.ConfYaml, q *queue.Queue, s ...*http.Server) (err error) {
+func RunHTTPServer(
+	ctx context.Context,
+	cfg *config.ConfYaml,
+	q *queue.Queue,
+	s ...*http.Server,
+) (err error) {
 	var server *http.Server
 
 	if !cfg.Core.Enabled {
