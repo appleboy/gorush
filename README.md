@@ -256,23 +256,37 @@ See the complete [example config file](config/testdata/config.yml).
 
 ## Installation
 
-### Recommended: Pre-built Binaries
+### Recommended: Install Script
 
-Download from [releases page](https://github.com/appleboy/gorush/releases) (recommended for production):
+The easiest way to install gorush is using the install script:
 
 ```bash
-# Linux
-wget https://github.com/appleboy/gorush/releases/download/v1.18.9/gorush-1.18.9-linux-amd64 -O gorush
-chmod +x gorush
-
-# macOS (Intel)
-wget https://github.com/appleboy/gorush/releases/download/v1.18.9/gorush-1.18.9-darwin-amd64 -O gorush
-chmod +x gorush
-
-# macOS (Apple Silicon)
-wget https://github.com/appleboy/gorush/releases/download/v1.18.9/gorush-1.18.9-darwin-arm64 -O gorush
-chmod +x gorush
+curl -fsSL https://raw.githubusercontent.com/appleboy/gorush/master/install.sh | bash
 ```
+
+This will automatically:
+
+- Detect your OS and architecture
+- Download the latest version
+- Install to `~/.gorush/bin`
+- Add to your PATH
+
+**Options:**
+
+```bash
+# Install specific version
+VERSION=1.19.2 curl -fsSL https://raw.githubusercontent.com/appleboy/gorush/master/install.sh | bash
+
+# Custom install directory
+INSTALL_DIR=/usr/local/bin curl -fsSL https://raw.githubusercontent.com/appleboy/gorush/master/install.sh | bash
+
+# Skip SSL verification (not recommended)
+INSECURE=1 curl -fsSL https://raw.githubusercontent.com/appleboy/gorush/master/install.sh | bash
+```
+
+### Manual Download
+
+Download from [releases page](https://github.com/appleboy/gorush/releases):
 
 ### Package Managers
 
