@@ -23,7 +23,6 @@ import (
 	"github.com/appleboy/graceful"
 )
 
-//nolint:gocyclo
 func main() {
 	// Parse CLI flags
 	opts := app.NewOptions()
