@@ -274,8 +274,8 @@ This will automatically:
 **Options:**
 
 ```bash
-# Install specific version
-VERSION=1.19.2 curl -fsSL https://raw.githubusercontent.com/appleboy/gorush/master/install.sh | bash
+# Install specific version (replace X.Y.Z with the desired version, e.g., 1.19.2)
+VERSION=X.Y.Z curl -fsSL https://raw.githubusercontent.com/appleboy/gorush/master/install.sh | bash
 
 # Custom install directory
 INSTALL_DIR=/usr/local/bin curl -fsSL https://raw.githubusercontent.com/appleboy/gorush/master/install.sh | bash
