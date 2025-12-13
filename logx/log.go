@@ -33,7 +33,7 @@ type LogPushEntry struct {
 
 var isTerm bool
 
-//nolint
+//nolint:gochecknoinits
 func init() {
 	isTerm = isatty.IsTerminal(os.Stdout.Fd())
 }

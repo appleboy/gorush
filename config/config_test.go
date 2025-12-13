@@ -202,7 +202,11 @@ func (suite *ConfigTestSuite) TestValidateConf() {
 	assert.Equal(suite.T(), "", suite.ConfGorush.Core.FeedbackURL)
 	assert.Equal(suite.T(), int64(10), suite.ConfGorush.Core.FeedbackTimeout)
 	assert.Equal(suite.T(), 1, len(suite.ConfGorush.Core.FeedbackHeader))
-	assert.Equal(suite.T(), "x-gorush-token:4e989115e09680f44a645519fed6a976", suite.ConfGorush.Core.FeedbackHeader[0])
+	assert.Equal(
+		suite.T(),
+		"x-gorush-token:4e989115e09680f44a645519fed6a976",
+		suite.ConfGorush.Core.FeedbackHeader[0],
+	)
 	assert.Equal(suite.T(), false, suite.ConfGorush.Core.SSL)
 	assert.Equal(suite.T(), "cert.pem", suite.ConfGorush.Core.CertPath)
 	assert.Equal(suite.T(), "key.pem", suite.ConfGorush.Core.KeyPath)
@@ -474,7 +478,11 @@ func TestValidateAddress(t *testing.T) {
 					return
 				}
 				if tt.errMsg != "" && !strings.Contains(err.Error(), tt.errMsg) {
-					t.Errorf("ValidateAddress() error = %v, want error containing %v", err, tt.errMsg)
+					t.Errorf(
+						"ValidateAddress() error = %v, want error containing %v",
+						err,
+						tt.errMsg,
+					)
 				}
 			} else if err != nil {
 				t.Errorf("ValidateAddress() error = %v, want nil", err)
@@ -574,7 +582,11 @@ func TestValidatePIDPath(t *testing.T) {
 					return
 				}
 				if tt.errMsg != "" && !strings.Contains(err.Error(), tt.errMsg) {
-					t.Errorf("ValidatePIDPath() error = %v, want error containing %v", err, tt.errMsg)
+					t.Errorf(
+						"ValidatePIDPath() error = %v, want error containing %v",
+						err,
+						tt.errMsg,
+					)
 				}
 			} else if err != nil {
 				t.Errorf("ValidatePIDPath() error = %v, want nil", err)
@@ -625,7 +637,11 @@ func TestValidateConfig(t *testing.T) {
 				}
 
 				if tt.errMsg != "" && !strings.Contains(err.Error(), tt.errMsg) {
-					t.Errorf("ValidateConfig() error = %v, want error containing %v", err, tt.errMsg)
+					t.Errorf(
+						"ValidateConfig() error = %v, want error containing %v",
+						err,
+						tt.errMsg,
+					)
 				}
 			} else if err != nil {
 				t.Errorf("ValidateConfig() error = %v, want nil", err)

@@ -5,7 +5,7 @@ functions = "release/linux/lambda"
 [build.environment]
 GO111MODULE = "on"
 GO_IMPORT_PATH = "github.com/appleboy/gorush"
-GO_VERSION = "1.24.6"
+GO_VERSION = "1.24.11"
 
 [[redirects]]
 from = "/*"

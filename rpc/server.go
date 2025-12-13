@@ -46,7 +46,10 @@ func NewServer(cfg *config.ConfYaml) *Server {
 }
 
 // Check implements `service Health`.
-func (s *Server) Check(ctx context.Context, in *proto.HealthCheckRequest) (*proto.HealthCheckResponse, error) {
+func (s *Server) Check(
+	ctx context.Context,
+	in *proto.HealthCheckRequest,
+) (*proto.HealthCheckResponse, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	if in.Service == "" {
@@ -64,7 +67,10 @@ func (s *Server) Check(ctx context.Context, in *proto.HealthCheckRequest) (*prot
 }
 
 // Send implements helloworld.GreeterServer
-func (s *Server) Send(ctx context.Context, in *proto.NotificationRequest) (*proto.NotificationReply, error) {
+func (s *Server) Send(
+	ctx context.Context,
+	in *proto.NotificationRequest,
+) (*proto.NotificationReply, error) {
 	badge := int(in.Badge)
 	notification := notify.PushNotification{
 		ID:               in.ID,

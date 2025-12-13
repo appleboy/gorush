@@ -1,6 +1,5 @@
 EXECUTABLE := gorush
 GO ?= go
-GOFMT ?= gofumpt -l -s -extra
 GOFILES := $(shell find . -name "*.go" -type f)
 TAGS ?= sqlite
 LDFLAGS ?= -X main.version=$(VERSION) -X main.commit=$(COMMIT)
@@ -123,3 +122,17 @@ dev: air
 
 version: ## print the version
 	@echo $(VERSION)
+
+.PHONY: lint
+lint: ## Run golangci-lint
+	@hash golangci-lint > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
+		$(GO) install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest; \
+	fi
+	golangci-lint run ./...
+
+.PHONY: fmt
+fmt: ## Format code using golangci-lint
+	@hash golangci-lint > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
+		$(GO) install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest; \
+	fi
+	golangci-lint fmt ./...

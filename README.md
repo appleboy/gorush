@@ -3,7 +3,7 @@
 A push notification micro server using [Gin](https://github.com/gin-gonic/gin) framework written in Go (Golang) and see the [demo app](https://github.com/appleboy/flutter-gorush).
 
 [![Run Lint and Testing](https://github.com/appleboy/gorush/actions/workflows/testing.yml/badge.svg)](https://github.com/appleboy/gorush/actions/workflows/testing.yml)
-[![Daily Trivy Security Scan](https://github.com/appleboy/gorush/actions/workflows/trivy-daily-scan.yml/badge.svg)](https://github.com/appleboy/gorush/actions/workflows/trivy-daily-scan.yml)
+[![Trivy Security Scan](https://github.com/appleboy/gorush/actions/workflows/trivy-scan.yml/badge.svg)](https://github.com/appleboy/gorush/actions/workflows/trivy-daily-scan.yml)
 [![GoDoc](https://godoc.org/github.com/appleboy/gorush?status.svg)](https://pkg.go.dev/github.com/appleboy/gorush)
 [![codecov](https://codecov.io/gh/appleboy/gorush/branch/master/graph/badge.svg)](https://codecov.io/gh/appleboy/gorush)
 [![Go Report Card](https://goreportcard.com/badge/github.com/appleboy/gorush)](https://goreportcard.com/report/github.com/appleboy/gorush)
@@ -256,23 +256,37 @@ See the complete [example config file](config/testdata/config.yml).
 
 ## Installation
 
-### Recommended: Pre-built Binaries
+### Recommended: Install Script
 
-Download from [releases page](https://github.com/appleboy/gorush/releases) (recommended for production):
+The easiest way to install gorush is using the install script:
 
 ```bash
-# Linux
-wget https://github.com/appleboy/gorush/releases/download/v1.18.9/gorush-1.18.9-linux-amd64 -O gorush
-chmod +x gorush
-
-# macOS (Intel)
-wget https://github.com/appleboy/gorush/releases/download/v1.18.9/gorush-1.18.9-darwin-amd64 -O gorush
-chmod +x gorush
-
-# macOS (Apple Silicon)
-wget https://github.com/appleboy/gorush/releases/download/v1.18.9/gorush-1.18.9-darwin-arm64 -O gorush
-chmod +x gorush
+curl -fsSL https://raw.githubusercontent.com/appleboy/gorush/master/install.sh | bash
 ```
+
+This will automatically:
+
+- Detect your OS and architecture
+- Download the latest version
+- Install to `~/.gorush/bin`
+- Add to your PATH
+
+**Options:**
+
+```bash
+# Install specific version (replace X.Y.Z with the desired version, e.g., 1.19.2)
+VERSION=X.Y.Z curl -fsSL https://raw.githubusercontent.com/appleboy/gorush/master/install.sh | bash
+
+# Custom install directory
+INSTALL_DIR=/usr/local/bin curl -fsSL https://raw.githubusercontent.com/appleboy/gorush/master/install.sh | bash
+
+# Skip SSL verification (not recommended)
+INSECURE=1 curl -fsSL https://raw.githubusercontent.com/appleboy/gorush/master/install.sh | bash
+```
+
+### Manual Download
+
+Download from [releases page](https://github.com/appleboy/gorush/releases):
 
 ### Package Managers
 

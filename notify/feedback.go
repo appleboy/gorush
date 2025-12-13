@@ -34,7 +34,13 @@ func extractHeaders(headers []string) map[string]string {
 //
 // Returns:
 //   - error: An error if the request fails or the response status is not OK.
-func DispatchFeedback(ctx context.Context, log logx.LogPushEntry, url string, timeout int64, header []string) error {
+func DispatchFeedback(
+	ctx context.Context,
+	log logx.LogPushEntry,
+	url string,
+	timeout int64,
+	header []string,
+) error {
 	if url == "" {
 		return errors.New("url can't be empty")
 	}
