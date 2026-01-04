@@ -289,6 +289,18 @@ func TestLoadConfigFromEnv(t *testing.T) {
 	os.Setenv("GORUSH_API_HEALTH_URI", "/healthz")
 	os.Setenv("GORUSH_CORE_FEEDBACK_HOOK_URL", "http://example.com")
 	os.Setenv("GORUSH_CORE_FEEDBACK_HEADER", "x-api-key:1234567890 x-auth-key:0987654321")
+
+	t.Cleanup(func() {
+		os.Unsetenv("GORUSH_CORE_PORT")
+		os.Unsetenv("GORUSH_GRPC_ENABLED")
+		os.Unsetenv("GORUSH_CORE_MAX_NOTIFICATION")
+		os.Unsetenv("GORUSH_IOS_KEY_ID")
+		os.Unsetenv("GORUSH_IOS_TEAM_ID")
+		os.Unsetenv("GORUSH_API_HEALTH_URI")
+		os.Unsetenv("GORUSH_CORE_FEEDBACK_HOOK_URL")
+		os.Unsetenv("GORUSH_CORE_FEEDBACK_HEADER")
+	})
+
 	ConfGorush, err := LoadConf("testdata/config.yml")
 	if err != nil {
 		panic("failed to load config.yml from file")
@@ -325,6 +337,11 @@ func TestRedisDBConfigurationFromEnv(t *testing.T) {
 	os.Setenv("GORUSH_QUEUE_REDIS_DB", "7")
 	os.Setenv("GORUSH_STAT_REDIS_DB", "9")
 
+	t.Cleanup(func() {
+		os.Unsetenv("GORUSH_QUEUE_REDIS_DB")
+		os.Unsetenv("GORUSH_STAT_REDIS_DB")
+	})
+
 	conf, err := LoadConf()
 	if err != nil {
 		t.Fatalf("failed to load config: %v", err)
@@ -335,10 +352,6 @@ func TestRedisDBConfigurationFromEnv(t *testing.T) {
 
 	// Test stat.redis.db is properly loaded from env
 	assert.Equal(t, 9, conf.Stat.Redis.DB)
-
-	// Clean up
-	os.Unsetenv("GORUSH_QUEUE_REDIS_DB")
-	os.Unsetenv("GORUSH_STAT_REDIS_DB")
 }
 
 func TestLoadWrongDefaultYAMLConfig(t *testing.T) {
@@ -713,6 +726,12 @@ func TestAPIDefaultsFromEnv(t *testing.T) {
 	os.Setenv("GORUSH_API_STAT_GO_URI", "/custom/stat/go")
 	os.Setenv("GORUSH_API_METRIC_URI", "/custom/metrics")
 
+	t.Cleanup(func() {
+		os.Unsetenv("GORUSH_API_PUSH_URI")
+		os.Unsetenv("GORUSH_API_STAT_GO_URI")
+		os.Unsetenv("GORUSH_API_METRIC_URI")
+	})
+
 	conf, err := LoadConf()
 	if err != nil {
 		t.Fatalf("failed to load config: %v", err)
@@ -721,11 +740,6 @@ func TestAPIDefaultsFromEnv(t *testing.T) {
 	assert.Equal(t, "/custom/push", conf.API.PushURI)
 	assert.Equal(t, "/custom/stat/go", conf.API.StatGoURI)
 	assert.Equal(t, "/custom/metrics", conf.API.MetricURI)
-
-	// Clean up
-	os.Unsetenv("GORUSH_API_PUSH_URI")
-	os.Unsetenv("GORUSH_API_STAT_GO_URI")
-	os.Unsetenv("GORUSH_API_METRIC_URI")
 }
 
 func TestLogDefaultsFromEnv(t *testing.T) {
@@ -733,6 +747,12 @@ func TestLogDefaultsFromEnv(t *testing.T) {
 	os.Setenv("GORUSH_LOG_ACCESS_LEVEL", "info")
 	os.Setenv("GORUSH_LOG_ERROR_LEVEL", "warn")
 	os.Setenv("GORUSH_LOG_FORMAT", "json")
+
+	t.Cleanup(func() {
+		os.Unsetenv("GORUSH_LOG_ACCESS_LEVEL")
+		os.Unsetenv("GORUSH_LOG_ERROR_LEVEL")
+		os.Unsetenv("GORUSH_LOG_FORMAT")
+	})
 
 	conf, err := LoadConf()
 	if err != nil {
@@ -742,11 +762,6 @@ func TestLogDefaultsFromEnv(t *testing.T) {
 	assert.Equal(t, "info", conf.Log.AccessLevel)
 	assert.Equal(t, "warn", conf.Log.ErrorLevel)
 	assert.Equal(t, "json", conf.Log.Format)
-
-	// Clean up
-	os.Unsetenv("GORUSH_LOG_ACCESS_LEVEL")
-	os.Unsetenv("GORUSH_LOG_ERROR_LEVEL")
-	os.Unsetenv("GORUSH_LOG_FORMAT")
 }
 
 func TestLogLevelDefaultsWhenEmpty(t *testing.T) {
