@@ -342,6 +342,12 @@ func TestRedisDBConfigurationFromEnv(t *testing.T) {
 }
 
 func TestLoadWrongDefaultYAMLConfig(t *testing.T) {
+	// Backup original defaultConf
+	originalDefaultConf := defaultConf
+	defer func() {
+		defaultConf = originalDefaultConf
+	}()
+
 	defaultConf = []byte(`a`)
 	_, err := LoadConf()
 	assert.Error(t, err)
@@ -699,4 +705,87 @@ func TestSecurityValidationIntegration(t *testing.T) {
 			t.Error("Sensitive directory write should error")
 		}
 	})
+}
+
+func TestAPIDefaultsFromEnv(t *testing.T) {
+	// Test that API endpoint defaults can be overridden by environment variables
+	os.Setenv("GORUSH_API_PUSH_URI", "/custom/push")
+	os.Setenv("GORUSH_API_STAT_GO_URI", "/custom/stat/go")
+	os.Setenv("GORUSH_API_METRIC_URI", "/custom/metrics")
+
+	conf, err := LoadConf()
+	if err != nil {
+		t.Fatalf("failed to load config: %v", err)
+	}
+
+	assert.Equal(t, "/custom/push", conf.API.PushURI)
+	assert.Equal(t, "/custom/stat/go", conf.API.StatGoURI)
+	assert.Equal(t, "/custom/metrics", conf.API.MetricURI)
+
+	// Clean up
+	os.Unsetenv("GORUSH_API_PUSH_URI")
+	os.Unsetenv("GORUSH_API_STAT_GO_URI")
+	os.Unsetenv("GORUSH_API_METRIC_URI")
+}
+
+func TestLogDefaultsFromEnv(t *testing.T) {
+	// Test that log level defaults can be overridden by environment variables
+	os.Setenv("GORUSH_LOG_ACCESS_LEVEL", "info")
+	os.Setenv("GORUSH_LOG_ERROR_LEVEL", "warn")
+	os.Setenv("GORUSH_LOG_FORMAT", "json")
+
+	conf, err := LoadConf()
+	if err != nil {
+		t.Fatalf("failed to load config: %v", err)
+	}
+
+	assert.Equal(t, "info", conf.Log.AccessLevel)
+	assert.Equal(t, "warn", conf.Log.ErrorLevel)
+	assert.Equal(t, "json", conf.Log.Format)
+
+	// Clean up
+	os.Unsetenv("GORUSH_LOG_ACCESS_LEVEL")
+	os.Unsetenv("GORUSH_LOG_ERROR_LEVEL")
+	os.Unsetenv("GORUSH_LOG_FORMAT")
+}
+
+func TestLogLevelDefaultsWhenEmpty(t *testing.T) {
+	// Test that when no log level is specified, defaults are used
+	// This was the original bug - empty log levels caused initialization to fail
+	conf, err := LoadConf()
+	if err != nil {
+		t.Fatalf("failed to load config: %v", err)
+	}
+
+	// Verify defaults are set
+	assert.NotEmpty(t, conf.Log.AccessLevel, "access level should have default value")
+	assert.NotEmpty(t, conf.Log.ErrorLevel, "error level should have default value")
+	assert.Equal(t, "debug", conf.Log.AccessLevel)
+	assert.Equal(t, "error", conf.Log.ErrorLevel)
+}
+
+func TestAllAPIEndpointsHaveDefaults(t *testing.T) {
+	// Test that all API endpoints have proper defaults
+	conf, err := LoadConf()
+	if err != nil {
+		t.Fatalf("failed to load config: %v", err)
+	}
+
+	// Verify all API endpoints have non-empty defaults
+	assert.NotEmpty(t, conf.API.PushURI, "push_uri should have default")
+	assert.NotEmpty(t, conf.API.StatGoURI, "stat_go_uri should have default")
+	assert.NotEmpty(t, conf.API.StatAppURI, "stat_app_uri should have default")
+	assert.NotEmpty(t, conf.API.ConfigURI, "config_uri should have default")
+	assert.NotEmpty(t, conf.API.SysStatURI, "sys_stat_uri should have default")
+	assert.NotEmpty(t, conf.API.MetricURI, "metric_uri should have default")
+	assert.NotEmpty(t, conf.API.HealthURI, "health_uri should have default")
+
+	// Verify correct default values
+	assert.Equal(t, "/api/push", conf.API.PushURI)
+	assert.Equal(t, "/api/stat/go", conf.API.StatGoURI)
+	assert.Equal(t, "/api/stat/app", conf.API.StatAppURI)
+	assert.Equal(t, "/api/config", conf.API.ConfigURI)
+	assert.Equal(t, "/sys/stats", conf.API.SysStatURI)
+	assert.Equal(t, "/metrics", conf.API.MetricURI)
+	assert.Equal(t, "/healthz", conf.API.HealthURI)
 }
