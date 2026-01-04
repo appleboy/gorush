@@ -433,6 +433,7 @@ func TestBuildFCMMessage(t *testing.T) {
 
 func TestGetAndroidNotificationWithTopic(t *testing.T) {
 	req := &PushNotification{
+		Platform:  core.PlatFormAndroid,
 		Topic:     "test-topic",
 		Condition: "'dogs' in topics",
 		Message:   "Topic message",
@@ -459,9 +460,10 @@ func TestGetAndroidNotificationWithTokens(t *testing.T) {
 
 func TestGetAndroidNotificationWithTopicAndTokens(t *testing.T) {
 	req := &PushNotification{
-		Topic:   "test-topic",
-		Tokens:  []string{"token1", "token2"},
-		Message: "Combined message",
+		Platform: core.PlatFormAndroid,
+		Topic:    "test-topic",
+		Tokens:   []string{"token1", "token2"},
+		Message:  "Combined message",
 	}
 
 	messages := GetAndroidNotification(req)
