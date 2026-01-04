@@ -10,9 +10,9 @@ func TestPlatformStringAndValidity(t *testing.T) {
 		p        Platform
 		expected string
 	}{
-		{PlatformIOS, "ios"},
-		{PlatformAndroid, "android"},
-		{PlatformHuawei, "huawei"},
+		{PlatformIOS, PlatformIOS.String()},
+		{PlatformAndroid, PlatformAndroid.String()},
+		{PlatformHuawei, PlatformHuawei.String()},
 	}
 
 	for _, c := range cases {
@@ -34,7 +34,7 @@ func TestParsePlatform(t *testing.T) {
 	if err != nil || p != PlatformIOS {
 		t.Fatalf("ParsePlatform ios failed: p=%v err=%v", p, err)
 	}
-	p, err = ParsePlatform("android")
+	p, err = ParsePlatform(PlatformAndroid.String())
 	if err != nil || p != PlatformAndroid {
 		t.Fatalf("ParsePlatform android failed: p=%v err=%v", p, err)
 	}
@@ -49,22 +49,25 @@ func TestParsePlatform(t *testing.T) {
 
 func TestPlatformTextMarshaling(t *testing.T) {
 	b, err := PlatformIOS.MarshalText()
-	if err != nil || string(b) != "ios" {
+	if err != nil || string(b) != PlatformIOS.String() {
 		t.Fatalf("MarshalText: got %q err=%v", string(b), err)
 	}
 	var p Platform
-	if err := p.UnmarshalText([]byte("android")); err != nil || p != PlatformAndroid {
+	androidText := []byte(PlatformAndroid.String())
+	if err := p.UnmarshalText(androidText); err != nil || p != PlatformAndroid {
 		t.Fatalf("UnmarshalText: p=%v err=%v", p, err)
 	}
 }
 
 func TestPlatformJSONMarshaling(t *testing.T) {
 	b, err := json.Marshal(PlatformHuawei)
-	if err != nil || string(b) != "\"huawei\"" {
+	expected := `"` + PlatformHuawei.String() + `"`
+	if err != nil || string(b) != expected {
 		t.Fatalf("MarshalJSON: got %s err=%v", string(b), err)
 	}
 	var p Platform
-	if err := json.Unmarshal([]byte("\"ios\""), &p); err != nil || p != PlatformIOS {
+	iosJSON := []byte(`"` + PlatformIOS.String() + `"`)
+	if err := json.Unmarshal(iosJSON, &p); err != nil || p != PlatformIOS {
 		t.Fatalf("UnmarshalJSON string: p=%v err=%v", p, err)
 	}
 	// legacy numeric values
@@ -84,4 +87,3 @@ func TestLogBlock(t *testing.T) {
 		t.Fatalf("expected arbitrary value to be invalid")
 	}
 }
-

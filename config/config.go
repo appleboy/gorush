@@ -346,6 +346,15 @@ func setDefaults() {
 	viper.SetDefault("android.enabled", true)
 	viper.SetDefault("android.max_retry", 0)
 
+	// API defaults
+	viper.SetDefault("api.push_uri", "/api/push")
+	viper.SetDefault("api.stat_go_uri", "/api/stat/go")
+	viper.SetDefault("api.stat_app_uri", "/api/stat/app")
+	viper.SetDefault("api.config_uri", "/api/config")
+	viper.SetDefault("api.sys_stat_uri", "/sys/stats")
+	viper.SetDefault("api.metric_uri", "/metrics")
+	viper.SetDefault("api.health_uri", "/healthz")
+
 	// gRPC defaults
 	viper.SetDefault("grpc.enabled", false)
 	viper.SetDefault("grpc.port", "9000")
@@ -355,6 +364,15 @@ func setDefaults() {
 
 	// Stat defaults
 	viper.SetDefault("stat.engine", "memory")
+
+	// Log defaults
+	viper.SetDefault("log.format", "string")
+	viper.SetDefault("log.access_log", "stdout")
+	viper.SetDefault("log.access_level", "debug")
+	viper.SetDefault("log.error_log", "stderr")
+	viper.SetDefault("log.error_level", "error")
+	viper.SetDefault("log.hide_token", true)
+	viper.SetDefault("log.hide_messages", false)
 }
 
 // LoadConf load config from file and read in environment variables that match
