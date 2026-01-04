@@ -111,20 +111,20 @@ Gorush uses YAML configuration. Create a `config.yml` file with your settings:
 
 ```yaml
 core:
-  port: "8088"              # HTTP server port
-  worker_num: 0             # Workers (0 = CPU cores)
-  queue_num: 8192           # Queue size
-  mode: "release"           # or "debug"
+  port: "8088" # HTTP server port
+  worker_num: 0 # Workers (0 = CPU cores)
+  queue_num: 8192 # Queue size
+  mode: "release" # or "debug"
 
 # Enable platforms you need
 android:
   enabled: true
-  key_path: "fcm-key.json"  # FCM service account key
+  key_path: "fcm-key.json" # FCM service account key
 
 ios:
   enabled: true
-  key_path: "apns-key.pem"  # APNS certificate
-  production: true          # Use production APNS
+  key_path: "apns-key.pem" # APNS certificate
+  production: true # Use production APNS
 
 huawei:
   enabled: false
@@ -252,6 +252,7 @@ stat:
 ```
 
 See the complete [example config file](config/testdata/config.yml).
+
 </details>
 
 ## Installation
@@ -462,6 +463,7 @@ Common Options:
     -h, --help                       Show this message
     -V, --version                    Show version
 ```
+
 </details>
 
 ## Web API
@@ -470,15 +472,15 @@ Common Options:
 
 Gorush provides RESTful APIs for sending notifications and monitoring system status:
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/push` | POST | Send push notifications |
-| `/api/stat/app` | GET | Application statistics |
-| `/api/stat/go` | GET | Go runtime statistics |
-| `/sys/stats` | GET | System performance metrics |
-| `/metrics` | GET | Prometheus metrics |
-| `/healthz` | GET | Health check |
-| `/api/config` | GET | Current configuration |
+| Endpoint        | Method | Description                |
+| --------------- | ------ | -------------------------- |
+| `/api/push`     | POST   | Send push notifications    |
+| `/api/stat/app` | GET    | Application statistics     |
+| `/api/stat/go`  | GET    | Go runtime statistics      |
+| `/sys/stats`    | GET    | System performance metrics |
+| `/metrics`      | GET    | Prometheus metrics         |
+| `/healthz`      | GET    | Health check               |
+| `/api/config`   | GET    | Current configuration      |
 
 ### Send Notifications - `POST /api/push`
 
@@ -488,12 +490,14 @@ Gorush provides RESTful APIs for sending notifications and monitoring system sta
 
 ```json
 {
-  "notifications": [{
-    "tokens": ["ios_device_token"],
-    "platform": 1,
-    "title": "Hello iOS",
-    "message": "Hello World iOS!"
-  }]
+  "notifications": [
+    {
+      "tokens": ["ios_device_token"],
+      "platform": 1,
+      "title": "Hello iOS",
+      "message": "Hello World iOS!"
+    }
+  ]
 }
 ```
 
@@ -501,12 +505,14 @@ Gorush provides RESTful APIs for sending notifications and monitoring system sta
 
 ```json
 {
-  "notifications": [{
-    "tokens": ["android_device_token"],
-    "platform": 2,
-    "title": "Hello Android",
-    "message": "Hello World Android!"
-  }]
+  "notifications": [
+    {
+      "tokens": ["android_device_token"],
+      "platform": 2,
+      "title": "Hello Android",
+      "message": "Hello World Android!"
+    }
+  ]
 }
 ```
 
@@ -514,12 +520,14 @@ Gorush provides RESTful APIs for sending notifications and monitoring system sta
 
 ```json
 {
-  "notifications": [{
-    "tokens": ["huawei_device_token"],
-    "platform": 3,
-    "title": "Hello Huawei",
-    "message": "Hello World Huawei!"
-  }]
+  "notifications": [
+    {
+      "tokens": ["huawei_device_token"],
+      "platform": 3,
+      "title": "Hello Huawei",
+      "message": "Hello World Huawei!"
+    }
+  ]
 }
 ```
 
@@ -529,23 +537,25 @@ Gorush provides RESTful APIs for sending notifications and monitoring system sta
 
 ```json
 {
-  "notifications": [{
-    "tokens": ["ios_device_token"],
-    "platform": 1,
-    "title": "Important Alert",
-    "message": "Critical notification",
-    "apns": {
-      "payload": {
-        "aps": {
-          "sound": {
-            "name": "custom.wav",
-            "critical": 1,
-            "volume": 0.8
+  "notifications": [
+    {
+      "tokens": ["ios_device_token"],
+      "platform": 1,
+      "title": "Important Alert",
+      "message": "Critical notification",
+      "apns": {
+        "payload": {
+          "aps": {
+            "sound": {
+              "name": "custom.wav",
+              "critical": 1,
+              "volume": 0.8
+            }
           }
         }
       }
     }
-  }]
+  ]
 }
 ```
 
@@ -1077,7 +1087,7 @@ docker run -d --name gorush -p 8088:8088 appleboy/gorush
 #### Docker Compose
 
 ```yaml
-version: '3'
+version: "3"
 services:
   gorush:
     image: appleboy/gorush
@@ -1122,7 +1132,7 @@ For AWS ALB, modify service type:
 ```yaml
 # k8s/gorush-service.yaml
 spec:
-  type: NodePort  # Change from LoadBalancer
+  type: NodePort # Change from LoadBalancer
 ```
 
 Then deploy ingress:
@@ -1264,10 +1274,10 @@ A: Configure workers and queue settings:
 
 ```yaml
 core:
-  worker_num: 8        # Increase workers
-  queue_num: 16384     # Increase queue size
+  worker_num: 8 # Increase workers
+  queue_num: 16384 # Increase queue size
 queue:
-  engine: "redis"      # Use external queue
+  engine: "redis" # Use external queue
 ```
 
 **Q: Can I send to multiple platforms at once?**
@@ -1276,8 +1286,8 @@ A: Yes, include multiple notification objects in the request:
 ```json
 {
   "notifications": [
-    {"platform": 1, "tokens": ["ios_token"], "message": "iOS"},
-    {"platform": 2, "tokens": ["android_token"], "message": "Android"}
+    { "platform": 1, "tokens": ["ios_token"], "message": "iOS" },
+    { "platform": 2, "tokens": ["android_token"], "message": "Android" }
   ]
 }
 ```
@@ -1287,8 +1297,8 @@ A: Enable sync mode or feedback webhook:
 
 ```yaml
 core:
-  sync: true                              # Get immediate response
-  feedback_hook_url: "https://your-api"   # Async webhook
+  sync: true # Get immediate response
+  feedback_hook_url: "https://your-api" # Async webhook
 ```
 
 **Q: What's the difference between platforms?**
