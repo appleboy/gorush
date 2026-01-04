@@ -36,22 +36,46 @@ curl -X POST http://localhost:8088/api/push \
   }'
 ```
 
-📱 **Platform codes**: `1` = iOS (APNS), `2` = Android (FCM), `3` = Huawei (HMS)
-
 ## Contents
 
 - [Quick Start](#quick-start) - Get up and running in 3 steps
 - [Support Platform](#support-platform) - iOS, Android, Huawei
 - [Features](#features) - What gorush can do
-- [Installation](#installation) - Binary, package managers, Docker, source
 - [Configuration](#configuration) - YAML config and options
+  - [Basic Configuration](#basic-configuration)
+  - [Advanced Configuration](#advanced-configuration)
+- [Installation](#installation) - Binary, package managers, Docker, source
+  - [Recommended: Install Script](#recommended-install-script)
+  - [Manual Download](#manual-download)
+  - [Package Managers](#package-managers)
+  - [Build from Source](#build-from-source)
+  - [Docker](#docker)
 - [Usage](#usage) - CLI commands and REST API examples
+  - [Starting the Server](#starting-the-server)
+  - [Command Line Notifications](#command-line-notifications)
+  - [REST API Usage](#rest-api-usage)
+  - [CLI Options Reference](#cli-options-reference)
 - [Web API](#web-api) - Complete API reference
+  - [Overview](#overview)
+  - [Send Notifications](#send-notifications---post-apipush)
+  - [Statistics APIs](#statistics-apis)
+  - [Advanced Configuration](#advanced-configuration-1)
 - [Deployment](#deployment) - Docker, Kubernetes, AWS Lambda, gRPC
+  - [Docker](#docker-1)
+  - [Kubernetes](#kubernetes)
+  - [AWS Lambda](#aws-lambda)
+  - [Netlify Functions](#netlify-functions)
+  - [gRPC Service](#grpc-service)
 - [FAQ](#faq) - Common issues and best practices
+  - [Common Issues](#common-issues)
+  - [Performance Tips](#performance-tips)
+  - [Security Best Practices](#security-best-practices)
+- [Stargazers over time](#stargazers-over-time)
 - [License](#license)
 
 ## Support Platform
+
+📱 Platform codes: `1` = iOS (APNS), `2` = Android (FCM), `3` = Huawei (HMS)
 
 - [APNS](https://developer.apple.com/documentation/usernotifications)
 - [FCM](https://firebase.google.com/)
