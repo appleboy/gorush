@@ -59,9 +59,9 @@ curl -X POST http://localhost:8088/api/push \
   - [Overview](#overview)
   - [Send Notifications](#send-notifications---post-apipush)
   - [Statistics APIs](#statistics-apis)
-  - [Advanced Configuration](#advanced-configuration-1)
+  - [Request Parameters](#request-parameters)
 - [Deployment](#deployment) - Docker, Kubernetes, AWS Lambda, gRPC
-  - [Docker](#docker-1)
+  - [Docker Deployment](#docker-deployment)
   - [Kubernetes](#kubernetes)
   - [AWS Lambda](#aws-lambda)
   - [Netlify Functions](#netlify-functions)
@@ -296,7 +296,7 @@ This will automatically:
 - Install to `~/.gorush/bin`
 - Add to your PATH
 
-**Options:**
+#### Options
 
 ```bash
 # Install specific version (replace X.Y.Z with the desired version, e.g., 1.19.2)
@@ -370,42 +370,42 @@ docker run --rm -p 8088:8088 -v $(pwd)/config.yml:/home/gorush/config.yml appleb
 
 ### Command Line Notifications
 
-#### Android (FCM)
+#### Android (FCM) Command Line
 
 **Prerequisites**: Generate FCM service account key from [Firebase Console](https://console.firebase.google.com/project/_/settings/serviceaccounts/adminsdk) → Settings → Service Accounts → Generate New Private Key.
 
 ```bash
-# Single notification
+# Android: Single notification
 gorush -android -m "Hello Android!" --fcm-key "path/to/fcm-key.json" -t "device_token"
 
-# Using environment variable (recommended)
+# Android: Using environment variable (recommended)
 export GOOGLE_APPLICATION_CREDENTIALS="path/to/fcm-key.json"
 gorush -android -m "Hello Android!" -t "device_token"
 
-# Topic message
+# Android: Topic message
 gorush --android --topic "news" -m "Breaking News!" --fcm-key "path/to/fcm-key.json"
 ```
 
-#### iOS (APNS)
+#### iOS (APNS) Command Line
 
 ```bash
-# Development environment
+# iOS: Development environment
 gorush -ios -m "Hello iOS!" -i "cert.pem" -t "device_token" --topic "com.example.app"
 
-# Production environment
+# iOS: Production environment
 gorush -ios -m "Hello iOS!" -i "cert.pem" -t "device_token" --topic "com.example.app" -production
 
-# With password-protected certificate
+# iOS: With password-protected certificate
 gorush -ios -m "Hello iOS!" -i "cert.p12" -P "cert_password" -t "device_token"
 ```
 
-#### Huawei (HMS)
+#### Huawei (HMS) Command Line
 
 ```bash
-# Single notification
+# Huawei: Single notification
 gorush -huawei -title "Hello" -m "Hello Huawei!" -hk "APP_SECRET" -hid "APP_ID" -t "device_token"
 
-# Topic message
+# Huawei: Topic message
 gorush --huawei --topic "updates" -title "Update" -m "New version available" -hk "APP_SECRET" -hid "APP_ID"
 ```
 
@@ -510,7 +510,7 @@ Gorush provides RESTful APIs for sending notifications and monitoring system sta
 
 #### Basic Examples
 
-**iOS (APNS)**
+##### iOS (APNS) API
 
 ```json
 {
@@ -525,7 +525,7 @@ Gorush provides RESTful APIs for sending notifications and monitoring system sta
 }
 ```
 
-**Android (FCM)**
+##### Android (FCM) API
 
 ```json
 {
@@ -540,7 +540,7 @@ Gorush provides RESTful APIs for sending notifications and monitoring system sta
 }
 ```
 
-**Huawei (HMS)**
+##### Huawei (HMS) API
 
 ```json
 {
@@ -557,7 +557,7 @@ Gorush provides RESTful APIs for sending notifications and monitoring system sta
 
 #### Advanced Examples
 
-**iOS with Custom Sound**
+##### iOS with Custom Sound
 
 ```json
 {
@@ -583,7 +583,7 @@ Gorush provides RESTful APIs for sending notifications and monitoring system sta
 }
 ```
 
-**Multiple Platforms**
+##### Multiple Platforms
 
 ```json
 {
@@ -645,12 +645,12 @@ Gorush provides RESTful APIs for sending notifications and monitoring system sta
 }
 ```
 
-### Advanced Configuration
+### Request Parameters
 
 <details>
 <summary>Complete API request parameters</summary>
 
-### Request body
+#### Request body
 
 The Request body must have a notifications array. The following is a parameter table for each notification.
 
@@ -1091,9 +1091,9 @@ See the following error format.
 
 ## Deployment
 
-### Docker
+### Docker Deployment
 
-#### Quick Start
+#### Docker Quick Start
 
 ```bash
 # Run with default config
@@ -1276,24 +1276,28 @@ func main() {
 
 ### Common Issues
 
-**Q: How do I get FCM credentials?**
+#### Q: How do I get FCM credentials?
+
 A: Go to [Firebase Console](https://console.firebase.google.com/) → Project Settings → Service Accounts → Generate New Private Key. Download the JSON file.
 
-**Q: iOS notifications not working in production?**
+#### Q: iOS notifications not working in production?
+
 A: Make sure you:
 
 1. Use production APNS certificates (`production: true`)
 2. Set correct bundle ID in certificate
 3. Test with production app build
 
-**Q: Getting "certificate verify failed" error?**
+#### Q: Getting "certificate verify failed" error?
+
 A: This usually means:
 
 - Wrong certificate format (use `.pem` or `.p12`)
 - Certificate expired
 - Wrong environment (dev vs production)
 
-**Q: How to handle large notification volumes?**
+#### Q: How to handle large notification volumes?
+
 A: Configure workers and queue settings:
 
 ```yaml
@@ -1304,7 +1308,8 @@ queue:
   engine: "redis" # Use external queue
 ```
 
-**Q: Can I send to multiple platforms at once?**
+#### Q: Can I send to multiple platforms at once?
+
 A: Yes, include multiple notification objects in the request:
 
 ```json
@@ -1316,7 +1321,8 @@ A: Yes, include multiple notification objects in the request:
 }
 ```
 
-**Q: How to monitor notification failures?**
+#### Q: How to monitor notification failures?
+
 A: Enable sync mode or feedback webhook:
 
 ```yaml
@@ -1325,7 +1331,8 @@ core:
   feedback_hook_url: "https://your-api" # Async webhook
 ```
 
-**Q: What's the difference between platforms?**
+#### Q: What's the difference between platforms?
+
 A: Platform codes: `1` = iOS (APNS), `2` = Android (FCM), `3` = Huawei (HMS)
 
 ### Performance Tips
@@ -1349,6 +1356,6 @@ A: Platform codes: `1` = iOS (APNS), `2` = Android (FCM), `3` = Huawei (HMS)
 
 ## License
 
-Copyright 2019 Bo-Yi Wu [@appleboy](https://twitter.com/appleboy).
+Copyright 2026 Bo-Yi Wu [@appleboy](https://github.com/appleboy).
 
 Licensed under the MIT License.
