@@ -267,11 +267,17 @@ Retry:
 		newResp := res.Responses[0]
 		if newResp.Success {
 			logPush(cfg, core.SucceededPush, to, "", req, nil)
+			if notifID, _ := req.Data["notification_id"].(string); notifID != "" {
+				logx.LogAccess.Infof("Android push sent | notification_id: %s", notifID)
+			}
 		}
 
 		if newResp.Error != nil {
 			// failure
 			errLog := logPush(cfg, core.FailedPush, to, "", req, newResp.Error)
+			if notifID, _ := req.Data["notification_id"].(string); notifID != "" {
+				logx.LogAccess.Infof("Android push failed | notification_id: %s | error: %v", notifID, newResp.Error)
+			}
 			resp.Logs = append(resp.Logs, errLog)
 			retryTopic = true
 		}
@@ -289,11 +295,17 @@ Retry:
 				RemoveToken(token, userId, "android")
 			}
 			errLog := logPush(cfg, core.FailedPush, token, userId, req, result.Error)
+			if notifID, _ := req.Data["notification_id"].(string); notifID != "" {
+				logx.LogAccess.Infof("Android push failed | notification_id: %s | error: %v", notifID, result.Error)
+			}
 			resp.Logs = append(resp.Logs, errLog)
 			newTokens = append(newTokens, token)
 			continue
 		}
 		logPush(cfg, core.SucceededPush, token, userId, req, nil)
+		if notifID, _ := req.Data["notification_id"].(string); notifID != "" {
+			logx.LogAccess.Infof("Android push sent | notification_id: %s", notifID)
+		}
 	}
 
 	if len(newTokens) > 0 && retryCount < maxRetry {

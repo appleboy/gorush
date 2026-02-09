@@ -567,6 +567,9 @@ Retry:
 
 				// Log push failure
 				errLog := logPush(cfg, core.FailedPush, token, userId, req, err)
+				if notifID, _ := req.Data["notification_id"].(string); notifID != "" {
+					logx.LogAccess.Infof("iOS push failed | notification_id: %s | error: %v", notifID, err)
+				}
 				resp.Logs = append(resp.Logs, errLog)
 				status.StatStorage.AddIosError(1)
 			}
@@ -574,6 +577,14 @@ Retry:
 			if res != nil && res.Sent() {
 				atomic.AddInt32(&successCount, 1)
 				logPush(cfg, core.SucceededPush, token, userId, req, nil)
+				notifID, _ := req.Data["notification_id"].(string)
+				if notifID != "" {
+					logx.LogAccess.Infof("iOS push sent | notification_id: %s | apns_id_req: %s | apns_id_res: %s | sent_at: %s",
+						notifID, req.ApnsID, res.ApnsID, time.Now().UTC().Format(time.RFC3339))
+				} else {
+					logx.LogAccess.Infof("iOS push sent | apns_id_req: %s | apns_id_res: %s | sent_at: %s",
+						req.ApnsID, res.ApnsID, time.Now().UTC().Format(time.RFC3339))
+				}
 				status.StatStorage.AddIosSuccess(1)
 			}
 
