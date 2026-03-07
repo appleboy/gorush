@@ -4,162 +4,87 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Gorush is a push notification microserver written in Go that supports sending notifications to iOS (APNS), Android (FCM), and Huawei (HMS) devices. It provides both HTTP REST API and gRPC interfaces for sending push notifications.
+Gorush is a push notification microserver written in Go that supports sending notifications to iOS (APNS), Android (FCM), and Huawei (HMS) devices. It provides both HTTP REST API and gRPC interfaces.
 
 ## Architecture
 
-### Core Components
+### Request Flow
 
-- **main.go**: Entry point that handles CLI flags, configuration loading, and server initialization
-- **config/**: Configuration management with YAML support and environment variable overrides
-- **core/**: Core abstractions for queue, storage, and health check interfaces
-- **notify/**: Push notification implementations for different platforms (APNS, FCM, HMS)
-- **router/**: HTTP server setup using Gin framework with REST endpoints
-- **rpc/**: gRPC server implementation with protocol buffer definitions
-- **status/**: Application statistics and metrics collection
-- **storage/**: Multiple storage backends (memory, Redis, BoltDB, BuntDB, LevelDB, BadgerDB)
-- **logx/**: Logging utilities and interfaces
+1. **main.go** parses CLI flags, loads config, initializes platform clients (APNS/FCM/HMS), then starts HTTP (Gin) and gRPC servers via `graceful.Manager`
+2. **router/** receives push requests at `POST /api/push`, validates them, and enqueues `PushNotification` messages into the queue
+3. **app/worker.go** creates the queue worker (local/NSQ/NATS/Redis) with `notify.Run(cfg)` as the processing function
+4. **notify/** dispatches notifications to platform-specific push functions (`PushToIOS`, `PushToAndroid`, `PushToHuawei`)
+5. **status/** + **storage/** track success/failure counts across configurable backends
 
-### Key Features
+### Key Packages
 
-- Multi-platform support (iOS APNS, Android FCM, Huawei HMS)
-- Multiple queue engines (local channels, NSQ, NATS, Redis streams)
-- Configurable storage backends for statistics
-- Prometheus metrics support
-- gRPC and REST API interfaces
-- Docker and Kubernetes deployment support
-- AWS Lambda support
+- **app/**: Application orchestration — CLI send helpers (`sender.go`), config validation/merge (`config.go`), CLI options (`options.go`), queue worker creation (`worker.go`)
+- **config/**: YAML config with Viper, env var overrides. Reference config: `config/testdata/config.yml`
+- **core/**: Shared types and interfaces — `Platform` enum, queue engine constants (`core/queue.go`), storage interface (`core/storage.go`), health check interface (`core/health.go`)
+- **notify/**: Platform-specific push implementations. Each platform has its own file (`notification_apns.go`, `notification_fcm.go`, `notification_hms.go`). `global.go` holds shared client state
+- **router/**: Gin HTTP server with REST endpoints and Prometheus metrics
+- **rpc/**: gRPC server. Proto definitions in `rpc/proto/`
+- **storage/**: Storage backends (memory, Redis, BoltDB, BuntDB, LevelDB, BadgerDB) all implement `core.Storage`
+- **logx/**: Logging utilities wrapping zerolog/logrus
 
 ## Development Commands
 
-### Building
+### Build and Run
 
 ```bash
-# Build for current platform
-make build
-
-# Build for specific platforms
-make build_linux_amd64
-make build_darwin_arm64
-make build_linux_lambda
-
-# Install locally
-make install
+make build                  # Build binary to release/gorush
+make install                # Install to $GOPATH/bin
+make dev                    # Hot reload with air
 ```
 
 ### Testing
 
 ```bash
-# Run tests (requires FCM_CREDENTIAL and FCM_TEST_TOKEN environment variables)
+# Full test suite (requires FCM credentials)
+export FCM_CREDENTIAL="/path/to/firebase-credentials.json"
+export FCM_TEST_TOKEN="your_test_device_token"
 make test
 
-# Check required environment variables first
-make init
+# Run a single test
+go test -v -tags sqlite -run TestFunctionName ./package/...
+
+# Run tests for a specific package
+go test -v -tags sqlite ./notify/...
+go test -v -tags sqlite ./config/...
 ```
 
-### Development Tools
+The `-tags sqlite` flag is required for all test commands (it's the default build tag).
+
+### Linting and Formatting
 
 ```bash
-# Run with hot reload
-make dev
-
-# Clean build artifacts
-make clean
-
-# Check available commands
-make help
+make lint                   # Run golangci-lint (auto-installs if missing)
+make fmt                    # Format code with golangci-lint fmt
 ```
 
-### Linting and Code Quality
-
-```bash
-# The project uses golangci-lint with configuration in .golangci.yml
-# Run linting (if golangci-lint is installed):
-golangci-lint run
-
-# Supported linters include: bodyclose, errcheck, gosec, govet, staticcheck, etc.
-# Formatters: gofmt, gofumpt, goimports
-```
+Linter config is in `.golangci.yml` (v2 format). Uses golangci-lint v2.
 
 ### Protocol Buffers
 
 ```bash
-# Install protoc dependencies
-make proto_install
-
-# Generate Go protobuf files
-make generate_proto_go
-
-# Generate JavaScript protobuf files
-make generate_proto_js
-
-# Generate all protobuf files
-make generate_proto
-```
-
-## Configuration
-
-The application uses YAML configuration files. See `config/testdata/config.yml` for the complete configuration example.
-
-Key configuration sections:
-
-- **core**: Server settings, workers, queue configuration
-- **grpc**: gRPC server settings
-- **android**: Firebase Cloud Messaging settings
-- **ios**: Apple Push Notification settings
-- **huawei**: Huawei Mobile Services settings
-- **queue**: Queue engine configuration (local/nsq/nats/redis)
-- **stat**: Statistics storage backend configuration
-- **log**: Logging configuration
-
-## Running the Server
-
-### Basic Usage
-
-```bash
-# Use default config
-./gorush
-
-# Use custom config file
-./gorush -c config.yml
-
-# CLI notification examples
-./gorush -android -m "Hello World" --fcm-key /path/to/key.json -t "device_token"
-./gorush -ios -m "Hello World" -i /path/to/cert.pem -t "device_token"
-```
-
-### Docker
-
-```bash
-docker run --name gorush -p 80:8088 appleboy/gorush
-```
-
-## API Endpoints
-
-### REST API
-
-- `GET /api/stat/go` - Go runtime statistics
-- `GET /api/stat/app` - Application push statistics
-- `GET /api/config` - Current configuration
-- `POST /api/push` - Send push notifications
-- `GET /metrics` - Prometheus metrics
-- `GET /healthz` - Health check
-
-### gRPC
-
-Enable gRPC server in config and use port 9000 by default. Protocol definitions are in `rpc/proto/`.
-
-## Testing Requirements
-
-Tests require FCM credentials and test tokens:
-
-```bash
-export FCM_CREDENTIAL="/path/to/firebase-credentials.json"
-export FCM_TEST_TOKEN="your_test_device_token"
+make generate_proto         # Generate both Go and JS proto files
 ```
 
 ## Build Tags
 
-- Default: `sqlite` tag enabled
-- `lambda` tag: For AWS Lambda builds
-- Custom tags can be set with `TAGS` environment variable
+- `sqlite` — default tag, required for standard builds and tests
+- `lambda` — for AWS Lambda builds (replaces sqlite)
+- Set custom tags via `TAGS` environment variable
+
+## Configuration
+
+Config uses Viper with YAML files. Key sections: `core`, `grpc`, `android`, `ios`, `huawei`, `queue`, `stat`, `log`, `api`. See `config/testdata/config.yml` for all options. Environment variables can override any config value.
+
+## API Endpoints
+
+- `POST /api/push` — send push notifications
+- `GET /api/stat/go` — Go runtime stats
+- `GET /api/stat/app` — push statistics
+- `GET /api/config` — current config
+- `GET /metrics` — Prometheus metrics
+- `GET /healthz` — health check
