@@ -39,3 +39,4 @@ node_modules
 config.yml
 dist/
 .idea
+.claude
