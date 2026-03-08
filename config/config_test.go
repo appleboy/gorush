@@ -655,19 +655,19 @@ func TestValidateConfig(t *testing.T) {
 
 // Benchmark tests for security validation functions
 func BenchmarkValidatePort(b *testing.B) {
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		_ = ValidatePort("8080")
 	}
 }
 
 func BenchmarkValidateAddress(b *testing.B) {
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		_ = ValidateAddress("127.0.0.1")
 	}
 }
 
 func BenchmarkValidatePIDPath(b *testing.B) {
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		_ = ValidatePIDPath("/tmp/gorush.pid")
 	}
 }
