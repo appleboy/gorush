@@ -1,7 +1,7 @@
 var messages = require('./gorush_pb');
 var services = require('./gorush_grpc_pb');
 
-var grpc = require('grpc');
+var grpc = require('@grpc/grpc-js');
 
 function main() {
   var client = new services.GorushClient('localhost:9000',
