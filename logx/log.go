@@ -33,7 +33,7 @@ type LogPushEntry struct {
 
 var isTerm bool
 
-//nolint:gochecknoinits
+//nolint:gochecknoinits // init is used to detect terminal for log formatting
 func init() {
 	isTerm = isatty.IsTerminal(os.Stdout.Fd())
 }

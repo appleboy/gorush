@@ -188,13 +188,13 @@ func newApnsClient(cfg *config.ConfYaml, certificate tls.Certificate) (*apns2.Cl
 		return client, nil
 	}
 
-	//nolint:gosec
+	//nolint:gosec // TLS min version is managed by the APNS library and proxy transport
 	tlsConfig := &tls.Config{
 		Certificates: []tls.Certificate{certificate},
 	}
 
 	if len(certificate.Certificate) > 0 {
-		//nolint:staticcheck
+		//nolint:staticcheck // deprecated but required for APNS proxy certificate mapping
 		tlsConfig.BuildNameToCertificate()
 	}
 
@@ -362,7 +362,7 @@ func setNotificationPriority(notification *apns2.Notification, priority string) 
 // setPayloadSound sets the sound on the payload based on the request.
 func setPayloadSound(p *payload.Payload, req *PushNotification) {
 	switch req.Sound.(type) {
-	case map[string]interface{}:
+	case map[string]any:
 		result := &Sound{}
 		_ = mapstructure.Decode(req.Sound, &result)
 		p.Sound(result)
@@ -456,7 +456,7 @@ func getApnsClient(cfg *config.ConfYaml, req *PushNotification) (client *apns2.C
 			client = ApnsClient.Development()
 		}
 	}
-	return
+	return client
 }
 
 // PushToIOS provide send notification to APNs server.

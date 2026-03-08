@@ -43,7 +43,7 @@ func (c *healthClient) Check(ctx context.Context) (bool, error) {
 		}
 		return false, nil
 	}
-	//nolint:exhaustive
+	//nolint:exhaustive // only specific gRPC error codes are handled as non-fatal; all others return the error
 	switch status.Code(err) {
 	case
 		codes.Aborted,

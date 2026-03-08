@@ -86,7 +86,7 @@ func TestMergeConfig_InvalidPort(t *testing.T) {
 	opts.Conf.Core.Port = "invalid"
 
 	err := MergeConfig(cfg, opts)
-	assert.Error(t, err)
+	require.Error(t, err)
 	assert.Contains(t, err.Error(), "invalid port")
 }
 

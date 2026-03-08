@@ -4,7 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"errors"
-	"fmt"
+	"log"
 	"math"
 	"net"
 	"runtime/debug"
@@ -158,8 +158,8 @@ func RunGRPCServer(ctx context.Context, cfg *config.ConfYaml) error {
 	}
 
 	recoveryOpt := grpc_recovery.WithRecoveryHandlerContext(
-		func(ctx context.Context, p interface{}) error {
-			fmt.Printf("[PANIC] %s\n%s", p, string(debug.Stack()))
+		func(ctx context.Context, p any) error {
+			log.Printf("[PANIC] %s\n%s", p, string(debug.Stack()))
 			return status.Error(codes.Internal, "system has been broken")
 		},
 	)

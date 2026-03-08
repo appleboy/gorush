@@ -7,6 +7,7 @@ import (
 	"github.com/appleboy/gorush/core"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestMemoryEngine(t *testing.T) {
@@ -14,7 +15,7 @@ func TestMemoryEngine(t *testing.T) {
 
 	memory := New()
 	err := memory.Init()
-	assert.Nil(t, err)
+	require.NoError(t, err)
 
 	// reset the value of the key to 0
 	memory.Set(core.HuaweiSuccessKey, 0)
@@ -34,12 +35,10 @@ func TestMemoryEngine(t *testing.T) {
 
 	// test concurrency issues
 	var wg sync.WaitGroup
-	for i := 0; i < 10; i++ {
-		wg.Add(1)
-		go func() {
+	for range 10 {
+		wg.Go(func() {
 			memory.Add(core.HuaweiSuccessKey, 1)
-			wg.Done()
-		}()
+		})
 	}
 	wg.Wait()
 	val = memory.Get(core.HuaweiSuccessKey)

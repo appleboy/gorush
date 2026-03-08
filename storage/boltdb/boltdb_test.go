@@ -7,6 +7,7 @@ import (
 	"github.com/appleboy/gorush/core"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestBoltDBEngine(t *testing.T) {
@@ -14,7 +15,7 @@ func TestBoltDBEngine(t *testing.T) {
 
 	boltDB := New("", "gorush")
 	err := boltDB.Init()
-	assert.Nil(t, err)
+	require.NoError(t, err)
 
 	// reset the value of the key to 0
 	boltDB.Set(core.HuaweiSuccessKey, 0)
@@ -34,12 +35,10 @@ func TestBoltDBEngine(t *testing.T) {
 
 	// test concurrency issues
 	var wg sync.WaitGroup
-	for i := 0; i < 10; i++ {
-		wg.Add(1)
-		go func() {
+	for range 10 {
+		wg.Go(func() {
 			boltDB.Add(core.HuaweiSuccessKey, 1)
-			wg.Done()
-		}()
+		})
 	}
 	wg.Wait()
 	val = boltDB.Get(core.HuaweiSuccessKey)

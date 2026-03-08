@@ -23,6 +23,7 @@ import (
 	"github.com/golang-queue/queue"
 	qcore "github.com/golang-queue/queue/core"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var (
@@ -69,7 +70,7 @@ func initTest() *config.ConfYaml {
 // testRequest is testing url string if server is running
 func testRequest(t *testing.T, url string) {
 	tr := &http.Transport{
-		//nolint:gosec
+		//nolint:gosec // InsecureSkipVerify is needed for testing with self-signed certificates
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
 	client := &http.Client{
@@ -89,10 +90,10 @@ func testRequest(t *testing.T, url string) {
 		}
 	}()
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	_, ioerr := io.ReadAll(resp.Body)
-	assert.NoError(t, ioerr)
+	require.NoError(t, ioerr)
 	assert.Equal(t, "200 OK", resp.Status, "should get a 200")
 }
 
@@ -151,9 +152,9 @@ func TestRunTLSServer(t *testing.T) {
 }
 
 func TestRunTLSBase64Server(t *testing.T) {
-	//nolint
+	//nolint:lll // base64-encoded test certificate must remain on a single line
 	cert := `LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUMrekNDQWVPZ0F3SUJBZ0lKQUxiWkVEdlVRckZLTUEwR0NTcUdTSWIzRFFFQkJRVUFNQlF4RWpBUUJnTlYKQkFNTUNXeHZZMkZzYUc5emREQWVGdzB4TmpBek1qZ3dNek13TkRGYUZ3MHlOakF6TWpZd016TXdOREZhTUJReApFakFRQmdOVkJBTU1DV3h2WTJGc2FHOXpkRENDQVNJd0RRWUpLb1pJaHZjTkFRRUJCUUFEZ2dFUEFEQ0NBUW9DCmdnRUJBTWoxK3hnNGpWTHpWbkI1ajduMXVsMzBXRUU0QkN6Y05GeGc1QU9CNUg1cSt3amUwWVlpVkZnNlBReXYKR0NpcHFJUlhWUmRWUTFoSFNldW5ZR0tlOGxxM1NiMVg4UFVKMTJ2OXVSYnBTOURLMU93cWs4cnNQRHU2c1ZUTApxS0tnSDFaOHlhenphUzBBYlh1QTVlOWdPL1J6aWpibnBFUCtxdU00ZHVlaU1QVkVKeUxxK0VvSVFZK01NOE1QCjhkWnpMNFhabDd3TDRVc0NON3JQY082VzN0bG5UMGlPM2g5Yy9ZbTJoRmh6K0tOSjlLUlJDdnRQR1pFU2lndEsKYkhzWEgwOTlXRG84di9XcDUvZXZCdy8rSkQwb3B4bUNmSElCQUxIdDl2NTNSdnZzRFoxdDMzUnB1NUM4em5FWQpZMkF5N05neGhxanFvV0pxQTQ4bEplQTBjbHNDQXdFQUFhTlFNRTR3SFFZRFZSME9CQllFRkMwYlRVMVhvZmVoCk5LSWVsYXNoSXNxS2lkRFlNQjhHQTFVZEl3UVlNQmFBRkMwYlRVMVhvZmVoTktJZWxhc2hJc3FLaWREWU1Bd0cKQTFVZEV3UUZNQU1CQWY4d0RRWUpLb1pJaHZjTkFRRUZCUUFEZ2dFQkFBaUpMOElNVHdOWDlYcVFXWURGZ2tHNApBbnJWd1FocmVBcUM5clN4RENqcXFuTUhQSEd6Y0NlRE1MQU1vaDBrT3kyMG5vd1VHTnRDWjB1QnZuWDJxMWJOCmcxanQrR0JjTEpEUjNMTDRDcE5PbG0zWWhPeWN1TmZXTXhUQTdCWGttblNyWkQvN0toQXJzQkVZOGF1bHh3S0oKSFJnTmxJd2Uxb0ZEMVlkWDFCUzVwcDR0MjVCNlZxNEEzRk1NVWtWb1dFNjg4bkUxNjhodlFnd2pySGtnSGh3ZQplTjhsR0UyRGhGcmFYbldtRE1kd2FIRDNIUkZHaHlwcElGTitmN0JxYldYOWdNK1QyWVJUZk9iSVhMV2JxSkxECjNNay9Oa3hxVmNnNGVZNTR3SjF1ZkNVR0FZQUlhWTZmUXFpTlV6OG5od0szdDQ1TkJWVDl5L3VKWHFuVEx5WT0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=`
-	//nolint
+	//nolint:lll // base64-encoded test private key must remain on a single line
 	key := `LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFb2dJQkFBS0NBUUVBeVBYN0dEaU5Vdk5XY0htUHVmVzZYZlJZUVRnRUxOdzBYR0RrQTRIa2ZtcjdDTjdSCmhpSlVXRG85REs4WUtLbW9oRmRWRjFWRFdFZEo2NmRnWXA3eVdyZEp2VmZ3OVFuWGEvMjVGdWxMME1yVTdDcVQKeXV3OE83cXhWTXVvb3FBZlZuekpyUE5wTFFCdGU0RGw3MkE3OUhPS051ZWtRLzZxNHpoMjU2SXc5VVFuSXVyNApTZ2hCajR3end3L3gxbk12aGRtWHZBdmhTd0kzdXM5dzdwYmUyV2RQU0k3ZUgxejlpYmFFV0hQNG8wbjBwRkVLCiswOFprUktLQzBwc2V4Y2ZUMzFZT2p5Lzlhbm45NjhIRC80a1BTaW5HWUo4Y2dFQXNlMzIvbmRHKyt3Tm5XM2YKZEdtN2tMek9jUmhqWURMczJER0dxT3FoWW1vRGp5VWw0RFJ5V3dJREFRQUJBb0lCQUdUS3FzTjlLYlNmQTQycQpDcUkwVXVMb3VKTU5hMXFzbno1dUFpNllLV2dXZEE0QTQ0bXBFakNtRlJTVmhVSnZ4V3VLK2N5WUlRelh4SVdECkQxNm5aZHFGNzJBZUNXWjlKeVNzdnZaMDBHZktNM3kzNWlSeTA4c0pXZ096bWNMbkdKQ2lTZXlLc1FlM0hUSkMKZGhEWGJYcXZzSFRWUFpnMDFMVGVEeFVpVGZmVThOTUtxUjJBZWNRMnNURHdYRWhBblR5QXRuemwvWGFCZ0Z6dQpVNkc3RnpHTTV5OWJ4a2ZRVmt2eStERUprSEdOT2p6d2NWZkJ5eVZsNjEwaXhtRzF2bXhWajlQYldtSVBzVVY4CnlTbWpodkRRYk9mb3hXMGg5dlRsVHFHdFFjQnc5NjJvc25ERE1XRkNkTTdsek8wVDdSUm5QVkdJUnBDSk9LaHEKa2VxSEt3RUNnWUVBOHd3SS9pWnVnaG9UWFRORzlMblFRL1dBdHNxTzgwRWpNVFVoZW81STFrT3ptVXowOXB5aAppQXNVRG9OMC8yNnRaNVdOamxueVp1N2R2VGMveDNkVFpwbU5ub284Z2NWYlFORUNEUnpxZnVROVBQWG0xU041CjZwZUJxQXZCdjc4aGpWMDVhWHpQRy9WQmJlaWc3bDI5OUVhckVBK2Evb0gzS3JnRG9xVnFFMEVDZ1lFQTA2dkEKWUptZ2c0ZlpSdWNBWW9hWXNMejlaOXJDRmpUZTFQQlRtVUprYk9SOHZGSUhIVFRFV2kvU3V4WEwwd0RTZW9FMgo3QlFtODZnQ0M3L0tnUmRyem9CcVo1cVM5TXYyZHNMZ1k2MzVWU2dqamZaa1ZMaUgxVlJScFNRT2JZbmZveXNnCmdhdGNIU0tNRXhkNFNMUUJ5QXVJbVhQK0w1YXlEQmNFSmZicVNwc0NnWUI3OElzMWIwdXpOTERqT2g3WTlWaHIKRDJxUHpFT1JjSW9Oc2RaY3RPb1h1WGFBbW1uZ3lJYm01UjlaTjFnV1djNDdvRndMVjNyeFdxWGdzNmZtZzhjWAo3djMwOXZGY0M5UTQvVnhhYTRCNUxOSzluM2dUQUlCUFRPdGxVbmwrMm15MXRmQnRCcVJtMFc2SUtiVEhXUzVnCnZ4akVtL0NpRUl5R1VFZ3FUTWdIQVFLQmdCS3VYZFFvdXRuZzYzUXVmd0l6RHRiS1Z6TUxRNFhpTktobWJYcGgKT2F2Q25wK2dQYkIrTDdZbDhsdEFtVFNPSmdWWjBoY1QwRHhBMzYxWngrMk11NThHQmw0T2JsbmNobXdFMXZqMQpLY1F5UHJFUXhkb1VUeWlzd0dmcXZyczhKOWltdmIrejkvVTZUMUtBQjhXaTNXVmlYelByNE1zaWFhUlhnNjQyCkZJZHhBb0dBWjcvNzM1ZGtoSmN5T2ZzK0xLc0xyNjhKU3N0b29yWE9ZdmRNdTErSkdhOWlMdWhuSEVjTVZXQzgKSXVpaHpQZmxvWnRNYkdZa1pKbjhsM0JlR2Q4aG1mRnRnVGdaR1BvVlJldGZ0MkxERkxuUHhwMnNFSDVPRkxzUQpSK0sva0FPdWw4ZVN0V3VNWE9GQTlwTXpHa0dFZ0lGSk1KT3lhSk9OM2tlZFFJOGRlQ009Ci0tLS0tRU5EIFJTQSBQUklWQVRFIEtFWS0tLS0tCg==`
 	cfg := initTest()
 
@@ -219,7 +220,7 @@ func TestMissingTLSCertcfgg(t *testing.T) {
 	cfg.Core.KeyBase64 = ""
 
 	err := RunHTTPServer(context.Background(), cfg, q)
-	assert.Error(t, RunHTTPServer(context.Background(), cfg, q))
+	require.Error(t, RunHTTPServer(context.Background(), cfg, q))
 	assert.Equal(t, "missing https cert config", err.Error())
 }
 
@@ -465,7 +466,7 @@ func TestDisabledHTTPServer(t *testing.T) {
 	err := RunHTTPServer(context.Background(), cfg, q)
 	cfg.Core.Enabled = true
 
-	assert.Nil(t, err)
+	require.NoError(t, err)
 }
 
 func TestSenMultipleNotifications(t *testing.T) {
@@ -475,7 +476,7 @@ func TestSenMultipleNotifications(t *testing.T) {
 	cfg.Ios.Enabled = true
 	cfg.Ios.KeyPath = testKeyPath
 	err := notify.InitAPNSClient(ctx, cfg)
-	assert.Nil(t, err)
+	require.NoError(t, err)
 
 	cfg.Android.Enabled = true
 	cfg.Android.Credential = os.Getenv("FCM_CREDENTIAL")
@@ -503,7 +504,7 @@ func TestSenMultipleNotifications(t *testing.T) {
 
 	count, logs := handleNotification(ctx, cfg, req, q)
 	assert.Equal(t, 3, count)
-	assert.Equal(t, 0, len(logs))
+	assert.Empty(t, logs)
 }
 
 func TestDisabledAndroidNotifications(t *testing.T) {
@@ -513,7 +514,7 @@ func TestDisabledAndroidNotifications(t *testing.T) {
 	cfg.Ios.Enabled = true
 	cfg.Ios.KeyPath = testKeyPath
 	err := notify.InitAPNSClient(ctx, cfg)
-	assert.Nil(t, err)
+	require.NoError(t, err)
 
 	cfg.Android.Enabled = false
 	cfg.Android.Credential = os.Getenv("FCM_CREDENTIAL")
@@ -541,7 +542,7 @@ func TestDisabledAndroidNotifications(t *testing.T) {
 
 	count, logs := handleNotification(ctx, cfg, req, q)
 	assert.Equal(t, 1, count)
-	assert.Equal(t, 0, len(logs))
+	assert.Empty(t, logs)
 }
 
 func TestSyncModeForNotifications(t *testing.T) {
@@ -551,7 +552,7 @@ func TestSyncModeForNotifications(t *testing.T) {
 	cfg.Ios.Enabled = true
 	cfg.Ios.KeyPath = testKeyPath
 	err := notify.InitAPNSClient(ctx, cfg)
-	assert.Nil(t, err)
+	require.NoError(t, err)
 
 	cfg.Android.Enabled = true
 	cfg.Android.Credential = os.Getenv("FCM_CREDENTIAL")
@@ -582,7 +583,7 @@ func TestSyncModeForNotifications(t *testing.T) {
 
 	count, logs := handleNotification(ctx, cfg, req, q)
 	assert.Equal(t, 3, count)
-	assert.Equal(t, 3, len(logs))
+	assert.Len(t, logs, 3)
 }
 
 func TestSyncModeForTopicNotification(t *testing.T) {
@@ -625,7 +626,7 @@ func TestSyncModeForTopicNotification(t *testing.T) {
 
 	count, logs := handleNotification(ctx, cfg, req, q)
 	assert.Equal(t, 2, count)
-	assert.Equal(t, 0, len(logs))
+	assert.Empty(t, logs)
 }
 
 func TestSyncModeForDeviceGroupNotification(t *testing.T) {
@@ -653,7 +654,7 @@ func TestSyncModeForDeviceGroupNotification(t *testing.T) {
 	// success
 	count, logs := handleNotification(ctx, cfg, req, q)
 	assert.Equal(t, 1, count)
-	assert.Equal(t, 0, len(logs))
+	assert.Empty(t, logs)
 }
 
 func TestDisabledIosNotifications(t *testing.T) {
@@ -663,7 +664,7 @@ func TestDisabledIosNotifications(t *testing.T) {
 	cfg.Ios.Enabled = false
 	cfg.Ios.KeyPath = testKeyPath
 	err := notify.InitAPNSClient(ctx, cfg)
-	assert.Nil(t, err)
+	require.NoError(t, err)
 
 	cfg.Android.Enabled = true
 	cfg.Android.Credential = os.Getenv("FCM_CREDENTIAL")
@@ -691,7 +692,7 @@ func TestDisabledIosNotifications(t *testing.T) {
 
 	count, logs := handleNotification(ctx, cfg, req, q)
 	assert.Equal(t, 2, count)
-	assert.Equal(t, 0, len(logs))
+	assert.Empty(t, logs)
 }
 
 // Tests for refactored helper functions
@@ -796,7 +797,7 @@ func TestFilterEnabledNotificationsAllDisabled(t *testing.T) {
 
 	result := filterEnabledNotifications(cfg, notifications)
 
-	assert.Len(t, result, 0)
+	assert.Empty(t, result)
 }
 
 func TestCountNotificationTargets(t *testing.T) {

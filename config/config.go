@@ -3,6 +3,7 @@ package config
 import (
 	"bytes"
 	"fmt"
+	"log"
 	"net"
 	"os"
 	"path/filepath"
@@ -408,7 +409,7 @@ func LoadConf(confPath ...string) (*ConfYaml, error) {
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
+		log.Println("Using config file:", viper.ConfigFileUsed())
 		return loadConfigFromViper()
 	}
 

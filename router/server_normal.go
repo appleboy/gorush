@@ -32,7 +32,7 @@ func RunHTTPServer(
 	}
 
 	if len(s) == 0 {
-		//nolint:gosec
+		//nolint:gosec // server timeouts are handled by the reverse proxy in production
 		server = &http.Server{
 			Addr:    cfg.Core.Address + ":" + cfg.Core.Port,
 			Handler: routerEngine(cfg, q),
@@ -54,7 +54,7 @@ func RunHTTPServer(
 		}
 
 		config.Certificates = make([]tls.Certificate, 1)
-		//nolint:gocritic
+		//nolint:gocritic // ifElseChain is intentional for clarity of TLS cert loading options
 		if cfg.Core.CertPath != "" && cfg.Core.KeyPath != "" {
 			config.Certificates[0], err = tls.LoadX509KeyPair(cfg.Core.CertPath, cfg.Core.KeyPath)
 			if err != nil {

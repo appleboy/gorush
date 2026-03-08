@@ -23,7 +23,7 @@ func TestNewQueueWorker_UnsupportedEngine(t *testing.T) {
 	cfg.Queue.Engine = "unsupported"
 
 	w, err := NewQueueWorker(cfg)
-	assert.Error(t, err)
+	require.Error(t, err)
 	assert.Nil(t, w)
 	assert.Contains(t, err.Error(), "unsupported queue engine")
 }

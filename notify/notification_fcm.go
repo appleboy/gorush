@@ -142,7 +142,7 @@ func setupFCMSound(req *PushNotification) {
 }
 
 // convertDataToStringMap converts the request data to a string map.
-func convertDataToStringMap(data map[string]interface{}) map[string]string {
+func convertDataToStringMap(data map[string]any) map[string]string {
 	if len(data) == 0 {
 		return nil
 	}

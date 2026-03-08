@@ -20,7 +20,7 @@ import (
 var json = jsoniter.ConfigCompatibleWithStandardLibrary
 
 // D provide string array
-type D map[string]interface{}
+type D map[string]any
 
 const (
 	// ApnsPriorityLow will tell APNs to send the push message at a time that takes
@@ -65,20 +65,20 @@ type ResponsePush struct {
 // PushNotification is single notification request
 type PushNotification struct {
 	// Common
-	ID               string      `json:"notif_id,omitempty"`
-	To               string      `json:"to,omitempty"`
-	Topic            string      `json:"topic,omitempty"` // FCM and iOS only
-	Tokens           []string    `json:"tokens"                      binding:"required"`
-	Platform         int         `json:"platform"                    binding:"required"`
-	Message          string      `json:"message,omitempty"`
-	Title            string      `json:"title,omitempty"`
-	Image            string      `json:"image,omitempty"`
-	Priority         string      `json:"priority,omitempty"`
-	ContentAvailable bool        `json:"content_available,omitempty"`
-	MutableContent   bool        `json:"mutable_content,omitempty"`
-	Sound            interface{} `json:"sound,omitempty"`
-	Data             D           `json:"data,omitempty"`
-	Retry            int         `json:"retry,omitempty"`
+	ID               string   `json:"notif_id,omitempty"`
+	To               string   `json:"to,omitempty"`
+	Topic            string   `json:"topic,omitempty"` // FCM and iOS only
+	Tokens           []string `json:"tokens"                      binding:"required"`
+	Platform         int      `json:"platform"                    binding:"required"`
+	Message          string   `json:"message,omitempty"`
+	Title            string   `json:"title,omitempty"`
+	Image            string   `json:"image,omitempty"`
+	Priority         string   `json:"priority,omitempty"`
+	ContentAvailable bool     `json:"content_available,omitempty"`
+	MutableContent   bool     `json:"mutable_content,omitempty"`
+	Sound            any      `json:"sound,omitempty"`
+	Data             D        `json:"data,omitempty"`
+	Retry            int      `json:"retry,omitempty"`
 
 	// Android
 	Notification *messaging.Notification  `json:"notification,omitempty"`
@@ -107,7 +107,7 @@ type PushNotification struct {
 	Category    string   `json:"category,omitempty"`
 	ThreadID    string   `json:"thread-id,omitempty"`
 	URLArgs     []string `json:"url-args,omitempty"`
-	Alert       Alert    `json:"alert,omitempty"`
+	Alert       Alert    `json:"alert,omitzero"`
 	Production  bool     `json:"production,omitempty"`
 	Development bool     `json:"development,omitempty"`
 	SoundName   string   `json:"name,omitempty"`

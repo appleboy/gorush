@@ -1,7 +1,6 @@
 package leveldb
 
 import (
-	"fmt"
 	"os"
 	"strconv"
 	"sync"
@@ -14,7 +13,7 @@ import (
 var _ core.Storage = (*Storage)(nil)
 
 func (s *Storage) setLevelDB(key string, count int64) {
-	value := fmt.Sprintf("%d", count)
+	value := strconv.FormatInt(count, 10)
 	_ = s.db.Put([]byte(key), []byte(value), nil)
 }
 

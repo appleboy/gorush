@@ -2,6 +2,7 @@ package router
 
 import (
 	"fmt"
+	"os"
 	"runtime"
 	"time"
 
@@ -34,13 +35,15 @@ func PrintGoRushVersion() {
 		commit = commit[:7]
 	}
 
-	fmt.Printf(`GoRush %s, Commit: %s, Compiler: %s %s, Copyright (C) %d Bo-Yi Wu, Inc.`,
+	fmt.Fprintf(
+		os.Stdout,
+		"GoRush %s, Commit: %s, Compiler: %s %s, Copyright (C) %d Bo-Yi Wu, Inc.\n",
 		version,
 		commit,
 		runtime.Compiler,
 		runtime.Version(),
-		time.Now().Year())
-	fmt.Println()
+		time.Now().Year(),
+	)
 }
 
 // VersionMiddleware : add version on header.

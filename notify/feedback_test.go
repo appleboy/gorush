@@ -10,7 +10,7 @@ import (
 	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/logx"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestEmptyFeedbackURL(t *testing.T) {
@@ -31,7 +31,7 @@ func TestEmptyFeedbackURL(t *testing.T) {
 		cfg.Core.FeedbackTimeout,
 		cfg.Core.FeedbackHeader,
 	)
-	assert.NotNil(t, err)
+	require.Error(t, err)
 }
 
 func TestHTTPErrorInFeedbackCall(t *testing.T) {
@@ -53,7 +53,7 @@ func TestHTTPErrorInFeedbackCall(t *testing.T) {
 		cfg.Core.FeedbackTimeout,
 		cfg.Core.FeedbackHeader,
 	)
-	assert.NotNil(t, err)
+	require.Error(t, err)
 }
 
 func TestSuccessfulFeedbackCall(t *testing.T) {
@@ -98,5 +98,5 @@ func TestSuccessfulFeedbackCall(t *testing.T) {
 		cfg.Core.FeedbackTimeout,
 		cfg.Core.FeedbackHeader,
 	)
-	assert.Nil(t, err)
+	require.NoError(t, err)
 }

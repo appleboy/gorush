@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"log"
@@ -190,7 +191,7 @@ Common Options:
 
 // usage will print out the flag options for the server.
 func usage() {
-	fmt.Printf("%s\n", usageStr)
+	os.Stdout.WriteString(usageStr + "\n")
 }
 
 // handleCLINotification handles sending notifications in CLI mode.
@@ -237,7 +238,7 @@ func pinger(ctx context.Context, cfg *config.ConfYaml) error {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("server returned non-200 status code")
+		return errors.New("server returned non-200 status code")
 	}
 	return nil
 }

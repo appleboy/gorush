@@ -11,6 +11,7 @@ import (
 	"github.com/appleboy/gorush/core"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestMissingAndroidCredential(t *testing.T) {
@@ -21,7 +22,7 @@ func TestMissingAndroidCredential(t *testing.T) {
 
 	err := CheckPushConf(cfg)
 
-	assert.Error(t, err)
+	require.Error(t, err)
 	assert.Equal(t, "missing fcm credential data", err.Error())
 }
 
@@ -32,7 +33,7 @@ func TestMissingKeyForInitFCMClient(t *testing.T) {
 	client, err := InitFCMClient(context.Background(), cfg)
 
 	assert.Nil(t, client)
-	assert.Error(t, err)
+	require.Error(t, err)
 	assert.Equal(t, "missing fcm credential data", err.Error())
 }
 
@@ -50,7 +51,7 @@ func TestPushToAndroidWrongToken(t *testing.T) {
 
 	// Android Success count: 0, Failure count: 2
 	resp, err := PushToAndroid(context.Background(), req, cfg)
-	assert.Nil(t, err)
+	require.NoError(t, err)
 	assert.Len(t, resp.Logs, 2)
 }
 
@@ -71,8 +72,8 @@ func TestPushToAndroidRightTokenForJSONLog(t *testing.T) {
 	}
 
 	resp, err := PushToAndroid(context.Background(), req, cfg)
-	assert.Nil(t, err)
-	assert.Len(t, resp.Logs, 0)
+	require.NoError(t, err)
+	assert.Empty(t, resp.Logs)
 }
 
 func TestPushToAndroidRightTokenForStringLog(t *testing.T) {
@@ -90,8 +91,8 @@ func TestPushToAndroidRightTokenForStringLog(t *testing.T) {
 	}
 
 	resp, err := PushToAndroid(context.Background(), req, cfg)
-	assert.Nil(t, err)
-	assert.Len(t, resp.Logs, 0)
+	require.NoError(t, err)
+	assert.Empty(t, resp.Logs)
 }
 
 func TestFCMMessage(t *testing.T) {
@@ -104,7 +105,7 @@ func TestFCMMessage(t *testing.T) {
 	}
 
 	err = CheckMessage(req)
-	assert.Error(t, err)
+	require.Error(t, err)
 
 	// ignore check token length if send topic message
 	req = &PushNotification{
@@ -114,7 +115,7 @@ func TestFCMMessage(t *testing.T) {
 	}
 
 	err = CheckMessage(req)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	// "condition": "'dogs' in topics || 'cats' in topics",
 	req = &PushNotification{
@@ -124,7 +125,7 @@ func TestFCMMessage(t *testing.T) {
 	}
 
 	err = CheckMessage(req)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	// the message may specify at most 1000 registration IDs
 	req = &PushNotification{
@@ -134,7 +135,7 @@ func TestFCMMessage(t *testing.T) {
 	}
 
 	err = CheckMessage(req)
-	assert.Error(t, err)
+	require.Error(t, err)
 
 	// Pass
 	req = &PushNotification{
@@ -144,7 +145,7 @@ func TestFCMMessage(t *testing.T) {
 	}
 
 	err = CheckMessage(req)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 }
 
 func TestAndroidNotificationStructure(t *testing.T) {
@@ -160,7 +161,7 @@ func TestAndroidNotificationStructure(t *testing.T) {
 		Data: D{
 			"a": "1",
 			"b": 2,
-			"json": map[string]interface{}{
+			"json": map[string]any{
 				"c": "3",
 				"d": 4,
 			},
@@ -177,7 +178,7 @@ func TestAndroidNotificationStructure(t *testing.T) {
 	assert.Equal(t, "Welcome", messages[0].Notification.Body)
 	assert.Equal(t, "1", messages[0].Data["a"])
 	assert.Equal(t, "2", messages[0].Data["b"])
-	assert.Equal(t, "{\"c\":\"3\",\"d\":4}", messages[0].Data["json"])
+	assert.JSONEq(t, `{"c":"3","d":4}`, messages[0].Data["json"])
 	assert.NotNil(t, messages[0].APNS)
 	assert.Equal(t, req.Sound, messages[0].APNS.Payload.Aps.Sound)
 	assert.Equal(t, req.MutableContent, messages[0].APNS.Payload.Aps.MutableContent)
@@ -192,14 +193,14 @@ func TestAndroidNotificationStructure(t *testing.T) {
 	}
 	messages = GetAndroidNotification(req)
 
-	assert.Equal(t, "", messages[0].Notification.Body)
+	assert.Empty(t, messages[0].Notification.Body)
 }
 
 func TestAndroidBackgroundNotificationStructure(t *testing.T) {
 	data := map[string]any{
 		"a": "1",
 		"b": 2,
-		"json": map[string]interface{}{
+		"json": map[string]any{
 			"c": "3",
 			"d": 4,
 		},
@@ -215,7 +216,7 @@ func TestAndroidBackgroundNotificationStructure(t *testing.T) {
 
 	assert.Equal(t, "1", messages[0].Data["a"])
 	assert.Equal(t, "2", messages[0].Data["b"])
-	assert.Equal(t, "{\"c\":\"3\",\"d\":4}", messages[0].Data["json"])
+	assert.JSONEq(t, `{"c":"3","d":4}`, messages[0].Data["json"])
 	assert.NotNil(t, messages[0].APNS)
 	assert.Equal(t, req.ContentAvailable, messages[0].APNS.Payload.Aps.ContentAvailable)
 	assert.True(t, reflect.DeepEqual(data, messages[0].APNS.Payload.Aps.CustomData))
@@ -385,7 +386,7 @@ func TestConvertDataToStringMap(t *testing.T) {
 		},
 		{
 			name: "nested object",
-			data: D{"nested": map[string]interface{}{"a": 1}},
+			data: D{"nested": map[string]any{"a": 1}},
 			want: map[string]string{"nested": `{"a":1}`},
 		},
 	}

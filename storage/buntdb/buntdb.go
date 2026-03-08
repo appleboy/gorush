@@ -1,7 +1,6 @@
 package buntdb
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -67,7 +66,7 @@ func (s *Storage) Close() error {
 
 func (s *Storage) setBuntDB(key string, count int64) {
 	err := s.db.Update(func(tx *buntdb.Tx) error {
-		if _, _, err := tx.Set(key, fmt.Sprintf("%d", count), nil); err != nil {
+		if _, _, err := tx.Set(key, strconv.FormatInt(count, 10), nil); err != nil {
 			return err
 		}
 		return nil

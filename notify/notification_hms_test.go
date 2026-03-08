@@ -7,6 +7,7 @@ import (
 
 	"github.com/appleboy/go-hms-push/push/model"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestMissingHuaweiAppSecret(t *testing.T) {
@@ -18,7 +19,7 @@ func TestMissingHuaweiAppSecret(t *testing.T) {
 
 	err := CheckPushConf(cfg)
 
-	assert.Error(t, err)
+	require.Error(t, err)
 	assert.Equal(t, "missing huawei app secret", err.Error())
 }
 
@@ -31,7 +32,7 @@ func TestMissingHuaweiAppID(t *testing.T) {
 
 	err := CheckPushConf(cfg)
 
-	assert.Error(t, err)
+	require.Error(t, err)
 	assert.Equal(t, "missing huawei app id", err.Error())
 }
 
@@ -40,7 +41,7 @@ func TestMissingAppSecretForInitHMSClient(t *testing.T) {
 	client, err := InitHMSClient(cfg, "", "APP_SECRET")
 
 	assert.Nil(t, client)
-	assert.Error(t, err)
+	require.Error(t, err)
 	assert.Equal(t, "missing huawei app secret", err.Error())
 }
 
@@ -49,7 +50,7 @@ func TestMissingAppIDForInitHMSClient(t *testing.T) {
 	client, err := InitHMSClient(cfg, "APP_ID", "")
 
 	assert.Nil(t, client)
-	assert.Error(t, err)
+	require.Error(t, err)
 	assert.Equal(t, "missing huawei app id", err.Error())
 }
 
@@ -100,7 +101,7 @@ func TestSetHuaweiMessageTarget(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			msgRequest, err := GetHuaweiNotification(tt.req)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			if len(tt.wantTokens) > 0 {
 				assert.Equal(t, tt.wantTokens, msgRequest.Message.Token)
@@ -128,7 +129,7 @@ func TestSetHuaweiAndroidConfig(t *testing.T) {
 	}
 
 	msgRequest, err := GetHuaweiNotification(req)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	android := msgRequest.Message.Android
 	assert.Equal(t, "HIGH", android.Urgency)
@@ -179,7 +180,7 @@ func TestSetHuaweiNotificationContent(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			msgRequest, err := GetHuaweiNotification(tt.req)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			notification := msgRequest.Message.Android.Notification
 			if tt.wantTitle != "" {
@@ -207,7 +208,7 @@ func TestHuaweiNotificationDefaultSound(t *testing.T) {
 	}
 
 	msgRequest, err := GetHuaweiNotification(req)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	notification := msgRequest.Message.Android.Notification
 	assert.True(t, notification.DefaultSound)
@@ -220,9 +221,9 @@ func TestHuaweiNotificationWithData(t *testing.T) {
 	}
 
 	msgRequest, err := GetHuaweiNotification(req)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
-	assert.Equal(t, `{"key":"value"}`, msgRequest.Message.Data)
+	assert.JSONEq(t, `{"key":"value"}`, msgRequest.Message.Data)
 }
 
 func TestHuaweiNotificationWithCustomNotification(t *testing.T) {
@@ -236,7 +237,7 @@ func TestHuaweiNotificationWithCustomNotification(t *testing.T) {
 	}
 
 	msgRequest, err := GetHuaweiNotification(req)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	notification := msgRequest.Message.Android.Notification
 	assert.Equal(t, "Custom Title", notification.Title)

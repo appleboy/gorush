@@ -7,6 +7,7 @@ import (
 	"github.com/appleboy/gorush/core"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestBadgerEngine(t *testing.T) {
@@ -14,7 +15,7 @@ func TestBadgerEngine(t *testing.T) {
 
 	badger := New("")
 	err := badger.Init()
-	assert.Nil(t, err)
+	require.NoError(t, err)
 
 	// reset the value of the key to 0
 	badger.Set(core.HuaweiSuccessKey, 0)
@@ -34,12 +35,10 @@ func TestBadgerEngine(t *testing.T) {
 
 	// test concurrency issues
 	var wg sync.WaitGroup
-	for i := 0; i < 100; i++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+	for range 100 {
+		wg.Go(func() {
 			badger.Add(core.HuaweiSuccessKey, 1)
-		}()
+		})
 	}
 	wg.Wait()
 	val = badger.Get(core.HuaweiSuccessKey)

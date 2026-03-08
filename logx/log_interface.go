@@ -20,26 +20,26 @@ type DefaultQueueLogger struct {
 	errorLogger  *logrus.Logger
 }
 
-func (l DefaultQueueLogger) Infof(format string, args ...interface{}) {
+func (l DefaultQueueLogger) Infof(format string, args ...any) {
 	l.accessLogger.Printf(format, args...)
 }
 
-func (l DefaultQueueLogger) Errorf(format string, args ...interface{}) {
+func (l DefaultQueueLogger) Errorf(format string, args ...any) {
 	l.errorLogger.Printf(format, args...)
 }
 
-func (l DefaultQueueLogger) Fatalf(format string, args ...interface{}) {
+func (l DefaultQueueLogger) Fatalf(format string, args ...any) {
 	l.errorLogger.Fatalf(format, args...)
 }
 
-func (l DefaultQueueLogger) Info(args ...interface{}) {
+func (l DefaultQueueLogger) Info(args ...any) {
 	l.accessLogger.Println(fmt.Sprint(args...))
 }
 
-func (l DefaultQueueLogger) Error(args ...interface{}) {
+func (l DefaultQueueLogger) Error(args ...any) {
 	l.errorLogger.Println(fmt.Sprint(args...))
 }
 
-func (l DefaultQueueLogger) Fatal(args ...interface{}) {
+func (l DefaultQueueLogger) Fatal(args ...any) {
 	l.errorLogger.Println(fmt.Sprint(args...))
 }
