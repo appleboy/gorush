@@ -123,7 +123,7 @@ curl -X POST \
 - Support send notification through [RPC](https://en.wikipedia.org/wiki/Remote_procedure_call) protocol, we use [gRPC](https://grpc.io/) as default framework.
 - Support running in Docker, [Kubernetes](https://kubernetes.io/) or [AWS Lambda](https://aws.amazon.com/lambda) ([Native Support in Golang](https://aws.amazon.com/blogs/compute/announcing-go-support-for-aws-lambda/))
 - Support graceful shutdown that workers and queue have been sent to APNs/FCM before shutdown service.
-- Support different Queue as backend like [NSQ](https://nsq.io/), [NATS](https://nats.io/) or [Redis streams](https://redis.io/docs/manual/data-types/streams/), defaut engine is local [Channel](https://tour.golang.org/concurrency/2).
+- Support different Queue as backend like [NSQ](https://nsq.io/), [NATS](https://nats.io/) or [Redis streams](https://redis.io/docs/manual/data-types/streams/), default engine is local [Channel](https://tour.golang.org/concurrency/2).
 
 **Performance**: Average memory usage ~28MB. Supports high-throughput notification delivery with configurable workers and queue systems.
 
@@ -334,7 +334,7 @@ go install github.com/appleboy/gorush@master
 
 ### Build from Source
 
-**Requirements**: [Go 1.24+](https://go.dev/dl/), [Git](http://git-scm.com/)
+**Requirements**: [Go 1.25+](https://go.dev/dl/), [Git](http://git-scm.com/)
 
 ```bash
 git clone https://github.com/appleboy/gorush.git
@@ -1040,7 +1040,7 @@ core:
   max_notification: 100
   sync: false
 - feedback_hook_url: ""
-+ feedback_hook_url: "https://exemple.com/api/hook"
++ feedback_hook_url: "https://example.com/api/hook"
 + feedback_header:
 +   - x-gorush-token:4e989115e09680f44a645519fed6a976
 ```
@@ -1248,10 +1248,11 @@ import (
     "log"
     "github.com/appleboy/gorush/rpc/proto"
     "google.golang.org/grpc"
+    "google.golang.org/grpc/credentials/insecure"
 )
 
 func main() {
-    conn, err := grpc.NewClient("localhost:9000", grpc.WithInsecure())
+    conn, err := grpc.NewClient("localhost:9000", grpc.WithTransportCredentials(insecure.NewCredentials()))
     if err != nil {
         log.Fatal(err)
     }
