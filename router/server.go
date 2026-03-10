@@ -112,7 +112,7 @@ func pushHandler(cfg *config.ConfYaml, q *queue.Queue) gin.HandlerFunc {
 
 func configHandler(cfg *config.ConfYaml) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.YAML(http.StatusCreated, cfg)
+		c.YAML(http.StatusOK, cfg.SanitizedCopy())
 	}
 }
 

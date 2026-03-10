@@ -281,11 +281,22 @@ func TestAPIStatusAppHandler(t *testing.T) {
 func TestAPIConfigHandler(t *testing.T) {
 	cfg := initTest()
 
+	// Set sensitive values to verify they are redacted
+	cfg.Android.Credential = "secret-fcm-credential"
+	cfg.Ios.Password = "secret-ios-password"
+	cfg.Stat.Redis.Password = "secret-redis-password"
+
 	r := gofight.New()
 
 	r.GET("/api/config").
 		Run(routerEngine(cfg, q), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
-			assert.Equal(t, http.StatusCreated, r.Code)
+			assert.Equal(t, http.StatusOK, r.Code)
+
+			body := r.Body.String()
+			assert.NotContains(t, body, "secret-fcm-credential")
+			assert.NotContains(t, body, "secret-ios-password")
+			assert.NotContains(t, body, "secret-redis-password")
+			assert.Contains(t, body, "[REDACTED]")
 		})
 }
 
