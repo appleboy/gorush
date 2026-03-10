@@ -624,3 +624,54 @@ func ValidateConfig(cfg *ConfYaml) error {
 
 	return nil
 }
+
+// SanitizedCopy returns a copy of the config with sensitive fields redacted.
+func (c *ConfYaml) SanitizedCopy() *ConfYaml {
+	sanitized := *c
+
+	// Core TLS & proxy
+	sanitized.Core.CertBase64 = redact(c.Core.CertBase64)
+	sanitized.Core.KeyBase64 = redact(c.Core.KeyBase64)
+	sanitized.Core.HTTPProxy = redact(c.Core.HTTPProxy)
+	sanitized.Core.CertPath = redact(c.Core.CertPath)
+	sanitized.Core.KeyPath = redact(c.Core.KeyPath)
+	if len(c.Core.FeedbackHeader) > 0 {
+		sanitized.Core.FeedbackHeader = make([]string, len(c.Core.FeedbackHeader))
+		for i, v := range c.Core.FeedbackHeader {
+			if v != "" {
+				sanitized.Core.FeedbackHeader[i] = "[REDACTED]"
+			}
+		}
+	}
+
+	// Android
+	sanitized.Android.KeyPath = redact(c.Android.KeyPath)
+	sanitized.Android.Credential = redact(c.Android.Credential)
+
+	// Huawei
+	sanitized.Huawei.AppSecret = redact(c.Huawei.AppSecret)
+
+	// iOS
+	sanitized.Ios.KeyPath = redact(c.Ios.KeyPath)
+	sanitized.Ios.KeyBase64 = redact(c.Ios.KeyBase64)
+	sanitized.Ios.Password = redact(c.Ios.Password)
+	sanitized.Ios.KeyID = redact(c.Ios.KeyID)
+	sanitized.Ios.TeamID = redact(c.Ios.TeamID)
+
+	// Queue Redis
+	sanitized.Queue.Redis.Username = redact(c.Queue.Redis.Username)
+	sanitized.Queue.Redis.Password = redact(c.Queue.Redis.Password)
+
+	// Stat Redis
+	sanitized.Stat.Redis.Username = redact(c.Stat.Redis.Username)
+	sanitized.Stat.Redis.Password = redact(c.Stat.Redis.Password)
+
+	return &sanitized
+}
+
+func redact(s string) string {
+	if s != "" {
+		return "[REDACTED]"
+	}
+	return ""
+}

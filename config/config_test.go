@@ -776,3 +776,91 @@ func TestAllAPIEndpointsHaveDefaults(t *testing.T) {
 	assert.Equal(t, "/metrics", conf.API.MetricURI)
 	assert.Equal(t, "/healthz", conf.API.HealthURI)
 }
+
+func TestSanitizedCopy(t *testing.T) {
+	cfg := &ConfYaml{}
+	cfg.Core.CertBase64 = "cert-data"
+	cfg.Core.KeyBase64 = "key-data"
+	cfg.Core.HTTPProxy = "http://proxy:8080"
+	cfg.Core.CertPath = "/path/to/cert.pem"
+	cfg.Core.KeyPath = "/path/to/key.pem"
+	cfg.Core.FeedbackHeader = []string{"x-api-key:secret123", "x-auth-key:secret456"}
+	cfg.Android.KeyPath = "/path/to/key.json"
+	cfg.Android.Credential = "fcm-credential"
+	cfg.Huawei.AppSecret = "hms-secret"
+	cfg.Ios.KeyPath = "/path/to/ios.p8"
+	cfg.Ios.KeyBase64 = "ios-key-data"
+	cfg.Ios.Password = "ios-password"
+	cfg.Ios.KeyID = "ABCDE12345"
+	cfg.Ios.TeamID = "TEAM123456"
+	cfg.Queue.Redis.Username = "queue-user"
+	cfg.Queue.Redis.Password = "queue-pass"
+	cfg.Stat.Redis.Username = "stat-user"
+	cfg.Stat.Redis.Password = "stat-pass"
+
+	// Set a non-sensitive field to verify it's preserved
+	cfg.Core.Port = "8088"
+
+	sanitized := cfg.SanitizedCopy()
+
+	// All sensitive fields should be redacted
+	assert.Equal(t, "[REDACTED]", sanitized.Core.CertBase64)
+	assert.Equal(t, "[REDACTED]", sanitized.Core.KeyBase64)
+	assert.Equal(t, "[REDACTED]", sanitized.Core.HTTPProxy)
+	assert.Equal(t, "[REDACTED]", sanitized.Core.CertPath)
+	assert.Equal(t, "[REDACTED]", sanitized.Core.KeyPath)
+	assert.Len(t, sanitized.Core.FeedbackHeader, 2)
+	assert.Equal(t, "[REDACTED]", sanitized.Core.FeedbackHeader[0])
+	assert.Equal(t, "[REDACTED]", sanitized.Core.FeedbackHeader[1])
+	assert.Equal(t, "[REDACTED]", sanitized.Android.KeyPath)
+	assert.Equal(t, "[REDACTED]", sanitized.Android.Credential)
+	assert.Equal(t, "[REDACTED]", sanitized.Huawei.AppSecret)
+	assert.Equal(t, "[REDACTED]", sanitized.Ios.KeyPath)
+	assert.Equal(t, "[REDACTED]", sanitized.Ios.KeyBase64)
+	assert.Equal(t, "[REDACTED]", sanitized.Ios.Password)
+	assert.Equal(t, "[REDACTED]", sanitized.Ios.KeyID)
+	assert.Equal(t, "[REDACTED]", sanitized.Ios.TeamID)
+	assert.Equal(t, "[REDACTED]", sanitized.Queue.Redis.Username)
+	assert.Equal(t, "[REDACTED]", sanitized.Queue.Redis.Password)
+	assert.Equal(t, "[REDACTED]", sanitized.Stat.Redis.Username)
+	assert.Equal(t, "[REDACTED]", sanitized.Stat.Redis.Password)
+
+	// Non-sensitive fields should be preserved
+	assert.Equal(t, "8088", sanitized.Core.Port)
+
+	// Original config must NOT be modified
+	assert.Equal(t, "/path/to/cert.pem", cfg.Core.CertPath)
+	assert.Equal(t, "/path/to/key.pem", cfg.Core.KeyPath)
+	assert.Equal(t, "x-api-key:secret123", cfg.Core.FeedbackHeader[0])
+	assert.Equal(t, "cert-data", cfg.Core.CertBase64)
+	assert.Equal(t, "fcm-credential", cfg.Android.Credential)
+	assert.Equal(t, "ios-password", cfg.Ios.Password)
+	assert.Equal(t, "stat-pass", cfg.Stat.Redis.Password)
+}
+
+func TestSanitizedCopyEmptyFields(t *testing.T) {
+	cfg := &ConfYaml{}
+	// All sensitive fields are empty by default
+
+	sanitized := cfg.SanitizedCopy()
+
+	// Empty fields should remain empty, not become "[REDACTED]"
+	assert.Empty(t, sanitized.Core.CertBase64)
+	assert.Empty(t, sanitized.Core.KeyBase64)
+	assert.Empty(t, sanitized.Core.HTTPProxy)
+	assert.Empty(t, sanitized.Core.CertPath)
+	assert.Empty(t, sanitized.Core.KeyPath)
+	assert.Nil(t, sanitized.Core.FeedbackHeader)
+	assert.Empty(t, sanitized.Android.KeyPath)
+	assert.Empty(t, sanitized.Android.Credential)
+	assert.Empty(t, sanitized.Huawei.AppSecret)
+	assert.Empty(t, sanitized.Ios.KeyPath)
+	assert.Empty(t, sanitized.Ios.KeyBase64)
+	assert.Empty(t, sanitized.Ios.Password)
+	assert.Empty(t, sanitized.Ios.KeyID)
+	assert.Empty(t, sanitized.Ios.TeamID)
+	assert.Empty(t, sanitized.Queue.Redis.Username)
+	assert.Empty(t, sanitized.Queue.Redis.Password)
+	assert.Empty(t, sanitized.Stat.Redis.Username)
+	assert.Empty(t, sanitized.Stat.Redis.Password)
+}
