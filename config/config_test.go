@@ -782,6 +782,9 @@ func TestSanitizedCopy(t *testing.T) {
 	cfg.Core.CertBase64 = "cert-data"
 	cfg.Core.KeyBase64 = "key-data"
 	cfg.Core.HTTPProxy = "http://proxy:8080"
+	cfg.Core.CertPath = "/path/to/cert.pem"
+	cfg.Core.KeyPath = "/path/to/key.pem"
+	cfg.Core.FeedbackHeader = []string{"x-api-key:secret123", "x-auth-key:secret456"}
 	cfg.Android.KeyPath = "/path/to/key.json"
 	cfg.Android.Credential = "fcm-credential"
 	cfg.Huawei.AppSecret = "hms-secret"
@@ -804,6 +807,11 @@ func TestSanitizedCopy(t *testing.T) {
 	assert.Equal(t, "[REDACTED]", sanitized.Core.CertBase64)
 	assert.Equal(t, "[REDACTED]", sanitized.Core.KeyBase64)
 	assert.Equal(t, "[REDACTED]", sanitized.Core.HTTPProxy)
+	assert.Equal(t, "[REDACTED]", sanitized.Core.CertPath)
+	assert.Equal(t, "[REDACTED]", sanitized.Core.KeyPath)
+	assert.Len(t, sanitized.Core.FeedbackHeader, 2)
+	assert.Equal(t, "[REDACTED]", sanitized.Core.FeedbackHeader[0])
+	assert.Equal(t, "[REDACTED]", sanitized.Core.FeedbackHeader[1])
 	assert.Equal(t, "[REDACTED]", sanitized.Android.KeyPath)
 	assert.Equal(t, "[REDACTED]", sanitized.Android.Credential)
 	assert.Equal(t, "[REDACTED]", sanitized.Huawei.AppSecret)
@@ -821,6 +829,9 @@ func TestSanitizedCopy(t *testing.T) {
 	assert.Equal(t, "8088", sanitized.Core.Port)
 
 	// Original config must NOT be modified
+	assert.Equal(t, "/path/to/cert.pem", cfg.Core.CertPath)
+	assert.Equal(t, "/path/to/key.pem", cfg.Core.KeyPath)
+	assert.Equal(t, "x-api-key:secret123", cfg.Core.FeedbackHeader[0])
 	assert.Equal(t, "cert-data", cfg.Core.CertBase64)
 	assert.Equal(t, "fcm-credential", cfg.Android.Credential)
 	assert.Equal(t, "ios-password", cfg.Ios.Password)
@@ -837,6 +848,9 @@ func TestSanitizedCopyEmptyFields(t *testing.T) {
 	assert.Empty(t, sanitized.Core.CertBase64)
 	assert.Empty(t, sanitized.Core.KeyBase64)
 	assert.Empty(t, sanitized.Core.HTTPProxy)
+	assert.Empty(t, sanitized.Core.CertPath)
+	assert.Empty(t, sanitized.Core.KeyPath)
+	assert.Nil(t, sanitized.Core.FeedbackHeader)
 	assert.Empty(t, sanitized.Android.KeyPath)
 	assert.Empty(t, sanitized.Android.Credential)
 	assert.Empty(t, sanitized.Huawei.AppSecret)

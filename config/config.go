@@ -633,6 +633,16 @@ func (c *ConfYaml) SanitizedCopy() *ConfYaml {
 	sanitized.Core.CertBase64 = redact(c.Core.CertBase64)
 	sanitized.Core.KeyBase64 = redact(c.Core.KeyBase64)
 	sanitized.Core.HTTPProxy = redact(c.Core.HTTPProxy)
+	sanitized.Core.CertPath = redact(c.Core.CertPath)
+	sanitized.Core.KeyPath = redact(c.Core.KeyPath)
+	if len(c.Core.FeedbackHeader) > 0 {
+		sanitized.Core.FeedbackHeader = make([]string, len(c.Core.FeedbackHeader))
+		for i, v := range c.Core.FeedbackHeader {
+			if v != "" {
+				sanitized.Core.FeedbackHeader[i] = "[REDACTED]"
+			}
+		}
+	}
 
 	// Android
 	sanitized.Android.KeyPath = redact(c.Android.KeyPath)
