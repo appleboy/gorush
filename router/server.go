@@ -86,19 +86,13 @@ func pushHandler(cfg *config.ConfYaml, q *queue.Queue) gin.HandlerFunc {
 			return
 		}
 
-		ctx, cancel := context.WithCancel(context.Background())
-		go func() {
-			// Deprecated: the CloseNotifier interface predates Go's context package.
-			// New code should use Request.Context instead.
-			// Change to context package
-			<-c.Request.Context().Done()
-			// Don't send notification after client timeout or disconnected.
-			// See the following issue for detail information.
-			// https://github.com/appleboy/gorush/issues/422
-			if cfg.Core.Sync {
-				cancel()
-			}
-		}()
+		// Use the request context directly so the context lifecycle is tied
+		// to the HTTP request. This avoids leaking a context.WithCancel on
+		// every request when running in async mode (sync: false), which was
+		// the root cause of the memory leak described in:
+		// https://github.com/appleboy/gorush/issues/422
+		// https://github.com/appleboy/gorush/issues/518
+		ctx := c.Request.Context()
 
 		counts, logs := handleNotification(ctx, cfg, form, q)
 
