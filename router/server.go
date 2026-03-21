@@ -280,7 +280,6 @@ func countNotificationTargets(notification *notify.PushNotification) int {
 	return count
 }
 
-
 // withEitherCancel returns a context that is cancelled when either ctx1 or ctx2 is done.
 // This is useful for merging an HTTP request context with a queue-task context so that
 // a push notification is aborted when the caller disconnects OR when the queue shuts down.
