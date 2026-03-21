@@ -858,8 +858,7 @@ func TestCountNotificationTargets(t *testing.T) {
 // when ctx1 (the first parent, e.g. the HTTP request context) is cancelled.
 func TestWithEitherCancel_Ctx1Cancel(t *testing.T) {
 	ctx1, cancel1 := context.WithCancel(context.Background())
-	ctx2, cancel2 := context.WithCancel(context.Background())
-	defer cancel2()
+	ctx2 := t.Context()
 
 	merged, cancelMerged := withEitherCancel(ctx1, ctx2)
 	defer cancelMerged()
@@ -885,9 +884,8 @@ func TestWithEitherCancel_Ctx1Cancel(t *testing.T) {
 // TestWithEitherCancel_Ctx2Cancel verifies that the derived context is cancelled
 // when ctx2 (the second parent, e.g. the queue-task context) is cancelled.
 func TestWithEitherCancel_Ctx2Cancel(t *testing.T) {
-	ctx1, cancel1 := context.WithCancel(context.Background())
+	ctx1 := t.Context()
 	ctx2, cancel2 := context.WithCancel(context.Background())
-	defer cancel1()
 
 	merged, cancelMerged := withEitherCancel(ctx1, ctx2)
 	defer cancelMerged()
@@ -948,8 +946,7 @@ func TestWithEitherCancel_ExplicitCancel(t *testing.T) {
 // preventing goroutine leaks.
 func TestWithEitherCancel_NoGoroutineLeak(t *testing.T) {
 	ctx1, cancel1 := context.WithCancel(context.Background())
-	ctx2, cancel2 := context.WithCancel(context.Background())
-	defer cancel2()
+	ctx2 := t.Context()
 
 	goroutinesBefore := runtime.NumGoroutine()
 
@@ -969,8 +966,9 @@ func TestWithEitherCancel_NoGoroutineLeak(t *testing.T) {
 	time.Sleep(50 * time.Millisecond)
 	goroutinesAfter := runtime.NumGoroutine()
 
+	// Allow a ±1 goroutine variance due to runtime scheduling
 	assert.LessOrEqual(t, goroutinesAfter, goroutinesBefore+1,
-		"goroutine count should return to baseline after cancellation (allow ±1 for runtime variance)")
+		"goroutine count should be near baseline after cancellation")
 
 	// merged context must be done
 	select {
@@ -987,8 +985,7 @@ func TestWithEitherCancel_AlreadyCancelledCtx1(t *testing.T) {
 	ctx1, cancel1 := context.WithCancel(context.Background())
 	cancel1() // already cancelled
 
-	ctx2, cancel2 := context.WithCancel(context.Background())
-	defer cancel2()
+	ctx2 := t.Context()
 
 	merged, cancelMerged := withEitherCancel(ctx1, ctx2)
 	defer cancelMerged()
@@ -1004,8 +1001,7 @@ func TestWithEitherCancel_AlreadyCancelledCtx1(t *testing.T) {
 // TestWithEitherCancel_AlreadyCancelledCtx2 verifies that if ctx2 is already
 // cancelled before withEitherCancel is called, the merged context is cancelled promptly.
 func TestWithEitherCancel_AlreadyCancelledCtx2(t *testing.T) {
-	ctx1, cancel1 := context.WithCancel(context.Background())
-	defer cancel1()
+	ctx1 := t.Context()
 
 	ctx2, cancel2 := context.WithCancel(context.Background())
 	cancel2() // already cancelled
