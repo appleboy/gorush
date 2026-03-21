@@ -313,6 +313,7 @@ func handleNotification(
 	var (
 		count int
 		wg    sync.WaitGroup
+		mu    sync.Mutex
 		logs  = make([]logx.LogPushEntry, 0)
 	)
 
@@ -335,9 +336,14 @@ func handleNotification(
 					if err != nil {
 						return err
 					}
+					mu.Lock()
 					logs = append(logs, resp.Logs...)
+					mu.Unlock()
 					return nil
 				}); err != nil {
+					if cfg.Core.Sync {
+						wg.Done()
+					}
 					logx.LogError.Error(err)
 				}
 			}(notification, cfg, ctx)
