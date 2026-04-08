@@ -237,8 +237,6 @@ func setDefaults(v *viper.Viper) {
 	// Android
 	v.SetDefault("android.enabled", true)
 	v.SetDefault("android.max_retry", 0)
-
-	// Android
 	v.SetDefault("android.key_path", "")
 	v.SetDefault("android.credential", "")
 
