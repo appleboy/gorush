@@ -13,7 +13,7 @@ require (
 	github.com/appleboy/gofight/v2 v2.2.1
 	github.com/appleboy/graceful v1.3.0
 	github.com/asdine/storm/v3 v3.2.1
-	github.com/buger/jsonparser v1.1.1
+	github.com/buger/jsonparser v1.1.2
 	github.com/dgraph-io/badger/v4 v4.9.1
 	github.com/gin-contrib/logger v1.2.6
 	github.com/gin-gonic/gin v1.12.0
@@ -80,7 +80,7 @@ require (
 	github.com/fukata/golang-stats-api-handler v1.0.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.13 // indirect
 	github.com/gin-contrib/sse v1.1.0 // indirect
-	github.com/go-jose/go-jose/v4 v4.1.3 // indirect
+	github.com/go-jose/go-jose/v4 v4.1.4 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
