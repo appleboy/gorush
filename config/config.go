@@ -326,14 +326,19 @@ func LoadConf(confPath ...string) (*ConfYaml, error) {
 		return loadConfigFromViper(v)
 	}
 
-	// Search config in home directory with name ".gorush" (without extension).
+	// Search for config.{yaml,yml,json,...} in standard directories.
 	v.AddConfigPath("/etc/gorush/")
 	v.AddConfigPath("$HOME/.gorush")
 	v.AddConfigPath(".")
 	v.SetConfigName("config")
 
 	// If a config file is found, read it in.
-	if err := v.ReadInConfig(); err == nil {
+	if err := v.ReadInConfig(); err != nil {
+		// Only ignore "config file not found" — fail on parse/permission errors
+		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+			return nil, fmt.Errorf("failed to read config: %w", err)
+		}
+	} else {
 		log.Println("Using config file:", v.ConfigFileUsed())
 	}
 
