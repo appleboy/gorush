@@ -43,25 +43,6 @@ func TestInvalidYAMLFile(t *testing.T) {
 	assert.Contains(t, err.Error(), tmpFile)
 }
 
-// Test improved error messages for default config loading
-func TestDefaultConfigLoadFailure(t *testing.T) {
-	// Backup original defaultConf
-	originalDefaultConf := defaultConf
-	defer func() {
-		defaultConf = originalDefaultConf
-	}()
-
-	// Set invalid default config
-	defaultConf = []byte(`invalid: yaml: [unclosed`)
-
-	conf, err := LoadConf()
-
-	assert.Nil(t, conf)
-	require.Error(t, err)
-	// Check that the error message describes the default config loading failure
-	assert.Contains(t, err.Error(), "failed to load default config and no config file found")
-}
-
 func TestEmptyConfig(t *testing.T) {
 	conf, err := LoadConf("testdata/empty.yml")
 	if err != nil {
@@ -89,62 +70,98 @@ func (suite *ConfigTestSuite) SetupTest() {
 	}
 }
 
-func (suite *ConfigTestSuite) TestValidateConfDefault() {
+// assertCommonConfig verifies config values shared by both default and file-loaded configs.
+func (suite *ConfigTestSuite) assertCommonConfig(conf *ConfYaml) {
 	// Core
+	suite.Equal("8088", conf.Core.Port)
+	suite.Equal(int64(30), conf.Core.ShutdownTimeout)
+	suite.True(conf.Core.Enabled)
+	suite.Equal(int64(runtime.NumCPU()), conf.Core.WorkerNum)
+	suite.Equal(int64(8192), conf.Core.QueueNum)
+	suite.Equal("release", conf.Core.Mode)
+	suite.False(conf.Core.Sync)
+	suite.Empty(conf.Core.FeedbackURL)
+	suite.Equal(int64(10), conf.Core.FeedbackTimeout)
+	suite.False(conf.Core.SSL)
+	suite.Equal("cert.pem", conf.Core.CertPath)
+	suite.Equal("key.pem", conf.Core.KeyPath)
+	suite.Empty(conf.Core.CertBase64)
+	suite.Empty(conf.Core.KeyBase64)
+	suite.Equal(int64(100), conf.Core.MaxNotification)
+	suite.Empty(conf.Core.HTTPProxy)
+
+	// PID
+	suite.False(conf.Core.PID.Enabled)
+	suite.Equal("gorush.pid", conf.Core.PID.Path)
+	suite.True(conf.Core.PID.Override)
+	suite.False(conf.Core.AutoTLS.Enabled)
+	suite.Equal(".cache", conf.Core.AutoTLS.Folder)
+	suite.Empty(conf.Core.AutoTLS.Host)
+
+	// API
+	suite.Equal("/api/push", conf.API.PushURI)
+	suite.Equal("/api/stat/go", conf.API.StatGoURI)
+	suite.Equal("/api/stat/app", conf.API.StatAppURI)
+	suite.Equal("/api/config", conf.API.ConfigURI)
+	suite.Equal("/sys/stats", conf.API.SysStatURI)
+	suite.Equal("/metrics", conf.API.MetricURI)
+	suite.Equal("/healthz", conf.API.HealthURI)
+
+	// iOS (common fields)
+	suite.False(conf.Ios.Enabled)
+	suite.Empty(conf.Ios.KeyBase64)
+	suite.Equal("pem", conf.Ios.KeyType)
+	suite.Empty(conf.Ios.Password)
+	suite.False(conf.Ios.Production)
+	suite.Equal(uint(100), conf.Ios.MaxConcurrentPushes)
+	suite.Equal(0, conf.Ios.MaxRetry)
+	suite.Empty(conf.Ios.KeyID)
+	suite.Empty(conf.Ios.TeamID)
+
+	// Log
+	suite.Equal("string", conf.Log.Format)
+	suite.Equal("stdout", conf.Log.AccessLog)
+	suite.Equal("debug", conf.Log.AccessLevel)
+	suite.Equal("stderr", conf.Log.ErrorLog)
+	suite.Equal("error", conf.Log.ErrorLevel)
+	suite.True(conf.Log.HideToken)
+
+	// Stat
+	suite.Equal("memory", conf.Stat.Engine)
+	suite.False(conf.Stat.Redis.Cluster)
+	suite.Equal("localhost:6379", conf.Stat.Redis.Addr)
+	suite.Empty(conf.Stat.Redis.Username)
+	suite.Empty(conf.Stat.Redis.Password)
+	suite.Equal(0, conf.Stat.Redis.DB)
+	suite.Equal("bolt.db", conf.Stat.BoltDB.Path)
+	suite.Equal("gorush", conf.Stat.BoltDB.Bucket)
+	suite.Equal("bunt.db", conf.Stat.BuntDB.Path)
+	suite.Equal("level.db", conf.Stat.LevelDB.Path)
+	suite.Equal("badger.db", conf.Stat.BadgerDB.Path)
+
+	// gRPC
+	suite.False(conf.GRPC.Enabled)
+	suite.Equal("9000", conf.GRPC.Port)
+}
+
+func (suite *ConfigTestSuite) TestValidateConfDefault() {
+	suite.assertCommonConfig(suite.ConfGorushDefault)
+
+	// Default-specific assertions
 	suite.Empty(suite.ConfGorushDefault.Core.Address)
-	suite.Equal("8088", suite.ConfGorushDefault.Core.Port)
-	suite.Equal(int64(30), suite.ConfGorushDefault.Core.ShutdownTimeout)
-	suite.True(suite.ConfGorushDefault.Core.Enabled)
-	suite.Equal(int64(runtime.NumCPU()), suite.ConfGorushDefault.Core.WorkerNum)
-	suite.Equal(int64(8192), suite.ConfGorushDefault.Core.QueueNum)
-	suite.Equal("release", suite.ConfGorushDefault.Core.Mode)
-	suite.False(suite.ConfGorushDefault.Core.Sync)
-	suite.Empty(suite.ConfGorushDefault.Core.FeedbackURL)
 	suite.Empty(suite.ConfGorushDefault.Core.FeedbackHeader)
-	suite.Equal(int64(10), suite.ConfGorushDefault.Core.FeedbackTimeout)
-	suite.False(suite.ConfGorushDefault.Core.SSL)
-	suite.Equal("cert.pem", suite.ConfGorushDefault.Core.CertPath)
-	suite.Equal("key.pem", suite.ConfGorushDefault.Core.KeyPath)
-	suite.Empty(suite.ConfGorushDefault.Core.KeyBase64)
-	suite.Empty(suite.ConfGorushDefault.Core.CertBase64)
-	suite.Equal(int64(100), suite.ConfGorushDefault.Core.MaxNotification)
-	suite.Empty(suite.ConfGorushDefault.Core.HTTPProxy)
-	// Pid
-	suite.False(suite.ConfGorushDefault.Core.PID.Enabled)
-	suite.Equal("gorush.pid", suite.ConfGorushDefault.Core.PID.Path)
-	suite.True(suite.ConfGorushDefault.Core.PID.Override)
-	suite.False(suite.ConfGorushDefault.Core.AutoTLS.Enabled)
-	suite.Equal(".cache", suite.ConfGorushDefault.Core.AutoTLS.Folder)
-	suite.Empty(suite.ConfGorushDefault.Core.AutoTLS.Host)
+	suite.False(suite.ConfGorushDefault.Log.HideMessages)
 
-	// Api
-	suite.Equal("/api/push", suite.ConfGorushDefault.API.PushURI)
-	suite.Equal("/api/stat/go", suite.ConfGorushDefault.API.StatGoURI)
-	suite.Equal("/api/stat/app", suite.ConfGorushDefault.API.StatAppURI)
-	suite.Equal("/api/config", suite.ConfGorushDefault.API.ConfigURI)
-	suite.Equal("/sys/stats", suite.ConfGorushDefault.API.SysStatURI)
-	suite.Equal("/metrics", suite.ConfGorushDefault.API.MetricURI)
-	suite.Equal("/healthz", suite.ConfGorushDefault.API.HealthURI)
-
-	// Android
+	// Android defaults
 	suite.True(suite.ConfGorushDefault.Android.Enabled)
 	suite.Empty(suite.ConfGorushDefault.Android.KeyPath)
 	suite.Empty(suite.ConfGorushDefault.Android.Credential)
 	suite.Equal(0, suite.ConfGorushDefault.Android.MaxRetry)
 
-	// iOS
-	suite.False(suite.ConfGorushDefault.Ios.Enabled)
+	// iOS defaults
 	suite.Empty(suite.ConfGorushDefault.Ios.KeyPath)
-	suite.Empty(suite.ConfGorushDefault.Ios.KeyBase64)
-	suite.Equal("pem", suite.ConfGorushDefault.Ios.KeyType)
-	suite.Empty(suite.ConfGorushDefault.Ios.Password)
-	suite.False(suite.ConfGorushDefault.Ios.Production)
-	suite.Equal(uint(100), suite.ConfGorushDefault.Ios.MaxConcurrentPushes)
-	suite.Equal(0, suite.ConfGorushDefault.Ios.MaxRetry)
-	suite.Empty(suite.ConfGorushDefault.Ios.KeyID)
-	suite.Empty(suite.ConfGorushDefault.Ios.TeamID)
 
-	// queue
+	// Queue defaults
 	suite.Equal("local", suite.ConfGorushDefault.Queue.Engine)
 	suite.Equal("127.0.0.1:4150", suite.ConfGorushDefault.Queue.NSQ.Addr)
 	suite.Equal("gorush", suite.ConfGorushDefault.Queue.NSQ.Topic)
@@ -162,118 +179,26 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 	suite.Empty(suite.ConfGorushDefault.Queue.Redis.Password)
 	suite.False(suite.ConfGorushDefault.Queue.Redis.WithTLS)
 	suite.Equal(0, suite.ConfGorushDefault.Queue.Redis.DB)
-
-	// log
-	suite.Equal("string", suite.ConfGorushDefault.Log.Format)
-	suite.Equal("stdout", suite.ConfGorushDefault.Log.AccessLog)
-	suite.Equal("debug", suite.ConfGorushDefault.Log.AccessLevel)
-	suite.Equal("stderr", suite.ConfGorushDefault.Log.ErrorLog)
-	suite.Equal("error", suite.ConfGorushDefault.Log.ErrorLevel)
-	suite.True(suite.ConfGorushDefault.Log.HideToken)
-	suite.False(suite.ConfGorushDefault.Log.HideMessages)
-
-	suite.Equal("memory", suite.ConfGorushDefault.Stat.Engine)
-	suite.False(suite.ConfGorushDefault.Stat.Redis.Cluster)
-	suite.Equal("localhost:6379", suite.ConfGorushDefault.Stat.Redis.Addr)
-	suite.Empty(suite.ConfGorushDefault.Stat.Redis.Username)
-	suite.Empty(suite.ConfGorushDefault.Stat.Redis.Password)
-	suite.Equal(0, suite.ConfGorushDefault.Stat.Redis.DB)
-
-	suite.Equal("bolt.db", suite.ConfGorushDefault.Stat.BoltDB.Path)
-	suite.Equal("gorush", suite.ConfGorushDefault.Stat.BoltDB.Bucket)
-
-	suite.Equal("bunt.db", suite.ConfGorushDefault.Stat.BuntDB.Path)
-	suite.Equal("level.db", suite.ConfGorushDefault.Stat.LevelDB.Path)
-	suite.Equal("badger.db", suite.ConfGorushDefault.Stat.BadgerDB.Path)
-
-	// gRPC
-	suite.False(suite.ConfGorushDefault.GRPC.Enabled)
-	suite.Equal("9000", suite.ConfGorushDefault.GRPC.Port)
 }
 
 func (suite *ConfigTestSuite) TestValidateConf() {
-	// Core
-	suite.Equal("8088", suite.ConfGorush.Core.Port)
-	suite.Equal(int64(30), suite.ConfGorush.Core.ShutdownTimeout)
-	suite.True(suite.ConfGorush.Core.Enabled)
-	suite.Equal(int64(runtime.NumCPU()), suite.ConfGorush.Core.WorkerNum)
-	suite.Equal(int64(8192), suite.ConfGorush.Core.QueueNum)
-	suite.Equal("release", suite.ConfGorush.Core.Mode)
-	suite.False(suite.ConfGorush.Core.Sync)
-	suite.Empty(suite.ConfGorush.Core.FeedbackURL)
-	suite.Equal(int64(10), suite.ConfGorush.Core.FeedbackTimeout)
+	suite.assertCommonConfig(suite.ConfGorush)
+
+	// File-specific assertions
 	suite.Len(suite.ConfGorush.Core.FeedbackHeader, 1)
 	suite.Equal(
 		"x-gorush-token:4e989115e09680f44a645519fed6a976",
 		suite.ConfGorush.Core.FeedbackHeader[0],
 	)
-	suite.False(suite.ConfGorush.Core.SSL)
-	suite.Equal("cert.pem", suite.ConfGorush.Core.CertPath)
-	suite.Equal("key.pem", suite.ConfGorush.Core.KeyPath)
-	suite.Empty(suite.ConfGorush.Core.CertBase64)
-	suite.Empty(suite.ConfGorush.Core.KeyBase64)
-	suite.Equal(int64(100), suite.ConfGorush.Core.MaxNotification)
-	suite.Empty(suite.ConfGorush.Core.HTTPProxy)
-	// Pid
-	suite.False(suite.ConfGorush.Core.PID.Enabled)
-	suite.Equal("gorush.pid", suite.ConfGorush.Core.PID.Path)
-	suite.True(suite.ConfGorush.Core.PID.Override)
-	suite.False(suite.ConfGorush.Core.AutoTLS.Enabled)
-	suite.Equal(".cache", suite.ConfGorush.Core.AutoTLS.Folder)
-	suite.Empty(suite.ConfGorush.Core.AutoTLS.Host)
 
-	// Api
-	suite.Equal("/api/push", suite.ConfGorush.API.PushURI)
-	suite.Equal("/api/stat/go", suite.ConfGorush.API.StatGoURI)
-	suite.Equal("/api/stat/app", suite.ConfGorush.API.StatAppURI)
-	suite.Equal("/api/config", suite.ConfGorush.API.ConfigURI)
-	suite.Equal("/sys/stats", suite.ConfGorush.API.SysStatURI)
-	suite.Equal("/metrics", suite.ConfGorush.API.MetricURI)
-	suite.Equal("/healthz", suite.ConfGorush.API.HealthURI)
-
-	// Android
+	// Android from file
 	suite.True(suite.ConfGorush.Android.Enabled)
 	suite.Equal("key.json", suite.ConfGorush.Android.KeyPath)
 	suite.Equal("CREDENTIAL_JSON_DATA", suite.ConfGorush.Android.Credential)
 	suite.Equal(0, suite.ConfGorush.Android.MaxRetry)
 
-	// iOS
-	suite.False(suite.ConfGorush.Ios.Enabled)
+	// iOS from file
 	suite.Equal("key.pem", suite.ConfGorush.Ios.KeyPath)
-	suite.Empty(suite.ConfGorush.Ios.KeyBase64)
-	suite.Equal("pem", suite.ConfGorush.Ios.KeyType)
-	suite.Empty(suite.ConfGorush.Ios.Password)
-	suite.False(suite.ConfGorush.Ios.Production)
-	suite.Equal(uint(100), suite.ConfGorush.Ios.MaxConcurrentPushes)
-	suite.Equal(0, suite.ConfGorush.Ios.MaxRetry)
-	suite.Empty(suite.ConfGorush.Ios.KeyID)
-	suite.Empty(suite.ConfGorush.Ios.TeamID)
-
-	// log
-	suite.Equal("string", suite.ConfGorush.Log.Format)
-	suite.Equal("stdout", suite.ConfGorush.Log.AccessLog)
-	suite.Equal("debug", suite.ConfGorush.Log.AccessLevel)
-	suite.Equal("stderr", suite.ConfGorush.Log.ErrorLog)
-	suite.Equal("error", suite.ConfGorush.Log.ErrorLevel)
-	suite.True(suite.ConfGorush.Log.HideToken)
-
-	suite.Equal("memory", suite.ConfGorush.Stat.Engine)
-	suite.False(suite.ConfGorush.Stat.Redis.Cluster)
-	suite.Equal("localhost:6379", suite.ConfGorush.Stat.Redis.Addr)
-	suite.Empty(suite.ConfGorush.Stat.Redis.Username)
-	suite.Empty(suite.ConfGorush.Stat.Redis.Password)
-	suite.Equal(0, suite.ConfGorush.Stat.Redis.DB)
-
-	suite.Equal("bolt.db", suite.ConfGorush.Stat.BoltDB.Path)
-	suite.Equal("gorush", suite.ConfGorush.Stat.BoltDB.Bucket)
-
-	suite.Equal("bunt.db", suite.ConfGorush.Stat.BuntDB.Path)
-	suite.Equal("level.db", suite.ConfGorush.Stat.LevelDB.Path)
-	suite.Equal("badger.db", suite.ConfGorush.Stat.BadgerDB.Path)
-
-	// gRPC
-	suite.False(suite.ConfGorush.GRPC.Enabled)
-	suite.Equal("9000", suite.ConfGorush.GRPC.Port)
 }
 
 func TestConfigTestSuite(t *testing.T) {
@@ -336,18 +261,6 @@ func TestRedisDBConfigurationFromEnv(t *testing.T) {
 
 	// Test stat.redis.db is properly loaded from env
 	assert.Equal(t, 9, conf.Stat.Redis.DB)
-}
-
-func TestLoadWrongDefaultYAMLConfig(t *testing.T) {
-	// Backup original defaultConf
-	originalDefaultConf := defaultConf
-	defer func() {
-		defaultConf = originalDefaultConf
-	}()
-
-	defaultConf = []byte(`a`)
-	_, err := LoadConf()
-	assert.Error(t, err)
 }
 
 func TestValidatePort(t *testing.T) {

@@ -17,6 +17,7 @@ require (
 	github.com/dgraph-io/badger/v4 v4.9.1
 	github.com/gin-contrib/logger v1.2.6
 	github.com/gin-gonic/gin v1.12.0
+	github.com/go-viper/mapstructure/v2 v2.5.0
 	github.com/golang-queue/nats v0.2.0
 	github.com/golang-queue/nsq v0.3.0
 	github.com/golang-queue/queue v0.5.0
@@ -86,7 +87,6 @@ require (
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.30.1 // indirect
-	github.com/go-viper/mapstructure/v2 v2.5.0 // indirect
 	github.com/goccy/go-json v0.10.5 // indirect
 	github.com/goccy/go-yaml v1.19.2 // indirect
 	github.com/golang-jwt/jwt/v4 v4.5.2 // indirect

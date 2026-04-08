@@ -28,6 +28,7 @@ func TestMissingHuaweiAppID(t *testing.T) {
 
 	cfg.Android.Enabled = false
 	cfg.Huawei.Enabled = true
+	cfg.Huawei.AppSecret = "test-secret"
 	cfg.Huawei.AppID = ""
 
 	err := CheckPushConf(cfg)
