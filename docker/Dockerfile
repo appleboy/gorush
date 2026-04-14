@@ -12,7 +12,8 @@ LABEL maintainer="Bo-Yi Wu <appleboy.tw@gmail.com>" \
 
 # add new user
 RUN adduser -D $USER
-RUN apk add --no-cache ca-certificates mailcap && \
+RUN apk upgrade --no-cache && \
+  apk add --no-cache ca-certificates mailcap && \
   rm -rf /var/cache/apk/*
 
 COPY release/${TARGETOS}/${TARGETARCH}/gorush /bin/
