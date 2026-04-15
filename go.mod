@@ -1,6 +1,6 @@
 module github.com/appleboy/gorush
 
-go 1.25.0
+go 1.25.9
 
 replace github.com/msalihkarakasli/go-hms-push => github.com/spawn2kill/go-hms-push v0.0.0-20211125124117-e20af53b1304
 
