@@ -2,10 +2,14 @@
   "name": "gorush-examples",
   "version": "0.1.0",
   "dependencies": {
-    "async": "^3.2.6",
     "@grpc/grpc-js": "^1.12.6",
+    "async": "^3.2.6",
     "google-protobuf": "^3.21.4",
     "lodash": "^4.18.0",
     "minimist": ">=1.2.8"
+  },
+  "overrides": {
+    "protobufjs": "^7.6.1",
+    "@protobufjs/utf8": "^1.1.1"
   }
 }
