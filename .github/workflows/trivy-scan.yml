@@ -23,7 +23,7 @@ jobs:
           fetch-depth: 0
 
       - name: Run Trivy vulnerability scanner in repo mode
-        uses: aquasecurity/trivy-action@0.35.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: 'fs'
           ignore-unfixed: true
@@ -41,7 +41,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Run Trivy vulnerability scanner (Docker Hub)
-        uses: aquasecurity/trivy-action@0.35.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: 'appleboy/gorush:latest'
           format: 'sarif'
@@ -54,7 +54,7 @@ jobs:
           sarif_file: 'trivy-dockerhub-results.sarif'
 
       - name: Run Trivy vulnerability scanner (Docker Hub Table format)
-        uses: aquasecurity/trivy-action@0.35.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: 'appleboy/gorush:latest'
           format: 'table'
@@ -73,7 +73,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Run Trivy vulnerability scanner (GHCR)
-        uses: aquasecurity/trivy-action@0.35.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: 'ghcr.io/appleboy/gorush:latest'
           format: 'sarif'
@@ -86,7 +86,7 @@ jobs:
           sarif_file: 'trivy-ghcr-results.sarif'
 
       - name: Run Trivy vulnerability scanner (GHCR Table format)
-        uses: aquasecurity/trivy-action@0.35.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: 'ghcr.io/appleboy/gorush:latest'
           format: 'table'
