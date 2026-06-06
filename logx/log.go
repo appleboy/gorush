@@ -205,54 +205,62 @@ type InputLog struct {
 
 // LogPush record user push request and server response.
 func LogPush(input *InputLog) LogPushEntry {
-	var platColor, resetColor, output string
+	log := GetLogPushEntry(input)
 
+	// Only build the output string when the destination logger will actually
+	// emit it; the marshal/format runs once per token on the push hot path.
+	switch input.Status {
+	case core.SucceededPush:
+		if LogAccess.IsLevelEnabled(logrus.InfoLevel) {
+			LogAccess.Info(formatPushLog(input, log))
+		}
+	case core.FailedPush:
+		if LogError.IsLevelEnabled(logrus.ErrorLevel) {
+			LogError.Error(formatPushLog(input, log))
+		}
+	}
+
+	return log
+}
+
+// formatPushLog renders a push log entry as JSON or colored text.
+func formatPushLog(input *InputLog, log LogPushEntry) string {
+	if input.Format == "json" {
+		logJSON, _ := json.Marshal(log)
+		return string(logJSON)
+	}
+
+	var platColor, resetColor, typeColor string
 	if isTerm {
 		platColor = colorForPlatForm(input.Platform)
 		resetColor = reset
 	}
 
-	log := GetLogPushEntry(input)
-
-	if input.Format == "json" {
-		logJSON, _ := json.Marshal(log)
-
-		output = string(logJSON)
-	} else {
-		var typeColor string
-		switch input.Status {
-		case core.SucceededPush:
-			if isTerm {
-				typeColor = green
-			}
-
-			output = fmt.Sprintf("|%s %s %s| %s%s%s [%s] %s",
-				typeColor, log.Type, resetColor,
-				platColor, log.Platform, resetColor,
-				log.Token,
-				log.Message,
-			)
-		case core.FailedPush:
-			if isTerm {
-				typeColor = red
-			}
-
-			output = fmt.Sprintf("|%s %s %s| %s%s%s [%s] | %s | Error Message: %s",
-				typeColor, log.Type, resetColor,
-				platColor, log.Platform, resetColor,
-				log.Token,
-				log.Message,
-				log.Error,
-			)
-		}
-	}
-
 	switch input.Status {
 	case core.SucceededPush:
-		LogAccess.Info(output)
+		if isTerm {
+			typeColor = green
+		}
+
+		return fmt.Sprintf("|%s %s %s| %s%s%s [%s] %s",
+			typeColor, log.Type, resetColor,
+			platColor, log.Platform, resetColor,
+			log.Token,
+			log.Message,
+		)
 	case core.FailedPush:
-		LogError.Error(output)
+		if isTerm {
+			typeColor = red
+		}
+
+		return fmt.Sprintf("|%s %s %s| %s%s%s [%s] | %s | Error Message: %s",
+			typeColor, log.Type, resetColor,
+			platColor, log.Platform, resetColor,
+			log.Token,
+			log.Message,
+			log.Error,
+		)
 	}
 
-	return log
+	return ""
 }

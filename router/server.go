@@ -227,7 +227,7 @@ func markFailedNotification(
 	reason string,
 ) []logx.LogPushEntry {
 	logx.LogError.Error(reason)
-	logs := make([]logx.LogPushEntry, 0)
+	logs := make([]logx.LogPushEntry, 0, len(notification.Tokens))
 	for _, token := range notification.Tokens {
 		logs = append(logs, logx.GetLogPushEntry(&logx.InputLog{
 			ID:        notification.ID,
