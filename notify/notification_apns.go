@@ -478,6 +478,7 @@ Retry:
 		newTokens    []string
 		successCount atomic.Int64
 		errorCount   atomic.Int64
+		mu           sync.Mutex // guards newTokens and resp.Logs against the per-token goroutines
 	)
 
 	notification := GetIOSNotification(req)
@@ -502,14 +503,17 @@ Retry:
 
 				// apns server error
 				errLog := logPush(cfg, core.FailedPush, token, req, err)
-				resp.Logs = append(resp.Logs, errLog)
-
 				errorCount.Add(1)
 				// We should retry only "retryable" statuses. More info about response:
 				// See https://apple.co/3AdNane (Handling Notification Responses from APNs)
-				if res != nil && res.StatusCode >= http.StatusInternalServerError {
+				retryable := res != nil && res.StatusCode >= http.StatusInternalServerError
+
+				mu.Lock()
+				resp.Logs = append(resp.Logs, errLog)
+				if retryable {
 					newTokens = append(newTokens, token)
 				}
+				mu.Unlock()
 			}
 
 			if res != nil && res.Sent() {
