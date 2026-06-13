@@ -141,6 +141,20 @@ func setupFCMSound(req *PushNotification) {
 	}
 }
 
+// setupFCMPriority propagates the delivery priority to the AndroidConfig so it
+// is honored even for data-only messages that have no sound or notification.
+func setupFCMPriority(req *PushNotification) {
+	if req.Priority == "" {
+		return
+	}
+	switch {
+	case req.Android == nil:
+		req.Android = &messaging.AndroidConfig{Priority: req.Priority}
+	case req.Android.Priority == "":
+		req.Android.Priority = req.Priority
+	}
+}
+
 // convertDataToStringMap converts the request data to a string map.
 func convertDataToStringMap(data map[string]any) map[string]string {
 	if len(data) == 0 {
@@ -182,6 +196,7 @@ func GetAndroidNotification(req *PushNotification) []*messaging.Message {
 	setupFCMNotification(req)
 	setupFCMContentAvailable(req)
 	setupFCMSound(req)
+	setupFCMPriority(req)
 
 	data := convertDataToStringMap(req.Data)
 	var messages []*messaging.Message

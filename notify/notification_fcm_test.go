@@ -474,3 +474,21 @@ func TestGetAndroidNotificationWithTopicAndTokens(t *testing.T) {
 	assert.Equal(t, "token1", messages[1].Token)
 	assert.Equal(t, "token2", messages[2].Token)
 }
+
+func TestFCMDataOnlyMessageKeepsHighPriority(t *testing.T) {
+	req := &PushNotification{
+		Tokens:   []string{"test-token"},
+		Platform: core.PlatFormAndroid,
+		Priority: "high",
+		Data: map[string]any{
+			"type":    "xcall",
+			"room_id": "t_47189",
+		},
+	}
+
+	messages := GetAndroidNotification(req)
+
+	assert.Len(t, messages, 1)
+	assert.NotNil(t, messages[0].Android)
+	assert.Equal(t, "high", messages[0].Android.Priority)
+}
