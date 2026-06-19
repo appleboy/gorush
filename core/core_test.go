@@ -57,6 +57,12 @@ func TestPlatformTextMarshaling(t *testing.T) {
 	if err := p.UnmarshalText(androidText); err != nil || p != PlatformAndroid {
 		t.Fatalf("UnmarshalText: p=%v err=%v", p, err)
 	}
+	if _, err := Platform(0).MarshalText(); err == nil {
+		t.Fatalf("expected error for invalid platform MarshalText")
+	}
+	if err := p.UnmarshalText([]byte("")); err == nil {
+		t.Fatalf("expected error for empty UnmarshalText")
+	}
 }
 
 func TestPlatformJSONMarshaling(t *testing.T) {
@@ -76,6 +82,12 @@ func TestPlatformJSONMarshaling(t *testing.T) {
 	}
 	if err := json.Unmarshal([]byte("99"), &p); err == nil {
 		t.Fatalf("expected error for invalid numeric JSON")
+	}
+	if _, err := json.Marshal(Platform(0)); err == nil {
+		t.Fatalf("expected error for invalid platform MarshalJSON")
+	}
+	if err := json.Unmarshal([]byte("0"), &p); err == nil {
+		t.Fatalf("expected error for zero numeric JSON")
 	}
 }
 
