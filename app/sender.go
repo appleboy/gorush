@@ -40,11 +40,8 @@ func SendAndroidNotification(ctx context.Context, cfg *config.ConfYaml, opts CLI
 		return err
 	}
 
-	if _, err := notify.PushToAndroid(ctx, req, cfg); err != nil {
-		return err
-	}
-
-	return nil
+	_, err := notify.PushToAndroid(ctx, req, cfg)
+	return err
 }
 
 // SendHuaweiNotification sends a Huawei notification via CLI.
@@ -73,11 +70,8 @@ func SendHuaweiNotification(ctx context.Context, cfg *config.ConfYaml, opts CLIS
 		return err
 	}
 
-	if _, err := notify.PushToHuawei(ctx, req, cfg); err != nil {
-		return err
-	}
-
-	return nil
+	_, err := notify.PushToHuawei(ctx, req, cfg)
+	return err
 }
 
 // SendIOSNotification sends an iOS notification via CLI.
@@ -110,11 +104,8 @@ func SendIOSNotification(ctx context.Context, cfg *config.ConfYaml, opts CLISend
 		return err
 	}
 
-	if _, err := notify.PushToIOS(ctx, req, cfg); err != nil {
-		return err
-	}
-
-	return nil
+	_, err := notify.PushToIOS(ctx, req, cfg)
+	return err
 }
 
 // SendNotification sends a notification based on platform type.

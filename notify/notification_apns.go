@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/appleboy/gorush/config"
@@ -467,19 +468,18 @@ func PushToIOS(
 ) (resp *ResponsePush, err error) {
 	logx.LogAccess.Debug("Start push notification for iOS")
 
-	var (
-		retryCount = 0
-		maxRetry   = cfg.Ios.MaxRetry
-	)
-
-	if req.Retry > 0 && req.Retry < maxRetry {
-		maxRetry = req.Retry
-	}
+	retryCount := 0
+	maxRetry := effectiveMaxRetry(req.Retry, cfg.Ios.MaxRetry)
 
 	resp = &ResponsePush{}
 
 Retry:
-	var newTokens []string
+	var (
+		newTokens    []string
+		successCount atomic.Int64
+		errorCount   atomic.Int64
+		mu           sync.Mutex // guards newTokens and resp.Logs against the per-token goroutines
+	)
 
 	notification := GetIOSNotification(req)
 	client := getApnsClient(cfg, req)
@@ -503,19 +503,22 @@ Retry:
 
 				// apns server error
 				errLog := logPush(cfg, core.FailedPush, token, req, err)
-				resp.Logs = append(resp.Logs, errLog)
-
-				status.StatStorage.AddIosError(1)
+				errorCount.Add(1)
 				// We should retry only "retryable" statuses. More info about response:
 				// See https://apple.co/3AdNane (Handling Notification Responses from APNs)
-				if res != nil && res.StatusCode >= http.StatusInternalServerError {
+				retryable := res != nil && res.StatusCode >= http.StatusInternalServerError
+
+				mu.Lock()
+				resp.Logs = append(resp.Logs, errLog)
+				if retryable {
 					newTokens = append(newTokens, token)
 				}
+				mu.Unlock()
 			}
 
 			if res != nil && res.Sent() {
 				logPush(cfg, core.SucceededPush, token, req, nil)
-				status.StatStorage.AddIosSuccess(1)
+				successCount.Add(1)
 			}
 
 			// free push slot
@@ -525,6 +528,15 @@ Retry:
 	}
 
 	wg.Wait()
+
+	// Flush the per-token counts in a single update each, instead of one
+	// stat-storage round-trip per device token.
+	if n := successCount.Load(); n > 0 {
+		status.StatStorage.AddIosSuccess(n)
+	}
+	if n := errorCount.Load(); n > 0 {
+		status.StatStorage.AddIosError(n)
+	}
 
 	if len(newTokens) > 0 && retryCount < maxRetry {
 		retryCount++
