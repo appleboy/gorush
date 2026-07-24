@@ -280,9 +280,24 @@ func countNotificationTargets(notification *notify.PushNotification) int {
 	return count
 }
 
+// withEitherCancel returns a context that is cancelled when either ctx1 or ctx2 is done.
+// This is useful for merging an HTTP request context with a queue-task context so that
+// a push notification is aborted when the caller disconnects OR when the queue shuts down.
+func withEitherCancel(ctx1, ctx2 context.Context) (context.Context, context.CancelFunc) {
+	ctx, cancel := context.WithCancel(ctx1)
+	go func() {
+		select {
+		case <-ctx2.Done():
+			cancel()
+		case <-ctx.Done():
+		}
+	}()
+	return ctx, cancel
+}
+
 // HandleNotification add notification to queue list.
 func handleNotification(
-	_ context.Context,
+	ctx context.Context,
 	cfg *config.ConfYaml,
 	req notify.RequestPush,
 	q *queue.Queue,
@@ -297,6 +312,7 @@ func handleNotification(
 	var (
 		count int
 		wg    sync.WaitGroup
+		mu    sync.Mutex
 		logs  = make([]logx.LogPushEntry, 0)
 	)
 
@@ -306,19 +322,30 @@ func handleNotification(
 		}
 
 		if isLocalSync {
-			func(msg *notify.PushNotification, cfg *config.ConfYaml) {
-				if err := q.QueueTask(func(ctx context.Context) error {
+			func(msg *notify.PushNotification, cfg *config.ConfYaml, reqCtx context.Context) {
+				if err := q.QueueTask(func(queueCtx context.Context) error {
 					defer wg.Done()
-					resp, err := notify.SendNotification(ctx, msg, cfg)
+					// Merge the HTTP request context with the queue context so that
+					// the notification is cancelled when either the client disconnects
+					// or the queue shuts down. See:
+					// https://github.com/appleboy/gorush/issues/422
+					mergedCtx, cancel := withEitherCancel(reqCtx, queueCtx)
+					defer cancel()
+					resp, err := notify.SendNotification(mergedCtx, msg, cfg)
 					if err != nil {
 						return err
 					}
+					mu.Lock()
 					logs = append(logs, resp.Logs...)
+					mu.Unlock()
 					return nil
 				}); err != nil {
+					if cfg.Core.Sync {
+						wg.Done()
+					}
 					logx.LogError.Error(err)
 				}
-			}(notification, cfg)
+			}(notification, cfg, ctx)
 		} else if err := q.Queue(notification); err != nil {
 			resp := markFailedNotification(cfg, notification, "max capacity reached")
 			logs = append(logs, resp...)
