@@ -117,7 +117,7 @@ type PushNotification struct {
 	InterruptionLevel string `json:"interruption_level,omitempty"`
 
 	// live-activity support
-	// ref: ref: https://apple.co/3MLe2DB
+	// ref: https://apple.co/3MLe2DB
 	ContentState   D        `json:"content-state,omitempty"`
 	StaleDate      int64    `json:"stale-date,omitempty"`
 	DismissalDate  int64    `json:"dismissal-date"`
