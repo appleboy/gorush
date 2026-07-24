@@ -685,7 +685,7 @@ The Request body must have a notifications array. The following is a parameter t
 | expiration              | int          | expiration for notification                                                                       | -        | only iOS                                                      |
 | apns_id                 | string       | A canonical UUID that identifies the notification                                                 | -        | only iOS                                                      |
 | collapse_id             | string       | An identifier you use to coalesce multiple notifications into a single notification for the user  | -        | only iOS                                                      |
-| push_type               | string       | The type of the notification. The value of this header is alert or background.                    | -        | only iOS                                                      |
+| push_type               | string       | The type of the notification. The value of this header is `alert`, `background`, or `liveactivity`. | -        | only iOS; use `liveactivity` for Live Activities              |
 | badge                   | int          | badge count                                                                                       | -        | only iOS                                                      |
 | category                | string       | the UIMutableUserNotificationCategory object                                                      | -        | only iOS                                                      |
 | alert                   | string array | payload of a iOS message                                                                          | -        | only iOS. See the [detail](#ios-alert-payload)                |
@@ -694,10 +694,13 @@ The Request body must have a notifications array. The following is a parameter t
 | volume                  | float32      | sets the volume value on the aps sound dictionary.                                                | -        | only iOS                                                      |
 | interruption_level      | string       | defines the interruption level for the push notification.                                         | -        | only iOS(15.0+)                                               |
 | content-state           | string array | dynamic and custom content for live-activity notification.                                        | -        | only iOS(16.1+)                                               |
-| timestamp               | int          | the UNIX time when sending the remote notification that updates or ends a Live Activity           | -        | only iOS(16.1+)                                               |
-| event                   | string       | describes whether you update or end an ongoing Live Activity                                      | -        | only iOS(16.1+)                                               |
+| timestamp               | int          | the UNIX time when sending the remote notification that starts, updates or ends a Live Activity   | -        | only iOS(16.1+)                                               |
+| event                   | string       | `start`, `update`, or `end` for a Live Activity                                                   | -        | only iOS(16.1+); `start` requires iOS 17.2+                   |
 | stale-date              | int          | the date which a Live Activity becomes stale, or out of date                                      | -        | only iOS(16.1+)                                               |
 | dismissal-date          | int          | the UNIX time -timestamp- which a Live Activity will end and will be removed                      | -        | only iOS(16.1+)                                               |
+| attributes-type         | string       | the ActivityAttributes type name used to start a Live Activity                                    | -        | only iOS(17.2+); required for `event: start`                  |
+| attributes              | string array | fixed ActivityAttributes content used to start a Live Activity                                    | -        | only iOS(17.2+); required for `event: start`                  |
+| relevance-score         | float        | relevance score used to order Live Activities / choose Dynamic Island presentation                | -        | only iOS(16.1+)                                               |
 
 ### iOS alert payload
 
@@ -852,6 +855,39 @@ Support send notification from different environment. See the detail of [issue](
       "platform": 1,
 +     "development": true,
       "message": "Hello World iOS Sandbox!"
+    }
+  ]
+}
+```
+
+Send a Live Activity push-to-start notification (requires a push-to-start token and `push_type` / topic for Live Activities):
+
+```json
+{
+  "notifications": [
+    {
+      "tokens": ["push_to_start_token"],
+      "platform": 1,
+      "push_type": "liveactivity",
+      "topic": "com.example.app.push-type.liveactivity",
+      "event": "start",
+      "timestamp": 1685952000,
+      "content-state": {
+        "homeScore": 0,
+        "awayScore": 0,
+        "minute": 1,
+        "period": "1H"
+      },
+      "attributes-type": "FootballMatchAttributes",
+      "attributes": {
+        "homeTeam": "Team 1",
+        "awayTeam": "Team 2",
+        "league": "Premier League"
+      },
+      "alert": {
+        "title": "Team 1 vs Team 2",
+        "body": "Kick-off! The match has started."
+      }
     }
   ]
 }
