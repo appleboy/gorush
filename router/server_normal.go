@@ -86,7 +86,12 @@ func RunHTTPServer(
 	return startServer(ctx, server, cfg)
 }
 
-func listenAndServe(ctx context.Context, s *http.Server, cfg *config.ConfYaml) error {
+func serveUntilShutdown(
+	ctx context.Context,
+	s *http.Server,
+	cfg *config.ConfYaml,
+	serve func() error,
+) error {
 	var g errgroup.Group
 	g.Go(func() error {
 		<-ctx.Done()
@@ -96,25 +101,7 @@ func listenAndServe(ctx context.Context, s *http.Server, cfg *config.ConfYaml) e
 		return s.Shutdown(ctx)
 	})
 	g.Go(func() error {
-		if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			return err
-		}
-		return nil
-	})
-	return g.Wait()
-}
-
-func listenAndServeTLS(ctx context.Context, s *http.Server, cfg *config.ConfYaml) error {
-	var g errgroup.Group
-	g.Go(func() error {
-		<-ctx.Done()
-		timeout := time.Duration(cfg.Core.ShutdownTimeout) * time.Second
-		ctx, cancel := context.WithTimeout(context.Background(), timeout)
-		defer cancel()
-		return s.Shutdown(ctx)
-	})
-	g.Go(func() error {
-		if err := s.ListenAndServeTLS("", ""); err != nil && err != http.ErrServerClosed {
+		if err := serve(); err != nil && err != http.ErrServerClosed {
 			return err
 		}
 		return nil
@@ -124,8 +111,10 @@ func listenAndServeTLS(ctx context.Context, s *http.Server, cfg *config.ConfYaml
 
 func startServer(ctx context.Context, s *http.Server, cfg *config.ConfYaml) error {
 	if s.TLSConfig == nil {
-		return listenAndServe(ctx, s, cfg)
+		return serveUntilShutdown(ctx, s, cfg, s.ListenAndServe)
 	}
 
-	return listenAndServeTLS(ctx, s, cfg)
+	return serveUntilShutdown(ctx, s, cfg, func() error {
+		return s.ListenAndServeTLS("", "")
+	})
 }

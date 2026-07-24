@@ -13,7 +13,6 @@ import (
 
 	"firebase.google.com/go/v4/messaging"
 	"github.com/appleboy/gorush/config"
-	"github.com/appleboy/gorush/core"
 	"github.com/appleboy/gorush/logx"
 	"github.com/appleboy/gorush/notify"
 	"github.com/appleboy/gorush/rpc/proto"
@@ -92,10 +91,6 @@ func (s *Server) Send(
 
 	if badge > 0 {
 		notification.Badge = &badge
-	}
-
-	if in.Topic != "" && in.Platform == core.PlatFormAndroid {
-		notification.Topic = in.Topic
 	}
 
 	if in.Alert != nil {

@@ -162,9 +162,9 @@ func convertDataToStringMap(data map[string]any) map[string]string {
 	}
 	result := make(map[string]string, len(data))
 	for k, v := range data {
-		switch v.(type) {
+		switch val := v.(type) {
 		case string:
-			result[k] = fmt.Sprintf("%s", v)
+			result[k] = val
 		default:
 			if b, err := json.Marshal(v); err == nil {
 				result[k] = string(b)
@@ -199,7 +199,7 @@ func GetAndroidNotification(req *PushNotification) []*messaging.Message {
 	setupFCMPriority(req)
 
 	data := convertDataToStringMap(req.Data)
-	var messages []*messaging.Message
+	messages := make([]*messaging.Message, 0, len(req.Tokens)+1)
 
 	if req.IsTopic() {
 		msg := buildFCMMessage(req, data)
@@ -292,10 +292,7 @@ func PushToAndroid(
 		return nil, err
 	}
 
-	maxRetry := cfg.Android.MaxRetry
-	if req.Retry > 0 && req.Retry < maxRetry {
-		maxRetry = req.Retry
-	}
+	maxRetry := effectiveMaxRetry(req.Retry, cfg.Android.MaxRetry)
 
 	resp = &ResponsePush{}
 	retryCount := 0

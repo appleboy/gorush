@@ -142,11 +142,17 @@ func (p *PushNotification) Payload() []byte {
 // IsTopic check if message format is topic for FCM
 // ref: https://firebase.google.com/docs/cloud-messaging/send-message#topic-http-post-request
 func (p *PushNotification) IsTopic() bool {
-	if p.Platform == core.PlatFormHuawei || p.Platform == core.PlatFormAndroid {
-		return p.Topic != "" || p.Condition != ""
-	}
+	return (p.Platform == core.PlatFormHuawei || p.Platform == core.PlatFormAndroid) &&
+		(p.Topic != "" || p.Condition != "")
+}
 
-	return false
+// effectiveMaxRetry clamps the configured retry count by the per-request Retry
+// override when the request asks for fewer retries.
+func effectiveMaxRetry(reqRetry, cfgMax int) int {
+	if reqRetry > 0 && reqRetry < cfgMax {
+		return reqRetry
+	}
+	return cfgMax
 }
 
 // CheckMessage for check request message
