@@ -699,7 +699,7 @@ The Request body must have a notifications array. The following is a parameter t
 | stale-date              | int          | the date which a Live Activity becomes stale, or out of date                                      | -        | only iOS(16.1+)                                               |
 | dismissal-date          | int          | the UNIX time -timestamp- which a Live Activity will end and will be removed                      | -        | only iOS(16.1+)                                               |
 | attributes-type         | string       | the ActivityAttributes type name used to start a Live Activity                                    | -        | only iOS(17.2+); required for `event: start`                  |
-| attributes              | string array | fixed ActivityAttributes content used to start a Live Activity                                    | -        | only iOS(17.2+); required for `event: start`                  |
+| attributes              | object       | fixed ActivityAttributes content used to start a Live Activity                                    | -        | only iOS(17.2+); required for `event: start`                  |
 | relevance-score         | float        | relevance score used to order Live Activities / choose Dynamic Island presentation                | -        | only iOS(16.1+)                                               |
 
 ### iOS alert payload
