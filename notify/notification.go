@@ -118,11 +118,14 @@ type PushNotification struct {
 
 	// live-activity support
 	// ref: https://apple.co/3MLe2DB
-	ContentState  D      `json:"content-state,omitempty"`
-	StaleDate     int64  `json:"stale-date,omitempty"`
-	DismissalDate int64  `json:"dismissal-date"`
-	Event         string `json:"event,omitempty"`
-	Timestamp     int64  `json:"timestamp,omitempty"`
+	ContentState   D        `json:"content-state,omitempty"`
+	StaleDate      int64    `json:"stale-date,omitempty"`
+	DismissalDate  int64    `json:"dismissal-date"`
+	Event          string   `json:"event,omitempty"`
+	Timestamp      int64    `json:"timestamp,omitempty"`
+	AttributesType string   `json:"attributes-type,omitempty"`
+	Attributes     D        `json:"attributes,omitempty"`
+	RelevanceScore *float64 `json:"relevance-score,omitempty"`
 }
 
 // Bytes for queue message

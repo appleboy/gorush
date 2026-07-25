@@ -960,15 +960,23 @@ func TestSetLiveActivityFields(t *testing.T) {
 	staleDate := time.Now().Unix()
 	dismissalDate := staleDate + 100
 	timestamp := time.Now().Unix()
+	relevanceScore := 100.0
 
 	req := &PushNotification{
 		ContentState: D{
-			"score": 10,
+			"homeScore": 1,
+			"awayScore": 0,
 		},
-		StaleDate:     staleDate,
-		DismissalDate: dismissalDate,
-		Event:         "update",
-		Timestamp:     timestamp,
+		StaleDate:      staleDate,
+		DismissalDate:  dismissalDate,
+		Event:          "update",
+		Timestamp:      timestamp,
+		AttributesType: "FootballMatchAttributes",
+		Attributes: D{
+			"homeTeam": "Team 1",
+			"awayTeam": "Team 2",
+		},
+		RelevanceScore: &relevanceScore,
 	}
 
 	notification := GetIOSNotification(req)
@@ -978,10 +986,60 @@ func TestSetLiveActivityFields(t *testing.T) {
 	gotStaleDate, _ := jsonparser.GetInt(data, "aps", "stale-date")
 	gotEvent, _ := jsonparser.GetString(data, "aps", "event")
 	gotTimestamp, _ := jsonparser.GetInt(data, "aps", "timestamp")
+	gotAttributesType, _ := jsonparser.GetString(data, "aps", "attributes-type")
+	gotHomeTeam, _ := jsonparser.GetString(data, "aps", "attributes", "homeTeam")
+	gotRelevanceScore, _ := jsonparser.GetFloat(data, "aps", "relevance-score")
 
 	assert.Equal(t, staleDate, gotStaleDate)
 	assert.Equal(t, "update", gotEvent)
 	assert.Equal(t, timestamp, gotTimestamp)
+	assert.Equal(t, "FootballMatchAttributes", gotAttributesType)
+	assert.Equal(t, "Team 1", gotHomeTeam)
+	assert.InDelta(t, relevanceScore, gotRelevanceScore, 0.01)
+}
+
+func TestLiveActivityPushToStart(t *testing.T) {
+	timestamp := time.Now().Unix()
+
+	req := &PushNotification{
+		PushType:  "liveactivity",
+		Topic:     "com.example.app.push-type.liveactivity",
+		Event:     "start",
+		Timestamp: timestamp,
+		ContentState: D{
+			"homeScore": 0,
+			"awayScore": 0,
+			"minute":    1,
+			"period":    "1H",
+		},
+		AttributesType: "FootballMatchAttributes",
+		Attributes: D{
+			"homeTeam": "Team 1",
+			"awayTeam": "Team 2",
+			"league":   "Premier League",
+		},
+		Alert: Alert{
+			Title: "Team 1 vs Team 2",
+			Body:  "Kick-off! The match has started.",
+		},
+	}
+
+	notification := GetIOSNotification(req)
+	assert.Equal(t, apns2.EPushType("liveactivity"), notification.PushType)
+	assert.Equal(t, "com.example.app.push-type.liveactivity", notification.Topic)
+
+	dump, err := json.Marshal(notification.Payload)
+	assert.NoError(t, err)
+
+	gotEvent, _ := jsonparser.GetString(dump, "aps", "event")
+	gotAttributesType, _ := jsonparser.GetString(dump, "aps", "attributes-type")
+	gotHomeTeam, _ := jsonparser.GetString(dump, "aps", "attributes", "homeTeam")
+	gotTitle, _ := jsonparser.GetString(dump, "aps", "alert", "title")
+
+	assert.Equal(t, "start", gotEvent)
+	assert.Equal(t, "FootballMatchAttributes", gotAttributesType)
+	assert.Equal(t, "Team 1", gotHomeTeam)
+	assert.Equal(t, "Team 1 vs Team 2", gotTitle)
 }
 
 func TestSetNotificationPriority(t *testing.T) {

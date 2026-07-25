@@ -325,6 +325,15 @@ func setLiveActivityFields(p *payload.Payload, req *PushNotification) {
 	if req.Timestamp > 0 {
 		p.SetTimestamp(req.Timestamp)
 	}
+	if len(req.AttributesType) > 0 {
+		p.SetAttributesType(req.AttributesType)
+	}
+	if len(req.Attributes) > 0 {
+		p.SetAttributes(req.Attributes)
+	}
+	if req.RelevanceScore != nil {
+		p.RelevanceScore(float32(*req.RelevanceScore))
+	}
 }
 
 func iosAlertDictionary(
