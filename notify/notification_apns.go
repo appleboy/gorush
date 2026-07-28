@@ -452,20 +452,25 @@ func GetIOSNotification(req *PushNotification) *apns2.Notification {
 	return notification
 }
 
-func getApnsClient(cfg *config.ConfYaml, req *PushNotification) (client *apns2.Client) {
+func getApnsClient(cfg *config.ConfYaml, req *PushNotification) *apns2.Client {
+	// Copy the shared client so setting the host per request does not mutate the
+	// process-wide ApnsClient. apns2's Production/Development mutate the receiver,
+	// so calling them on the global would race and could redirect concurrent
+	// pushes to the wrong host. HTTPClient and Token are safe to share.
+	client := *ApnsClient
 	switch {
 	case req.Production:
-		client = ApnsClient.Production()
+		client.Host = apns2.HostProduction
 	case req.Development:
-		client = ApnsClient.Development()
+		client.Host = apns2.HostDevelopment
 	default:
 		if cfg.Ios.Production {
-			client = ApnsClient.Production()
+			client.Host = apns2.HostProduction
 		} else {
-			client = ApnsClient.Development()
+			client.Host = apns2.HostDevelopment
 		}
 	}
-	return client
+	return &client
 }
 
 // PushToIOS provide send notification to APNs server.
