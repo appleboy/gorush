@@ -13,11 +13,10 @@ import (
 
 // extractHeaders converts a slice of strings to a map of strings.
 func extractHeaders(headers []string) map[string]string {
-	result := make(map[string]string)
+	result := make(map[string]string, len(headers))
 	for _, header := range headers {
-		parts := strings.Split(header, ":")
-		if len(parts) == 2 {
-			result[parts[0]] = parts[1]
+		if key, value, ok := strings.Cut(header, ":"); ok {
+			result[key] = value
 		}
 	}
 	return result

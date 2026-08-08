@@ -166,12 +166,8 @@ func PushToHuawei(
 	var (
 		client     *client.HMSClient
 		retryCount = 0
-		maxRetry   = cfg.Huawei.MaxRetry
+		maxRetry   = effectiveMaxRetry(req.Retry, cfg.Huawei.MaxRetry)
 	)
-
-	if req.Retry > 0 && req.Retry < maxRetry {
-		maxRetry = req.Retry
-	}
 
 	// check message
 	err = CheckMessage(req)

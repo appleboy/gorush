@@ -36,6 +36,5 @@ var (
 )
 
 const (
-	HIGH   = "high"
-	NORMAL = "nornal"
+	HIGH = "high"
 )
