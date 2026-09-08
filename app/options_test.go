@@ -22,6 +22,7 @@ func TestOptions_CLISendOptions(t *testing.T) {
 		Message: "test-message",
 		Title:   "test-title",
 		Topic:   "test-topic",
+		Retry:   3,
 	}
 
 	sendOpts := opts.CLISendOptions()
@@ -29,6 +30,13 @@ func TestOptions_CLISendOptions(t *testing.T) {
 	assert.Equal(t, "test-message", sendOpts.Message)
 	assert.Equal(t, "test-title", sendOpts.Title)
 	assert.Equal(t, "test-topic", sendOpts.Topic)
+	assert.Equal(t, 3, sendOpts.Retry)
+}
+
+func TestOptions_DefaultRetry(t *testing.T) {
+	opts := NewOptions()
+	sendOpts := opts.CLISendOptions()
+	assert.Equal(t, 0, sendOpts.Retry)
 }
 
 func TestOptions_IsCLIMode(t *testing.T) {

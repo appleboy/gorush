@@ -16,6 +16,7 @@ type CLISendOptions struct {
 	Message string
 	Title   string
 	Topic   string
+	Retry   int
 }
 
 // SendAndroidNotification sends an Android notification via CLI.
@@ -34,6 +35,10 @@ func SendAndroidNotification(ctx context.Context, cfg *config.ConfYaml, opts CLI
 
 	if opts.Topic != "" {
 		req.Topic = opts.Topic
+	}
+
+	if opts.Retry > 0 {
+		req.Retry = opts.Retry
 	}
 
 	if err := status.InitAppStatus(cfg); err != nil {
@@ -63,6 +68,10 @@ func SendHuaweiNotification(ctx context.Context, cfg *config.ConfYaml, opts CLIS
 
 	if opts.Topic != "" {
 		req.To = opts.Topic
+	}
+
+	if opts.Retry > 0 {
+		req.Retry = opts.Retry
 	}
 
 	if err := notify.CheckMessage(req); err != nil {
@@ -96,6 +105,10 @@ func SendIOSNotification(ctx context.Context, cfg *config.ConfYaml, opts CLISend
 
 	if opts.Topic != "" {
 		req.Topic = opts.Topic
+	}
+
+	if opts.Retry > 0 {
+		req.Retry = opts.Retry
 	}
 
 	if err := notify.CheckMessage(req); err != nil {

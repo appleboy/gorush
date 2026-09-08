@@ -185,6 +185,7 @@ Huawei Options:
     --huawei                         enabled huawei (default: false)
 Common Options:
     --topic <topic>                  iOS, Android or Huawei topic message
+    --retry <count>                  Maximum retry count for notification
     -h, --help                       Show this message
     -V, --version                    Show version
 `

@@ -14,12 +14,14 @@ func TestCLISendOptions(t *testing.T) {
 		Message: "test-message",
 		Title:   "test-title",
 		Topic:   "test-topic",
+		Retry:   2,
 	}
 
 	assert.Equal(t, "test-token", opts.Token)
 	assert.Equal(t, "test-message", opts.Message)
 	assert.Equal(t, "test-title", opts.Title)
 	assert.Equal(t, "test-topic", opts.Topic)
+	assert.Equal(t, 2, opts.Retry)
 }
 
 func TestSendNotification_UnsupportedPlatform(t *testing.T) {

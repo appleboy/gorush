@@ -17,6 +17,7 @@ type Options struct {
 	Message string
 	Title   string
 	Topic   string
+	Retry   int
 
 	// Config overrides
 	Conf config.ConfYaml
@@ -86,6 +87,7 @@ func (o *Options) BindFlags() {
 	flag.StringVar(&o.Message, "message", "", "notification message")
 	flag.StringVar(&o.Title, "title", "", "notification title")
 	flag.StringVar(&o.Topic, "topic", "", "apns topic in iOS")
+	flag.IntVar(&o.Retry, "retry", 0, "maximum retry count for sending notification")
 
 	// Health check
 	flag.BoolVar(&o.Ping, "ping", false, "ping server")
@@ -98,6 +100,7 @@ func (o *Options) CLISendOptions() CLISendOptions {
 		Message: o.Message,
 		Title:   o.Title,
 		Topic:   o.Topic,
+		Retry:   o.Retry,
 	}
 }
 
