@@ -104,7 +104,7 @@ func (s *Server) Send(
 			Body:         in.Alert.Body,
 			Subtitle:     in.Alert.Subtitle,
 			Action:       in.Alert.Action,
-			ActionLocKey: in.Alert.Action,
+			ActionLocKey: in.Alert.ActionLocKey,
 			LaunchImage:  in.Alert.LaunchImage,
 			LocArgs:      in.Alert.LocArgs,
 			LocKey:       in.Alert.LocKey,
