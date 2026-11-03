@@ -287,48 +287,51 @@ func handleNotification(
 	req notify.RequestPush,
 	q *queue.Queue,
 ) (int, []logx.LogPushEntry) {
-	if cfg.Core.Sync && !core.IsLocalQueue(core.Queue(cfg.Queue.Engine)) {
-		cfg.Core.Sync = false
-	}
+	// sync mode only works with a local queue; never mutate the shared config
+	isSync := cfg.Core.Sync && core.IsLocalQueue(core.Queue(cfg.Queue.Engine))
 
 	notifications := filterEnabledNotifications(cfg, req.Notifications)
-	isLocalSync := core.IsLocalQueue(core.Queue(cfg.Queue.Engine)) && cfg.Core.Sync
 
 	var (
 		count int
 		wg    sync.WaitGroup
+		mu    sync.Mutex
 		logs  = make([]logx.LogPushEntry, 0)
 	)
 
 	for _, notification := range notifications {
-		if cfg.Core.Sync {
-			wg.Add(1)
-		}
+		count += countNotificationTargets(notification)
 
-		if isLocalSync {
-			func(msg *notify.PushNotification, cfg *config.ConfYaml) {
-				if err := q.QueueTask(func(ctx context.Context) error {
-					defer wg.Done()
-					resp, err := notify.SendNotification(ctx, msg, cfg)
-					if err != nil {
-						return err
-					}
-					logs = append(logs, resp.Logs...)
-					return nil
-				}); err != nil {
-					logx.LogError.Error(err)
+		if isSync {
+			wg.Add(1)
+			err := q.QueueTask(func(ctx context.Context) error {
+				defer wg.Done()
+				resp, err := notify.SendNotification(ctx, notification, cfg)
+				if err != nil {
+					return err
 				}
-			}(notification, cfg)
+				mu.Lock()
+				logs = append(logs, resp.Logs...)
+				mu.Unlock()
+				return nil
+			})
+			if err != nil {
+				// the task was never queued, so wg.Done() inside it will
+				// never run: release the slot here to avoid hanging wg.Wait()
+				wg.Done()
+				logx.LogError.Error(err)
+				resp := markFailedNotification(cfg, notification, "max capacity reached")
+				mu.Lock()
+				logs = append(logs, resp...)
+				mu.Unlock()
+			}
 		} else if err := q.Queue(notification); err != nil {
 			resp := markFailedNotification(cfg, notification, "max capacity reached")
 			logs = append(logs, resp...)
-			wg.Done()
 		}
-
-		count += countNotificationTargets(notification)
 	}
 
-	if cfg.Core.Sync {
+	if isSync {
 		wg.Wait()
 	}
 
