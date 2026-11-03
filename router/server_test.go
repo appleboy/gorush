@@ -853,3 +853,51 @@ func TestCountNotificationTargets(t *testing.T) {
 		})
 	}
 }
+
+func TestHandleNotificationQueueFull(t *testing.T) {
+	cfg := initTest()
+	cfg.Ios.Enabled = true
+
+	req := notify.RequestPush{
+		Notifications: []notify.PushNotification{
+			{
+				Tokens: []string{
+					"11aa01229f15f0f0c12029d8c111d1ae1f2365f14cebc4af26cd6d76b7919ef7",
+				},
+				Platform: core.PlatFormIos,
+				Message:  "Welcome",
+			},
+		},
+	}
+
+	// async mode: a released queue must not panic (negative WaitGroup counter)
+	releasedQ := queue.NewPool(
+		1,
+		queue.WithFn(func(ctx context.Context, msg qcore.TaskMessage) error {
+			_, err := notify.SendNotification(ctx, msg, cfg)
+			return err
+		}),
+	)
+	releasedQ.Release()
+
+	count, logs := handleNotification(context.Background(), cfg, req, releasedQ)
+	assert.Equal(t, 1, count)
+	assert.Len(t, logs, 1)
+
+	// sync mode: a rejected task must not hang on wg.Wait() forever
+	cfg.Core.Sync = true
+	done := make(chan struct{})
+	var syncCount int
+	var syncLogs []logx.LogPushEntry
+	go func() {
+		syncCount, syncLogs = handleNotification(context.Background(), cfg, req, releasedQ)
+		close(done)
+	}()
+	select {
+	case <-done:
+	case <-time.After(10 * time.Second):
+		t.Fatal("handleNotification hung in sync mode when queue rejected the task")
+	}
+	assert.Equal(t, 1, syncCount)
+	assert.Len(t, syncLogs, 1)
+}
