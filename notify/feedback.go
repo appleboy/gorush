@@ -15,7 +15,7 @@ import (
 func extractHeaders(headers []string) map[string]string {
 	result := make(map[string]string)
 	for _, header := range headers {
-		parts := strings.Split(header, ":")
+		parts := strings.SplitN(header, ":", 2)
 		if len(parts) == 2 {
 			result[parts[0]] = parts[1]
 		}
