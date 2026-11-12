@@ -3,6 +3,7 @@ package notify
 import (
 	"context"
 	"errors"
+	"fmt"
 	"sync"
 
 	"github.com/appleboy/gorush/config"
@@ -220,5 +221,43 @@ Retry:
 		goto Retry
 	}
 
+	// HMS returns one business result for the whole request (not per token).
+	// Mirror FCM/APNs by recording failed-push logs so feedback_hook_url can fire.
+	if isError {
+		appendHuaweiFailureLogs(cfg, req, resp, res)
+	}
+
 	return resp, nil
+}
+
+// appendHuaweiFailureLogs records failed-push entries for feedback_hook_url.
+// Huawei Push Send API does not support exact results for each token, so every
+// target in the request is marked failed with the HMS code/message.
+func appendHuaweiFailureLogs(
+	cfg *config.ConfYaml,
+	req *PushNotification,
+	resp *ResponsePush,
+	res *model.MessageResponse,
+) {
+	if resp == nil || req == nil {
+		return
+	}
+
+	code := ""
+	msg := ""
+	if res != nil {
+		code = res.Code
+		msg = res.Msg
+	}
+	hmsErr := fmt.Errorf("%s-%s", code, msg)
+
+	targets := req.Tokens
+	if len(targets) == 0 {
+		targets = []string{req.Topic}
+	}
+
+	for _, token := range targets {
+		errLog := logPush(cfg, core.FailedPush, token, req, hmsErr)
+		resp.Logs = append(resp.Logs, errLog)
+	}
 }
