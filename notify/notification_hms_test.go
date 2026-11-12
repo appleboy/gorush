@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/appleboy/gorush/config"
+	"github.com/appleboy/gorush/core"
 
 	"github.com/appleboy/go-hms-push/push/model"
 	"github.com/stretchr/testify/assert"
@@ -246,4 +247,53 @@ func TestHuaweiNotificationWithCustomNotification(t *testing.T) {
 	assert.Equal(t, "custom-image.png", notification.Image)
 	// ClickAction should be set to default
 	assert.NotNil(t, notification.ClickAction)
+}
+
+func TestAppendHuaweiFailureLogsForTokens(t *testing.T) {
+	cfg, err := config.LoadConf()
+	require.NoError(t, err)
+	cfg.Log.HideToken = false
+	cfg.Log.HideMessages = false
+
+	req := &PushNotification{
+		Tokens:   []string{"token-a", "token-b"},
+		Platform: core.PlatFormHuawei,
+		Message:  "hello",
+		ID:       "req-1",
+	}
+	resp := &ResponsePush{}
+	res := &model.MessageResponse{
+		Code: "80300007",
+		Msg:  "All the tokens are invalid",
+	}
+
+	appendHuaweiFailureLogs(cfg, req, resp, res)
+
+	require.Len(t, resp.Logs, 2)
+	assert.Equal(t, core.FailedPush, resp.Logs[0].Type)
+	assert.Equal(t, "huawei", resp.Logs[0].Platform)
+	assert.Equal(t, "token-a", resp.Logs[0].Token)
+	assert.Equal(t, "token-b", resp.Logs[1].Token)
+	assert.Equal(t, "80300007-All the tokens are invalid", resp.Logs[0].Error)
+}
+
+func TestAppendHuaweiFailureLogsForTopic(t *testing.T) {
+	cfg, err := config.LoadConf()
+	require.NoError(t, err)
+	cfg.Log.HideToken = false
+	cfg.Log.HideMessages = false
+
+	req := &PushNotification{
+		Topic:    "news",
+		Platform: core.PlatFormHuawei,
+		Message:  "hello",
+	}
+	resp := &ResponsePush{}
+	res := &model.MessageResponse{Code: "80100003", Msg: "Illegal payload"}
+
+	appendHuaweiFailureLogs(cfg, req, resp, res)
+
+	require.Len(t, resp.Logs, 1)
+	assert.Equal(t, "news", resp.Logs[0].Token)
+	assert.Equal(t, "80100003-Illegal payload", resp.Logs[0].Error)
 }
